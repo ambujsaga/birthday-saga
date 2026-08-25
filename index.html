@@ -1052,7 +1052,7 @@
           <div class="admin-form">
             <label>Admin Email</label><input id="adminEmail" type="email" placeholder="admin@mmitsce.com" autocomplete="username">
             <label>Password</label><input id="adminPassword" type="password" placeholder="Firebase Authentication password" autocomplete="current-password">
-            <button class="admin-btn" onclick="firebaseAdminLogin()">🔑 Login</button>
+            <button class="admin-btn" onclick="firebaseAdminLogin()">🔑 Login</button><button class="admin-btn orange" onclick="createFirebaseAdmin()">🆕 Create Admin Account</button>
             <button class="admin-btn orange" onclick="closeAdminPanel()">Cancel</button>
             <p id="adminLoginMsg" class="admin-small"></p>
           </div>
@@ -1617,7 +1617,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 import { getDatabase, ref, onValue, get, set, update, remove } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAegYu-tHbS662BnPV3pyTFBGoKw1jomMQ",
@@ -1695,7 +1695,9 @@ async function fileToDataURL(file,maxSize=1000,quality=0.68){
 
 window.openAdminLogin=function(){document.getElementById('adminModal').classList.add('active');document.getElementById('adminLoginView').style.display=auth.currentUser?'none':'block';document.getElementById('adminDashboardView').style.display=auth.currentUser?'block':'none';if(auth.currentUser)renderAdminAll();};
 window.closeAdminPanel=function(){document.getElementById('adminModal').classList.remove('active');};
-window.firebaseAdminLogin=async function(){const email=document.getElementById('adminEmail').value.trim();const pass=document.getElementById('adminPassword').value;const msg=document.getElementById('adminLoginMsg');if(email!==ADMIN_EMAIL){msg.textContent='Use the configured admin email: '+ADMIN_EMAIL;return;}msg.textContent='Logging in…';try{await signInWithEmailAndPassword(auth,email,pass);msg.textContent='';}catch(e){msg.textContent='Login failed: '+e.message;}};
+function firebaseAuthError(e){const m={"auth/invalid-credential":"Email ya password galat hai.","auth/user-not-found":"Admin account nahi mila. Pehle Create Admin Account dabayein.","auth/wrong-password":"Password galat hai.","auth/invalid-email":"Email address sahi nahi hai.","auth/email-already-in-use":"Ye admin email pehle se registered hai. Login karein.","auth/weak-password":"Password kam se kam 6 characters ka rakhein.","auth/operation-not-allowed":"Firebase Console me Authentication → Sign-in method → Email/Password enable karein.","auth/network-request-failed":"Internet connection check karein.","auth/unauthorized-domain":"Firebase Authentication me Vercel domain Authorized domains me add karein."};return m[e.code]||e.message||"Firebase Authentication error.";}
+window.firebaseAdminLogin=async function(){const email=document.getElementById('adminEmail').value.trim();const pass=document.getElementById('adminPassword').value;const msg=document.getElementById('adminLoginMsg');if(email!==ADMIN_EMAIL){msg.textContent='Sirf configured admin email '+ADMIN_EMAIL+' se login allowed hai.';return;}if(!pass){msg.textContent='Password enter karein.';return;}msg.textContent='Logging in…';try{await signInWithEmailAndPassword(auth,email,pass);msg.textContent='Login successful…';}catch(e){msg.textContent='Login failed: '+firebaseAuthError(e);}};
+window.createFirebaseAdmin=async function(){const email=document.getElementById('adminEmail').value.trim();const pass=document.getElementById('adminPassword').value;const msg=document.getElementById('adminLoginMsg');if(email!==ADMIN_EMAIL){msg.textContent='Admin email exactly '+ADMIN_EMAIL+' hona chahiye.';return;}if(!pass||pass.length<6){msg.textContent='Password kam se kam 6 characters ka rakhein.';return;}msg.textContent='Admin account create ho raha hai…';try{await createUserWithEmailAndPassword(auth,email,pass);msg.textContent='Admin account create ho gaya. Login active hai.';}catch(e){msg.textContent='Account create nahi hua: '+firebaseAuthError(e);}};
 window.firebaseAdminLogout=()=>signOut(auth);
 window.uploadBrandImage=async function(kind){if(!auth.currentUser)return alert('Admin login required.');const file=document.getElementById(kind==='logo'?'adminLogoFile':'adminHeroFile').files[0];try{setStatus('Photo compress karke Realtime Database me save ho rahi hai…');const data=await fileToDataURL(file,kind==='logo'?650:1050,0.68);await update(ref(db,'portal/branding'),{[kind]:data});setStatus('Photo online update ho gayi. Firebase Storage required nahi hai.');}catch(e){setStatus('Photo save failed: '+e.message);}};
 window.saveSubject=async function(id){const s=onlineData.subjects.find(x=>String(x.id)===String(id));if(!s)return;const title=document.getElementById('st-'+id).value.trim(),desc=document.getElementById('sd-'+id).value.trim(),file=document.getElementById('sf-'+id).files[0];try{setStatus('Subject save ho raha hai…');let image=s.image;if(file)image=await fileToDataURL(file,900,0.65);await update(ref(db,'portal/subjects/'+id),{title,desc,image});setStatus('Subject + photo online update ho gaye.');}catch(e){setStatus('Save failed: '+e.message);}};
