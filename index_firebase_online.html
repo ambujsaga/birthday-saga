@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTEUP / JEECUP Portal - CSE 1st Sem</title>
+    
+    <style>
+        /* ================= CSS START ================= */
+        :root {
+            --primary-blue: #003366; /* Official Govt Blue */
+            --accent-orange: #ff9900; /* Official Accent */
+            --bg-color: #f4f6f9;
+            --text-dark: #333;
+            --card-bg: #ffffff;
+            --sarkari-red: #c0392b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            /* Added padding-bottom so content doesn't hide behind bottom nav */
+            padding-bottom: 70px; 
+        }
+
+        /* Main Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary-blue);
+            padding: 0.8rem 1.5rem;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .navbar .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .navbar .logo-container img {
+            width: 45px;
+            height: 45px;
+            background: #fff;
+            border-radius: 50%;
+            padding: 3px;
+        }
+
+        .navbar .logo-text h1 {
+            font-size: 1.1rem;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .navbar .logo-text p {
+            font-size: 0.75rem;
+            color: #cbd5e1;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        /* Notification Icon & Badge */
+        .notif-bell-container {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .notif-bell-container:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .red-dot {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            width: 10px;
+            height: 10px;
+            background-color: #ff3333;
+            border-radius: 50%;
+            border: 2px solid var(--primary-blue);
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(255, 82, 82, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 82, 82, 0); }
+        }
+
+        .menu-icon {
+            font-size: 1.8rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Notification Panel Dropdown */
+        .notif-panel {
+            display: none;
+            position: fixed;
+            top: 65px;
+            right: 15px;
+            width: 320px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            border: 1px solid #ddd;
+            z-index: 105;
+            overflow: hidden;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .notif-header {
+            background: var(--primary-blue);
+            color: #fff;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+
+        .notif-body {
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .notif-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.85rem;
+            color: #333;
+            transition: background 0.2s;
+        }
+
+        .notif-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .notif-item .notif-time {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        /* Scrolling Notice Bar */
+        .notice-bar {
+            background: var(--accent-orange);
+            color: #000;
+            padding: 8px 15px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .notice-bar .notice-btn {
+            background: var(--sarkari-red);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin-right: 10px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.1s, background 0.2s;
+            user-select: none;
+        }
+
+        .notice-bar .notice-btn:hover {
+            background: #a93226;
+            transform: scale(1.03);
+        }
+
+        /* Side Menu */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100vh;
+            background-color: #f8f9fa;
+            border-left: 3px solid var(--primary-blue);
+            padding-top: 60px;
+            transition: 0.3s ease-in-out;
+            z-index: 101;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+        }
+
+        .side-menu.active {
+            right: 0;
+        }
+
+        .menu-header {
+            padding: 0 20px 20px 20px;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 10px;
+        }
+
+        .menu-header h2 {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+        }
+
+        .side-menu a {
+            padding: 12px 25px;
+            text-decoration: none;
+            font-size: 1rem;
+            color: var(--text-dark);
+            display: block;
+            transition: 0.2s;
+            border-bottom: 1px solid #eee;
+            font-weight: 500;
+        }
+
+        .side-menu a:hover {
+            color: var(--primary-blue);
+            background-color: #e2e8f0;
+            padding-left: 30px;
+        }
+
+        .close-menu {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            color: var(--primary-blue);
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            background: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80') center/cover;
+            position: relative;
+            color: white;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 51, 102, 0.85);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent-orange);
+        }
+
+        /* Container & Grid */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary-blue);
+            border-bottom: 3px solid var(--accent-orange);
+            display: inline-block;
+            padding-bottom: 5px;
+            left: 50%;
+            position: relative;
+            transform: translateX(-50%);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Official looking Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-top: 4px solid var(--primary-blue);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,33,102,0.15);
+        }
+
+        .card-img-container {
+            height: 160px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-code {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--accent-orange);
+            color: #000;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-top-left-radius: 8px;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-body h3 {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .card-body p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Subject Detail & Notice Page */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .back-btn {
+            padding: 0.6rem 1.2rem;
+            background-color: var(--primary-blue);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .back-btn:hover { background-color: #002244; }
+
+        .download-btn {
+            padding: 0.6rem 1.2rem;
+            background-color: var(--accent-orange);
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .subject-header {
+            display: flex;
+            gap: 20px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 5px solid var(--primary-blue);
+            margin-bottom: 2rem;
+        }
+
+        .subject-header img {
+            width: 250px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .subject-info h1 {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .subject-info p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .syllabus-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .syllabus-table th, .syllabus-table td {
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .syllabus-table th {
+            background-color: var(--primary-blue);
+            color: #fff;
+        }
+
+        .syllabus-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        /* Sarkari Result Style Notice Board Page */
+        .sarkari-card {
+            background: #fff;
+            border: 2px solid var(--sarkari-red);
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .sarkari-header {
+            background: var(--sarkari-red);
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .sarkari-header h2 {
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .sarkari-header p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .sarkari-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sarkari-list li {
+            padding: 12px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .sarkari-list li:nth-child(even) {
+            background-color: #fff9f9;
+        }
+
+        .sarkari-list li:hover {
+            background-color: #f0f4f8;
+        }
+
+        .sarkari-list a {
+            color: #0000cc;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sarkari-list a:hover {
+            text-decoration: underline;
+            color: var(--sarkari-red);
+        }
+
+        .badge-new {
+            background: red;
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.3; }
+        }
+
+        .notice-date {
+            font-size: 0.8rem;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        /* Responsive */
+        @media(max-width: 768px) {
+            .subject-header {
+                flex-direction: column;
+            }
+            .subject-header img {
+                width: 100%;
+                height: auto;
+            }
+            .sarkari-list li {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .notif-panel {
+                width: 90%;
+                right: 5%;
+            }
+        }
+        /* ================= USER UPDATE: BUTTON + NAV ICON ================= */
+        .download-btn {
+            min-width: 190px;
+        }
+
+        .menu-icon {
+            display: none !important;
+        }
+        /* ================= END USER UPDATE ================= */
+
+        /* ================= MMIT WEBSITE PAGE UPDATE ================= */
+        .website-icon {
+            font-size: 1.55rem;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .website-icon:hover {
+            transform: scale(1.08);
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        .mmit-page {
+            max-width: 1200px;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+        }
+
+        .mmit-action-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .mmit-back-btn {
+            padding: 0.65rem 1.4rem;
+            background-color: var(--primary-blue);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+        .mmit-back-btn:hover {
+            background-color: #002244;
+        }
+
+        .mmit-frame {
+            width: 100%;
+            height: 75vh;
+            min-height: 520px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+        }
+        /* ================= END MMIT WEBSITE PAGE UPDATE ================= */
+
+        /* ================= BOTTOM NAVIGATION BAR ================= */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 65px;
+            z-index: 999;
+            border-top: 1px solid #eaeaea;
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 0.75rem;
+            width: 25%;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .bottom-nav-item:hover, .bottom-nav-item.active {
+            color: var(--primary-blue); 
+        }
+
+        .bottom-nav-item:active {
+            transform: scale(0.95);
+        }
+
+        .bottom-nav-item svg {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            fill: currentColor;
+        }
+
+        /* ================= NEW FEED & POST STYLES START ================= */
+        .feed-container {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .post-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            padding: 1.2rem;
+            border-top: 3px solid var(--accent-orange);
+        }
+
+        .post-header {
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .post-text {
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        .post-img {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .post-action-btn {
+            background: #f4f6f9;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--primary-blue);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+
+        .post-action-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .comments-section {
+            margin-top: 15px;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .comment-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comment-item:last-child {
+            border-bottom: none;
+        }
+
+        .delete-comment-btn {
+            color: red;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-left: 10px;
+        }
+
+        .comment-input-box {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .comment-input-box input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .comment-input-box button {
+            background: var(--primary-blue);
+            color: #fff;
+            border: none;
+            padding: 0 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Image Viewer Modal Styles */
+        .image-viewer-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .viewer-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .viewer-img {
+            max-width: 95%;
+            max-height: 85vh;
+            object-fit: contain;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+        /* ================= NEW FEED & POST STYLES END ================= */
+        
+        /* ================= CHAT & PROFILE STYLES ================= */
+        .chat-container {
+            background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column; height: 60vh; border-top: 3px solid var(--primary-blue);
+        }
+        .chat-messages {
+            flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+        }
+        .chat-msg {
+            max-width: 75%; padding: 10px; border-radius: 8px; font-size: 0.9rem;
+        }
+        .chat-msg.received { background: #f1f1f1; align-self: flex-start; border-bottom-left-radius: 0; }
+        .chat-msg.sent { background: var(--primary-blue); color: white; align-self: flex-end; border-bottom-right-radius: 0; }
+        .chat-input-area {
+            display: flex; padding: 10px; border-top: 1px solid #eee; gap: 10px;
+        }
+        .chat-input-area input {
+            flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; outline: none; font-size: 0.9rem;
+        }
+        .chat-input-area button {
+            background: var(--accent-orange); color: #000; border: none; padding: 0 20px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .chat-input-area button:hover { background: #e68a00; }
+        
+        .profile-card {
+            background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 30px; text-align: center; border-top: 3px solid var(--accent-orange);
+        }
+        .profile-avatar {
+            font-size: 4rem; margin-bottom: 15px; display: inline-block; background: #f4f6f9; border-radius: 50%; padding: 20px;
+        }
+        .profile-name { color: var(--primary-blue); font-size: 1.5rem; margin-bottom: 5px; }
+        .profile-role { color: #666; margin-bottom: 20px; font-weight: 500; }
+        .profile-details { text-align: left; background: #f9f9f9; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #eee; }
+        .profile-details p { margin-bottom: 12px; font-size: 0.95rem; display: flex; justify-content: space-between;}
+        .logout-btn {
+            background: var(--sarkari-red); color: white; border: none; padding: 10px 25px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+        .logout-btn:hover { background: #a93226; }
+    
+        /* ================= FIREBASE ONLINE ADMIN PANEL ================= */
+        .admin-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:12000;display:none;align-items:center;justify-content:center;padding:15px}
+        .admin-modal.active{display:flex}
+        .admin-box{width:min(1050px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+        .admin-head{position:sticky;top:0;z-index:2;background:var(--primary-blue);color:#fff;padding:15px 18px;display:flex;justify-content:space-between;align-items:center}
+        .admin-head h2{font-size:1.15rem}.admin-close{font-size:28px;cursor:pointer}
+        .admin-login{padding:25px}.admin-login input,.admin-form input,.admin-form textarea,.admin-form select{width:100%;padding:11px;border:1px solid #ccc;border-radius:7px;margin:6px 0 12px;outline:none}
+        .admin-form textarea{min-height:90px;resize:vertical}.admin-btn{border:0;border-radius:7px;padding:10px 15px;background:var(--primary-blue);color:#fff;font-weight:700;cursor:pointer;margin:4px}.admin-btn.orange{background:var(--accent-orange);color:#000}.admin-btn.red{background:var(--sarkari-red)}
+        .admin-tabs{display:flex;gap:7px;flex-wrap:wrap;padding:12px 15px;border-bottom:1px solid #ddd;background:#f7f9fc;position:sticky;top:57px;z-index:2}.admin-tab{border:1px solid #ccd4df;background:#fff;padding:8px 11px;border-radius:20px;cursor:pointer;font-weight:700;color:#334155}.admin-tab.active{background:var(--primary-blue);color:#fff}
+        .admin-content{padding:18px}.admin-section{display:none}.admin-section.active{display:block}.admin-card{border:1px solid #e2e8f0;border-radius:10px;padding:15px;margin-bottom:14px;background:#fff}.admin-card h3{color:var(--primary-blue);margin-bottom:10px}.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.admin-preview{width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #ddd;margin:5px 0 10px}.admin-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.admin-status{padding:9px 12px;background:#eef6ff;border-radius:7px;margin-bottom:12px;font-size:.9rem}.admin-small{font-size:.8rem;color:#666}.admin-post-img{width:90px;height:65px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:8px}
+    </style>
+</head>
+<body>
+
+    <div id="sideMenu" class="side-menu">
+        <span class="close-menu" onclick="toggleMenu()">&times;</span>
+        <div class="menu-header">
+            <h2>Course Modules</h2>
+        </div>
+        <a href="#" onclick="openHomePage()">🏠 Dashboard (Home)</a>
+        <a href="#" onclick="openNoticePage()">📢 Notice Board (Sarkari)</a>
+        <a href="#" onclick="openSubjectPage(1)">📚 Communication Skills-I</a>
+        <a href="#" onclick="openSubjectPage(2)">📐 Applied Mathematics-I</a>
+        <a href="#" onclick="openSubjectPage(3)">🔬 Applied Physics-I</a>
+        <a href="#" onclick="openSubjectPage(4)">🧪 Applied Chemistry</a>
+        <a href="#" onclick="openSubjectPage(5)">💻 Fundamentals of IT (FCIT)</a>
+    </div>
+
+    <!-- ================= MODIFIED: Top Navigation Moved Inside homePage ================= -->
+    <div id="homePage">
+        
+        <header class="navbar">
+            <div class="logo-container" onclick="openHomePage()">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Emblem_of_Uttar_Pradesh.svg/1200px-Emblem_of_Uttar_Pradesh.svg.png" alt="Govt Logo">
+                <div class="logo-text">
+                    <h1>POLYTECHNIC ACADEMIC PORTAL</h1>
+                    <p>Computer Science & Engineering (1st Semester)</p>
+                </div>
+            </div>
+            
+            <div class="nav-actions">
+                <div class="notif-bell-container" onclick="toggleNotifPanel()" title="Notifications">
+                    🔔
+                    <span id="notifRedDot" class="red-dot"></span>
+                </div>
+                
+                <div class="website-icon" onclick="openMMITPage()" title="Open MMIT Website">🌐</div>
+                <div class="website-icon" onclick="openAdminLogin()" title="Admin Panel">⚙️</div>
+                <div class="menu-icon" onclick="toggleMenu()">☰</div>
+            </div>
+        </header>
+
+        <div id="notifPanel" class="notif-panel">
+            <div class="notif-header">
+                <span>📢 Recent Notifications</span>
+                <span style="cursor: pointer; font-size: 1.2rem;" onclick="toggleNotifPanel()">&times;</span>
+            </div>
+            <div class="notif-body" id="notifList">
+                </div>
+        </div>
+
+        <div class="notice-bar">
+            <span class="notice-btn" onclick="openNoticePage()">NEW NOTICE 🚀</span>
+            <marquee behavior="scroll" direction="left">
+                Welcome to the official study material portal for Diploma in CSE 1st Semester. All subjects' syllabus and notes are updated as per the latest BTEUP curriculum.
+            </marquee>
+        </div>
+
+        <section class="hero">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h2>Diploma in Computer Science & Engineering</h2>
+                <p>1st Semester Syllabus, Notes & Study Material (As per BTEUP Guidelines)</p>
+            </div>
+        </section>
+
+        <section class="container">
+            <h2 class="section-title">Academic Subjects (Semester-I)</h2>
+            <div class="grid" id="subjectsGrid">
+                </div>
+        </section>
+    </div>
+    <!-- ================= END OF MODIFIED SECTION ================= -->
+
+    <div id="noticePage" class="container" style="display: none;">
+        <div class="action-bar">
+            <button class="back-btn" onclick="openHomePage()">← Back to Dashboard</button>
+        </div>
+
+        <div class="sarkari-card">
+            <div class="sarkari-header">
+                <h2>BTEUP / JEECUP OFFICIAL NOTICES & UPDATES</h2>
+                <p>Latest Board Notifications, Exam Schedules & Circulars</p>
+            </div>
+            <ul class="sarkari-list" id="sarkariNoticeList">
+                </ul>
+        </div>
+    </div>
+
+    <div id="mmitPage" class="mmit-page" style="display: none;">
+        <div class="mmit-action-bar">
+            <button class="mmit-back-btn" onclick="openHomePage()">← Back to Home</button>
+        </div>
+        <iframe
+            class="mmit-frame"
+            src="https://mmitgp.ac.in/"
+            title="MMIT Gorakhpur Website"
+            loading="lazy"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <div id="subjectPage" class="container" style="display: none;">
+        <div class="action-bar">
+            <button class="back-btn" onclick="openHomePage()">← Back to Dashboard</button>
+            <button class="download-btn" onclick="alert('Syllabus PDF downloading...')">⬇ Download Syllabus</button>
+        </div>
+        
+        <div class="subject-header">
+            <img id="detailImg" src="" alt="Subject Image">
+            <div class="subject-info">
+                <h1 id="detailTitle">Subject Title</h1>
+                <p><strong>Subject Code:</strong> <span id="detailCode">1001</span></p>
+                <p style="margin-top: 10px;" id="detailDesc">Subject description...</p>
+            </div>
+        </div>
+        
+        <h2 style="color: var(--primary-blue); margin-bottom: 1rem;">Detailed Syllabus</h2>
+        <table class="syllabus-table">
+            <thead>
+                <tr>
+                    <th width="15%">Unit No.</th>
+                    <th>Topic / Chapter Details</th>
+                </tr>
+            </thead>
+            <tbody id="moduleList">
+                </tbody>
+        </table>
+
+        <!-- ================= NEW FEED CONTAINER INSIDE SUBJECT PAGE ================= -->
+        <div class="feed-container" id="subjectFeedContainer">
+            <!-- Posts will render here -->
+        </div>
+    </div>
+
+    <!-- ================= NEW SAVED POSTS PAGE ================= -->
+    <div id="savedPage" class="container" style="display: none;">
+        <div class="action-bar">
+            <button class="back-btn" onclick="openHomePage()">← Back to Dashboard</button>
+        </div>
+        <h2 class="section-title">Saved Posts</h2>
+        <div class="feed-container" id="savedFeedContainer">
+            <!-- Saved Posts will render here -->
+        </div>
+    </div>
+
+    <!-- ================= CHAT PAGE ================= -->
+    <div id="chatPage" class="container" style="display: none;">
+        <div class="action-bar">
+            <button class="back-btn" onclick="openHomePage()">← Back to Dashboard</button>
+        </div>
+        <h2 class="section-title">Class Discussion</h2>
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-msg received"><strong>Admin:</strong> Welcome to the CSE 1st Sem discussion group! Padhai se related koi bhi doubt yahan puchein.</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Type your message here..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                <button onclick="sendChatMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= PROFILE PAGE ================= -->
+    <div id="profilePage" class="container" style="display: none;">
+        <div class="action-bar">
+            <button class="back-btn" onclick="openHomePage()">← Back to Dashboard</button>
+        </div>
+        <h2 class="section-title">Student Profile</h2>
+        <div class="profile-card">
+            <div class="profile-avatar">👨‍💻</div>
+            <h3 class="profile-name">Ambuj Kumar Saga</h3>
+            <p class="profile-role">Diploma in CSE (1st Sem)</p>
+            <div class="profile-details">
+                <p><strong>Registration No:</strong> <span>UP2026CSE101</span></p>
+                <p><strong>Email ID:</strong> <span>ambuj.saga@student.bteup.ac.in</span></p>
+                <p><strong>College:</strong> <span>MMIT Gorakhpur</span></p>
+                <p><strong>Status:</strong> <span style="color: green; font-weight: bold;">Active</span></p>
+            </div>
+            <button class="logout-btn" onclick="alert('Logging out...')">Log Out</button>
+        </div>
+    </div>
+
+
+    <!-- ================= FIREBASE ONLINE ADMIN PANEL ================= -->
+    <div id="adminModal" class="admin-modal">
+      <div class="admin-box">
+        <div class="admin-head"><h2>⚙️ Online Admin Control Panel</h2><span class="admin-close" onclick="closeAdminPanel()">&times;</span></div>
+        <div id="adminLoginView" class="admin-login">
+          <div class="admin-status">🔐 Firebase Admin Login — text aur photos Firebase Realtime Database me online sync honge. Firebase Storage ki zarurat nahi hai.</div>
+          <div class="admin-form">
+            <label>Admin Email</label><input id="adminEmail" type="email" placeholder="admin@mmitsce.com" autocomplete="username">
+            <label>Password</label><input id="adminPassword" type="password" placeholder="Firebase Authentication password" autocomplete="current-password">
+            <button class="admin-btn" onclick="firebaseAdminLogin()">🔑 Login</button>
+            <button class="admin-btn orange" onclick="closeAdminPanel()">Cancel</button>
+            <p id="adminLoginMsg" class="admin-small"></p>
+          </div>
+        </div>
+        <div id="adminDashboardView" style="display:none">
+          <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="branding">🖼️ Photos</button>
+            <button class="admin-tab" data-tab="subjects">📚 Subjects</button>
+            <button class="admin-tab" data-tab="notifications">🔔 Notifications</button>
+            <button class="admin-tab" data-tab="notices">📢 Notices</button>
+            <button class="admin-tab" data-tab="posts">📰 Posts</button>
+          </div>
+          <div class="admin-content">
+            <div id="adminStatus" class="admin-status">Connecting to Firebase…</div>
+            <section id="tab-branding" class="admin-section active">
+              <div class="admin-grid">
+                <div class="admin-card"><h3>Portal Logo</h3><img id="adminLogoPreview" class="admin-preview"><input id="adminLogoFile" type="file" accept="image/*"><button class="admin-btn" onclick="uploadBrandImage('logo')">🌐 Save Logo Online</button></div>
+                <div class="admin-card"><h3>Hero / Banner Photo</h3><img id="adminHeroPreview" class="admin-preview"><input id="adminHeroFile" type="file" accept="image/*"><button class="admin-btn" onclick="uploadBrandImage('hero')">🌐 Save Hero Online</button></div>
+              </div>
+            </section>
+            <section id="tab-subjects" class="admin-section"><div id="adminSubjectsList"></div></section>
+            <section id="tab-notifications" class="admin-section">
+              <div class="admin-card"><h3>➕ Add Notification</h3><input id="newNotifText" placeholder="Notification text"><button class="admin-btn" onclick="addOnlineNotification()">Publish Notification</button></div>
+              <div id="adminNotificationsList"></div>
+            </section>
+            <section id="tab-notices" class="admin-section">
+              <div class="admin-card"><h3>➕ Add Notice</h3><input id="newNoticeTitle" placeholder="Notice title"><input id="newNoticeDate" placeholder="25-Aug-2026"><label><input id="newNoticeNew" type="checkbox"> Mark as NEW</label><button class="admin-btn" onclick="addOnlineNotice()">Publish Notice</button></div>
+              <div class="admin-card"><h3>📜 Scrolling Notice Bar</h3><textarea id="scrollNoticeText" placeholder="Scrolling notice text"></textarea><button class="admin-btn" onclick="saveScrollNotice()">Save Notice Bar</button></div>
+              <div id="adminNoticesList"></div>
+            </section>
+            <section id="tab-posts" class="admin-section">
+              <div class="admin-card"><h3>➕ Create Feed Post</h3><select id="newPostSubject"></select><textarea id="newPostText" placeholder="Post text"></textarea><input id="newPostFile" type="file" accept="image/*"><p class="admin-small">Photo compress hokar Firebase Realtime Database me save hogi. Firebase Storage required nahi hai.</p><button class="admin-btn" onclick="createOnlinePost()">Publish Post Online</button></div>
+              <div id="adminPostsList"></div>
+            </section>
+            <div style="padding-top:10px;border-top:1px solid #ddd"><button class="admin-btn red" onclick="firebaseAdminLogout()">Logout Admin</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= FULLSCREEN IMAGE VIEWER MODAL ================= -->
+    <div id="imageViewerModal" class="image-viewer-modal" style="display: none;">
+        <span class="viewer-close-btn" onclick="closeImageViewer()">&times;</span>
+        <img id="viewerImageSrc" class="viewer-img" src="" alt="Original Size Image">
+    </div>
+
+    <!-- ================= BOTTOM NAVIGATION BAR ================= -->
+    <nav class="bottom-nav">
+        <!-- 1. Home -->
+        <div class="bottom-nav-item active" id="navHome" onclick="openHomePage()">
+            <svg viewBox="0 0 24 24"><path d="M12 2.099l-9 6.75v11.151h5.5v-6h7v6h5.5v-11.151z"/></svg>
+            <span>Home</span>
+        </div>
+        <!-- 2. Chat -->
+        <div class="bottom-nav-item" id="navChat" onclick="openChat()">
+            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>
+            <span>Chat</span>
+        </div>
+        <!-- 3. Save (UPDATED TO OPEN SAVED FEED) -->
+        <div class="bottom-nav-item" id="navSave" onclick="openSavePage()">
+            <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+            <span>Save</span>
+        </div>
+        <!-- 4. Profile -->
+        <div class="bottom-nav-item" id="navProfile" onclick="openProfile()">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <span>Profile</span>
+        </div>
+    </nav>
+    <!-- ==================================================================== -->
+
+    <script>
+        // ================= JAVASCRIPT START ================= //
+        
+        // Notifications Data
+        let notifications = [
+            { id: 1, text: "BTEUP Odd Semester Exam Scheme 2026-27 released.", time: "Just now" },
+            { id: 2, text: "CSE 1st Semester Syllabus officially updated.", time: "1 hour ago" },
+            { id: 3, text: "Practical Exam schedule announced for Diploma Students.", time: "Yesterday" }
+        ];
+
+        // Sarkari Result Style Links Data
+        const officialNotices = [
+            { title: "BTEUP Odd Semester Examination Form 2026 Direct Link", date: "20-Aug-2026", isNew: true },
+            { title: "JEECUP Polytechnic Admission Counselling Schedule 2026", date: "18-Aug-2026", isNew: true },
+            { title: "Download Official Diploma CSE 1st Sem Syllabus PDF", date: "15-Aug-2026", isNew: false },
+            { title: "BTEUP Scrutiny & Revaluation Result Declared", date: "10-Aug-2026", isNew: false },
+            { title: "UP Scholarship Online Form 2026-27 Apply Online", date: "05-Aug-2026", isNew: false }
+        ];
+
+        // UP Polytechnic CSE 1st Sem ka Official Data
+        const subjects = [
+            {
+                id: 1,
+                title: "Communication Skills - I",
+                code: "SUB-101",
+                image: "https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=600&q=80",
+                desc: "Technical education mein effective communication ki zarurat ko samajhna. Is subject me grammar, reading, aur writing skills par focus kiya gaya hai jo aage job placement me kaam aayega.",
+                modules: [
+                    { unit: "Unit 1", detail: "Basics of Communication: Definition, Process, and Types (Verbal & Non-Verbal)" },
+                    { unit: "Unit 2", detail: "Application of Grammar: Parts of Speech, Tenses, Active-Passive Voice" },
+                    { unit: "Unit 3", detail: "Reading Skill: Unseen passage for comprehension" },
+                    { unit: "Unit 4", detail: "Writing Skill: Picture composition, Paragraph writing, Notice writing" }
+                ]
+            },
+            {
+                id: 2,
+                title: "Applied Mathematics - I",
+                code: "SUB-102",
+                image: "https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?auto=format&fit=crop&w=600&q=80",
+                desc: "Diploma engineering ke basics ko strong karne ke liye Mathematics. Isme Algebra, Trigonometry, aur Differential Calculus ke fundamentals cover hote hain.",
+                modules: [
+                    { unit: "Unit 1", detail: "Algebra-I: Arithmetic Progression (A.P.), Geometric Progression (G.P.), Binomial Theorem" },
+                    { unit: "Unit 2", detail: "Algebra-II: Determinants, Cramer's Rule" },
+                    { unit: "Unit 3", detail: "Trigonometry: Inverse circular functions, Properties of Triangles" },
+                    { unit: "Unit 4", detail: "Differential Calculus-I: Functions, Limits, Continuity, Basics of Differentiation" }
+                ]
+            },
+            {
+                id: 3,
+                title: "Applied Physics - I",
+                code: "SUB-103",
+                image: "https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&w=600&q=80",
+                desc: "Engineering applications ke liye Physics ka basic knowledge. Units, dimensions, mechanics aur properties of matter par focus.",
+                modules: [
+                    { unit: "Unit 1", detail: "Units and Dimensions: SI units, Dimensional formula and their applications" },
+                    { unit: "Unit 2", detail: "Force and Motion: Scalar and Vector quantities, Circular motion, Newton's Laws" },
+                    { unit: "Unit 3", detail: "Work, Power and Energy: Kinetic & Potential Energy, Conservation of energy" },
+                    { unit: "Unit 4", detail: "Rotational Motion & Properties of Matter: Moment of Inertia, Surface tension, Viscosity" }
+                ]
+            },
+            {
+                id: 4,
+                title: "Applied Chemistry",
+                code: "SUB-104",
+                image: "https://images.unsplash.com/photo-1603126857599-f6e1570d8136?auto=format&fit=crop&w=600&q=80",
+                desc: "Engineering materials ki properties samajhne ke liye Chemistry. Water treatment, polymers, aur electrochemistry iske main topics hain.",
+                modules: [
+                    { unit: "Unit 1", detail: "Atomic Structure, Periodic Table and Chemical Bonding" },
+                    { unit: "Unit 2", detail: "Fuels and Lubricants: Types of fuels, Properties of good lubricants" },
+                    { unit: "Unit 3", detail: "Water: Hardness of water, Water treatment, Boiler feed water" },
+                    { unit: "Unit 4", detail: "Electrochemistry & Corrosion: Galvanic cell, Causes and prevention of corrosion" }
+                ]
+            },
+            {
+                id: 5,
+                title: "Fundamentals of Computer & IT (FCIT)",
+                code: "SUB-105",
+                image: "https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=600&q=80",
+                desc: "Computer Science ka core foundational subject. Isme Computer architecture, memory, software types, OS, aur Internet basics cover kiye gaye hain.",
+                modules: [
+                    { unit: "Unit 1", detail: "Fundamentals of Computer: Block diagram of PC, Input/Output devices, CPU" },
+                    { unit: "Unit 2", detail: "Data Representation: Binary, Octal, Hexadecimal number systems and logic gates" },
+                    { unit: "Unit 3", detail: "Memory & Storage: Primary memory (RAM/ROM), Secondary storage devices" },
+                    { unit: "Unit 4", detail: "Basics of OS and Internet: MS Windows, Web browsers, E-mail, Search Engines" }
+                ]
+            }
+        ];
+
+        // 1. Dashboard par subjects load karna
+        function loadSubjects() {
+            const grid = document.getElementById('subjectsGrid');
+            grid.innerHTML = subjects.map(sub => `
+                <div class="card" onclick="openSubjectPage(${sub.id})">
+                    <div class="card-img-container">
+                        <img src="${sub.image}" alt="${sub.title}">
+                        <div class="card-code">${sub.code}</div>
+                    </div>
+                    <div class="card-body">
+                        <h3>${sub.title}</h3>
+                        <p>BTEUP prescribed syllabus aur study material ke liye click karein.</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 2. Notification System Logic
+        function renderNotifications() {
+            const listContainer = document.getElementById('notifList');
+            if(notifications.length === 0) {
+                listContainer.innerHTML = `<div class="notif-item">No notifications yet.</div>`;
+                return;
+            }
+            listContainer.innerHTML = notifications.map(n => `
+                <div class="notif-item">
+                    <div>${n.text}</div>
+                    <div class="notif-time">${n.time}</div>
+                </div>
+            `).join('');
+        }
+
+        function toggleNotifPanel() {
+            const panel = document.getElementById('notifPanel');
+            const isVisible = panel.style.display === 'block';
+            
+            panel.style.display = isVisible ? 'none' : 'block';
+            
+            // Notification seen hone par Red Dot hide kar do
+            if (!isVisible) {
+                document.getElementById('notifRedDot').style.display = 'none';
+            }
+        }
+
+        function addNewNotification(text) {
+            notifications.unshift({
+                id: Date.now(),
+                text: text,
+                time: "Just now"
+            });
+            renderNotifications();
+            document.getElementById('notifRedDot').style.display = 'block';
+        }
+
+        // 3. Sarkari Result Notice Board Render
+        function renderNoticeBoard() {
+            const noticeList = document.getElementById('sarkariNoticeList');
+            noticeList.innerHTML = officialNotices.map(notice => `
+                <li>
+                    <a href="#" onclick="alert('Opening official notification PDF for: ${notice.title}')">
+                        👉 ${notice.title} 
+                        ${notice.isNew ? '<span class="badge-new">NEW</span>' : ''}
+                    </a>
+                    <span class="notice-date">📅 ${notice.date}</span>
+                </li>
+            `).join('');
+        }
+
+        function openNoticePage() {
+            closeAllSections();
+            document.getElementById('noticePage').style.display = 'block';
+            window.scrollTo(0, 0);
+            updateNavState('navHome'); 
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('sideMenu');
+            menu.classList.toggle('active');
+        }
+
+        function openMMITPage() {
+            closeAllSections();
+            document.getElementById('mmitPage').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        // 5. Subject Page open karna (UPDATED FOR FEED)
+        let currentOpenSubjectId = null;
+        function openSubjectPage(id) {
+            closeAllSections();
+            currentOpenSubjectId = id;
+            const sub = subjects.find(s => s.id === id);
+            
+            document.getElementById('detailImg').src = sub.image;
+            document.getElementById('detailTitle').innerText = sub.title;
+            document.getElementById('detailCode').innerText = sub.code;
+            document.getElementById('detailDesc').innerText = sub.desc;
+            
+            const list = document.getElementById('moduleList');
+            list.innerHTML = sub.modules.map(mod => `
+                <tr>
+                    <td><strong>${mod.unit}</strong></td>
+                    <td>${mod.detail}</td>
+                </tr>
+            `).join('');
+
+            // NEW: Render the Feed for this subject
+            renderFeed(id, 'subjectFeedContainer');
+
+            document.getElementById('subjectPage').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function openHomePage() {
+            closeAllSections();
+            currentOpenSubjectId = null;
+            document.getElementById('homePage').style.display = 'block';
+            window.scrollTo(0, 0);
+            updateNavState('navHome');
+        }
+
+        // Helper to hide all main view containers (UPDATED for Chat and Profile)
+        function closeAllSections() {
+            document.getElementById('sideMenu').classList.remove('active');
+            document.getElementById('notifPanel').style.display = 'none';
+            document.getElementById('homePage').style.display = 'none';
+            document.getElementById('subjectPage').style.display = 'none';
+            document.getElementById('noticePage').style.display = 'none';
+            document.getElementById('mmitPage').style.display = 'none';
+            document.getElementById('savedPage').style.display = 'none';
+            document.getElementById('chatPage').style.display = 'none'; 
+            document.getElementById('profilePage').style.display = 'none'; 
+        }
+
+        window.onclick = function(event) {
+            const panel = document.getElementById('notifPanel');
+            const bell = document.querySelector('.notif-bell-container');
+            if (panel.style.display === 'block' && !panel.contains(event.target) && !bell.contains(event.target)) {
+                panel.style.display = 'none';
+            }
+        };
+
+        function updateNavState(activeId) {
+            document.querySelectorAll('.bottom-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            if(activeId) {
+                document.getElementById(activeId).classList.add('active');
+            }
+        }
+
+        // ================= UPDATED NAVIGATION FUNCTIONS ================= //
+        function openChat() {
+            updateNavState('navChat');
+            closeAllSections();
+            document.getElementById('chatPage').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function openProfile() {
+            updateNavState('navProfile');
+            closeAllSections();
+            document.getElementById('profilePage').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        // Chat send karne ka function
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if(message !== '') {
+                const msgBox = document.getElementById('chatMessages');
+                msgBox.innerHTML += `<div class="chat-msg sent">${message}</div>`;
+                input.value = '';
+                // Scroll to bottom
+                msgBox.scrollTop = msgBox.scrollHeight;
+            }
+        }
+        // =============================================================== //
+
+        // Init App
+        window.onload = function() {
+            loadSubjects();
+            renderNotifications();
+            renderNoticeBoard();
+        };
+
+        /* ================= NEW FEED FEATURES START (LOGIC) ================= */
+
+        // Mock Current User (Bina iske comment delete permissions verify nahi hoti)
+        const currentUser = { id: 'user_123', name: 'Ambuj Kumar Saga', role: 'user' }; 
+
+        // Mock Posts Data (Admin Panel se aaye hue posts)
+        let adminPostsData = [
+            {
+                id: 'post_1',
+                subjectId: 1, // Communication Skills ke liye
+                type: 'photo',
+                text: 'Important Notice: Communication process flow chart. Ise dhyan se padh lijiye exam ke liye jaruri hai.',
+                imgUrl: 'https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=800',
+                comments: [
+                    { id: 'com_1', userId: 'admin_1', userName: 'Admin', text: 'Sabhi students isko download kar lena.' }
+                ]
+            },
+            {
+                id: 'post_2',
+                subjectId: 1,
+                type: 'text',
+                text: 'Aaj ki class suspend kar di gayi hai, kal se regular classes wapas chalengi apne time par.',
+                imgUrl: '',
+                comments: []
+            },
+            {
+                id: 'post_3',
+                subjectId: 2, // Math ke liye
+                type: 'photo',
+                text: 'Chapter 1 ke formulas revision notes.',
+                imgUrl: 'https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?w=800',
+                comments: []
+            }
+        ];
+
+        let savedPostIds = []; // Jo id isme hogi wo saved manni jayegi
+
+        // Render Posts HTML
+        function generatePostHTML(post) {
+            let isSaved = savedPostIds.includes(post.id);
+            let saveText = isSaved ? '💾 Saved' : '🔖 Save';
+            
+            let mediaHTML = '';
+            let viewBtnHTML = '';
+            
+            // Check type photo hai to Image tag aur View button aayega
+            if(post.type === 'photo') {
+                mediaHTML = `<img src="${post.imgUrl}" class="post-img" alt="Post Image">`;
+                viewBtnHTML = `<button class="post-action-btn" onclick="openImageViewer('${post.imgUrl}')">👁️ View</button>`;
+            }
+
+            // Comments Render Karna (Delete logic ke sath)
+            let commentsHTML = post.comments.map(c => {
+                let deleteHTML = '';
+                // Sirf comment owner ya Admin delete kar sakta hai
+                if(currentUser.role === 'admin' || currentUser.id === c.userId) {
+                    deleteHTML = `<span class="delete-comment-btn" onclick="deleteComment('${post.id}', '${c.id}')" title="Delete Comment">✖</span>`;
+                }
+                return `<div class="comment-item">
+                            <div><strong>${c.userName}</strong>: ${c.text}</div>
+                            ${deleteHTML}
+                        </div>`;
+            }).join('');
+
+            return `
+            <div class="post-card" id="post-${post.id}">
+                <div class="post-header"><span>Admin Update</span></div>
+                <div class="post-text">${post.text}</div>
+                ${mediaHTML}
+                <div class="post-actions">
+                    <button class="post-action-btn" onclick="toggleCommentSection('${post.id}')">💬 Comment</button>
+                    <button class="post-action-btn" onclick="toggleSavePost('${post.id}')">${saveText}</button>
+                    ${viewBtnHTML}
+                    <button class="post-action-btn" onclick="downloadPostMedia('${post.type}', '${post.imgUrl}')">⬇️ Download</button>
+                </div>
+                
+                <div class="comments-section" id="comments-sec-${post.id}" style="display: none;">
+                    <div id="comments-list-${post.id}">${commentsHTML}</div>
+                    <div class="comment-input-box">
+                        <input type="text" id="comment-input-${post.id}" placeholder="Write a comment...">
+                        <button onclick="addComment('${post.id}')">Post</button>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+
+        // Render Feed For Specific Subject
+        function renderFeed(subjectId, containerId) {
+            const container = document.getElementById(containerId);
+            const posts = adminPostsData.filter(p => p.subjectId === subjectId);
+            
+            if(posts.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:#777;">No updates in this feed yet.</p>`;
+                return;
+            }
+            container.innerHTML = posts.map(p => generatePostHTML(p)).join('');
+        }
+
+        // Render Saved Posts Feed
+        function renderSavedFeed() {
+            const container = document.getElementById('savedFeedContainer');
+            const posts = adminPostsData.filter(p => savedPostIds.includes(p.id));
+            
+            if(posts.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:#777;">No saved posts found.</p>`;
+                return;
+            }
+            container.innerHTML = posts.map(p => generatePostHTML(p)).join('');
+        }
+
+        // Toggle Comments visibility
+        function toggleCommentSection(postId) {
+            const sec = document.getElementById(`comments-sec-${postId}`);
+            if (sec.style.display === 'none') {
+                sec.style.display = 'block';
+            } else {
+                sec.style.display = 'none';
+            }
+        }
+
+        // Add Comment
+        function addComment(postId) {
+            const inputField = document.getElementById(`comment-input-${postId}`);
+            const text = inputField.value.trim();
+            if(!text) return;
+
+            const postIndex = adminPostsData.findIndex(p => p.id === postId);
+            if(postIndex > -1) {
+                adminPostsData[postIndex].comments.push({
+                    id: 'com_' + Date.now(),
+                    userId: currentUser.id,
+                    userName: currentUser.name,
+                    text: text
+                });
+                refreshCurrentFeeds();
+            }
+        }
+
+        // Delete Comment
+        function deleteComment(postId, commentId) {
+            const postIndex = adminPostsData.findIndex(p => p.id === postId);
+            if(postIndex > -1) {
+                adminPostsData[postIndex].comments = adminPostsData[postIndex].comments.filter(c => c.id !== commentId);
+                refreshCurrentFeeds();
+            }
+        }
+
+        // Save/Unsave Post
+        function toggleSavePost(postId) {
+            if(savedPostIds.includes(postId)) {
+                savedPostIds = savedPostIds.filter(id => id !== postId);
+            } else {
+                savedPostIds.push(postId);
+            }
+            refreshCurrentFeeds();
+        }
+
+        // Refresh currently active feed after action (Comment/Save/Delete)
+        function refreshCurrentFeeds() {
+            if(document.getElementById('savedPage').style.display === 'block') {
+                renderSavedFeed();
+            } else if (document.getElementById('subjectPage').style.display === 'block' && currentOpenSubjectId) {
+                renderFeed(currentOpenSubjectId, 'subjectFeedContainer');
+            }
+        }
+
+        // Open Saved Navigation Page
+        function openSavePage() {
+            updateNavState('navSave');
+            closeAllSections();
+            document.getElementById('savedPage').style.display = 'block';
+            renderSavedFeed();
+            window.scrollTo(0, 0);
+        }
+
+        // Fullscreen Image Viewer Modal
+        function openImageViewer(imgUrl) {
+            document.getElementById('viewerImageSrc').src = imgUrl;
+            document.getElementById('imageViewerModal').style.display = 'flex';
+        }
+
+        function closeImageViewer() {
+            document.getElementById('imageViewerModal').style.display = 'none';
+            document.getElementById('viewerImageSrc').src = '';
+        }
+
+        // Download Post
+        function downloadPostMedia(type, imgUrl) {
+            if(type === 'photo' && imgUrl) {
+                // Programmatic download via temporary anchor link
+                fetch(imgUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'polytechnic-post-image.jpg'; // File name
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                })
+                .catch(() => {
+                    // Fallback to opening in new tab if CORS blocks fetch
+                    window.open(imgUrl, '_blank');
+                });
+            } else {
+                alert("Only photo posts can be downloaded.");
+            }
+        }
+        /* ================= NEW FEED FEATURES END ================= */
+    </script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import { getDatabase, ref, onValue, get, set, update, remove } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAegYu-tHbS662BnPV3pyTFBGoKw1jomMQ",
+  authDomain: "mmitsce.firebaseapp.com",
+  databaseURL: "https://mmitsce-default-rtdb.firebaseio.com",
+  projectId: "mmitsce",
+  storageBucket: "mmitsce.firebasestorage.app"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+const ADMIN_EMAIL = "admin@mmitsce.com";
+
+const defaultSubjects = [
+ {id:1,title:"Communication Skills - I",code:"SUB-101",image:"https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=600&q=80",desc:"Technical education mein effective communication ki zarurat ko samajhna. Is subject me grammar, reading, aur writing skills par focus kiya gaya hai.",modules:[{unit:"Unit 1",detail:"Basics of Communication: Definition, Process, and Types (Verbal & Non-Verbal)"},{unit:"Unit 2",detail:"Application of Grammar: Parts of Speech, Tenses, Active-Passive Voice"},{unit:"Unit 3",detail:"Reading Skill: Unseen passage for comprehension"},{unit:"Unit 4",detail:"Writing Skill: Picture composition, Paragraph writing, Notice writing"}]},
+ {id:2,title:"Applied Mathematics - I",code:"SUB-102",image:"https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?auto=format&fit=crop&w=600&q=80",desc:"Diploma engineering ke basics ko strong karne ke liye Mathematics. Isme Algebra, Trigonometry, aur Differential Calculus ke fundamentals cover hote hain.",modules:[{unit:"Unit 1",detail:"Algebra-I: Arithmetic Progression (A.P.), Geometric Progression (G.P.), Binomial Theorem"},{unit:"Unit 2",detail:"Algebra-II: Determinants, Cramer's Rule"},{unit:"Unit 3",detail:"Trigonometry: Inverse circular functions, Properties of Triangles"},{unit:"Unit 4",detail:"Differential Calculus-I: Functions, Limits, Continuity, Basics of Differentiation"}]},
+ {id:3,title:"Applied Physics - I",code:"SUB-103",image:"https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&w=600&q=80",desc:"Engineering applications ke liye Physics ka basic knowledge. Units, dimensions, mechanics aur properties of matter par focus.",modules:[{unit:"Unit 1",detail:"Units and Dimensions: SI units, Dimensional formula and their applications"},{unit:"Unit 2",detail:"Force and Motion: Scalar and Vector quantities, Circular motion, Newton's Laws"},{unit:"Unit 3",detail:"Work, Power and Energy: Kinetic & Potential Energy, Conservation of energy"},{unit:"Unit 4",detail:"Rotational Motion & Properties of Matter: Moment of Inertia, Surface tension, Viscosity"}]},
+ {id:4,title:"Applied Chemistry",code:"SUB-104",image:"https://images.unsplash.com/photo-1603126857599-f6e1570d8136?auto=format&fit=crop&w=600&q=80",desc:"Engineering materials ki properties samajhne ke liye Chemistry. Water treatment, polymers, aur electrochemistry iske main topics hain.",modules:[{unit:"Unit 1",detail:"Atomic Structure, Periodic Table and Chemical Bonding"},{unit:"Unit 2",detail:"Fuels and Lubricants: Types of fuels, Properties of good lubricants"},{unit:"Unit 3",detail:"Water: Hardness of water, Water treatment, Boiler feed water"},{unit:"Unit 4",detail:"Electrochemistry & Corrosion: Galvanic cell, Causes and prevention of corrosion"}]},
+ {id:5,title:"Fundamentals of Computer & IT (FCIT)",code:"SUB-105",image:"https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=600&q=80",desc:"Computer Science ka core foundational subject. Isme Computer architecture, memory, software types, OS, aur Internet basics cover kiye gaye hain.",modules:[{unit:"Unit 1",detail:"Fundamentals of Computer: Block diagram of PC, Input/Output devices, CPU"},{unit:"Unit 2",detail:"Data Representation: Binary, Octal, Hexadecimal number systems and logic gates"},{unit:"Unit 3",detail:"Memory & Storage: Primary memory (RAM/ROM), Secondary storage devices"},{unit:"Unit 4",detail:"Basics of OS and Internet: MS Windows, Web browsers, E-mail, Search Engines"}]}
+];
+const defaultNotifs=[{id:"n1",text:"BTEUP Odd Semester Exam Scheme 2026-27 released.",time:"Just now"},{id:"n2",text:"CSE 1st Semester Syllabus officially updated.",time:"1 hour ago"},{id:"n3",text:"Practical Exam schedule announced for Diploma Students.",time:"Yesterday"}];
+const defaultNotices=[{id:"no1",title:"BTEUP Odd Semester Examination Form 2026 Direct Link",date:"20-Aug-2026",isNew:true},{id:"no2",title:"JEECUP Polytechnic Admission Counselling Schedule 2026",date:"18-Aug-2026",isNew:true},{id:"no3",title:"Download Official Diploma CSE 1st Sem Syllabus PDF",date:"15-Aug-2026",isNew:false},{id:"no4",title:"BTEUP Scrutiny & Revaluation Result Declared",date:"10-Aug-2026",isNew:false},{id:"no5",title:"UP Scholarship Online Form 2026-27 Apply Online",date:"05-Aug-2026",isNew:false}];
+let onlineData={branding:{logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Emblem_of_Uttar_Pradesh.svg/1200px-Emblem_of_Uttar_Pradesh.svg.png",hero:"https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80",scrollNotice:"Welcome to the official study material portal for Diploma in CSE 1st Semester. All subjects' syllabus and notes are updated as per the latest BTEUP curriculum."},subjects:defaultSubjects,notifications:defaultNotifs,notices:defaultNotices,posts:[]};
+
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function setStatus(t){const e=document.getElementById('adminStatus');if(e)e.textContent=t;}
+function arr(v){return v?Object.entries(v).map(([id,x])=>({id,...x})):[]}
+function applyOnlineData(d){
+  onlineData={...onlineData,...(d||{})};
+  onlineData.branding={...onlineData.branding,...((d&&d.branding)||{})};
+  onlineData.subjects=arr(d&&d.subjects).length?arr(d.subjects):onlineData.subjects;
+  onlineData.notifications=arr(d&&d.notifications).length?arr(d.notifications):((d&&d.notifications)?[]:onlineData.notifications);
+  onlineData.notices=arr(d&&d.notices).length?arr(d.notices):((d&&d.notices)?[]:onlineData.notices);
+  onlineData.posts=arr(d&&d.posts);
+  document.querySelector('.navbar .logo-container img').src=onlineData.branding.logo;
+  document.querySelector('.hero').style.backgroundImage=`url('${onlineData.branding.hero}')`;
+  const marquee=document.querySelector('.notice-bar marquee'); if(marquee) marquee.textContent=onlineData.branding.scrollNotice;
+  renderOnlineSubjects(); renderOnlineNotifications(); renderOnlineNotices(); renderOnlinePosts();
+  if(document.getElementById('adminDashboardView').style.display==='block') renderAdminAll();
+}
+function renderOnlinePosts(){ adminPostsData=onlineData.posts||[]; if(typeof refreshCurrentFeeds==='function') refreshCurrentFeeds(); }
+function renderOnlineSubjects(){
+  const grid=document.getElementById('subjectsGrid');if(!grid)return;
+  grid.innerHTML=onlineData.subjects.map(s=>`<div class="card" onclick="openSubjectPage(${s.id})"><div class="card-img-container"><img src="${esc(s.image)}" alt="${esc(s.title)}"><div class="card-code">${esc(s.code)}</div></div><div class="card-body"><h3>${esc(s.title)}</h3><p>BTEUP prescribed syllabus aur study material ke liye click karein.</p></div></div>`).join('');
+}
+function renderOnlineNotifications(){const c=document.getElementById('notifList');if(!c)return;c.innerHTML=onlineData.notifications.length?onlineData.notifications.map(n=>`<div class="notif-item"><div>${esc(n.text)}</div><div class="notif-time">${esc(n.time||'')}</div></div>`).join(''):`<div class="notif-item">No notifications yet.</div>`;}
+function renderOnlineNotices(){const c=document.getElementById('sarkariNoticeList');if(!c)return;c.innerHTML=onlineData.notices.map(n=>`<li><a href="#" onclick="event.preventDefault();alert('Opening official notification: ${esc(n.title)}')">👉 ${esc(n.title)} ${n.isNew?'<span class="badge-new">NEW</span>':''}</a><span class="notice-date">📅 ${esc(n.date)}</span></li>`).join('');}
+window.openSubjectPage=function(id){closeAllSections();const s=onlineData.subjects.find(x=>String(x.id)===String(id));if(!s)return;window.currentOpenSubjectId=id;document.getElementById('detailImg').src=s.image;document.getElementById('detailTitle').innerText=s.title;document.getElementById('detailCode').innerText=s.code;document.getElementById('detailDesc').innerText=s.desc;document.getElementById('moduleList').innerHTML=(s.modules||[]).map(m=>`<tr><td><strong>${esc(m.unit)}</strong></td><td>${esc(m.detail)}</td></tr>`).join('');document.getElementById('subjectPage').style.display='block';window.scrollTo(0,0);};
+
+function subscribe(){onValue(ref(db,'portal'),snap=>applyOnlineData(snap.val()||{}),err=>{console.error(err);setStatus('Firebase read error: '+err.message);});}
+async function seed(){const snap=await get(ref(db,'portal'));const cur=snap.val()||{};const updates={};if(!cur.branding)updates['portal/branding']=onlineData.branding;if(!cur.subjects)updates['portal/subjects']=Object.fromEntries(onlineData.subjects.map(s=>[s.id,s]));if(!cur.notifications)updates['portal/notifications']=Object.fromEntries(onlineData.notifications.map(n=>[n.id,n]));if(!cur.notices)updates['portal/notices']=Object.fromEntries(onlineData.notices.map(n=>[n.id,n]));if(!cur.posts)updates['portal/posts']={};if(Object.keys(updates).length)await update(ref(db),updates);}
+async function fileToDataURL(file,maxSize=1000,quality=0.68){
+  if(!file) throw new Error('Photo select karein.');
+  if(!file.type.startsWith('image/')) throw new Error('Sirf image file select karein.');
+  return new Promise((resolve,reject)=>{
+    const r=new FileReader();
+    r.onerror=()=>reject(new Error('Photo read nahi ho paayi.'));
+    r.onload=()=>{
+      const img=new Image();
+      img.onerror=()=>reject(new Error('Invalid image.'));
+      img.onload=()=>{
+        const scale=Math.min(1,maxSize/Math.max(img.width,img.height));
+        const w=Math.max(1,Math.round(img.width*scale)),h=Math.max(1,Math.round(img.height*scale));
+        const c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        let data=c.toDataURL('image/jpeg',quality);
+        if(data.length>850000)data=c.toDataURL('image/jpeg',0.52);
+        resolve(data);
+      };
+      img.src=r.result;
+    };
+    r.readAsDataURL(file);
+  });
+}
+
+window.openAdminLogin=function(){document.getElementById('adminModal').classList.add('active');document.getElementById('adminLoginView').style.display=auth.currentUser?'none':'block';document.getElementById('adminDashboardView').style.display=auth.currentUser?'block':'none';if(auth.currentUser)renderAdminAll();};
+window.closeAdminPanel=function(){document.getElementById('adminModal').classList.remove('active');};
+window.firebaseAdminLogin=async function(){const email=document.getElementById('adminEmail').value.trim();const pass=document.getElementById('adminPassword').value;const msg=document.getElementById('adminLoginMsg');if(email!==ADMIN_EMAIL){msg.textContent='Use the configured admin email: '+ADMIN_EMAIL;return;}msg.textContent='Logging in…';try{await signInWithEmailAndPassword(auth,email,pass);msg.textContent='';}catch(e){msg.textContent='Login failed: '+e.message;}};
+window.firebaseAdminLogout=()=>signOut(auth);
+window.uploadBrandImage=async function(kind){if(!auth.currentUser)return alert('Admin login required.');const file=document.getElementById(kind==='logo'?'adminLogoFile':'adminHeroFile').files[0];try{setStatus('Photo compress karke Realtime Database me save ho rahi hai…');const data=await fileToDataURL(file,kind==='logo'?650:1050,0.68);await update(ref(db,'portal/branding'),{[kind]:data});setStatus('Photo online update ho gayi. Firebase Storage required nahi hai.');}catch(e){setStatus('Photo save failed: '+e.message);}};
+window.saveSubject=async function(id){const s=onlineData.subjects.find(x=>String(x.id)===String(id));if(!s)return;const title=document.getElementById('st-'+id).value.trim(),desc=document.getElementById('sd-'+id).value.trim(),file=document.getElementById('sf-'+id).files[0];try{setStatus('Subject save ho raha hai…');let image=s.image;if(file)image=await fileToDataURL(file,900,0.65);await update(ref(db,'portal/subjects/'+id),{title,desc,image});setStatus('Subject + photo online update ho gaye.');}catch(e){setStatus('Save failed: '+e.message);}};
+window.addOnlineNotification=async function(){const text=document.getElementById('newNotifText').value.trim();if(!text)return alert('Notification text likhein.');const id='n_'+Date.now();await set(ref(db,'portal/notifications/'+id),{text,time:'Just now'});document.getElementById('newNotifText').value='';};
+window.deleteOnlineNotification=async id=>remove(ref(db,'portal/notifications/'+id));
+window.addOnlineNotice=async function(){const title=document.getElementById('newNoticeTitle').value.trim();if(!title)return alert('Notice title likhein.');const id='no_'+Date.now();await set(ref(db,'portal/notices/'+id),{title,date:document.getElementById('newNoticeDate').value.trim()||new Date().toLocaleDateString('en-GB'),isNew:document.getElementById('newNoticeNew').checked});document.getElementById('newNoticeTitle').value='';};
+window.deleteOnlineNotice=async id=>remove(ref(db,'portal/notices/'+id));
+window.saveScrollNotice=async function(){await update(ref(db,'portal/branding'),{scrollNotice:document.getElementById('scrollNoticeText').value.trim()});};
+window.createOnlinePost=async function(){const subjectId=Number(document.getElementById('newPostSubject').value),text=document.getElementById('newPostText').value.trim(),file=document.getElementById('newPostFile').files[0];if(!text)return alert('Post text likhein.');try{setStatus('Post save ho raha hai…');let imgUrl='';if(file)imgUrl=await fileToDataURL(file,950,0.64);const id='post_'+Date.now();await set(ref(db,'portal/posts/'+id),{subjectId,text,type:imgUrl?'photo':'text',imgUrl,comments:[]});document.getElementById('newPostText').value='';document.getElementById('newPostFile').value='';setStatus('Post online publish ho gaya.');}catch(e){setStatus('Post failed: '+e.message);}};
+window.deleteOnlinePost=async id=>remove(ref(db,'portal/posts/'+id));
+window.updateOnlinePostText=async function(id){const text=document.getElementById('pt-'+id).value.trim();await update(ref(db,'portal/posts/'+id),{text});};
+window.replaceOnlinePostImage=async function(id){const f=document.getElementById('pf-'+id).files[0];if(!f)return alert('New photo select karein.');try{setStatus('Photo compress karke database me save ho rahi hai…');const url=await fileToDataURL(f,950,0.64);await update(ref(db,'portal/posts/'+id),{imgUrl:url,type:'photo'});setStatus('Post photo online update ho gayi.');}catch(e){setStatus('Photo update failed: '+e.message);}};
+function renderAdminAll(){
+ const b=onlineData.branding;document.getElementById('adminLogoPreview').src=b.logo;document.getElementById('adminHeroPreview').src=b.hero;document.getElementById('scrollNoticeText').value=b.scrollNotice||'';
+ document.getElementById('adminSubjectsList').innerHTML=onlineData.subjects.map(s=>`<div class="admin-card"><h3>${esc(s.title)}</h3><div class="admin-grid"><div><img src="${esc(s.image)}" class="admin-preview"></div><div class="admin-form"><label>Title</label><input id="st-${s.id}" value="${esc(s.title)}"><label>Description</label><textarea id="sd-${s.id}">${esc(s.desc)}</textarea><input id="sf-${s.id}" type="file" accept="image/*"><button class="admin-btn" onclick="saveSubject(${s.id})">Save Subject + Photo Online</button></div></div></div>`).join('');
+ document.getElementById('adminNotificationsList').innerHTML=onlineData.notifications.map(n=>`<div class="admin-card"><div class="admin-row"><strong>${esc(n.text)}</strong><button class="admin-btn red" onclick="deleteOnlineNotification('${n.id}')">Delete</button></div></div>`).join('');
+ document.getElementById('adminNoticesList').innerHTML=onlineData.notices.map(n=>`<div class="admin-card"><div class="admin-row"><strong>${esc(n.title)}</strong><span>${esc(n.date)}</span><button class="admin-btn red" onclick="deleteOnlineNotice('${n.id}')">Delete</button></div></div>`).join('');
+ const sel=document.getElementById('newPostSubject');sel.innerHTML=onlineData.subjects.map(s=>`<option value="${s.id}">${esc(s.title)}</option>`).join('');
+ document.getElementById('adminPostsList').innerHTML=onlineData.posts.map(p=>`<div class="admin-card"><h3>${esc((onlineData.subjects.find(s=>String(s.id)===String(p.subjectId))||{}).title||'Subject')}</h3>${p.imgUrl?`<img src="${esc(p.imgUrl)}" class="admin-post-img">`:''}<textarea id="pt-${p.id}">${esc(p.text)}</textarea><div><button class="admin-btn" onclick="updateOnlinePostText('${p.id}')">Save Text</button><input id="pf-${p.id}" type="file" accept="image/*"><button class="admin-btn orange" onclick="replaceOnlinePostImage('${p.id}')">Update Photo Online</button><button class="admin-btn red" onclick="deleteOnlinePost('${p.id}')">Delete Post</button></div></div>`).join('');
+}
+document.querySelectorAll('.admin-tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.admin-tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.admin-section').forEach(x=>x.classList.remove('active'));btn.classList.add('active');document.getElementById('tab-'+btn.dataset.tab).classList.add('active');}));
+onAuthStateChanged(auth,async user=>{if(user&&user.email===ADMIN_EMAIL){document.getElementById('adminLoginView').style.display='none';document.getElementById('adminDashboardView').style.display='block';setStatus('Admin connected: '+user.email);try{await seed();}catch(e){console.warn('Seed skipped:',e.message)}renderAdminAll();}else{document.getElementById('adminLoginView').style.display='block';document.getElementById('adminDashboardView').style.display='none';if(user)await signOut(auth);}});
+subscribe();
+</script>
+
+</body>
+</html>
