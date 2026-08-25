@@ -1299,7 +1299,8 @@
         }
 
         // 5. Subject Page open karna (UPDATED FOR FEED)
-        let currentOpenSubjectId = null;
+        var currentOpenSubjectId = null; // Changed from let to var for global state sync with Module
+        
         function openSubjectPage(id) {
             closeAllSections();
             currentOpenSubjectId = id;
@@ -1614,10 +1615,11 @@
         /* ================= NEW FEED FEATURES END ================= */
     </script>
 
+<!-- VERSION FIX YAHAN KIYA GAYA HAI - VERSION 10.12.2 KA USE KIYA HAI -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-import { getDatabase, ref, onValue, get, set, update, remove } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAegYu-tHbS662BnPV3pyTFBGoKw1jomMQ",
@@ -1665,7 +1667,26 @@ function renderOnlineSubjects(){
 }
 function renderOnlineNotifications(){const c=document.getElementById('notifList');if(!c)return;c.innerHTML=onlineData.notifications.length?onlineData.notifications.map(n=>`<div class="notif-item"><div>${esc(n.text)}</div><div class="notif-time">${esc(n.time||'')}</div></div>`).join(''):`<div class="notif-item">No notifications yet.</div>`;}
 function renderOnlineNotices(){const c=document.getElementById('sarkariNoticeList');if(!c)return;c.innerHTML=onlineData.notices.map(n=>`<li><a href="#" onclick="event.preventDefault();alert('Opening official notification: ${esc(n.title)}')">👉 ${esc(n.title)} ${n.isNew?'<span class="badge-new">NEW</span>':''}</a><span class="notice-date">📅 ${esc(n.date)}</span></li>`).join('');}
-window.openSubjectPage=function(id){closeAllSections();const s=onlineData.subjects.find(x=>String(x.id)===String(id));if(!s)return;window.currentOpenSubjectId=id;document.getElementById('detailImg').src=s.image;document.getElementById('detailTitle').innerText=s.title;document.getElementById('detailCode').innerText=s.code;document.getElementById('detailDesc').innerText=s.desc;document.getElementById('moduleList').innerHTML=(s.modules||[]).map(m=>`<tr><td><strong>${esc(m.unit)}</strong></td><td>${esc(m.detail)}</td></tr>`).join('');document.getElementById('subjectPage').style.display='block';window.scrollTo(0,0);};
+
+// FEED RENDERING FIX KIYA GAYA YAHAN
+window.openSubjectPage=function(id){
+    closeAllSections();
+    const s=onlineData.subjects.find(x=>String(x.id)===String(id));
+    if(!s)return;
+    window.currentOpenSubjectId=id;
+    document.getElementById('detailImg').src=s.image;
+    document.getElementById('detailTitle').innerText=s.title;
+    document.getElementById('detailCode').innerText=s.code;
+    document.getElementById('detailDesc').innerText=s.desc;
+    document.getElementById('moduleList').innerHTML=(s.modules||[]).map(m=>`<tr><td><strong>${esc(m.unit)}</strong></td><td>${esc(m.detail)}</td></tr>`).join('');
+    
+    if(typeof renderFeed === 'function') {
+        renderFeed(id, 'subjectFeedContainer');
+    }
+    
+    document.getElementById('subjectPage').style.display='block';
+    window.scrollTo(0,0);
+};
 
 function subscribe(){onValue(ref(db,'portal'),snap=>applyOnlineData(snap.val()||{}),err=>{console.error(err);setStatus('Firebase read error: '+err.message);});}
 async function seed(){const snap=await get(ref(db,'portal'));const cur=snap.val()||{};const updates={};if(!cur.branding)updates['portal/branding']=onlineData.branding;if(!cur.subjects)updates['portal/subjects']=Object.fromEntries(onlineData.subjects.map(s=>[s.id,s]));if(!cur.notifications)updates['portal/notifications']=Object.fromEntries(onlineData.notifications.map(n=>[n.id,n]));if(!cur.notices)updates['portal/notices']=Object.fromEntries(onlineData.notices.map(n=>[n.id,n]));if(!cur.posts)updates['portal/posts']={};if(Object.keys(updates).length)await update(ref(db),updates);}
