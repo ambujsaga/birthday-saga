@@ -877,7 +877,7 @@
         <a href="#" onclick="openSubjectPage(5)">💻 Fundamentals of IT (FCIT)</a>
     </div>
 
-    <!-- ================= MODIFIED: Top Navigation Moved Inside homePage ================= -->
+    <!-- ================= Top Navigation Inside homePage ================= -->
     <div id="homePage">
         
         <header class="navbar">
@@ -907,7 +907,7 @@
                 <span style="cursor: pointer; font-size: 1.2rem;" onclick="toggleNotifPanel()">&times;</span>
             </div>
             <div class="notif-body" id="notifList">
-                </div>
+            </div>
         </div>
 
         <div class="notice-bar">
@@ -928,10 +928,9 @@
         <section class="container">
             <h2 class="section-title">Academic Subjects (Semester-I)</h2>
             <div class="grid" id="subjectsGrid">
-                </div>
+            </div>
         </section>
     </div>
-    <!-- ================= END OF MODIFIED SECTION ================= -->
 
     <div id="noticePage" class="container" style="display: none;">
         <div class="action-bar">
@@ -944,7 +943,7 @@
                 <p>Latest Board Notifications, Exam Schedules & Circulars</p>
             </div>
             <ul class="sarkari-list" id="sarkariNoticeList">
-                </ul>
+            </ul>
         </div>
     </div>
 
@@ -985,16 +984,14 @@
                 </tr>
             </thead>
             <tbody id="moduleList">
-                </tbody>
+            </tbody>
         </table>
 
-        <!-- ================= NEW FEED CONTAINER INSIDE SUBJECT PAGE ================= -->
         <div class="feed-container" id="subjectFeedContainer">
             <!-- Posts will render here -->
         </div>
     </div>
 
-    <!-- ================= NEW SAVED POSTS PAGE ================= -->
     <div id="savedPage" class="container" style="display: none;">
         <div class="action-bar">
             <button class="back-btn" onclick="openHomePage()">← Back to Dashboard</button>
@@ -1005,7 +1002,6 @@
         </div>
     </div>
 
-    <!-- ================= CHAT PAGE ================= -->
     <div id="chatPage" class="container" style="display: none;">
         <div class="action-bar">
             <button class="back-btn" onclick="openHomePage()">← Back to Dashboard</button>
@@ -1022,7 +1018,6 @@
         </div>
     </div>
 
-    <!-- ================= PROFILE PAGE ================= -->
     <div id="profilePage" class="container" style="display: none;">
         <div class="action-bar">
             <button class="back-btn" onclick="openHomePage()">← Back to Dashboard</button>
@@ -1042,13 +1037,12 @@
         </div>
     </div>
 
-
     <!-- ================= FIREBASE ONLINE ADMIN PANEL ================= -->
     <div id="adminModal" class="admin-modal">
       <div class="admin-box">
         <div class="admin-head"><h2>⚙️ Online Admin Control Panel</h2><span class="admin-close" onclick="closeAdminPanel()">&times;</span></div>
         <div id="adminLoginView" class="admin-login">
-          <div class="admin-status">🔐 Firebase Admin Login — text aur photos Firebase Realtime Database me online sync honge. Firebase Storage ki zarurat nahi hai.</div>
+          <div class="admin-status">🔐 Firebase Admin Login — text aur photos Firebase Realtime Database me online sync honge.</div>
           <div class="admin-form">
             <label>Admin Email</label><input id="adminEmail" type="email" placeholder="admin@mmitsce.com" autocomplete="username">
             <label>Password</label><input id="adminPassword" type="password" placeholder="Firebase Authentication password" autocomplete="current-password">
@@ -1084,7 +1078,7 @@
               <div id="adminNoticesList"></div>
             </section>
             <section id="tab-posts" class="admin-section">
-              <div class="admin-card"><h3>➕ Create Feed Post</h3><select id="newPostSubject"></select><textarea id="newPostText" placeholder="Post text"></textarea><input id="newPostFile" type="file" accept="image/*"><p class="admin-small">Photo compress hokar Firebase Realtime Database me save hogi. Firebase Storage required nahi hai.</p><button class="admin-btn" onclick="createOnlinePost()">Publish Post Online</button></div>
+              <div class="admin-card"><h3>➕ Create Feed Post</h3><select id="newPostSubject"></select><textarea id="newPostText" placeholder="Post text"></textarea><input id="newPostFile" type="file" accept="image/*"><p class="admin-small">Photo compress hokar Firebase Realtime Database me save hogi.</p><button class="admin-btn" onclick="createOnlinePost()">Publish Post Online</button></div>
               <div id="adminPostsList"></div>
             </section>
             <div style="padding-top:10px;border-top:1px solid #ddd"><button class="admin-btn red" onclick="firebaseAdminLogout()">Logout Admin</button></div>
@@ -1101,40 +1095,33 @@
 
     <!-- ================= BOTTOM NAVIGATION BAR ================= -->
     <nav class="bottom-nav">
-        <!-- 1. Home -->
         <div class="bottom-nav-item active" id="navHome" onclick="openHomePage()">
             <svg viewBox="0 0 24 24"><path d="M12 2.099l-9 6.75v11.151h5.5v-6h7v6h5.5v-11.151z"/></svg>
             <span>Home</span>
         </div>
-        <!-- 2. Chat -->
         <div class="bottom-nav-item" id="navChat" onclick="openChat()">
             <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>
             <span>Chat</span>
         </div>
-        <!-- 3. Save (UPDATED TO OPEN SAVED FEED) -->
         <div class="bottom-nav-item" id="navSave" onclick="openSavePage()">
             <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
             <span>Save</span>
         </div>
-        <!-- 4. Profile -->
         <div class="bottom-nav-item" id="navProfile" onclick="openProfile()">
             <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
             <span>Profile</span>
         </div>
     </nav>
-    <!-- ==================================================================== -->
 
     <script>
         // ================= JAVASCRIPT START ================= //
         
-        // Notifications Data
         let notifications = [
             { id: 1, text: "BTEUP Odd Semester Exam Scheme 2026-27 released.", time: "Just now" },
             { id: 2, text: "CSE 1st Semester Syllabus officially updated.", time: "1 hour ago" },
             { id: 3, text: "Practical Exam schedule announced for Diploma Students.", time: "Yesterday" }
         ];
 
-        // Sarkari Result Style Links Data
         const officialNotices = [
             { title: "BTEUP Odd Semester Examination Form 2026 Direct Link", date: "20-Aug-2026", isNew: true },
             { title: "JEECUP Polytechnic Admission Counselling Schedule 2026", date: "18-Aug-2026", isNew: true },
@@ -1143,7 +1130,6 @@
             { title: "UP Scholarship Online Form 2026-27 Apply Online", date: "05-Aug-2026", isNew: false }
         ];
 
-        // UP Polytechnic CSE 1st Sem ka Official Data
         const subjects = [
             {
                 id: 1,
@@ -1212,9 +1198,9 @@
             }
         ];
 
-        // 1. Dashboard par subjects load karna
         function loadSubjects() {
             const grid = document.getElementById('subjectsGrid');
+            if(!grid) return;
             grid.innerHTML = subjects.map(sub => `
                 <div class="card" onclick="openSubjectPage(${sub.id})">
                     <div class="card-img-container">
@@ -1229,9 +1215,9 @@
             `).join('');
         }
 
-        // 2. Notification System Logic
         function renderNotifications() {
             const listContainer = document.getElementById('notifList');
+            if(!listContainer) return;
             if(notifications.length === 0) {
                 listContainer.innerHTML = `<div class="notif-item">No notifications yet.</div>`;
                 return;
@@ -1247,10 +1233,7 @@
         function toggleNotifPanel() {
             const panel = document.getElementById('notifPanel');
             const isVisible = panel.style.display === 'block';
-            
             panel.style.display = isVisible ? 'none' : 'block';
-            
-            // Notification seen hone par Red Dot hide kar do
             if (!isVisible) {
                 document.getElementById('notifRedDot').style.display = 'none';
             }
@@ -1266,9 +1249,9 @@
             document.getElementById('notifRedDot').style.display = 'block';
         }
 
-        // 3. Sarkari Result Notice Board Render
         function renderNoticeBoard() {
             const noticeList = document.getElementById('sarkariNoticeList');
+            if(!noticeList) return;
             noticeList.innerHTML = officialNotices.map(notice => `
                 <li>
                     <a href="#" onclick="alert('Opening official notification PDF for: ${notice.title}')">
@@ -1298,13 +1281,13 @@
             window.scrollTo(0, 0);
         }
 
-        // 5. Subject Page open karna (UPDATED FOR FEED)
-        var currentOpenSubjectId = null; // Changed from let to var for global state sync with Module
+        var currentOpenSubjectId = null;
         
         function openSubjectPage(id) {
             closeAllSections();
             currentOpenSubjectId = id;
             const sub = subjects.find(s => s.id === id);
+            if(!sub) return;
             
             document.getElementById('detailImg').src = sub.image;
             document.getElementById('detailTitle').innerText = sub.title;
@@ -1319,9 +1302,7 @@
                 </tr>
             `).join('');
 
-            // NEW: Render the Feed for this subject
             renderFeed(id, 'subjectFeedContainer');
-
             document.getElementById('subjectPage').style.display = 'block';
             window.scrollTo(0, 0);
         }
@@ -1334,7 +1315,6 @@
             updateNavState('navHome');
         }
 
-        // Helper to hide all main view containers (UPDATED for Chat and Profile)
         function closeAllSections() {
             document.getElementById('sideMenu').classList.remove('active');
             document.getElementById('notifPanel').style.display = 'none';
@@ -1350,7 +1330,7 @@
         window.onclick = function(event) {
             const panel = document.getElementById('notifPanel');
             const bell = document.querySelector('.notif-bell-container');
-            if (panel.style.display === 'block' && !panel.contains(event.target) && !bell.contains(event.target)) {
+            if (panel && panel.style.display === 'block' && !panel.contains(event.target) && !bell.contains(event.target)) {
                 panel.style.display = 'none';
             }
         };
@@ -1364,7 +1344,6 @@
             }
         }
 
-        // ================= UPDATED NAVIGATION FUNCTIONS ================= //
         function openChat() {
             updateNavState('navChat');
             closeAllSections();
@@ -1379,7 +1358,6 @@
             window.scrollTo(0, 0);
         }
 
-        // Chat send karne ka function
         function sendChatMessage() {
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
@@ -1387,29 +1365,22 @@
                 const msgBox = document.getElementById('chatMessages');
                 msgBox.innerHTML += `<div class="chat-msg sent">${message}</div>`;
                 input.value = '';
-                // Scroll to bottom
                 msgBox.scrollTop = msgBox.scrollHeight;
             }
         }
-        // =============================================================== //
 
-        // Init App
         window.onload = function() {
             loadSubjects();
             renderNotifications();
             renderNoticeBoard();
         };
 
-        /* ================= NEW FEED FEATURES START (LOGIC) ================= */
-
-        // Mock Current User (Bina iske comment delete permissions verify nahi hoti)
         const currentUser = { id: 'user_123', name: 'Ambuj Kumar Saga', role: 'user' }; 
 
-        // Mock Posts Data (Admin Panel se aaye hue posts)
         let adminPostsData = [
             {
                 id: 'post_1',
-                subjectId: 1, // Communication Skills ke liye
+                subjectId: 1,
                 type: 'photo',
                 text: 'Important Notice: Communication process flow chart. Ise dhyan se padh lijiye exam ke liye jaruri hai.',
                 imgUrl: 'https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=800',
@@ -1427,7 +1398,7 @@
             },
             {
                 id: 'post_3',
-                subjectId: 2, // Math ke liye
+                subjectId: 2,
                 type: 'photo',
                 text: 'Chapter 1 ke formulas revision notes.',
                 imgUrl: 'https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?w=800',
@@ -1435,9 +1406,8 @@
             }
         ];
 
-        let savedPostIds = []; // Jo id isme hogi wo saved manni jayegi
+        let savedPostIds = [];
 
-        // Render Posts HTML
         function generatePostHTML(post) {
             let isSaved = savedPostIds.includes(post.id);
             let saveText = isSaved ? '💾 Saved' : '🔖 Save';
@@ -1445,16 +1415,13 @@
             let mediaHTML = '';
             let viewBtnHTML = '';
             
-            // Check type photo hai to Image tag aur View button aayega
-            if(post.type === 'photo') {
+            if(post.type === 'photo' && post.imgUrl) {
                 mediaHTML = `<img src="${post.imgUrl}" class="post-img" alt="Post Image">`;
                 viewBtnHTML = `<button class="post-action-btn" onclick="openImageViewer('${post.imgUrl}')">👁️ View</button>`;
             }
 
-            // Comments Render Karna (Delete logic ke sath)
-            let commentsHTML = post.comments.map(c => {
+            let commentsHTML = (post.comments || []).map(c => {
                 let deleteHTML = '';
-                // Sirf comment owner ya Admin delete kar sakta hai
                 if(currentUser.role === 'admin' || currentUser.id === c.userId) {
                     deleteHTML = `<span class="delete-comment-btn" onclick="deleteComment('${post.id}', '${c.id}')" title="Delete Comment">✖</span>`;
                 }
@@ -1487,10 +1454,10 @@
             `;
         }
 
-        // Render Feed For Specific Subject
         function renderFeed(subjectId, containerId) {
             const container = document.getElementById(containerId);
-            const posts = adminPostsData.filter(p => p.subjectId === subjectId);
+            if(!container) return;
+            const posts = adminPostsData.filter(p => String(p.subjectId) === String(subjectId));
             
             if(posts.length === 0) {
                 container.innerHTML = `<p style="text-align:center; color:#777;">No updates in this feed yet.</p>`;
@@ -1499,9 +1466,9 @@
             container.innerHTML = posts.map(p => generatePostHTML(p)).join('');
         }
 
-        // Render Saved Posts Feed
         function renderSavedFeed() {
             const container = document.getElementById('savedFeedContainer');
+            if(!container) return;
             const posts = adminPostsData.filter(p => savedPostIds.includes(p.id));
             
             if(posts.length === 0) {
@@ -1511,7 +1478,6 @@
             container.innerHTML = posts.map(p => generatePostHTML(p)).join('');
         }
 
-        // Toggle Comments visibility
         function toggleCommentSection(postId) {
             const sec = document.getElementById(`comments-sec-${postId}`);
             if (sec.style.display === 'none') {
@@ -1521,7 +1487,6 @@
             }
         }
 
-        // Add Comment
         function addComment(postId) {
             const inputField = document.getElementById(`comment-input-${postId}`);
             const text = inputField.value.trim();
@@ -1529,6 +1494,7 @@
 
             const postIndex = adminPostsData.findIndex(p => p.id === postId);
             if(postIndex > -1) {
+                if(!adminPostsData[postIndex].comments) adminPostsData[postIndex].comments = [];
                 adminPostsData[postIndex].comments.push({
                     id: 'com_' + Date.now(),
                     userId: currentUser.id,
@@ -1539,16 +1505,14 @@
             }
         }
 
-        // Delete Comment
         function deleteComment(postId, commentId) {
             const postIndex = adminPostsData.findIndex(p => p.id === postId);
-            if(postIndex > -1) {
+            if(postIndex > -1 && adminPostsData[postIndex].comments) {
                 adminPostsData[postIndex].comments = adminPostsData[postIndex].comments.filter(c => c.id !== commentId);
                 refreshCurrentFeeds();
             }
         }
 
-        // Save/Unsave Post
         function toggleSavePost(postId) {
             if(savedPostIds.includes(postId)) {
                 savedPostIds = savedPostIds.filter(id => id !== postId);
@@ -1558,7 +1522,6 @@
             refreshCurrentFeeds();
         }
 
-        // Refresh currently active feed after action (Comment/Save/Delete)
         function refreshCurrentFeeds() {
             if(document.getElementById('savedPage').style.display === 'block') {
                 renderSavedFeed();
@@ -1567,7 +1530,6 @@
             }
         }
 
-        // Open Saved Navigation Page
         function openSavePage() {
             updateNavState('navSave');
             closeAllSections();
@@ -1576,7 +1538,6 @@
             window.scrollTo(0, 0);
         }
 
-        // Fullscreen Image Viewer Modal
         function openImageViewer(imgUrl) {
             document.getElementById('viewerImageSrc').src = imgUrl;
             document.getElementById('imageViewerModal').style.display = 'flex';
@@ -1587,10 +1548,8 @@
             document.getElementById('viewerImageSrc').src = '';
         }
 
-        // Download Post
         function downloadPostMedia(type, imgUrl) {
             if(type === 'photo' && imgUrl) {
-                // Programmatic download via temporary anchor link
                 fetch(imgUrl)
                 .then(response => response.blob())
                 .then(blob => {
@@ -1598,24 +1557,22 @@
                     const a = document.createElement('a');
                     a.style.display = 'none';
                     a.href = url;
-                    a.download = 'polytechnic-post-image.jpg'; // File name
+                    a.download = 'polytechnic-post-image.jpg';
                     document.body.appendChild(a);
                     a.click();
                     window.URL.revokeObjectURL(url);
                     document.body.removeChild(a);
                 })
                 .catch(() => {
-                    // Fallback to opening in new tab if CORS blocks fetch
                     window.open(imgUrl, '_blank');
                 });
             } else {
                 alert("Only photo posts can be downloaded.");
             }
         }
-        /* ================= NEW FEED FEATURES END ================= */
     </script>
 
-<!-- VERSION FIX YAHAN KIYA GAYA HAI - VERSION 10.12.2 KA USE KIYA HAI -->
+<!-- ================= FIREBASE REALTIME MODULE SCRIPT ================= -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -1640,13 +1597,28 @@ const defaultSubjects = [
  {id:4,title:"Applied Chemistry",code:"SUB-104",image:"https://images.unsplash.com/photo-1603126857599-f6e1570d8136?auto=format&fit=crop&w=600&q=80",desc:"Engineering materials ki properties samajhne ke liye Chemistry. Water treatment, polymers, aur electrochemistry iske main topics hain.",modules:[{unit:"Unit 1",detail:"Atomic Structure, Periodic Table and Chemical Bonding"},{unit:"Unit 2",detail:"Fuels and Lubricants: Types of fuels, Properties of good lubricants"},{unit:"Unit 3",detail:"Water: Hardness of water, Water treatment, Boiler feed water"},{unit:"Unit 4",detail:"Electrochemistry & Corrosion: Galvanic cell, Causes and prevention of corrosion"}]},
  {id:5,title:"Fundamentals of Computer & IT (FCIT)",code:"SUB-105",image:"https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=600&q=80",desc:"Computer Science ka core foundational subject. Isme Computer architecture, memory, software types, OS, aur Internet basics cover kiye gaye hain.",modules:[{unit:"Unit 1",detail:"Fundamentals of Computer: Block diagram of PC, Input/Output devices, CPU"},{unit:"Unit 2",detail:"Data Representation: Binary, Octal, Hexadecimal number systems and logic gates"},{unit:"Unit 3",detail:"Memory & Storage: Primary memory (RAM/ROM), Secondary storage devices"},{unit:"Unit 4",detail:"Basics of OS and Internet: MS Windows, Web browsers, E-mail, Search Engines"}]}
 ];
+
 const defaultNotifs=[{id:"n1",text:"BTEUP Odd Semester Exam Scheme 2026-27 released.",time:"Just now"},{id:"n2",text:"CSE 1st Semester Syllabus officially updated.",time:"1 hour ago"},{id:"n3",text:"Practical Exam schedule announced for Diploma Students.",time:"Yesterday"}];
 const defaultNotices=[{id:"no1",title:"BTEUP Odd Semester Examination Form 2026 Direct Link",date:"20-Aug-2026",isNew:true},{id:"no2",title:"JEECUP Polytechnic Admission Counselling Schedule 2026",date:"18-Aug-2026",isNew:true},{id:"no3",title:"Download Official Diploma CSE 1st Sem Syllabus PDF",date:"15-Aug-2026",isNew:false},{id:"no4",title:"BTEUP Scrutiny & Revaluation Result Declared",date:"10-Aug-2026",isNew:false},{id:"no5",title:"UP Scholarship Online Form 2026-27 Apply Online",date:"05-Aug-2026",isNew:false}];
-let onlineData={branding:{logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Emblem_of_Uttar_Pradesh.svg/1200px-Emblem_of_Uttar_Pradesh.svg.png",hero:"https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80",scrollNotice:"Welcome to the official study material portal for Diploma in CSE 1st Semester. All subjects' syllabus and notes are updated as per the latest BTEUP curriculum."},subjects:defaultSubjects,notifications:defaultNotifs,notices:defaultNotices,posts:[]};
+
+let onlineData={
+  branding:{
+    logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Emblem_of_Uttar_Pradesh.svg/1200px-Emblem_of_Uttar_Pradesh.svg.png",
+    hero:"https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80",
+    scrollNotice:"Welcome to the official study material portal for Diploma in CSE 1st Semester. All subjects' syllabus and notes are updated as per the latest BTEUP curriculum."
+  },
+  subjects:defaultSubjects,
+  notifications:defaultNotifs,
+  notices:defaultNotices,
+  posts:[]
+};
+
+let lastNotifCount = null;
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function setStatus(t){const e=document.getElementById('adminStatus');if(e)e.textContent=t;}
 function arr(v){return v?Object.entries(v).map(([id,x])=>({id,...x})):[]}
+
 function applyOnlineData(d){
   onlineData={...onlineData,...(d||{})};
   onlineData.branding={...onlineData.branding,...((d&&d.branding)||{})};
@@ -1654,93 +1626,393 @@ function applyOnlineData(d){
   onlineData.notifications=arr(d&&d.notifications).length?arr(d.notifications):((d&&d.notifications)?[]:onlineData.notifications);
   onlineData.notices=arr(d&&d.notices).length?arr(d.notices):((d&&d.notices)?[]:onlineData.notices);
   onlineData.posts=arr(d&&d.posts);
-  document.querySelector('.navbar .logo-container img').src=onlineData.branding.logo;
-  document.querySelector('.hero').style.backgroundImage=`url('${onlineData.branding.hero}')`;
-  const marquee=document.querySelector('.notice-bar marquee'); if(marquee) marquee.textContent=onlineData.branding.scrollNotice;
-  renderOnlineSubjects(); renderOnlineNotifications(); renderOnlineNotices(); renderOnlinePosts();
-  if(document.getElementById('adminDashboardView').style.display==='block') renderAdminAll();
-}
-function renderOnlinePosts(){ adminPostsData=onlineData.posts||[]; if(typeof refreshCurrentFeeds==='function') refreshCurrentFeeds(); }
-function renderOnlineSubjects(){
-  const grid=document.getElementById('subjectsGrid');if(!grid)return;
-  grid.innerHTML=onlineData.subjects.map(s=>`<div class="card" onclick="openSubjectPage(${s.id})"><div class="card-img-container"><img src="${esc(s.image)}" alt="${esc(s.title)}"><div class="card-code">${esc(s.code)}</div></div><div class="card-body"><h3>${esc(s.title)}</h3><p>BTEUP prescribed syllabus aur study material ke liye click karein.</p></div></div>`).join('');
-}
-function renderOnlineNotifications(){const c=document.getElementById('notifList');if(!c)return;c.innerHTML=onlineData.notifications.length?onlineData.notifications.map(n=>`<div class="notif-item"><div>${esc(n.text)}</div><div class="notif-time">${esc(n.time||'')}</div></div>`).join(''):`<div class="notif-item">No notifications yet.</div>`;}
-function renderOnlineNotices(){const c=document.getElementById('sarkariNoticeList');if(!c)return;c.innerHTML=onlineData.notices.map(n=>`<li><a href="#" onclick="event.preventDefault();alert('Opening official notification: ${esc(n.title)}')">👉 ${esc(n.title)} ${n.isNew?'<span class="badge-new">NEW</span>':''}</a><span class="notice-date">📅 ${esc(n.date)}</span></li>`).join('');}
 
-// FEED RENDERING FIX KIYA GAYA YAHAN
-window.openSubjectPage=function(id){
-    closeAllSections();
-    const s=onlineData.subjects.find(x=>String(x.id)===String(id));
-    if(!s)return;
-    window.currentOpenSubjectId=id;
-    document.getElementById('detailImg').src=s.image;
-    document.getElementById('detailTitle').innerText=s.title;
-    document.getElementById('detailCode').innerText=s.code;
-    document.getElementById('detailDesc').innerText=s.desc;
-    document.getElementById('moduleList').innerHTML=(s.modules||[]).map(m=>`<tr><td><strong>${esc(m.unit)}</strong></td><td>${esc(m.detail)}</td></tr>`).join('');
+  // Synchronize global arrays
+  window.notifications = onlineData.notifications;
+
+  // Realtime UI updates
+  const logoImg = document.querySelector('.navbar .logo-container img');
+  if(logoImg && onlineData.branding.logo) logoImg.src = onlineData.branding.logo;
+
+  const heroSec = document.querySelector('.hero');
+  if(heroSec && onlineData.branding.hero) heroSec.style.backgroundImage = `url('${onlineData.branding.hero}')`;
+
+  const marquee = document.querySelector('.notice-bar marquee');
+  if(marquee && onlineData.branding.scrollNotice) marquee.textContent = onlineData.branding.scrollNotice;
+
+  // Red dot trigger on new notification in realtime
+  if(lastNotifCount !== null && onlineData.notifications.length > lastNotifCount) {
+      const redDot = document.getElementById('notifRedDot');
+      if(redDot) redDot.style.display = 'block';
+  }
+  lastNotifCount = onlineData.notifications.length;
+
+  renderOnlineSubjects();
+  renderOnlineNotifications();
+  renderOnlineNotices();
+  renderOnlinePosts();
+
+  // Active Subject Page Realtime Refresh
+  if(window.currentOpenSubjectId && document.getElementById('subjectPage').style.display === 'block') {
+      const s = onlineData.subjects.find(x => String(x.id) === String(window.currentOpenSubjectId));
+      if(s) {
+          document.getElementById('detailImg').src = s.image;
+          document.getElementById('detailTitle').innerText = s.title;
+          document.getElementById('detailCode').innerText = s.code;
+          document.getElementById('detailDesc').innerText = s.desc;
+      }
+  }
+
+  if(document.getElementById('adminDashboardView') && document.getElementById('adminDashboardView').style.display === 'block') {
+      renderAdminAll();
+  }
+}
+
+function renderOnlinePosts(){
+  window.adminPostsData = onlineData.posts || [];
+  if(typeof window.refreshCurrentFeeds === 'function') window.refreshCurrentFeeds();
+}
+
+function renderOnlineSubjects(){
+  const grid = document.getElementById('subjectsGrid');
+  if(!grid) return;
+  window.subjects = onlineData.subjects;
+  grid.innerHTML = onlineData.subjects.map(s => `
+    <div class="card" onclick="openSubjectPage(${s.id})">
+      <div class="card-img-container">
+        <img src="${esc(s.image)}" alt="${esc(s.title)}">
+        <div class="card-code">${esc(s.code)}</div>
+      </div>
+      <div class="card-body">
+        <h3>${esc(s.title)}</h3>
+        <p>BTEUP prescribed syllabus aur study material ke liye click karein.</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderOnlineNotifications(){
+  const c = document.getElementById('notifList');
+  if(!c) return;
+  c.innerHTML = onlineData.notifications.length ? onlineData.notifications.map(n => `
+    <div class="notif-item">
+      <div>${esc(n.text)}</div>
+      <div class="notif-time">${esc(n.time||'')}</div>
+    </div>
+  `).join('') : `<div class="notif-item">No notifications yet.</div>`;
+}
+
+function renderOnlineNotices(){
+  const c = document.getElementById('sarkariNoticeList');
+  if(!c) return;
+  c.innerHTML = onlineData.notices.map(n => `
+    <li>
+      <a href="#" onclick="event.preventDefault();alert('Opening official notification: ${esc(n.title)}')">
+        👉 ${esc(n.title)} ${n.isNew ? '<span class="badge-new">NEW</span>' : ''}
+      </a>
+      <span class="notice-date">📅 ${esc(n.date)}</span>
+    </li>
+  `).join('');
+}
+
+window.openSubjectPage = function(id){
+    window.closeAllSections();
+    const s = onlineData.subjects.find(x => String(x.id) === String(id));
+    if(!s) return;
+    window.currentOpenSubjectId = id;
+    document.getElementById('detailImg').src = s.image;
+    document.getElementById('detailTitle').innerText = s.title;
+    document.getElementById('detailCode').innerText = s.code;
+    document.getElementById('detailDesc').innerText = s.desc;
+    document.getElementById('moduleList').innerHTML = (s.modules || []).map(m => `
+      <tr><td><strong>${esc(m.unit)}</strong></td><td>${esc(m.detail)}</td></tr>
+    `).join('');
     
-    if(typeof renderFeed === 'function') {
-        renderFeed(id, 'subjectFeedContainer');
+    if(typeof window.renderFeed === 'function') {
+        window.renderFeed(id, 'subjectFeedContainer');
     }
     
-    document.getElementById('subjectPage').style.display='block';
+    document.getElementById('subjectPage').style.display = 'block';
     window.scrollTo(0,0);
 };
 
-function subscribe(){onValue(ref(db,'portal'),snap=>applyOnlineData(snap.val()||{}),err=>{console.error(err);setStatus('Firebase read error: '+err.message);});}
-async function seed(){const snap=await get(ref(db,'portal'));const cur=snap.val()||{};const updates={};if(!cur.branding)updates['portal/branding']=onlineData.branding;if(!cur.subjects)updates['portal/subjects']=Object.fromEntries(onlineData.subjects.map(s=>[s.id,s]));if(!cur.notifications)updates['portal/notifications']=Object.fromEntries(onlineData.notifications.map(n=>[n.id,n]));if(!cur.notices)updates['portal/notices']=Object.fromEntries(onlineData.notices.map(n=>[n.id,n]));if(!cur.posts)updates['portal/posts']={};if(Object.keys(updates).length)await update(ref(db),updates);}
-async function fileToDataURL(file,maxSize=1000,quality=0.68){
+function subscribe(){
+  onValue(ref(db,'portal'), snap => applyOnlineData(snap.val() || {}), err => {
+    console.error(err);
+    setStatus('Firebase read error: ' + err.message);
+  });
+}
+
+async function seed(){
+  const snap = await get(ref(db,'portal'));
+  const cur = snap.val() || {};
+  const updates = {};
+  if(!cur.branding) updates['portal/branding'] = onlineData.branding;
+  if(!cur.subjects) updates['portal/subjects'] = Object.fromEntries(onlineData.subjects.map(s => [s.id, s]));
+  if(!cur.notifications) updates['portal/notifications'] = Object.fromEntries(onlineData.notifications.map(n => [n.id, n]));
+  if(!cur.notices) updates['portal/notices'] = Object.fromEntries(onlineData.notices.map(n => [n.id, n]));
+  if(!cur.posts) updates['portal/posts'] = {};
+  if(Object.keys(updates).length) await update(ref(db), updates);
+}
+
+async function fileToDataURL(file, maxSize=1000, quality=0.68){
   if(!file) throw new Error('Photo select karein.');
   if(!file.type.startsWith('image/')) throw new Error('Sirf image file select karein.');
-  return new Promise((resolve,reject)=>{
-    const r=new FileReader();
-    r.onerror=()=>reject(new Error('Photo read nahi ho paayi.'));
-    r.onload=()=>{
-      const img=new Image();
-      img.onerror=()=>reject(new Error('Invalid image.'));
-      img.onload=()=>{
-        const scale=Math.min(1,maxSize/Math.max(img.width,img.height));
-        const w=Math.max(1,Math.round(img.width*scale)),h=Math.max(1,Math.round(img.height*scale));
-        const c=document.createElement('canvas');c.width=w;c.height=h;
-        c.getContext('2d').drawImage(img,0,0,w,h);
-        let data=c.toDataURL('image/jpeg',quality);
-        if(data.length>850000)data=c.toDataURL('image/jpeg',0.52);
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onerror = () => reject(new Error('Photo read nahi ho paayi.'));
+    r.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('Invalid image.'));
+      img.onload = () => {
+        const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+        const w = Math.max(1, Math.round(img.width * scale)), h = Math.max(1, Math.round(img.height * scale));
+        const c = document.createElement('canvas'); c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        let data = c.toDataURL('image/jpeg', quality);
+        if(data.length > 850000) data = c.toDataURL('image/jpeg', 0.52);
         resolve(data);
       };
-      img.src=r.result;
+      img.src = r.result;
     };
     r.readAsDataURL(file);
   });
 }
 
-window.openAdminLogin=function(){document.getElementById('adminModal').classList.add('active');document.getElementById('adminLoginView').style.display=auth.currentUser?'none':'block';document.getElementById('adminDashboardView').style.display=auth.currentUser?'block':'none';if(auth.currentUser)renderAdminAll();};
-window.closeAdminPanel=function(){document.getElementById('adminModal').classList.remove('active');};
-function firebaseAuthError(e){const m={"auth/invalid-credential":"Email ya password galat hai.","auth/user-not-found":"Admin account nahi mila. Pehle Create Admin Account dabayein.","auth/wrong-password":"Password galat hai.","auth/invalid-email":"Email address sahi nahi hai.","auth/email-already-in-use":"Ye admin email pehle se registered hai. Login karein.","auth/weak-password":"Password kam se kam 6 characters ka rakhein.","auth/operation-not-allowed":"Firebase Console me Authentication → Sign-in method → Email/Password enable karein.","auth/network-request-failed":"Internet connection check karein.","auth/unauthorized-domain":"Firebase Authentication me Vercel domain Authorized domains me add karein."};return m[e.code]||e.message||"Firebase Authentication error.";}
-window.firebaseAdminLogin=async function(){const email=document.getElementById('adminEmail').value.trim();const pass=document.getElementById('adminPassword').value;const msg=document.getElementById('adminLoginMsg');if(email!==ADMIN_EMAIL){msg.textContent='Sirf configured admin email '+ADMIN_EMAIL+' se login allowed hai.';return;}if(!pass){msg.textContent='Password enter karein.';return;}msg.textContent='Logging in…';try{await signInWithEmailAndPassword(auth,email,pass);msg.textContent='Login successful…';}catch(e){msg.textContent='Login failed: '+firebaseAuthError(e);}};
-window.createFirebaseAdmin=async function(){const email=document.getElementById('adminEmail').value.trim();const pass=document.getElementById('adminPassword').value;const msg=document.getElementById('adminLoginMsg');if(email!==ADMIN_EMAIL){msg.textContent='Admin email exactly '+ADMIN_EMAIL+' hona chahiye.';return;}if(!pass||pass.length<6){msg.textContent='Password kam se kam 6 characters ka rakhein.';return;}msg.textContent='Admin account create ho raha hai…';try{await createUserWithEmailAndPassword(auth,email,pass);msg.textContent='Admin account create ho gaya. Login active hai.';}catch(e){msg.textContent='Account create nahi hua: '+firebaseAuthError(e);}};
-window.firebaseAdminLogout=()=>signOut(auth);
-window.uploadBrandImage=async function(kind){if(!auth.currentUser)return alert('Admin login required.');const file=document.getElementById(kind==='logo'?'adminLogoFile':'adminHeroFile').files[0];try{setStatus('Photo compress karke Realtime Database me save ho rahi hai…');const data=await fileToDataURL(file,kind==='logo'?650:1050,0.68);await update(ref(db,'portal/branding'),{[kind]:data});setStatus('Photo online update ho gayi. Firebase Storage required nahi hai.');}catch(e){setStatus('Photo save failed: '+e.message);}};
-window.saveSubject=async function(id){const s=onlineData.subjects.find(x=>String(x.id)===String(id));if(!s)return;const title=document.getElementById('st-'+id).value.trim(),desc=document.getElementById('sd-'+id).value.trim(),file=document.getElementById('sf-'+id).files[0];try{setStatus('Subject save ho raha hai…');let image=s.image;if(file)image=await fileToDataURL(file,900,0.65);await update(ref(db,'portal/subjects/'+id),{title,desc,image});setStatus('Subject + photo online update ho gaye.');}catch(e){setStatus('Save failed: '+e.message);}};
-window.addOnlineNotification=async function(){const text=document.getElementById('newNotifText').value.trim();if(!text)return alert('Notification text likhein.');const id='n_'+Date.now();await set(ref(db,'portal/notifications/'+id),{text,time:'Just now'});document.getElementById('newNotifText').value='';};
-window.deleteOnlineNotification=async id=>remove(ref(db,'portal/notifications/'+id));
-window.addOnlineNotice=async function(){const title=document.getElementById('newNoticeTitle').value.trim();if(!title)return alert('Notice title likhein.');const id='no_'+Date.now();await set(ref(db,'portal/notices/'+id),{title,date:document.getElementById('newNoticeDate').value.trim()||new Date().toLocaleDateString('en-GB'),isNew:document.getElementById('newNoticeNew').checked});document.getElementById('newNoticeTitle').value='';};
-window.deleteOnlineNotice=async id=>remove(ref(db,'portal/notices/'+id));
-window.saveScrollNotice=async function(){await update(ref(db,'portal/branding'),{scrollNotice:document.getElementById('scrollNoticeText').value.trim()});};
-window.createOnlinePost=async function(){const subjectId=Number(document.getElementById('newPostSubject').value),text=document.getElementById('newPostText').value.trim(),file=document.getElementById('newPostFile').files[0];if(!text)return alert('Post text likhein.');try{setStatus('Post save ho raha hai…');let imgUrl='';if(file)imgUrl=await fileToDataURL(file,950,0.64);const id='post_'+Date.now();await set(ref(db,'portal/posts/'+id),{subjectId,text,type:imgUrl?'photo':'text',imgUrl,comments:[]});document.getElementById('newPostText').value='';document.getElementById('newPostFile').value='';setStatus('Post online publish ho gaya.');}catch(e){setStatus('Post failed: '+e.message);}};
-window.deleteOnlinePost=async id=>remove(ref(db,'portal/posts/'+id));
-window.updateOnlinePostText=async function(id){const text=document.getElementById('pt-'+id).value.trim();await update(ref(db,'portal/posts/'+id),{text});};
-window.replaceOnlinePostImage=async function(id){const f=document.getElementById('pf-'+id).files[0];if(!f)return alert('New photo select karein.');try{setStatus('Photo compress karke database me save ho rahi hai…');const url=await fileToDataURL(f,950,0.64);await update(ref(db,'portal/posts/'+id),{imgUrl:url,type:'photo'});setStatus('Post photo online update ho gayi.');}catch(e){setStatus('Photo update failed: '+e.message);}};
-function renderAdminAll(){
- const b=onlineData.branding;document.getElementById('adminLogoPreview').src=b.logo;document.getElementById('adminHeroPreview').src=b.hero;document.getElementById('scrollNoticeText').value=b.scrollNotice||'';
- document.getElementById('adminSubjectsList').innerHTML=onlineData.subjects.map(s=>`<div class="admin-card"><h3>${esc(s.title)}</h3><div class="admin-grid"><div><img src="${esc(s.image)}" class="admin-preview"></div><div class="admin-form"><label>Title</label><input id="st-${s.id}" value="${esc(s.title)}"><label>Description</label><textarea id="sd-${s.id}">${esc(s.desc)}</textarea><input id="sf-${s.id}" type="file" accept="image/*"><button class="admin-btn" onclick="saveSubject(${s.id})">Save Subject + Photo Online</button></div></div></div>`).join('');
- document.getElementById('adminNotificationsList').innerHTML=onlineData.notifications.map(n=>`<div class="admin-card"><div class="admin-row"><strong>${esc(n.text)}</strong><button class="admin-btn red" onclick="deleteOnlineNotification('${n.id}')">Delete</button></div></div>`).join('');
- document.getElementById('adminNoticesList').innerHTML=onlineData.notices.map(n=>`<div class="admin-card"><div class="admin-row"><strong>${esc(n.title)}</strong><span>${esc(n.date)}</span><button class="admin-btn red" onclick="deleteOnlineNotice('${n.id}')">Delete</button></div></div>`).join('');
- const sel=document.getElementById('newPostSubject');sel.innerHTML=onlineData.subjects.map(s=>`<option value="${s.id}">${esc(s.title)}</option>`).join('');
- document.getElementById('adminPostsList').innerHTML=onlineData.posts.map(p=>`<div class="admin-card"><h3>${esc((onlineData.subjects.find(s=>String(s.id)===String(p.subjectId))||{}).title||'Subject')}</h3>${p.imgUrl?`<img src="${esc(p.imgUrl)}" class="admin-post-img">`:''}<textarea id="pt-${p.id}">${esc(p.text)}</textarea><div><button class="admin-btn" onclick="updateOnlinePostText('${p.id}')">Save Text</button><input id="pf-${p.id}" type="file" accept="image/*"><button class="admin-btn orange" onclick="replaceOnlinePostImage('${p.id}')">Update Photo Online</button><button class="admin-btn red" onclick="deleteOnlinePost('${p.id}')">Delete Post</button></div></div>`).join('');
+window.openAdminLogin = function(){
+  document.getElementById('adminModal').classList.add('active');
+  document.getElementById('adminLoginView').style.display = auth.currentUser ? 'none' : 'block';
+  document.getElementById('adminDashboardView').style.display = auth.currentUser ? 'block' : 'none';
+  if(auth.currentUser) renderAdminAll();
+};
+
+window.closeAdminPanel = function(){
+  document.getElementById('adminModal').classList.remove('active');
+};
+
+function firebaseAuthError(e){
+  const m = {
+    "auth/invalid-credential": "Email ya password galat hai.",
+    "auth/user-not-found": "Admin account nahi mila. Pehle Create Admin Account dabayein.",
+    "auth/wrong-password": "Password galat hai.",
+    "auth/invalid-email": "Email address sahi nahi hai.",
+    "auth/email-already-in-use": "Ye admin email pehle se registered hai. Login karein.",
+    "auth/weak-password": "Password kam se kam 6 characters ka rakhein.",
+    "auth/operation-not-allowed": "Firebase Console me Authentication → Sign-in method → Email/Password enable karein.",
+    "auth/network-request-failed": "Internet connection check karein.",
+    "auth/unauthorized-domain": "Firebase Authentication me Vercel domain Authorized domains me add karein."
+  };
+  return m[e.code] || e.message || "Firebase Authentication error.";
 }
-document.querySelectorAll('.admin-tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.admin-tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.admin-section').forEach(x=>x.classList.remove('active'));btn.classList.add('active');document.getElementById('tab-'+btn.dataset.tab).classList.add('active');}));
-onAuthStateChanged(auth,async user=>{if(user&&user.email===ADMIN_EMAIL){document.getElementById('adminLoginView').style.display='none';document.getElementById('adminDashboardView').style.display='block';setStatus('Admin connected: '+user.email);try{await seed();}catch(e){console.warn('Seed skipped:',e.message)}renderAdminAll();}else{document.getElementById('adminLoginView').style.display='block';document.getElementById('adminDashboardView').style.display='none';if(user)await signOut(auth);}});
+
+window.firebaseAdminLogin = async function(){
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass = document.getElementById('adminPassword').value;
+  const msg = document.getElementById('adminLoginMsg');
+  if(email !== ADMIN_EMAIL){ msg.textContent = 'Sirf configured admin email ' + ADMIN_EMAIL + ' se login allowed hai.'; return; }
+  if(!pass){ msg.textContent = 'Password enter karein.'; return; }
+  msg.textContent = 'Logging in…';
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+    msg.textContent = 'Login successful…';
+  } catch(e) {
+    msg.textContent = 'Login failed: ' + firebaseAuthError(e);
+  }
+};
+
+window.createFirebaseAdmin = async function(){
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass = document.getElementById('adminPassword').value;
+  const msg = document.getElementById('adminLoginMsg');
+  if(email !== ADMIN_EMAIL){ msg.textContent = 'Admin email exactly ' + ADMIN_EMAIL + ' hona chahiye.'; return; }
+  if(!pass || pass.length < 6){ msg.textContent = 'Password kam se kam 6 characters ka rakhein.'; return; }
+  msg.textContent = 'Admin account create ho raha hai…';
+  try {
+    await createUserWithEmailAndPassword(auth, email, pass);
+    msg.textContent = 'Admin account create ho gaya. Login active hai.';
+  } catch(e) {
+    msg.textContent = 'Account create nahi hua: ' + firebaseAuthError(e);
+  }
+};
+
+window.firebaseAdminLogout = () => signOut(auth);
+
+window.uploadBrandImage = async function(kind){
+  if(!auth.currentUser) return alert('Admin login required.');
+  const file = document.getElementById(kind === 'logo' ? 'adminLogoFile' : 'adminHeroFile').files[0];
+  try {
+    setStatus('Photo compress karke Realtime Database me save ho rahi hai…');
+    const data = await fileToDataURL(file, kind === 'logo' ? 650 : 1050, 0.68);
+    await update(ref(db, 'portal/branding'), { [kind]: data });
+    setStatus('Photo online update ho gayi. Firebase Storage required nahi hai.');
+  } catch(e) {
+    setStatus('Photo save failed: ' + e.message);
+  }
+};
+
+window.saveSubject = async function(id){
+  const s = onlineData.subjects.find(x => String(x.id) === String(id));
+  if(!s) return;
+  const title = document.getElementById('st-' + id).value.trim();
+  const desc = document.getElementById('sd-' + id).value.trim();
+  const file = document.getElementById('sf-' + id).files[0];
+  try {
+    setStatus('Subject save ho raha hai…');
+    let image = s.image;
+    if(file) image = await fileToDataURL(file, 900, 0.65);
+    await update(ref(db, 'portal/subjects/' + id), { title, desc, image });
+    setStatus('Subject + photo online update ho gaye.');
+  } catch(e) {
+    setStatus('Save failed: ' + e.message);
+  }
+};
+
+window.addOnlineNotification = async function(){
+  const text = document.getElementById('newNotifText').value.trim();
+  if(!text) return alert('Notification text likhein.');
+  const id = 'n_' + Date.now();
+  await set(ref(db, 'portal/notifications/' + id), { text, time: 'Just now' });
+  document.getElementById('newNotifText').value = '';
+};
+
+window.deleteOnlineNotification = async id => remove(ref(db, 'portal/notifications/' + id));
+
+window.addOnlineNotice = async function(){
+  const title = document.getElementById('newNoticeTitle').value.trim();
+  if(!title) return alert('Notice title likhein.');
+  const id = 'no_' + Date.now();
+  await set(ref(db, 'portal/notices/' + id), {
+    title,
+    date: document.getElementById('newNoticeDate').value.trim() || new Date().toLocaleDateString('en-GB'),
+    isNew: document.getElementById('newNoticeNew').checked
+  });
+  document.getElementById('newNoticeTitle').value = '';
+};
+
+window.deleteOnlineNotice = async id => remove(ref(db, 'portal/notices/' + id));
+
+window.saveScrollNotice = async function(){
+  await update(ref(db, 'portal/branding'), { scrollNotice: document.getElementById('scrollNoticeText').value.trim() });
+};
+
+window.createOnlinePost = async function(){
+  const subjectId = Number(document.getElementById('newPostSubject').value);
+  const text = document.getElementById('newPostText').value.trim();
+  const file = document.getElementById('newPostFile').files[0];
+  if(!text) return alert('Post text likhein.');
+  try {
+    setStatus('Post save ho raha hai…');
+    let imgUrl = '';
+    if(file) imgUrl = await fileToDataURL(file, 950, 0.64);
+    const id = 'post_' + Date.now();
+    await set(ref(db, 'portal/posts/' + id), { subjectId, text, type: imgUrl ? 'photo' : 'text', imgUrl, comments: [] });
+    document.getElementById('newPostText').value = '';
+    document.getElementById('newPostFile').value = '';
+    setStatus('Post online publish ho gaya.');
+  } catch(e) {
+    setStatus('Post failed: ' + e.message);
+  }
+};
+
+window.deleteOnlinePost = async id => remove(ref(db, 'portal/posts/' + id));
+
+window.updateOnlinePostText = async function(id){
+  const text = document.getElementById('pt-' + id).value.trim();
+  await update(ref(db, 'portal/posts/' + id), { text });
+};
+
+window.replaceOnlinePostImage = async function(id){
+  const f = document.getElementById('pf-' + id).files[0];
+  if(!f) return alert('New photo select karein.');
+  try {
+    setStatus('Photo compress karke database me save ho rahi hai…');
+    const url = await fileToDataURL(f, 950, 0.64);
+    await update(ref(db, 'portal/posts/' + id), { imgUrl: url, type: 'photo' });
+    setStatus('Post photo online update ho gayi.');
+  } catch(e) {
+    setStatus('Photo update failed: ' + e.message);
+  }
+};
+
+function renderAdminAll(){
+ const b = onlineData.branding;
+ document.getElementById('adminLogoPreview').src = b.logo;
+ document.getElementById('adminHeroPreview').src = b.hero;
+ document.getElementById('scrollNoticeText').value = b.scrollNotice || '';
+ 
+ document.getElementById('adminSubjectsList').innerHTML = onlineData.subjects.map(s => `
+   <div class="admin-card">
+     <h3>${esc(s.title)}</h3>
+     <div class="admin-grid">
+       <div><img src="${esc(s.image)}" class="admin-preview"></div>
+       <div class="admin-form">
+         <label>Title</label><input id="st-${s.id}" value="${esc(s.title)}">
+         <label>Description</label><textarea id="sd-${s.id}">${esc(s.desc)}</textarea>
+         <input id="sf-${s.id}" type="file" accept="image/*">
+         <button class="admin-btn" onclick="saveSubject(${s.id})">Save Subject + Photo Online</button>
+       </div>
+     </div>
+   </div>
+ `).join('');
+
+ document.getElementById('adminNotificationsList').innerHTML = onlineData.notifications.map(n => `
+   <div class="admin-card">
+     <div class="admin-row">
+       <strong>${esc(n.text)}</strong>
+       <button class="admin-btn red" onclick="deleteOnlineNotification('${n.id}')">Delete</button>
+     </div>
+   </div>
+ `).join('');
+
+ document.getElementById('adminNoticesList').innerHTML = onlineData.notices.map(n => `
+   <div class="admin-card">
+     <div class="admin-row">
+       <strong>${esc(n.title)}</strong>
+       <span>${esc(n.date)}</span>
+       <button class="admin-btn red" onclick="deleteOnlineNotice('${n.id}')">Delete</button>
+     </div>
+   </div>
+ `).join('');
+
+ const sel = document.getElementById('newPostSubject');
+ sel.innerHTML = onlineData.subjects.map(s => `<option value="${s.id}">${esc(s.title)}</option>`).join('');
+
+ document.getElementById('adminPostsList').innerHTML = onlineData.posts.map(p => `
+   <div class="admin-card">
+     <h3>${esc((onlineData.subjects.find(s => String(s.id) === String(p.subjectId)) || {}).title || 'Subject')}</h3>
+     ${p.imgUrl ? `<img src="${esc(p.imgUrl)}" class="admin-post-img">` : ''}
+     <textarea id="pt-${p.id}">${esc(p.text)}</textarea>
+     <div>
+       <button class="admin-btn" onclick="updateOnlinePostText('${p.id}')">Save Text</button>
+       <input id="pf-${p.id}" type="file" accept="image/*">
+       <button class="admin-btn orange" onclick="replaceOnlinePostImage('${p.id}')">Update Photo Online</button>
+       <button class="admin-btn red" onclick="deleteOnlinePost('${p.id}')">Delete Post</button>
+     </div>
+   </div>
+ `).join('');
+}
+
+document.querySelectorAll('.admin-tab').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.admin-tab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.admin-section').forEach(x => x.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+}));
+
+onAuthStateChanged(auth, async user => {
+  if(user && user.email === ADMIN_EMAIL){
+    document.getElementById('adminLoginView').style.display = 'none';
+    document.getElementById('adminDashboardView').style.display = 'block';
+    setStatus('Admin connected: ' + user.email);
+    try { await seed(); } catch(e) { console.warn('Seed skipped:', e.message); }
+    renderAdminAll();
+  } else {
+    document.getElementById('adminLoginView').style.display = 'block';
+    document.getElementById('adminDashboardView').style.display = 'none';
+    if(user) await signOut(auth);
+  }
+});
+
 subscribe();
 </script>
 
