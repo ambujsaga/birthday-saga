@@ -1054,7 +1054,7 @@
 .user-post-create-back{width:40px;height:40px;border:0;border-radius:50%;background:var(--primary-blue);color:#fff;font-size:1.25rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .user-post-create-holder{width:100%}
 .user-post-create-page .user-post-composer{margin-top:0}
-.profile-post-plus{position:absolute;right:18px;bottom:18px;width:52px;height:52px;border:0;border-radius:50%;background:var(--primary-blue);color:#fff;font-size:2rem;line-height:1;box-shadow:0 5px 16px rgba(0,0,0,.25);cursor:pointer;z-index:5}
+.profile-post-plus{position:fixed;right:18px;bottom:85px;width:52px;height:52px;border:0;border-radius:50%;background:var(--primary-blue);color:#fff;font-size:2rem;line-height:1;box-shadow:0 5px 16px rgba(0,0,0,.25);cursor:pointer;z-index:500}
 .profile-card{position:relative}
 .global-feed-page{width:100%;max-width:760px;margin:0 auto;padding:1rem;min-height:calc(100vh - 135px)}
 .global-feed-list{display:flex;flex-direction:column;gap:1rem;margin-top:1rem}
@@ -1070,7 +1070,7 @@
 .user-post-photo-dots span.active{background:var(--primary-blue);transform:scale(1.15)}
 #navFeed{width:20%}
 .bottom-nav-item{width:20%}
-@media(max-width:480px){.profile-post-plus{right:14px;bottom:14px;width:50px;height:50px}.global-feed-page{padding:.75rem}.user-post-carousel-nav button{width:26px;height:26px;font-size:16px}}
+@media(max-width:480px){.profile-post-plus{right:14px;bottom:80px;width:50px;height:50px}.global-feed-page{padding:.75rem}.user-post-carousel-nav button{width:26px;height:26px;font-size:16px}}
 
 </style>
 </head>
@@ -3115,10 +3115,14 @@ onAuthStateChanged(auth, user => {
     return p.imgUrl ? [p.imgUrl] : [];
   }
   function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  let globalPostObserver=null;
   function userFeedCard(p){
     const photos=userFeedPhotos(p);
     const author=esc(p.authorName || p.authorRoll || p.userId || 'User');
     const text=p.text?`<div class="user-post-body">${esc(p.text)}</div>`:'';
+    const seenCount=p.seenBy ? Object.keys(p.seenBy).filter(k=>p.seenBy[k]).length : 0;
+    const ownRoll=window.localUser ? String(window.localUser.rollNumber) : '';
+    const isOwn=ownRoll && String(p.authorRoll||p.userId||p.createdBy||'')===ownRoll;
     let media='';
     if(photos.length){
       const pid=esc(p.id||('post_'+Date.now()));
@@ -3126,11 +3130,15 @@ onAuthStateChanged(auth, user => {
         ${photos.map((src,i)=>`<img src="${esc(src)}" alt="Post photo ${i+1}" loading="lazy" data-userpost-img="${esc(src)}">`).join('')}
         ${photos.length>1?`<div class="user-post-carousel-nav"><button type="button" aria-label="Previous photo" onclick="globalPostPrev(this)">&lt;</button><button type="button" aria-label="Next photo" onclick="globalPostNext(this)">&gt;</button></div>`:''}
       </div>`;
-      if(photos.length>1) media+=`<div class="user-post-photo-dots">${photos.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('')}</div>`;
+      if(photos.length>1) media+=`<div class="user-post-photo-dots">${photos.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('')}</div><div class="user-post-photo-count">📷 ${photos.length} photos • swipe left/right</div>`;
     }
-    return `<article class="global-user-post" data-user-post-id="${esc(p.id||'')}">
-      <div class="user-post-head"><div><div class="user-post-author">${author}</div><div class="user-post-time">${typeof userPostTime==='function'?userPostTime(p.timestamp):''}</div></div></div>
+    return `<article class="global-user-post user-post-card" data-user-post-id="${esc(p.id||'')}">
+      <div class="user-post-head">
+        <div><div class="user-post-author">${author}</div><div class="user-post-time">${typeof userPostTime==='function'?userPostTime(p.timestamp):''}</div></div>
+        ${isOwn?`<button class="user-post-delete" onclick="deleteOwnUserPost('${esc(p.id)}')">🗑️ Delete</button>`:''}
+      </div>
       ${text}${media}
+      <div class="user-post-footer"><span class="user-post-seen">👁️ ${seenCount} seen</span></div>
     </article>`;
   }
   window.globalPostPrev=function(btn){
@@ -3159,6 +3167,17 @@ onAuthStateChanged(auth, user => {
       if(typeof bindLongPress==='function') bindLongPress(img,img.getAttribute('data-userpost-img'));
     });
     list.querySelectorAll('.user-post-carousel').forEach(c=>c.addEventListener('scroll',()=>updateGlobalDots(c),{passive:true}));
+
+    if(globalPostObserver) globalPostObserver.disconnect();
+    globalPostObserver=new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting && entry.intersectionRatio>=0.55){
+          const id=entry.target.getAttribute('data-user-post-id');
+          if(id && typeof window.markUserPostSeen==='function') window.markUserPostSeen(id);
+        }
+      });
+    },{threshold:[0.55]});
+    list.querySelectorAll('.global-user-post[data-user-post-id]').forEach(el=>globalPostObserver.observe(el));
   };
   window.openGlobalFeed=function(){
     closeAllSections();
