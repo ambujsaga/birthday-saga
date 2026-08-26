@@ -1006,6 +1006,7 @@
     </style>
 <style>
 
+
 /* ================= ADDITIVE USER PROFILE POSTS UPDATE ================= */
 .user-post-composer{margin-top:22px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;box-shadow:0 3px 12px rgba(0,0,0,.08);text-align:left}
 .user-post-composer h3{color:var(--primary-blue);margin-bottom:10px;font-size:1.05rem}
@@ -1044,6 +1045,32 @@
   .user-post-composer{padding:12px}
   .user-post-delete{font-size:.72rem;padding:5px 7px}
 }
+
+
+/* ================= ADDITIVE PROFILE CREATE PAGE + GLOBAL USER FEED UPDATE ================= */
+.user-post-create-page{width:100%;max-width:720px;margin:0 auto;padding:1rem;min-height:calc(100vh - 135px)}
+.user-post-create-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.user-post-create-header h2{color:var(--primary-blue);font-size:1.2rem;margin:0}
+.user-post-create-back{width:40px;height:40px;border:0;border-radius:50%;background:var(--primary-blue);color:#fff;font-size:1.25rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.user-post-create-holder{width:100%}
+.user-post-create-page .user-post-composer{margin-top:0}
+.profile-post-plus{position:absolute;right:18px;bottom:18px;width:52px;height:52px;border:0;border-radius:50%;background:var(--primary-blue);color:#fff;font-size:2rem;line-height:1;box-shadow:0 5px 16px rgba(0,0,0,.25);cursor:pointer;z-index:5}
+.profile-card{position:relative}
+.global-feed-page{width:100%;max-width:760px;margin:0 auto;padding:1rem;min-height:calc(100vh - 135px)}
+.global-feed-list{display:flex;flex-direction:column;gap:1rem;margin-top:1rem}
+.global-feed-empty{text-align:center;color:#777;padding:25px;background:#f8fafc;border-radius:10px}
+.global-user-post{background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:12px;border-top:3px solid var(--accent-orange)}
+.global-user-post .user-post-carousel{position:relative}
+.user-post-carousel{position:relative}
+.user-post-carousel-nav{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;pointer-events:none;padding:0 7px;z-index:2}
+.user-post-carousel-nav button{pointer-events:auto;width:28px;height:28px;border:0;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;font-size:18px;font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.user-post-carousel-nav button:active{transform:scale(.9)}
+.user-post-photo-dots{display:flex;justify-content:center;gap:4px;margin:-3px 0 8px}
+.user-post-photo-dots span{width:5px;height:5px;border-radius:50%;background:#cbd5e1;display:block}
+.user-post-photo-dots span.active{background:var(--primary-blue);transform:scale(1.15)}
+#navFeed{width:20%}
+.bottom-nav-item{width:20%}
+@media(max-width:480px){.profile-post-plus{right:14px;bottom:14px;width:50px;height:50px}.global-feed-page{padding:.75rem}.user-post-carousel-nav button{width:26px;height:26px;font-size:16px}}
 
 </style>
 </head>
@@ -1205,7 +1232,22 @@
                 <p><strong>Status:</strong> <span style="color: green; font-weight: bold;">Active</span></p>
             </div>
             <button class="logout-btn" onclick="userLogout()">Log Out</button>
+            <button class="profile-post-plus" onclick="openUserPostCreatePage()" title="Create Post">+</button>
         </div>
+    </div>
+
+
+    <div id="userPostCreatePage" class="user-post-create-page full-screen-container" style="display:none;">
+        <div class="user-post-create-header">
+            <button class="user-post-create-back" onclick="closeUserPostCreatePage()" title="Back to Profile">←</button>
+            <h2>Create Post</h2>
+        </div>
+        <div id="userPostCreateHolder" class="user-post-create-holder"></div>
+    </div>
+
+    <div id="globalFeedPage" class="global-feed-page full-screen-container" style="display:none;">
+        <h2 class="section-title">All Users Feed</h2>
+        <div id="globalFeedList" class="global-feed-list"></div>
     </div>
 
     <div id="adminModal" class="admin-modal">
@@ -1314,6 +1356,10 @@
             <span id="chatRedDot" class="chat-red-dot"></span>
             <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>
             <span>Chat</span>
+        </div>
+        <div class="bottom-nav-item" id="navFeed" onclick="openGlobalFeed()">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm2 2h8v2H8V8zm0 4h8v2H8v-2z"/></svg>
+            <span>Feed</span>
         </div>
         <div class="bottom-nav-item" id="navSave" onclick="openSavePage()">
             <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
@@ -1677,7 +1723,9 @@
             document.getElementById('mmitPage').style.display = 'none';
             document.getElementById('savedPage').style.display = 'none';
             document.getElementById('chatPage').style.display = 'none'; 
-            document.getElementById('profilePage').style.display = 'none'; 
+            document.getElementById('profilePage').style.display = 'none';
+            document.getElementById('userPostCreatePage').style.display = 'none';
+            document.getElementById('globalFeedPage').style.display = 'none'; 
         }
 
         window.onclick = function(event) {
@@ -2760,6 +2808,8 @@ onAuthStateChanged(auth, user => {
     });
   }
 
+  window.ensureProfilePostUI=ensureProfilePostUI;
+
   function renderUserPhotoPreview(files){
     const box=document.getElementById('userPostPreview');
     const label=document.getElementById('userPostSelected');
@@ -2926,8 +2976,9 @@ onAuthStateChanged(auth, user => {
       const photoHTML=photos.length ? `
         <div class="user-post-carousel" data-post-carousel="${userPostEsc(p.id)}">
           ${photos.map((src,i)=>`<img data-userpost-img="${userPostEsc(src)}" src="${userPostEsc(src)}" alt="Post photo ${i+1}" loading="lazy">`).join('')}
+          ${photos.length>1 ? `<div class="user-post-carousel-nav"><button type="button" aria-label="Previous photo" onclick="userProfilePostPrev(this)">&lt;</button><button type="button" aria-label="Next photo" onclick="userProfilePostNext(this)">&gt;</button></div>` : ''}
         </div>
-        ${photos.length>1 ? `<div class="user-post-photo-count">📷 ${photos.length} photos • swipe left/right</div>` : ''}
+        ${photos.length>1 ? `<div class="user-post-photo-dots">${photos.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('')}</div><div class="user-post-photo-count">📷 ${photos.length} photos • swipe left/right</div>` : ''}
       ` : '';
       return `
         <article class="user-post-card" data-user-post-id="${userPostEsc(p.id)}">
@@ -2960,6 +3011,16 @@ onAuthStateChanged(auth, user => {
     list.querySelectorAll('[data-user-post-id]').forEach(el=>userPostObserver.observe(el));
   }
 
+
+  window.userProfilePostPrev=function(btn){
+    const c=btn.closest('.user-post-carousel'); if(!c) return;
+    c.scrollBy({left:-c.clientWidth,behavior:'smooth'});
+  };
+  window.userProfilePostNext=function(btn){
+    const c=btn.closest('.user-post-carousel'); if(!c) return;
+    c.scrollBy({left:c.clientWidth,behavior:'smooth'});
+  };
+
   function ensureOriginalModal(){
     if(document.getElementById('userPostOriginalModal')) return;
     const modal=document.createElement('div');
@@ -2972,6 +3033,7 @@ onAuthStateChanged(auth, user => {
 
   const oldOpenProfile=window.openProfile;
   window.openProfile=function(){
+    if(typeof moveProfilePostComposerBack==='function') moveProfilePostComposerBack();
     if(typeof oldOpenProfile==='function') oldOpenProfile();
     setTimeout(()=>{
       ensureProfilePostUI();
@@ -2999,6 +3061,117 @@ onAuthStateChanged(auth, user => {
       if(document.getElementById('profilePage')?.style.display==='block') renderUserProfilePosts();
     };
   }
+})();
+
+
+/* ================= ADDITIVE PROFILE CREATE PAGE + GLOBAL FEED ================= */
+(function(){
+  function moveProfilePostComposerToCreatePage(){
+    const composer=document.getElementById('userPostComposer');
+    const posts=document.getElementById('userProfilePosts');
+    const holder=document.getElementById('userPostCreateHolder');
+    if(!composer || !holder) return;
+    holder.appendChild(composer);
+    if(posts) holder.appendChild(posts);
+  }
+  function moveProfilePostComposerBack(){
+    const composer=document.getElementById('userPostComposer');
+    const posts=document.getElementById('userProfilePosts');
+    const card=document.querySelector('#profilePage .profile-card');
+    if(!composer || !card) return;
+    card.appendChild(composer);
+    if(posts) card.appendChild(posts);
+  }
+  window.moveProfilePostComposerToCreatePage=moveProfilePostComposerToCreatePage;
+  window.moveProfilePostComposerBack=moveProfilePostComposerBack;
+
+  window.openUserPostCreatePage=function(){
+    requireLogin(()=>{
+      ensureProfilePostUI();
+      moveProfilePostComposerToCreatePage();
+      closeAllSections();
+      document.getElementById('userPostCreatePage').style.display='block';
+      updateNavState('navProfile');
+      window.scrollTo(0,0);
+    });
+  };
+  window.closeUserPostCreatePage=function(){
+    moveProfilePostComposerBack();
+    closeAllSections();
+    document.getElementById('profilePage').style.display='block';
+    updateNavState('navProfile');
+    if(window.renderUserProfilePosts) window.renderUserProfilePosts();
+    window.scrollTo(0,0);
+  };
+
+  const baseOpenProfile=window.openProfile;
+  window.openProfile=function(){
+    moveProfilePostComposerBack();
+    if(typeof baseOpenProfile==='function') baseOpenProfile();
+  };
+
+  function userFeedPhotos(p){
+    if(Array.isArray(p.imgUrls)) return p.imgUrls.filter(Boolean);
+    return p.imgUrl ? [p.imgUrl] : [];
+  }
+  function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  function userFeedCard(p){
+    const photos=userFeedPhotos(p);
+    const author=esc(p.authorName || p.authorRoll || p.userId || 'User');
+    const text=p.text?`<div class="user-post-body">${esc(p.text)}</div>`:'';
+    let media='';
+    if(photos.length){
+      const pid=esc(p.id||('post_'+Date.now()));
+      media=`<div class="user-post-carousel" data-global-carousel="${pid}">
+        ${photos.map((src,i)=>`<img src="${esc(src)}" alt="Post photo ${i+1}" loading="lazy" data-userpost-img="${esc(src)}">`).join('')}
+        ${photos.length>1?`<div class="user-post-carousel-nav"><button type="button" aria-label="Previous photo" onclick="globalPostPrev(this)">&lt;</button><button type="button" aria-label="Next photo" onclick="globalPostNext(this)">&gt;</button></div>`:''}
+      </div>`;
+      if(photos.length>1) media+=`<div class="user-post-photo-dots">${photos.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('')}</div>`;
+    }
+    return `<article class="global-user-post" data-user-post-id="${esc(p.id||'')}">
+      <div class="user-post-head"><div><div class="user-post-author">${author}</div><div class="user-post-time">${typeof userPostTime==='function'?userPostTime(p.timestamp):''}</div></div></div>
+      ${text}${media}
+    </article>`;
+  }
+  window.globalPostPrev=function(btn){
+    const c=btn.closest('.user-post-carousel'); if(!c) return;
+    c.scrollBy({left:-c.clientWidth,behavior:'smooth'}); setTimeout(()=>updateGlobalDots(c),260);
+  };
+  window.globalPostNext=function(btn){
+    const c=btn.closest('.user-post-carousel'); if(!c) return;
+    c.scrollBy({left:c.clientWidth,behavior:'smooth'}); setTimeout(()=>updateGlobalDots(c),260);
+  };
+  function updateGlobalDots(c){
+    const dots=c.parentElement.querySelector('.user-post-photo-dots'); if(!dots) return;
+    const idx=Math.round(c.scrollLeft/c.clientWidth);
+    dots.querySelectorAll('span').forEach((d,i)=>d.classList.toggle('active',i===idx));
+  }
+  window.renderGlobalFeed=function(){
+    const list=document.getElementById('globalFeedList'); if(!list) return;
+    const posts=(window.adminPostsData || window.onlineData?.posts || []).filter(p=>p && (p.timestamp || p.authorRoll || p.userId || p.createdBy));
+    posts.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    if(!posts.length){list.innerHTML='<div class="global-feed-empty">Abhi koi post available nahi hai.</div>';return;}
+    list.innerHTML=posts.map(p=>{
+      const isUserPost=String(p.authorRoll||p.userId||p.createdBy||'')!=='';
+      return isUserPost ? userFeedCard(p) : (typeof generatePostHTML==='function'?generatePostHTML(p):'');
+    }).join('');
+    list.querySelectorAll('[data-userpost-img]').forEach(img=>{
+      if(typeof bindLongPress==='function') bindLongPress(img,img.getAttribute('data-userpost-img'));
+    });
+    list.querySelectorAll('.user-post-carousel').forEach(c=>c.addEventListener('scroll',()=>updateGlobalDots(c),{passive:true}));
+  };
+  window.openGlobalFeed=function(){
+    closeAllSections();
+    document.getElementById('globalFeedPage').style.display='block';
+    updateNavState('navFeed');
+    renderGlobalFeed();
+    window.scrollTo(0,0);
+  };
+  const oldRefresh=window.refreshCurrentFeeds;
+  window.refreshCurrentFeeds=function(){
+    if(typeof oldRefresh==='function') oldRefresh();
+    if(document.getElementById('globalFeedPage')?.style.display==='block') renderGlobalFeed();
+  };
 })();
 
 </script>
