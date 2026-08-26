@@ -104,6 +104,21 @@
             border: 2px solid var(--primary-blue);
             box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
             animation: pulse 1.5s infinite;
+            display: none;
+        }
+
+        .chat-red-dot {
+            position: absolute;
+            top: 4px;
+            right: 28%;
+            width: 9px;
+            height: 9px;
+            background-color: #ff3333;
+            border-radius: 50%;
+            border: 1.5px solid #fff;
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+            animation: pulse 1.5s infinite;
+            display: none;
         }
 
         @keyframes pulse {
@@ -156,40 +171,17 @@
         }
 
         .notif-item {
-            position: relative;
             padding: 12px 15px;
             border-bottom: 1px solid #eee;
             font-size: 0.85rem;
             color: #333;
             transition: background 0.2s;
+            position: relative;
             user-select: none;
-            -webkit-user-select: none;
         }
 
         .notif-item:hover {
             background-color: #f8f9fa;
-        }
-
-        .notif-item.long-pressing {
-            background-color: #fff3cd !important;
-        }
-
-        .notif-delete-pop {
-            position: absolute;
-            top: 50%;
-            right: 10px;
-            transform: translateY(-50%);
-            background: var(--sarkari-red);
-            color: #fff;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: bold;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-            animation: fadeIn 0.2s ease-in-out;
-            z-index: 10;
         }
 
         .notif-item .notif-time {
@@ -197,6 +189,25 @@
             color: #888;
             margin-top: 4px;
         }
+
+        .delete-notif-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ff3333;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            z-index: 10;
+            display: none;
+            animation: fadeIn 0.2s;
+        }
+        .delete-notif-btn:hover { background: #d60000; }
 
         /* Scrolling Notice Bar */
         .notice-bar {
@@ -313,13 +324,22 @@
         /* Container & Grid */
         .container {
             max-width: 1200px;
-            margin: 2rem auto;
+            margin: 1.5rem auto;
             padding: 0 1rem;
+        }
+
+        /* FULL SCREEN OVERRIDES FOR SECTION PAGES, CHAT & IFRAME */
+        .full-screen-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 1rem !important;
+            min-height: calc(100vh - 70px);
         }
 
         .section-title {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             color: var(--primary-blue);
             border-bottom: 3px solid var(--accent-orange);
             display: inline-block;
@@ -335,7 +355,7 @@
             gap: 1.5rem;
         }
 
-        /* Official looking Cards */
+        /* Cards */
         .card {
             background: var(--card-bg);
             border-radius: 8px;
@@ -390,25 +410,42 @@
             color: #666;
         }
 
-        /* Subject Detail & Notice Page */
+        /* Action Bar & Compact Back Icon Button */
         .action-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
-        .back-btn {
-            padding: 0.6rem 1.2rem;
+        .back-btn, .mmit-back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             background-color: var(--primary-blue);
             color: #fff;
             border: none;
-            border-radius: 4px;
             cursor: pointer;
+            font-size: 1.25rem;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0;
+            line-height: 1;
         }
 
-        .back-btn:hover { background-color: #002244; }
+        .back-btn:hover, .mmit-back-btn:hover {
+            background-color: var(--accent-orange);
+            color: #000;
+            transform: scale(1.1);
+        }
+
+        .back-btn:active, .mmit-back-btn:active {
+            transform: scale(0.95);
+        }
 
         .download-btn {
             padding: 0.6rem 1.2rem;
@@ -574,7 +611,7 @@
                 right: 5%;
             }
         }
-        /* ================= USER UPDATE: BUTTON + NAV ICON ================= */
+        
         .download-btn {
             min-width: 190px;
         }
@@ -582,9 +619,7 @@
         .menu-icon {
             display: none !important;
         }
-        /* ================= END USER UPDATE ================= */
 
-        /* ================= MMIT WEBSITE PAGE UPDATE ================= */
         .website-icon {
             font-size: 1.55rem;
             cursor: pointer;
@@ -605,51 +640,35 @@
         }
 
         .mmit-page {
-            max-width: 1200px;
-            margin: 1.5rem auto;
-            padding: 0 1rem;
+            width: 100%;
+            max-width: 100%;
+            padding: 0.8rem 1rem;
         }
 
         .mmit-action-bar {
             display: flex;
             align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .mmit-back-btn {
-            padding: 0.65rem 1.4rem;
-            background-color: var(--primary-blue);
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-        }
-
-        .mmit-back-btn:hover {
-            background-color: #002244;
+            margin-bottom: 0.8rem;
         }
 
         .mmit-frame {
             width: 100%;
-            height: 75vh;
-            min-height: 520px;
+            height: calc(100vh - 150px);
+            min-height: 500px;
             border: 1px solid #ddd;
             border-radius: 8px;
             background: #fff;
             box-shadow: 0 3px 10px rgba(0,0,0,0.12);
         }
-        /* ================= END MMIT WEBSITE PAGE UPDATE ================= */
 
-        /* ================= BOTTOM NAVIGATION BAR ================= */
+        /* BOTTOM NAVIGATION BAR & ANIMATIONS */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
             background-color: #ffffff;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.08);
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -664,29 +683,64 @@
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            color: #666;
+            color: #64748b;
             font-size: 0.75rem;
+            font-weight: 600;
             width: 25%;
+            height: 100%;
             cursor: pointer;
-            transition: color 0.2s ease, transform 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .bottom-nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 0%;
+            height: 3px;
+            background-color: var(--accent-orange);
+            border-radius: 0 0 4px 4px;
+            transition: width 0.3s ease;
         }
 
         .bottom-nav-item:hover, .bottom-nav-item.active {
             color: var(--primary-blue); 
         }
 
-        .bottom-nav-item:active {
-            transform: scale(0.95);
+        .bottom-nav-item.active::before {
+            width: 50%;
+        }
+
+        .bottom-nav-item.active svg {
+            transform: translateY(-2px) scale(1.12);
+            fill: var(--primary-blue);
+            filter: drop-shadow(0 2px 4px rgba(0, 51, 102, 0.25));
+        }
+
+        /* Touch / Click Professional Animation */
+        .bottom-nav-item:active svg {
+            animation: navTouchAnim 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes navTouchAnim {
+            0% { transform: scale(1); }
+            40% { transform: scale(0.8) translateY(2px); }
+            80% { transform: scale(1.2) translateY(-4px); }
+            100% { transform: scale(1.12) translateY(-2px); }
         }
 
         .bottom-nav-item svg {
             width: 24px;
             height: 24px;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             fill: currentColor;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), fill 0.2s ease;
         }
 
-        /* ================= NEW FEED & POST STYLES START ================= */
+        /* FEED & POST STYLES */
         .feed-container {
             margin-top: 2rem;
             display: flex;
@@ -832,12 +886,16 @@
             object-fit: contain;
             box-shadow: 0 0 20px rgba(255,255,255,0.1);
         }
-        /* ================= NEW FEED & POST STYLES END ================= */
         
-        /* ================= CHAT & PROFILE STYLES ================= */
+        /* CHAT FULL SCREEN STYLES */
         .chat-container {
-            background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            display: flex; flex-direction: column; height: 60vh; border-top: 3px solid var(--primary-blue);
+            background: #fff; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: flex; 
+            flex-direction: column; 
+            height: calc(100vh - 160px) !important; 
+            border-top: 3px solid var(--primary-blue);
         }
         .chat-messages {
             flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
@@ -862,7 +920,7 @@
         }
         .chat-input-area button:hover { background: #e68a00; }
         
-        /* ================= CHAT ENHANCEMENTS ================= */
+        /* CHAT ENHANCEMENTS */
         .chat-date-divider {
             text-align: center;
             margin: 12px 0 6px 0;
@@ -907,7 +965,6 @@
         .chat-msg.sent .chat-seen-count {
             background: rgba(255,255,255,0.2);
         }
-        /* ================= END CHAT ENHANCEMENTS ================= */
 
         .profile-card {
             background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 30px; text-align: center; border-top: 3px solid var(--accent-orange);
@@ -924,7 +981,7 @@
         }
         .logout-btn:hover { background: #a93226; }
     
-        /* ================= FIREBASE ONLINE ADMIN PANEL ================= */
+        /* FIREBASE ONLINE ADMIN PANEL */
         .admin-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:12000;display:none;align-items:center;justify-content:center;padding:15px}
         .admin-modal.active{display:flex}
         .admin-box{width:min(1050px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
@@ -935,7 +992,7 @@
         .admin-tabs{display:flex;gap:7px;flex-wrap:wrap;padding:12px 15px;border-bottom:1px solid #ddd;background:#f7f9fc;position:sticky;top:57px;z-index:2}.admin-tab{border:1px solid #ccd4df;background:#fff;padding:8px 11px;border-radius:20px;cursor:pointer;font-weight:700;color:#334155}.admin-tab.active{background:var(--primary-blue);color:#fff}
         .admin-content{padding:18px}.admin-section{display:none}.admin-section.active{display:block}.admin-card{border:1px solid #e2e8f0;border-radius:10px;padding:15px;margin-bottom:14px;background:#fff}.admin-card h3{color:var(--primary-blue);margin-bottom:10px}.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.admin-preview{width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #ddd;margin:5px 0 10px}.admin-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.admin-status{padding:9px 12px;background:#eef6ff;border-radius:7px;margin-bottom:12px;font-size:.9rem}.admin-small{font-size:.8rem;color:#666}.admin-post-img{width:90px;height:65px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:8px}
 
-        /* ================= NEW: USER LOGIN MODAL ================= */
+        /* USER LOGIN MODAL */
         .user-login-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 15px; }
         .user-login-box { background: #fff; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .user-login-box h2 { color: var(--primary-blue); margin-bottom: 10px; }
@@ -947,6 +1004,48 @@
         .user-login-box .cancel-btn { background: #e2e8f0; color: #333; }
         .user-login-box .cancel-btn:hover { background: #cbd5e1; }
     </style>
+<style>
+
+/* ================= ADDITIVE USER PROFILE POSTS UPDATE ================= */
+.user-post-composer{margin-top:22px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;box-shadow:0 3px 12px rgba(0,0,0,.08);text-align:left}
+.user-post-composer h3{color:var(--primary-blue);margin-bottom:10px;font-size:1.05rem}
+.user-post-text-wrap{position:relative}
+.user-post-text{width:100%;min-height:90px;resize:none;padding:12px 12px 30px;border:1px solid #cbd5e1;border-radius:9px;outline:none;font-size:.95rem;line-height:1.45}
+.user-post-text:focus{border-color:var(--primary-blue);box-shadow:0 0 0 2px rgba(0,51,102,.08)}
+.user-post-counter{position:absolute;right:10px;bottom:8px;font-size:.75rem;color:#64748b;font-weight:700}
+.user-post-counter.limit{color:#c0392b}
+.user-post-photo-row{display:flex;align-items:center;gap:10px;margin:12px 0}
+.user-post-photo-btn{display:inline-flex;align-items:center;gap:7px;background:#f1f5f9;border:1px solid #cbd5e1;color:#003366;padding:9px 12px;border-radius:8px;font-weight:700;cursor:pointer}
+.user-post-selected{font-size:.8rem;color:#64748b}
+.user-post-preview{display:flex;gap:7px;overflow-x:auto;padding:2px 0 7px}
+.user-post-preview img{width:72px;height:54px;object-fit:cover;border-radius:6px;border:1px solid #ddd;flex:0 0 auto}
+.user-post-submit{width:100%;border:0;border-radius:8px;background:var(--primary-blue);color:#fff;padding:11px;font-weight:700;cursor:pointer}
+.user-post-submit:disabled{opacity:.55;cursor:not-allowed}
+.user-profile-posts{margin-top:22px;text-align:left}
+.user-profile-posts-title{color:var(--primary-blue);margin-bottom:12px}
+.user-post-card{background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:12px;margin-bottom:15px;border-top:3px solid var(--accent-orange)}
+.user-post-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+.user-post-author{font-weight:700;color:var(--primary-blue)}
+.user-post-time{font-size:.75rem;color:#64748b;margin-top:3px}
+.user-post-delete{border:0;background:#fee2e2;color:#b91c1c;border-radius:7px;padding:6px 9px;font-weight:700;cursor:pointer}
+.user-post-body{font-size:.95rem;line-height:1.5;color:#374151;white-space:pre-wrap;word-break:break-word;margin-bottom:10px}
+.user-post-carousel{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:thin;margin:0 -1px 10px}
+.user-post-carousel::-webkit-scrollbar{height:5px}
+.user-post-carousel img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:7px;border:1px solid #eee;flex:0 0 100%;scroll-snap-align:center;user-select:none;-webkit-user-drag:none;touch-action:pan-x}
+.user-post-photo-count{text-align:center;font-size:.72rem;color:#64748b;margin-top:-5px;margin-bottom:8px}
+.user-post-footer{display:flex;justify-content:flex-end;align-items:center;border-top:1px solid #eee;padding-top:8px;font-size:.78rem;color:#64748b}
+.user-post-seen{font-weight:700}
+.user-post-empty{text-align:center;color:#777;padding:15px;background:#f8fafc;border-radius:8px}
+.user-post-original-modal{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:15000;display:none;align-items:center;justify-content:center;padding:20px;cursor:pointer}
+.user-post-original-modal.active{display:flex}
+.user-post-original-modal img{max-width:96vw;max-height:92vh;width:auto;height:auto;object-fit:contain;box-shadow:0 0 30px rgba(255,255,255,.12);user-select:none}
+.user-post-original-hint{position:absolute;top:16px;left:50%;transform:translateX(-50%);color:#fff;font-size:.78rem;background:rgba(0,0,0,.45);padding:6px 10px;border-radius:14px}
+@media(max-width:480px){
+  .user-post-composer{padding:12px}
+  .user-post-delete{font-size:.72rem;padding:5px 7px}
+}
+
+</style>
 </head>
 <body>
 
@@ -1018,9 +1117,9 @@
         </section>
     </div>
 
-    <div id="noticePage" class="container" style="display: none;">
+    <div id="noticePage" class="container full-screen-container" style="display: none;">
         <div class="action-bar">
-            <button class="back-btn" onclick="openHomePage()">← Back to Dashboard</button>
+            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard">←</button>
         </div>
 
         <div class="sarkari-card">
@@ -1033,9 +1132,9 @@
         </div>
     </div>
 
-    <div id="mmitPage" class="mmit-page" style="display: none;">
+    <div id="mmitPage" class="mmit-page full-screen-container" style="display: none;">
         <div class="mmit-action-bar">
-            <button class="mmit-back-btn" onclick="openHomePage()">← Back to Home</button>
+            <button class="mmit-back-btn" onclick="openHomePage()" title="Back to Home">←</button>
         </div>
         <iframe
             class="mmit-frame"
@@ -1046,9 +1145,9 @@
         </iframe>
     </div>
 
-    <div id="subjectPage" class="container" style="display: none;">
+    <div id="subjectPage" class="container full-screen-container" style="display: none;">
         <div class="action-bar">
-            <button class="back-btn" onclick="openHomePage()">← Back to Dashboard</button>
+            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard">←</button>
             <button class="download-btn" onclick="alert('Syllabus PDF downloading...')">⬇ Download Syllabus</button>
         </div>
         
@@ -1077,34 +1176,25 @@
             </div>
     </div>
 
-    <div id="savedPage" class="container" style="display: none;">
-        <div class="action-bar">
-            <button class="back-btn" onclick="openHomePage()">← Back to Dashboard</button>
-        </div>
+    <div id="savedPage" class="container full-screen-container" style="display: none;">
         <h2 class="section-title">Saved Posts</h2>
         <div class="feed-container" id="savedFeedContainer">
             </div>
     </div>
 
-    <div id="chatPage" class="container" style="display: none;">
-        <div class="action-bar">
-            <button class="back-btn" onclick="openHomePage()">← Back to Dashboard</button>
-        </div>
+    <div id="chatPage" class="container full-screen-container" style="display: none;">
         <h2 class="section-title">Class Discussion</h2>
         <div class="chat-container">
             <div class="chat-messages" id="chatMessages">
                 </div>
             <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Type your message here... (use @RollNo to mention)" onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                <input type="text" id="chatInput" placeholder="Type your message here..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
                 <button onclick="sendChatMessage()">Send</button>
             </div>
         </div>
     </div>
 
-    <div id="profilePage" class="container" style="display: none;">
-        <div class="action-bar">
-            <button class="back-btn" onclick="openHomePage()">← Back to Dashboard</button>
-        </div>
+    <div id="profilePage" class="container full-screen-container" style="display: none;">
         <h2 class="section-title">Student Profile</h2>
         <div class="profile-card">
             <div class="profile-avatar" id="profAvatar">👨‍💻</div>
@@ -1150,10 +1240,23 @@
               </div>
             </section>
             <section id="tab-subjects" class="admin-section"><div id="adminSubjectsList"></div></section>
+            
             <section id="tab-notifications" class="admin-section">
-              <div class="admin-card"><h3>➕ Add Notification</h3><input id="newNotifText" placeholder="Notification text"><button class="admin-btn" onclick="addOnlineNotification()">Publish Notification</button></div>
+              <div class="admin-card">
+                <h3>➕ Add / Send Target Notification</h3>
+                <div class="admin-form">
+                  <label>Select Recipient User (Target User Profile):</label>
+                  <select id="newNotifTargetUser" style="margin-bottom:12px; padding:11px; width:100%; border-radius:7px; border:1px solid #ccc;">
+                    <option value="ALL">🌐 Send to All Users (Public Notification)</option>
+                  </select>
+                  <label>Notification Text:</label>
+                  <input id="newNotifText" placeholder="Enter notification message here...">
+                  <button class="admin-btn" onclick="addOnlineNotification()">Publish Notification</button>
+                </div>
+              </div>
               <div id="adminNotificationsList"></div>
             </section>
+
             <section id="tab-notices" class="admin-section">
               <div class="admin-card"><h3>➕ Add Notice</h3><input id="newNoticeTitle" placeholder="Notice title"><input id="newNoticeLink" placeholder="Notice Link (URL) e.g. https://..."><label><input id="newNoticeNew" type="checkbox" checked> Mark as NEW</label><button class="admin-btn" onclick="addOnlineNotice()">Publish Notice</button></div>
               <div class="admin-card"><h3>📜 Scrolling Notice Bar</h3><textarea id="scrollNoticeText" placeholder="Scrolling notice text"></textarea><button class="admin-btn" onclick="saveScrollNotice()">Save Notice Bar</button></div>
@@ -1204,10 +1307,11 @@
 
     <nav class="bottom-nav">
         <div class="bottom-nav-item active" id="navHome" onclick="openHomePage()">
-            <svg viewBox="0 0 24 24"><path d="M12 2.099l-9 6.75v11.151h5.5v-6h7v6h5.5v-11.151z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
             <span>Home</span>
         </div>
         <div class="bottom-nav-item" id="navChat" onclick="openChat()">
+            <span id="chatRedDot" class="chat-red-dot"></span>
             <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>
             <span>Chat</span>
         </div>
@@ -1216,7 +1320,7 @@
             <span>Save</span>
         </div>
         <div class="bottom-nav-item" id="navProfile" onclick="openProfile()">
-            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
             <span>Profile</span>
         </div>
     </nav>
@@ -1328,6 +1432,7 @@
                 
                 if(window.setUserActiveStatus) window.setUserActiveStatus(roll, true);
                 if(window.renderOnlineChats) window.renderOnlineChats();
+                if(window.checkUnseenNotifications) window.checkUnseenNotifications();
 
                 if(pendingAction) {
                     pendingAction();
@@ -1355,9 +1460,9 @@
         });
 
         let notifications = [
-            { id: 1, text: "BTEUP Odd Semester Exam Scheme 2026-27 released.", time: "Just now" },
-            { id: 2, text: "CSE 1st Semester Syllabus officially updated.", time: "1 hour ago" },
-            { id: 3, text: "Practical Exam schedule announced for Diploma Students.", time: "Yesterday" }
+            { id: 1, text: "BTEUP Odd Semester Exam Scheme 2026-27 released.", time: "Just now", timestamp: Date.now() },
+            { id: 2, text: "CSE 1st Semester Syllabus officially updated.", time: "1 hour ago", timestamp: Date.now() - 3600000 },
+            { id: 3, text: "Practical Exam schedule announced for Diploma Students.", time: "Yesterday", timestamp: Date.now() - 86400000 }
         ];
 
         const officialNotices = [
@@ -1453,37 +1558,22 @@
             `).join('');
         }
 
-        // 3-SECOND LONG PRESS TO DELETE NOTIFICATION IMPLEMENTATION
-        let notifPressTimer = null;
-        window.handleNotifTouchStart = function(id, elem) {
-            document.querySelectorAll('.notif-delete-pop').forEach(p => p.remove());
-            elem.classList.add('long-pressing');
+        // Long Press Delete Notification
+        let notifPressTimer;
+        window.startNotifPress = function(id) {
             notifPressTimer = setTimeout(() => {
-                elem.classList.remove('long-pressing');
-                window.showNotifDeletePop(id, elem);
-            }, 3000); // 3 Seconds Long Press Trigger
+                const delBtn = document.getElementById('del-notif-' + id);
+                if(delBtn) delBtn.style.display = 'block';
+            }, 1000); 
         };
-
-        window.handleNotifTouchEnd = function(elem) {
-            if(notifPressTimer) {
-                clearTimeout(notifPressTimer);
-                notifPressTimer = null;
+        window.endNotifPress = function() {
+            clearTimeout(notifPressTimer);
+        };
+        
+        window.deleteUserNotification = function(id) {
+            if(window.deleteOnlineNotification) {
+                window.deleteOnlineNotification(id);
             }
-            if(elem) elem.classList.remove('long-pressing');
-        };
-
-        window.showNotifDeletePop = function(id, elem) {
-            document.querySelectorAll('.notif-delete-pop').forEach(p => p.remove());
-            const btn = document.createElement('button');
-            btn.className = 'notif-delete-pop';
-            btn.innerHTML = '🗑️ Delete';
-            btn.onclick = function(e) {
-                e.stopPropagation();
-                if(window.deleteOnlineNotification) {
-                    window.deleteOnlineNotification(id);
-                }
-            };
-            elem.appendChild(btn);
         };
 
         function renderNotifications() {
@@ -1494,36 +1584,22 @@
                 return;
             }
             listContainer.innerHTML = notifications.map(n => `
-                <div class="notif-item" id="notif-item-${n.id}"
-                     onmousedown="window.handleNotifTouchStart('${n.id}', this)"
-                     onmouseup="window.handleNotifTouchEnd(this)"
-                     onmouseleave="window.handleNotifTouchEnd(this)"
-                     ontouchstart="window.handleNotifTouchStart('${n.id}', this)"
-                     ontouchend="window.handleNotifTouchEnd(this)"
-                     ontouchcancel="window.handleNotifTouchEnd(this)">
-                    <div style="padding-right: 50px;">${n.text}</div>
+                <div class="notif-item">
+                    <div>${n.text}</div>
                     <div class="notif-time">${n.time}</div>
                 </div>
             `).join('');
         }
 
+        // LocalStorage Red Dot logic for Notifications
         function toggleNotifPanel() {
             const panel = document.getElementById('notifPanel');
             const isVisible = panel.style.display === 'block';
             panel.style.display = isVisible ? 'none' : 'block';
             if (!isVisible) {
                 document.getElementById('notifRedDot').style.display = 'none';
+                localStorage.setItem('lastSeenNotifTime', Date.now());
             }
-        }
-
-        function addNewNotification(text) {
-            notifications.unshift({
-                id: Date.now(),
-                text: text,
-                time: "Just now"
-            });
-            renderNotifications();
-            document.getElementById('notifRedDot').style.display = 'block';
         }
 
         function renderNoticeBoard() {
@@ -1621,11 +1697,17 @@
             }
         }
 
+        // LocalStorage Red Dot logic for Chat Icon
         function openChat() {
             requireLogin(() => {
                 updateNavState('navChat');
                 closeAllSections();
                 document.getElementById('chatPage').style.display = 'block';
+                
+                // Seen chat action
+                document.getElementById('chatRedDot').style.display = 'none';
+                localStorage.setItem('lastSeenChatTime', Date.now());
+
                 if(window.renderOnlineChats) window.renderOnlineChats();
                 window.scrollTo(0, 0);
             });
@@ -1653,6 +1735,16 @@
                     if(window.addOnlineChat) {
                         window.addOnlineChat(localUser.rollNumber, message);
                     }
+                    
+                    const mentionRegex = /@([a-zA-Z0-9_]+)/g;
+                    let match;
+                    while ((match = mentionRegex.exec(message)) !== null) {
+                        const mentionedRoll = match[1];
+                        if (window.addMentionNotification && mentionedRoll !== localUser.rollNumber) {
+                            window.addMentionNotification(mentionedRoll, localUser.rollNumber);
+                        }
+                    }
+                    
                     input.value = '';
                 }
             });
@@ -1896,7 +1988,7 @@ const defaultSubjects = [
  {id:5,title:"Fundamentals of Computer & IT (FCIT)",code:"SUB-105",image:"https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=600&q=80",desc:"Computer Science ka core foundational subject. Isme Computer architecture, memory, software types, OS, aur Internet basics cover kiye gaye hain.",modules:[{unit:"Unit 1",detail:"Fundamentals of Computer: Block diagram of PC, Input/Output devices, CPU"},{unit:"Unit 2",detail:"Data Representation: Binary, Octal, Hexadecimal number systems and logic gates"},{unit:"Unit 3",detail:"Memory & Storage: Primary memory (RAM/ROM), Secondary storage devices"},{unit:"Unit 4",detail:"Basics of OS and Internet: MS Windows, Web browsers, E-mail, Search Engines"}]}
 ];
 
-const defaultNotifs=[{id:"n1",text:"BTEUP Odd Semester Exam Scheme 2026-27 released.",time:"Just now"},{id:"n2",text:"CSE 1st Semester Syllabus officially updated.",time:"1 hour ago"},{id:"n3",text:"Practical Exam schedule announced for Diploma Students.",time:"Yesterday"}];
+const defaultNotifs=[{id:"n1",text:"BTEUP Odd Semester Exam Scheme 2026-27 released.",time:"Just now",timestamp:Date.now()},{id:"n2",text:"CSE 1st Semester Syllabus officially updated.",time:"1 hour ago",timestamp:Date.now()-3600000},{id:"n3",text:"Practical Exam schedule announced for Diploma Students.",time:"Yesterday",timestamp:Date.now()-86400000}];
 const defaultNotices=[{id:"no1",title:"BTEUP Odd Semester Examination Form 2026 Direct Link",date:"20-Aug-2026",isNew:true},{id:"no2",title:"JEECUP Polytechnic Admission Counselling Schedule 2026",date:"18-Aug-2026",isNew:true},{id:"no3",title:"Download Official Diploma CSE 1st Sem Syllabus PDF",date:"15-Aug-2026",isNew:false},{id:"no4",title:"BTEUP Scrutiny & Revaluation Result Declared",date:"10-Aug-2026",isNew:false},{id:"no5",title:"UP Scholarship Online Form 2026-27 Apply Online",date:"05-Aug-2026",isNew:false}];
 
 let onlineData={
@@ -1912,8 +2004,6 @@ let onlineData={
   users:{},
   chats:[]
 };
-
-let lastNotifCount = null;
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function setStatus(t){const e=document.getElementById('adminStatus');if(e)e.textContent=t;}
@@ -1949,11 +2039,9 @@ function applyOnlineData(d){
   const marquee = document.querySelector('.notice-bar marquee');
   if(marquee && onlineData.branding.scrollNotice) marquee.textContent = onlineData.branding.scrollNotice;
 
-  if(lastNotifCount !== null && onlineData.notifications.length > lastNotifCount) {
-      const redDot = document.getElementById('notifRedDot');
-      if(redDot) redDot.style.display = 'block';
-  }
-  lastNotifCount = onlineData.notifications.length;
+  // LocalStorage Red Dot logic check for Notifications & Chat
+  checkUnseenNotifications();
+  checkUnseenChats();
 
   renderOnlineSubjects();
   renderOnlineNotifications();
@@ -1975,6 +2063,56 @@ function applyOnlineData(d){
       renderAdminAll();
   }
 }
+
+// LocalStorage Unseen Notification Indicator Red Dot Logic
+function checkUnseenNotifications() {
+    let lastSeenNotifTime = parseInt(localStorage.getItem('lastSeenNotifTime') || '0');
+    let currentUserNotifs = (onlineData.notifications || []).filter(n => {
+        if (n.targetUser) return window.localUser && n.targetUser === window.localUser.rollNumber;
+        return true;
+    });
+
+    let hasUnseen = currentUserNotifs.some(n => {
+        let ts = n.timestamp || 0;
+        return ts > lastSeenNotifTime;
+    });
+
+    const redDot = document.getElementById('notifRedDot');
+    const panel = document.getElementById('notifPanel');
+    if (redDot) {
+        if (hasUnseen && panel && panel.style.display !== 'block') {
+            redDot.style.display = 'block';
+        } else if (panel && panel.style.display === 'block') {
+            redDot.style.display = 'none';
+        }
+    }
+}
+window.checkUnseenNotifications = checkUnseenNotifications;
+
+// LocalStorage Unseen Chat Indicator Red Dot Logic
+function checkUnseenChats() {
+    let lastSeenChatTime = parseInt(localStorage.getItem('lastSeenChatTime') || '0');
+    let isChatPageVisible = document.getElementById('chatPage') && document.getElementById('chatPage').style.display === 'block';
+    
+    if (isChatPageVisible) {
+        localStorage.setItem('lastSeenChatTime', Date.now());
+        const chatDot = document.getElementById('chatRedDot');
+        if (chatDot) chatDot.style.display = 'none';
+        return;
+    }
+
+    let hasUnseen = (onlineData.chats || []).some(c => {
+        let ts = c.timestamp || 0;
+        let isFromOtherUser = !window.localUser || (window.localUser && c.userId !== window.localUser.rollNumber);
+        return ts > lastSeenChatTime && isFromOtherUser;
+    });
+
+    const chatDot = document.getElementById('chatRedDot');
+    if (chatDot) {
+        chatDot.style.display = hasUnseen ? 'block' : 'none';
+    }
+}
+window.checkUnseenChats = checkUnseenChats;
 
 function renderOnlineChats() {
     const msgBox = document.getElementById('chatMessages');
@@ -2010,10 +2148,13 @@ function renderOnlineChats() {
 
             const rollColor = window.getColorForRoll(chat.userId);
             const timeStr = window.formatChatTime(chat.timestamp);
+            
+            let safeText = esc(chat.text);
+            safeText = safeText.replace(/@([a-zA-Z0-9_]+)/g, '<span style="color: #007bff; font-weight: bold;">@$1</span>');
 
             html += `<div class="chat-msg ${cssClass}">
                         <div style="font-weight: bold; margin-bottom: 3px; color: ${rollColor};">${esc(chat.userId)}</div>
-                        <div style="word-break: break-word;">${esc(chat.text)}</div>
+                        <div style="word-break: break-word;">${safeText}</div>
                         <div class="chat-msg-footer">
                             <span class="chat-time">${timeStr}</span>
                             <span class="chat-seen-count" title="Seen by ${seenCount} people">👁️ ${seenCount}</span>
@@ -2084,22 +2225,22 @@ function renderOnlineNotifications(){
   const c = document.getElementById('notifList');
   if(!c) return;
   
-  const currentUserRoll = window.localUser ? String(window.localUser.rollNumber) : null;
+  let userNotifs = onlineData.notifications.filter(n => {
+      if (n.targetUser) {
+          return window.localUser && n.targetUser === window.localUser.rollNumber;
+      }
+      return true;
+  });
 
-  const sortedNotifs = [...onlineData.notifications]
-    .filter(n => !n.targetRoll || (currentUserRoll && String(n.targetRoll) === currentUserRoll))
-    .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  const sortedNotifs = [...userNotifs].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
   c.innerHTML = sortedNotifs.length ? sortedNotifs.map(n => `
-    <div class="notif-item" id="notif-item-${esc(n.id)}"
-         onmousedown="window.handleNotifTouchStart('${esc(n.id)}', this)"
-         onmouseup="window.handleNotifTouchEnd(this)"
-         onmouseleave="window.handleNotifTouchEnd(this)"
-         ontouchstart="window.handleNotifTouchStart('${esc(n.id)}', this)"
-         ontouchend="window.handleNotifTouchEnd(this)"
-         ontouchcancel="window.handleNotifTouchEnd(this)">
-      <div style="padding-right: 55px;">${esc(n.text)}</div>
+    <div class="notif-item" id="notif-item-${n.id}" 
+         onmousedown="startNotifPress('${n.id}')" onmouseup="endNotifPress()" onmouseleave="endNotifPress()"
+         ontouchstart="startNotifPress('${n.id}')" ontouchend="endNotifPress()" ontouchcancel="endNotifPress()">
+      <div>${esc(n.text)}</div>
       <div class="notif-time">${n.timestamp ? window.formatNotificationTime(n.timestamp) : esc(n.time||'')}</div>
+      <div class="delete-notif-btn" id="del-notif-${n.id}" onclick="deleteUserNotification('${n.id}')">🗑️ Delete</div>
     </div>
   `).join('') : `<div class="notif-item">No notifications yet.</div>`;
 }
@@ -2249,14 +2390,38 @@ window.saveSubject = async function(id){
   }
 };
 
-window.addOnlineNotification = async function(){
-  const text = document.getElementById('newNotifText').value.trim();
-  if(!text) return alert('Notification text likhein.');
-  const id = 'n_' + Date.now();
-  await set(ref(db, 'portal/notifications/' + id), { text, timestamp: Date.now() });
-  document.getElementById('newNotifText').value = '';
+window.addMentionNotification = async function(targetRoll, senderRoll) {
+    const id = 'notif_' + Date.now() + Math.random().toString(36).substr(2, 5);
+    const text = `💬 ${senderRoll} mentioned you in the class discussion.`;
+    await set(ref(db, 'portal/notifications/' + id), { 
+        id: id,
+        text: text, 
+        timestamp: Date.now(),
+        targetUser: targetRoll
+    });
 };
 
+// Target Notification Addition by Admin
+window.addOnlineNotification = async function(){
+  const text = document.getElementById('newNotifText').value.trim();
+  const targetUserSelect = document.getElementById('newNotifTargetUser').value;
+  if(!text) return alert('Notification text likhein.');
+  const id = 'n_' + Date.now();
+  
+  const payload = {
+      id, 
+      text, 
+      timestamp: Date.now()
+  };
+  
+  if (targetUserSelect !== 'ALL') {
+      payload.targetUser = targetUserSelect;
+  }
+  
+  await set(ref(db, 'portal/notifications/' + id), payload);
+  document.getElementById('newNotifText').value = '';
+  setStatus('Notification published successfully!');
+};
 window.deleteOnlineNotification = async id => remove(ref(db, 'portal/notifications/' + id));
 
 window.addOnlineNotice = async function(){
@@ -2333,7 +2498,6 @@ window.deleteOnlineComment = async function(postId, commentId) {
     await remove(ref(db, `portal/posts/${postId}/comments/${commentId}`));
 };
 
-// AUTOMATIC MENTION NOTIFICATION IN CHAT FEED
 window.addOnlineChat = async function(userId, text) {
     const id = 'chat_' + Date.now();
     const seenBy = {};
@@ -2344,28 +2508,6 @@ window.addOnlineChat = async function(userId, text) {
         text, 
         timestamp: Date.now(),
         seenBy 
-    });
-
-    // Detect @mention (e.g. @21001 or @rollNumber)
-    const mentionRegex = /@([a-zA-Z0-9_-]+)/g;
-    let match;
-    const mentionedRolls = new Set();
-    while ((match = mentionRegex.exec(text)) !== null) {
-        mentionedRolls.add(match[1]);
-    }
-
-    mentionedRolls.forEach(async (targetRoll) => {
-        const notifId = 'n_mention_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
-        const snippetText = text.length > 35 ? text.substring(0, 35) + '...' : text;
-        const notifText = `💬 Roll No. ${userId} mentioned you (@${targetRoll}) in Chat: "${snippetText}"`;
-        
-        await set(ref(db, 'portal/notifications/' + notifId), {
-            id: notifId,
-            text: notifText,
-            timestamp: Date.now(),
-            targetRoll: targetRoll,
-            senderRoll: userId
-        });
     });
 };
 
@@ -2381,142 +2523,484 @@ window.deleteOnlineChat = async function(chatId) {
 window.saveOnlineUser = async function(){
     const name = document.getElementById('adminNewUserName').value.trim();
     const roll = document.getElementById('adminNewUserRoll').value.trim();
-    if(!name || !roll) return alert('Name aur Roll Number dono dalein.');
-    await set(ref(db, 'portal/users/' + roll), { name, rollNumber: roll, isActive: false });
+    if(!name || !roll) return alert('Name aur Roll Number dono fill karein.');
+    await update(ref(db, 'portal/users/' + roll), { name, rollNumber: roll });
     document.getElementById('adminNewUserName').value = '';
     document.getElementById('adminNewUserRoll').value = '';
-    setStatus('User details saved/updated online.');
+    setStatus('User save ho gaya.');
 };
 
-window.editOnlineUser = function(roll) {
-    const u = onlineData.users[roll];
-    if(!u) return;
-    document.getElementById('adminNewUserName').value = u.name;
-    document.getElementById('adminNewUserRoll').value = u.rollNumber;
-    alert("Details input box me daal di gayi hain. Edit karke 'Save User' click karein.");
-};
+window.renderAdminAll = function() {
+    if(!auth.currentUser) return;
+    const logoP = document.getElementById('adminLogoPreview');
+    if(logoP) logoP.src = onlineData.branding.logo || '';
+    const heroP = document.getElementById('adminHeroPreview');
+    if(heroP) heroP.src = onlineData.branding.hero || '';
+    const scrollN = document.getElementById('scrollNoticeText');
+    if(scrollN) scrollN.value = onlineData.branding.scrollNotice || '';
 
-window.deleteOnlineUser = async function(roll) {
-    if(confirm('Are you sure you want to delete user ' + roll + '?')) {
-        await remove(ref(db, 'portal/users/' + roll));
-        setStatus('User deleted.');
+    // Render subjects admin
+    const subContainer = document.getElementById('adminSubjectsList');
+    if(subContainer) {
+        subContainer.innerHTML = onlineData.subjects.map(s => `
+            <div class="admin-card">
+                <h3>Subject ${s.id}: ${esc(s.title)}</h3>
+                <div class="admin-form">
+                    <label>Title</label><input id="st-${s.id}" value="${esc(s.title)}">
+                    <label>Description</label><textarea id="sd-${s.id}">${esc(s.desc)}</textarea>
+                    <label>Image</label><input id="sf-${s.id}" type="file" accept="image/*">
+                    <button class="admin-btn" onclick="saveSubject(${s.id})">Save Subject</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Target Notification User Select Population
+    const notifUserSelect = document.getElementById('newNotifTargetUser');
+    if(notifUserSelect) {
+        let options = '<option value="ALL">🌐 Send to All Users (Public Notification)</option>';
+        Object.values(onlineData.users || {}).forEach(u => {
+            options += `<option value="${esc(u.rollNumber)}">👤 ${esc(u.name)} (${esc(u.rollNumber)})</option>`;
+        });
+        notifUserSelect.innerHTML = options;
+    }
+
+    // Render notifications admin
+    const notifContainer = document.getElementById('adminNotificationsList');
+    if(notifContainer) {
+        notifContainer.innerHTML = onlineData.notifications.map(n => `
+            <div class="admin-card">
+                <p><strong>${esc(n.text)}</strong></p>
+                <p class="admin-small">Target: ${n.targetUser ? esc(n.targetUser) : 'ALL'} | ${n.timestamp ? window.formatNotificationTime(n.timestamp) : esc(n.time||'')}</p>
+                <button class="admin-btn red" onclick="deleteOnlineNotification('${n.id}')">Delete</button>
+            </div>
+        `).join('');
+    }
+
+    // Render notices admin
+    const noticeContainer = document.getElementById('adminNoticesList');
+    if(noticeContainer) {
+        noticeContainer.innerHTML = onlineData.notices.map(n => `
+            <div class="admin-card">
+                <p><strong>${esc(n.title)}</strong> ${n.isNew ? '🆕' : ''}</p>
+                <p class="admin-small">Link: ${esc(n.link)} | Date: ${esc(n.date)}</p>
+                <button class="admin-btn red" onclick="deleteOnlineNotice('${n.id}')">Delete</button>
+            </div>
+        `).join('');
+    }
+
+    // Render posts select & posts admin
+    const postSubSelect = document.getElementById('newPostSubject');
+    if(postSubSelect) {
+        postSubSelect.innerHTML = onlineData.subjects.map(s => `<option value="${s.id}">${esc(s.title)}</option>`).join('');
+    }
+
+    const postsContainer = document.getElementById('adminPostsList');
+    if(postsContainer) {
+        postsContainer.innerHTML = onlineData.posts.map(p => `
+            <div class="admin-card">
+                <p><strong>Post ID:</strong> ${p.id} (Subject ${p.subjectId})</p>
+                <div class="admin-form">
+                    <textarea id="pt-${p.id}">${esc(p.text)}</textarea>
+                    <button class="admin-btn" onclick="updateOnlinePostText('${p.id}')">Update Text</button>
+                    ${p.imgUrl ? `<img src="${p.imgUrl}" class="admin-preview"><input id="pf-${p.id}" type="file" accept="image/*"><button class="admin-btn orange" onclick="replaceOnlinePostImage('${p.id}')">Replace Image</button>` : ''}
+                    <button class="admin-btn red" onclick="deleteOnlinePost('${p.id}')">Delete Post</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Render users admin
+    const usersContainer = document.getElementById('adminUsersList');
+    if(usersContainer) {
+        usersContainer.innerHTML = Object.values(onlineData.users || {}).map(u => `
+            <div class="admin-card">
+                <p><strong>Name:</strong> ${esc(u.name)} | <strong>Roll No:</strong> ${esc(u.rollNumber)}</p>
+            </div>
+        `).join('');
+    }
+
+    // Render chats admin
+    const chatsContainer = document.getElementById('adminChatsList');
+    if(chatsContainer) {
+        chatsContainer.innerHTML = onlineData.chats.map(c => `
+            <div class="admin-card">
+                <p><strong>${esc(c.userId)}:</strong> ${esc(c.text)}</p>
+                <p class="admin-small">${window.formatChatTime(c.timestamp)}</p>
+                <button class="admin-btn red" onclick="deleteOnlineChat('${c.id}')">Delete Chat</button>
+            </div>
+        `).join('');
     }
 };
 
-window.setUserActiveStatus = async function(roll, status) {
-    await update(ref(db, 'portal/users/' + roll), { isActive: status });
-};
-
-function renderAdminAll(){
- const b = onlineData.branding;
- document.getElementById('adminLogoPreview').src = b.logo;
- document.getElementById('adminHeroPreview').src = b.hero;
- document.getElementById('scrollNoticeText').value = b.scrollNotice || '';
- 
- document.getElementById('adminSubjectsList').innerHTML = onlineData.subjects.map(s => `
-   <div class="admin-card">
-     <h3>${esc(s.title)}</h3>
-     <div class="admin-grid">
-       <div><img src="${esc(s.image)}" class="admin-preview"></div>
-       <div class="admin-form">
-         <label>Title</label><input id="st-${s.id}" value="${esc(s.title)}">
-         <label>Description</label><textarea id="sd-${s.id}">${esc(s.desc)}</textarea>
-         <input id="sf-${s.id}" type="file" accept="image/*">
-         <button class="admin-btn" onclick="saveSubject(${s.id})">Save Subject + Photo Online</button>
-       </div>
-     </div>
-   </div>
- `).join('');
-
- document.getElementById('adminNotificationsList').innerHTML = [...onlineData.notifications].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).map(n => `
-   <div class="admin-card">
-     <div class="admin-row">
-       <strong>${esc(n.text)}</strong>
-       <button class="admin-btn red" onclick="deleteOnlineNotification('${n.id}')">Delete</button>
-     </div>
-   </div>
- `).join('');
-
- document.getElementById('adminNoticesList').innerHTML = [...onlineData.notices].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).map(n => `
-   <div class="admin-card">
-     <div class="admin-row">
-       <strong>${esc(n.title)}</strong>
-       <span>${esc(n.date)}</span>
-       <button class="admin-btn red" onclick="deleteOnlineNotice('${n.id}')">Delete</button>
-     </div>
-   </div>
- `).join('');
-
- const sel = document.getElementById('newPostSubject');
- sel.innerHTML = onlineData.subjects.map(s => `<option value="${s.id}">${esc(s.title)}</option>`).join('');
-
- document.getElementById('adminPostsList').innerHTML = onlineData.posts.map(p => `
-   <div class="admin-card">
-     <h3>${esc((onlineData.subjects.find(s => String(s.id) === String(p.subjectId)) || {}).title || 'Subject')}</h3>
-     ${p.imgUrl ? `<img src="${esc(p.imgUrl)}" class="admin-post-img">` : ''}
-     <textarea id="pt-${p.id}">${esc(p.text)}</textarea>
-     <div>
-       <button class="admin-btn" onclick="updateOnlinePostText('${p.id}')">Save Text</button>
-       <input id="pf-${p.id}" type="file" accept="image/*">
-       <button class="admin-btn orange" onclick="replaceOnlinePostImage('${p.id}')">Update Photo Online</button>
-       <button class="admin-btn red" onclick="deleteOnlinePost('${p.id}')">Delete Post</button>
-     </div>
-   </div>
- `).join('');
-
- document.getElementById('adminUsersList').innerHTML = Object.values(onlineData.users || {}).map(u => `
-   <div class="admin-card">
-     <div class="admin-row" style="justify-content: space-between;">
-       <div>
-         <strong style="font-size:1.1rem; color:var(--primary-blue);">${esc(u.name)}</strong> <br>
-         <span class="admin-small" style="font-weight:bold;">Roll No: ${esc(u.rollNumber)}</span>
-       </div>
-       <div>
-         <span style="padding:5px 10px; border-radius:5px; font-size:0.85rem; font-weight:bold; color:#fff; background:${u.isActive ? 'green' : 'gray'}">${u.isActive ? 'Active' : 'Offline'}</span>
-       </div>
-     </div>
-     <div style="margin-top: 15px;">
-       <button class="admin-btn" onclick="editOnlineUser('${u.rollNumber}')">Edit User</button>
-       <button class="admin-btn red" onclick="deleteOnlineUser('${u.rollNumber}')">Delete User</button>
-     </div>
-   </div>
- `).join('');
- 
- document.getElementById('adminChatsList').innerHTML = (onlineData.chats || []).map(c => `
-   <div class="admin-card">
-     <div class="admin-row" style="justify-content: space-between;">
-       <div>
-         <strong>${esc(c.userId)}:</strong> ${esc(c.text)}
-       </div>
-       <button class="admin-btn red" onclick="deleteOnlineChat('${c.id}')">Delete</button>
-     </div>
-   </div>
- `).join('');
-}
-
-document.querySelectorAll('.admin-tab').forEach(btn => btn.addEventListener('click', () => {
-  document.querySelectorAll('.admin-tab').forEach(x => x.classList.remove('active'));
-  document.querySelectorAll('.admin-section').forEach(x => x.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-}));
-
-onAuthStateChanged(auth, async user => {
-  if(user && user.email === ADMIN_EMAIL){
-    document.getElementById('adminLoginView').style.display = 'none';
-    document.getElementById('adminDashboardView').style.display = 'block';
-    setStatus('Admin connected: ' + user.email);
-    try { await seed(); } catch(e) { console.warn('Seed skipped:', e.message); }
-    renderAdminAll();
-  } else {
-    document.getElementById('adminLoginView').style.display = 'block';
-    document.getElementById('adminDashboardView').style.display = 'none';
-    if(user) await signOut(auth);
-  }
+// Admin Tab Switcher Logic
+document.querySelectorAll('.admin-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+        tab.classList.add('active');
+        const target = tab.getAttribute('data-tab');
+        const sec = document.getElementById('tab-' + target);
+        if(sec) sec.classList.add('active');
+    });
 });
 
-subscribe();
-</script>
+onAuthStateChanged(auth, user => {
+    if(user && user.email === ADMIN_EMAIL) {
+        document.getElementById('adminLoginView').style.display = 'none';
+        document.getElementById('adminDashboardView').style.display = 'block';
+        setStatus('Admin logged in: ' + user.email);
+        seed().then(() => subscribe());
+        renderAdminAll();
+    } else {
+        document.getElementById('adminLoginView').style.display = 'block';
+        document.getElementById('adminDashboardView').style.display = 'none';
+        subscribe();
+    }
+});
 
+/* ================= ADDITIVE USER PROFILE POSTS UPDATE ================= */
+(function(){
+  const USER_POST_MAX_TEXT = 90;
+  const USER_POST_MAX_PHOTOS = 5;
+  let userPostObserver = null;
+  let userPostLongPressTimer = null;
+  let userPostLongPressTriggered = false;
+
+  function userPostTime(ts){
+    if(!ts) return '';
+    const d = new Date(ts);
+    const now = new Date();
+    const sameDay = (a,b)=>a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+    const y = new Date(now); y.setDate(now.getDate()-1);
+    const time = d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:true});
+    const age = now.getTime() - d.getTime();
+    if(age < 24 * 60 * 60 * 1000) return 'Today, ' + time;
+    if(age < 48 * 60 * 60 * 1000) return 'Yesterday, ' + time;
+    return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}).replace(/ /g,'-') + ', ' + time;
+  }
+
+  function userPostEsc(v){
+    return String(v ?? '').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  function getUserPostAuthor(p){
+    return p.authorRoll || p.userId || p.createdBy || '';
+  }
+
+  function getUserPostPhotos(p){
+    if(Array.isArray(p.imgUrls)) return p.imgUrls.filter(Boolean);
+    if(p.imgUrl) return [p.imgUrl];
+    return [];
+  }
+
+  function ensureProfilePostUI(){
+    const profile = document.getElementById('profilePage');
+    if(!profile || document.getElementById('userPostComposer')) return;
+
+    const card = profile.querySelector('.profile-card');
+    if(!card) return;
+
+    const composer = document.createElement('div');
+    composer.className = 'user-post-composer';
+    composer.id = 'userPostComposer';
+    composer.innerHTML = `
+      <h3>📝 Create Your Post</h3>
+      <div class="user-post-text-wrap">
+        <textarea id="userPostText" class="user-post-text" maxlength="90" placeholder="Apna text likhiye (maximum 90 characters)..."></textarea>
+        <span id="userPostCounter" class="user-post-counter">0/90</span>
+      </div>
+      <div class="user-post-photo-row">
+        <label class="user-post-photo-btn" for="userPostPhotos">📷 Add Photos</label>
+        <input id="userPostPhotos" type="file" accept="image/*" multiple hidden>
+        <span id="userPostSelected" class="user-post-selected">0/5 photos</span>
+      </div>
+      <div id="userPostPreview" class="user-post-preview"></div>
+      <button id="userPostSubmit" class="user-post-submit" onclick="publishUserProfilePost()">Publish Post</button>
+    `;
+
+    const postsBox = document.createElement('div');
+    postsBox.className = 'user-profile-posts';
+    postsBox.id = 'userProfilePosts';
+    postsBox.innerHTML = '<h3 class="user-profile-posts-title">📌 My Posts</h3><div id="userProfilePostsList"></div>';
+
+    card.appendChild(composer);
+    card.appendChild(postsBox);
+
+    const text = document.getElementById('userPostText');
+    const counter = document.getElementById('userPostCounter');
+    text.addEventListener('input', function(){
+      if(this.value.length > USER_POST_MAX_TEXT) {
+        this.value = this.value.slice(0, USER_POST_MAX_TEXT);
+        alert('Post text maximum 90 characters ka hi ho sakta hai.');
+      }
+      counter.textContent = this.value.length + '/90';
+      counter.classList.toggle('limit', this.value.length >= USER_POST_MAX_TEXT);
+    });
+    text.addEventListener('paste', function(){
+      setTimeout(()=>{
+        if(this.value.length > USER_POST_MAX_TEXT){
+          this.value=this.value.slice(0,USER_POST_MAX_TEXT);
+          counter.textContent=this.value.length+'/90';
+          counter.classList.add('limit');
+          alert('Post text maximum 90 characters ka hi ho sakta hai.');
+        }
+      },0);
+    });
+
+    document.getElementById('userPostPhotos').addEventListener('change', function(){
+      const files = Array.from(this.files || []);
+      if(files.length > USER_POST_MAX_PHOTOS){
+        alert('Ek post me maximum 5 photos hi upload kar sakte hain.');
+        this.value='';
+        renderUserPhotoPreview([]);
+        return;
+      }
+      renderUserPhotoPreview(files);
+    });
+  }
+
+  function renderUserPhotoPreview(files){
+    const box=document.getElementById('userPostPreview');
+    const label=document.getElementById('userPostSelected');
+    if(!box || !label) return;
+    label.textContent=(files.length||0) + '/5 photos';
+    box.innerHTML='';
+    files.forEach(file=>{
+      const img=document.createElement('img');
+      img.src=URL.createObjectURL(file);
+      img.onload=()=>URL.revokeObjectURL(img.src);
+      box.appendChild(img);
+    });
+  }
+
+  async function userPostFileToDataURL(file){
+    if(!file || !file.type.startsWith('image/')) throw new Error('Sirf image file select karein.');
+    return new Promise((resolve,reject)=>{
+      const reader=new FileReader();
+      reader.onerror=()=>reject(new Error('Photo read nahi ho paayi.'));
+      reader.onload=()=>{
+        const img=new Image();
+        img.onerror=()=>reject(new Error('Invalid image.'));
+        img.onload=()=>{
+          const maxSize=760;
+          const scale=Math.min(1,maxSize/Math.max(img.width,img.height));
+          const w=Math.max(1,Math.round(img.width*scale));
+          const h=Math.max(1,Math.round(img.height*scale));
+          const c=document.createElement('canvas');
+          c.width=w;c.height=h;
+          c.getContext('2d').drawImage(img,0,0,w,h);
+          let data=c.toDataURL('image/jpeg',0.58);
+          if(data.length>650000) data=c.toDataURL('image/jpeg',0.45);
+          resolve(data);
+        };
+        img.src=reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  window.publishUserProfilePost = async function(){
+    if(!window.localUser) return requireLogin(window.publishUserProfilePost);
+    const textEl=document.getElementById('userPostText');
+    const fileEl=document.getElementById('userPostPhotos');
+    if(!textEl || !fileEl) return;
+    const text=textEl.value.trim();
+    const files=Array.from(fileEl.files || []);
+    if(text.length>USER_POST_MAX_TEXT){
+      textEl.value=text.slice(0,USER_POST_MAX_TEXT);
+      document.getElementById('userPostCounter').textContent=USER_POST_MAX_TEXT+'/90';
+      alert('Post text maximum 90 characters ka hi ho sakta hai.');
+      return;
+    }
+    if(!text && files.length===0) return alert('Post me text ya kam se kam 1 photo add karein.');
+    if(files.length>USER_POST_MAX_PHOTOS) return alert('Ek post me maximum 5 photos hi upload kar sakte hain.');
+
+    const btn=document.getElementById('userPostSubmit');
+    btn.disabled=true;
+    btn.textContent='Uploading…';
+    try{
+      const imgUrls=[];
+      for(const f of files) imgUrls.push(await userPostFileToDataURL(f));
+      const id='userpost_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+      const authorRoll=String(window.localUser.rollNumber);
+      const payload={
+        id,
+        subjectId:null,
+        type:imgUrls.length ? 'photo' : 'text',
+        text,
+        imgUrls,
+        imgUrl:imgUrls[0] || '',
+        authorRoll,
+        authorName:window.localUser.name || authorRoll,
+        timestamp:Date.now(),
+        seenBy:{},
+        comments:[]
+      };
+      payload.seenBy[authorRoll]=true;
+      await set(ref(db,'portal/posts/'+id),payload);
+      textEl.value='';
+      fileEl.value='';
+      document.getElementById('userPostCounter').textContent='0/90';
+      document.getElementById('userPostCounter').classList.remove('limit');
+      renderUserPhotoPreview([]);
+      alert('Post successfully publish ho gaya.');
+    }catch(e){
+      alert('Post upload failed: '+e.message);
+    }finally{
+      btn.disabled=false;
+      btn.textContent='Publish Post';
+    }
+  };
+
+  async function deleteOwnUserPost(id){
+    if(!window.localUser) return requireLogin(()=>deleteOwnUserPost(id));
+    const posts=(window.adminPostsData || onlineData.posts || []);
+    const post=posts.find(p=>String(p.id)===String(id));
+    if(!post) return;
+    if(String(getUserPostAuthor(post))!==String(window.localUser.rollNumber)){
+      return alert('Aap sirf apna post delete kar sakte hain.');
+    }
+    if(!confirm('Apna post delete karna hai?')) return;
+    try{
+      await remove(ref(db,'portal/posts/'+id));
+    }catch(e){ alert('Post delete failed: '+e.message); }
+  }
+  window.deleteOwnUserPost=deleteOwnUserPost;
+
+  window.markUserPostSeen=async function(id){
+    if(!window.localUser || !id) return;
+    const roll=String(window.localUser.rollNumber);
+    try{
+      await update(ref(db,'portal/posts/'+id+'/seenBy'),{[roll]:true});
+    }catch(e){ console.warn('Post seen update failed',e); }
+  };
+
+  function openUserPostOriginal(src){
+    const modal=document.getElementById('userPostOriginalModal');
+    const img=document.getElementById('userPostOriginalImage');
+    if(!modal||!img) return;
+    img.src=src;
+    modal.classList.add('active');
+  }
+
+  function closeUserPostOriginal(){
+    const modal=document.getElementById('userPostOriginalModal');
+    const img=document.getElementById('userPostOriginalImage');
+    if(modal) modal.classList.remove('active');
+    if(img) img.src='';
+  }
+  window.closeUserPostOriginal=closeUserPostOriginal;
+
+  function bindLongPress(img,src){
+    const start=()=>{
+      clearTimeout(userPostLongPressTimer);
+      userPostLongPressTriggered=false;
+      userPostLongPressTimer=setTimeout(()=>{
+        userPostLongPressTriggered=true;
+        openUserPostOriginal(src);
+      },3000);
+    };
+    const end=()=>clearTimeout(userPostLongPressTimer);
+    img.addEventListener('pointerdown',start);
+    img.addEventListener('pointerup',end);
+    img.addEventListener('pointercancel',end);
+    img.addEventListener('pointerleave',end);
+    img.addEventListener('contextmenu',e=>e.preventDefault());
+  }
+
+  function renderUserProfilePosts(){
+    const list=document.getElementById('userProfilePostsList');
+    if(!list || !window.localUser) return;
+    const roll=String(window.localUser.rollNumber);
+    const all=(window.adminPostsData || onlineData.posts || []);
+    const posts=all.filter(p=>String(getUserPostAuthor(p))===roll && (p.timestamp || p.imgUrls || p.authorRoll))
+                    .sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    if(!posts.length){
+      list.innerHTML='<div class="user-post-empty">Aapne abhi koi post publish nahi kiya hai.</div>';
+      return;
+    }
+    list.innerHTML=posts.map(p=>{
+      const photos=getUserPostPhotos(p);
+      const seenCount=p.seenBy ? Object.keys(p.seenBy).filter(k=>p.seenBy[k]).length : 0;
+      const photoHTML=photos.length ? `
+        <div class="user-post-carousel" data-post-carousel="${userPostEsc(p.id)}">
+          ${photos.map((src,i)=>`<img data-userpost-img="${userPostEsc(src)}" src="${userPostEsc(src)}" alt="Post photo ${i+1}" loading="lazy">`).join('')}
+        </div>
+        ${photos.length>1 ? `<div class="user-post-photo-count">📷 ${photos.length} photos • swipe left/right</div>` : ''}
+      ` : '';
+      return `
+        <article class="user-post-card" data-user-post-id="${userPostEsc(p.id)}">
+          <div class="user-post-head">
+            <div>
+              <div class="user-post-author">${userPostEsc(p.authorName || roll)}</div>
+              <div class="user-post-time">${userPostTime(p.timestamp)}</div>
+            </div>
+            <button class="user-post-delete" onclick="deleteOwnUserPost('${userPostEsc(p.id)}')">🗑️ Delete</button>
+          </div>
+          ${p.text ? `<div class="user-post-body">${userPostEsc(p.text)}</div>` : ''}
+          ${photoHTML}
+          <div class="user-post-footer"><span class="user-post-seen">👁️ ${seenCount} seen</span></div>
+        </article>`;
+    }).join('');
+
+    list.querySelectorAll('[data-userpost-img]').forEach(img=>{
+      bindLongPress(img,img.getAttribute('data-userpost-img'));
+    });
+
+    if(userPostObserver) userPostObserver.disconnect();
+    userPostObserver=new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting && entry.intersectionRatio>=0.55){
+          const id=entry.target.getAttribute('data-user-post-id');
+          if(id) window.markUserPostSeen(id);
+        }
+      });
+    },{threshold:[0.55]});
+    list.querySelectorAll('[data-user-post-id]').forEach(el=>userPostObserver.observe(el));
+  }
+
+  function ensureOriginalModal(){
+    if(document.getElementById('userPostOriginalModal')) return;
+    const modal=document.createElement('div');
+    modal.id='userPostOriginalModal';
+    modal.className='user-post-original-modal';
+    modal.innerHTML='<span class="user-post-original-hint">Tap to return</span><img id="userPostOriginalImage" alt="Original size">';
+    modal.addEventListener('click',closeUserPostOriginal);
+    document.body.appendChild(modal);
+  }
+
+  const oldOpenProfile=window.openProfile;
+  window.openProfile=function(){
+    if(typeof oldOpenProfile==='function') oldOpenProfile();
+    setTimeout(()=>{
+      ensureProfilePostUI();
+      ensureOriginalModal();
+      renderUserProfilePosts();
+    },40);
+  };
+
+  const oldApplyOnlineData=window.applyOnlineData;
+  window.renderUserProfilePosts=renderUserProfilePosts;
+
+  const refreshObserver=setInterval(()=>{
+    if(document.getElementById('profilePage')?.style.display==='block'){
+      ensureProfilePostUI();
+      ensureOriginalModal();
+      renderUserProfilePosts();
+    }
+  },1200);
+
+  // Add a dedicated profile-post view to the existing realtime feed renderer without changing its old methods.
+  const originalRenderOnlinePosts=window.renderOnlinePosts;
+  if(typeof originalRenderOnlinePosts==='function'){
+    window.renderOnlinePosts=function(){
+      originalRenderOnlinePosts();
+      if(document.getElementById('profilePage')?.style.display==='block') renderUserProfilePosts();
+    };
+  }
+})();
+
+</script>
 </body>
 </html>
