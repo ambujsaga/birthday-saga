@@ -104,6 +104,21 @@
             border: 2px solid var(--primary-blue);
             box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
             animation: pulse 1.5s infinite;
+            display: none;
+        }
+
+        .chat-red-dot {
+            position: absolute;
+            top: 4px;
+            right: 28%;
+            width: 9px;
+            height: 9px;
+            background-color: #ff3333;
+            border-radius: 50%;
+            border: 1.5px solid #fff;
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+            animation: pulse 1.5s infinite;
+            display: none;
         }
 
         @keyframes pulse {
@@ -161,8 +176,8 @@
             font-size: 0.85rem;
             color: #333;
             transition: background 0.2s;
-            position: relative; /* UPDATE: For Delete Button Positioning */
-            user-select: none; /* UPDATE: Prevent selection on long press */
+            position: relative;
+            user-select: none;
         }
 
         .notif-item:hover {
@@ -175,7 +190,6 @@
             margin-top: 4px;
         }
 
-        /* UPDATE: Notification Delete Button Styles */
         .delete-notif-btn {
             position: absolute;
             right: 15px;
@@ -571,7 +585,7 @@
                 right: 5%;
             }
         }
-        /* ================= USER UPDATE: BUTTON + NAV ICON ================= */
+        
         .download-btn {
             min-width: 190px;
         }
@@ -579,9 +593,7 @@
         .menu-icon {
             display: none !important;
         }
-        /* ================= END USER UPDATE ================= */
 
-        /* ================= MMIT WEBSITE PAGE UPDATE ================= */
         .website-icon {
             font-size: 1.55rem;
             cursor: pointer;
@@ -637,9 +649,8 @@
             background: #fff;
             box-shadow: 0 3px 10px rgba(0,0,0,0.12);
         }
-        /* ================= END MMIT WEBSITE PAGE UPDATE ================= */
 
-        /* ================= BOTTOM NAVIGATION BAR ================= */
+        /* BOTTOM NAVIGATION BAR */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -666,6 +677,7 @@
             width: 25%;
             cursor: pointer;
             transition: color 0.2s ease, transform 0.2s ease;
+            position: relative;
         }
 
         .bottom-nav-item:hover, .bottom-nav-item.active {
@@ -683,7 +695,7 @@
             fill: currentColor;
         }
 
-        /* ================= NEW FEED & POST STYLES START ================= */
+        /* FEED & POST STYLES */
         .feed-container {
             margin-top: 2rem;
             display: flex;
@@ -829,9 +841,8 @@
             object-fit: contain;
             box-shadow: 0 0 20px rgba(255,255,255,0.1);
         }
-        /* ================= NEW FEED & POST STYLES END ================= */
         
-        /* ================= CHAT & PROFILE STYLES ================= */
+        /* CHAT & PROFILE STYLES */
         .chat-container {
             background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
             display: flex; flex-direction: column; height: 60vh; border-top: 3px solid var(--primary-blue);
@@ -859,7 +870,7 @@
         }
         .chat-input-area button:hover { background: #e68a00; }
         
-        /* ================= CHAT ENHANCEMENTS ================= */
+        /* CHAT ENHANCEMENTS */
         .chat-date-divider {
             text-align: center;
             margin: 12px 0 6px 0;
@@ -904,7 +915,6 @@
         .chat-msg.sent .chat-seen-count {
             background: rgba(255,255,255,0.2);
         }
-        /* ================= END CHAT ENHANCEMENTS ================= */
 
         .profile-card {
             background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 30px; text-align: center; border-top: 3px solid var(--accent-orange);
@@ -921,7 +931,7 @@
         }
         .logout-btn:hover { background: #a93226; }
     
-        /* ================= FIREBASE ONLINE ADMIN PANEL ================= */
+        /* FIREBASE ONLINE ADMIN PANEL */
         .admin-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:12000;display:none;align-items:center;justify-content:center;padding:15px}
         .admin-modal.active{display:flex}
         .admin-box{width:min(1050px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
@@ -932,7 +942,7 @@
         .admin-tabs{display:flex;gap:7px;flex-wrap:wrap;padding:12px 15px;border-bottom:1px solid #ddd;background:#f7f9fc;position:sticky;top:57px;z-index:2}.admin-tab{border:1px solid #ccd4df;background:#fff;padding:8px 11px;border-radius:20px;cursor:pointer;font-weight:700;color:#334155}.admin-tab.active{background:var(--primary-blue);color:#fff}
         .admin-content{padding:18px}.admin-section{display:none}.admin-section.active{display:block}.admin-card{border:1px solid #e2e8f0;border-radius:10px;padding:15px;margin-bottom:14px;background:#fff}.admin-card h3{color:var(--primary-blue);margin-bottom:10px}.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.admin-preview{width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #ddd;margin:5px 0 10px}.admin-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.admin-status{padding:9px 12px;background:#eef6ff;border-radius:7px;margin-bottom:12px;font-size:.9rem}.admin-small{font-size:.8rem;color:#666}.admin-post-img{width:90px;height:65px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:8px}
 
-        /* ================= NEW: USER LOGIN MODAL ================= */
+        /* USER LOGIN MODAL */
         .user-login-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 15px; }
         .user-login-box { background: #fff; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .user-login-box h2 { color: var(--primary-blue); margin-bottom: 10px; }
@@ -1147,10 +1157,23 @@
               </div>
             </section>
             <section id="tab-subjects" class="admin-section"><div id="adminSubjectsList"></div></section>
+            
             <section id="tab-notifications" class="admin-section">
-              <div class="admin-card"><h3>➕ Add Notification</h3><input id="newNotifText" placeholder="Notification text"><button class="admin-btn" onclick="addOnlineNotification()">Publish Notification</button></div>
+              <div class="admin-card">
+                <h3>➕ Add / Send Target Notification</h3>
+                <div class="admin-form">
+                  <label>Select Recipient User (Target User Profile):</label>
+                  <select id="newNotifTargetUser" style="margin-bottom:12px; padding:11px; width:100%; border-radius:7px; border:1px solid #ccc;">
+                    <option value="ALL">🌐 Send to All Users (Public Notification)</option>
+                  </select>
+                  <label>Notification Text:</label>
+                  <input id="newNotifText" placeholder="Enter notification message here...">
+                  <button class="admin-btn" onclick="addOnlineNotification()">Publish Notification</button>
+                </div>
+              </div>
               <div id="adminNotificationsList"></div>
             </section>
+
             <section id="tab-notices" class="admin-section">
               <div class="admin-card"><h3>➕ Add Notice</h3><input id="newNoticeTitle" placeholder="Notice title"><input id="newNoticeLink" placeholder="Notice Link (URL) e.g. https://..."><label><input id="newNoticeNew" type="checkbox" checked> Mark as NEW</label><button class="admin-btn" onclick="addOnlineNotice()">Publish Notice</button></div>
               <div class="admin-card"><h3>📜 Scrolling Notice Bar</h3><textarea id="scrollNoticeText" placeholder="Scrolling notice text"></textarea><button class="admin-btn" onclick="saveScrollNotice()">Save Notice Bar</button></div>
@@ -1205,6 +1228,7 @@
             <span>Home</span>
         </div>
         <div class="bottom-nav-item" id="navChat" onclick="openChat()">
+            <span id="chatRedDot" class="chat-red-dot"></span>
             <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>
             <span>Chat</span>
         </div>
@@ -1213,7 +1237,7 @@
             <span>Save</span>
         </div>
         <div class="bottom-nav-item" id="navProfile" onclick="openProfile()">
-            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
             <span>Profile</span>
         </div>
     </nav>
@@ -1225,7 +1249,7 @@
         window.localUser = localUser;
         let pendingAction = null;
 
-        // --- NEW UPDATE: Dynamic Unique Color Generator per Roll Number ---
+        // Dynamic Unique Color Generator per Roll Number
         function getColorForRoll(roll) {
             if (!roll) return '#003366';
             let hash = 0;
@@ -1293,9 +1317,7 @@
         }
         window.getChatDateLabel = getChatDateLabel;
         
-        // --- NEW UPDATE: LocalStorage for Saved Posts ---
         let savedPostIds = JSON.parse(localStorage.getItem('portalSavedPosts')) || [];
-        // ------------------------------------------------
 
         function requireLogin(actionCallback) {
             if (localUser) {
@@ -1327,6 +1349,7 @@
                 
                 if(window.setUserActiveStatus) window.setUserActiveStatus(roll, true);
                 if(window.renderOnlineChats) window.renderOnlineChats();
+                if(window.checkUnseenNotifications) window.checkUnseenNotifications();
 
                 if(pendingAction) {
                     pendingAction();
@@ -1354,9 +1377,9 @@
         });
 
         let notifications = [
-            { id: 1, text: "BTEUP Odd Semester Exam Scheme 2026-27 released.", time: "Just now" },
-            { id: 2, text: "CSE 1st Semester Syllabus officially updated.", time: "1 hour ago" },
-            { id: 3, text: "Practical Exam schedule announced for Diploma Students.", time: "Yesterday" }
+            { id: 1, text: "BTEUP Odd Semester Exam Scheme 2026-27 released.", time: "Just now", timestamp: Date.now() },
+            { id: 2, text: "CSE 1st Semester Syllabus officially updated.", time: "1 hour ago", timestamp: Date.now() - 3600000 },
+            { id: 3, text: "Practical Exam schedule announced for Diploma Students.", time: "Yesterday", timestamp: Date.now() - 86400000 }
         ];
 
         const officialNotices = [
@@ -1452,13 +1475,13 @@
             `).join('');
         }
 
-        // ================= LONG PRESS DELETE NOTIFICATION START ================= //
+        // Long Press Delete Notification
         let notifPressTimer;
         window.startNotifPress = function(id) {
             notifPressTimer = setTimeout(() => {
                 const delBtn = document.getElementById('del-notif-' + id);
                 if(delBtn) delBtn.style.display = 'block';
-            }, 3000); // 3 seconds hold
+            }, 1000); 
         };
         window.endNotifPress = function() {
             clearTimeout(notifPressTimer);
@@ -1469,7 +1492,6 @@
                 window.deleteOnlineNotification(id);
             }
         };
-        // ================= LONG PRESS DELETE NOTIFICATION END ================= //
 
         function renderNotifications() {
             const listContainer = document.getElementById('notifList');
@@ -1486,23 +1508,15 @@
             `).join('');
         }
 
+        // LocalStorage Red Dot logic for Notifications
         function toggleNotifPanel() {
             const panel = document.getElementById('notifPanel');
             const isVisible = panel.style.display === 'block';
             panel.style.display = isVisible ? 'none' : 'block';
             if (!isVisible) {
                 document.getElementById('notifRedDot').style.display = 'none';
+                localStorage.setItem('lastSeenNotifTime', Date.now());
             }
-        }
-
-        function addNewNotification(text) {
-            notifications.unshift({
-                id: Date.now(),
-                text: text,
-                time: "Just now"
-            });
-            renderNotifications();
-            document.getElementById('notifRedDot').style.display = 'block';
         }
 
         function renderNoticeBoard() {
@@ -1600,11 +1614,17 @@
             }
         }
 
+        // LocalStorage Red Dot logic for Chat Icon
         function openChat() {
             requireLogin(() => {
                 updateNavState('navChat');
                 closeAllSections();
                 document.getElementById('chatPage').style.display = 'block';
+                
+                // Seen chat action
+                document.getElementById('chatRedDot').style.display = 'none';
+                localStorage.setItem('lastSeenChatTime', Date.now());
+
                 if(window.renderOnlineChats) window.renderOnlineChats();
                 window.scrollTo(0, 0);
             });
@@ -1624,7 +1644,6 @@
             });
         }
 
-        // ================= SEND CHAT + MENTION SYSTEM UPDATE ================= //
         function sendChatMessage() {
             requireLogin(() => {
                 const input = document.getElementById('chatInput');
@@ -1634,7 +1653,6 @@
                         window.addOnlineChat(localUser.rollNumber, message);
                     }
                     
-                    // Mention Extraction Regex to find @RollNumber
                     const mentionRegex = /@([a-zA-Z0-9_]+)/g;
                     let match;
                     while ((match = mentionRegex.exec(message)) !== null) {
@@ -1648,7 +1666,6 @@
                 }
             });
         }
-        // ================= END MENTION SYSTEM UPDATE ================= //
         
         function deleteUserChat(chatId) {
              if(window.deleteOnlineChat) {
@@ -1774,7 +1791,6 @@
                 const postIndex = dataset.findIndex(p => p.id === postId);
                 if(postIndex > -1) {
                     if(!dataset[postIndex].comments) dataset[postIndex].comments = [];
-                    // Using only Roll Number for Anonymity Update
                     const formatUserName = `${localUser.rollNumber}`;
                     dataset[postIndex].comments.push({
                         id: 'com_' + Date.now(),
@@ -1802,7 +1818,6 @@
             }
         }
 
-        // --- NEW UPDATE: LocalStorage Save Functionality ---
         function toggleSavePost(postId) {
             if(savedPostIds.includes(postId)) {
                 savedPostIds = savedPostIds.filter(id => id !== postId);
@@ -1812,7 +1827,6 @@
             localStorage.setItem('portalSavedPosts', JSON.stringify(savedPostIds));
             refreshCurrentFeeds();
         }
-        // ---------------------------------------------------
 
         function refreshCurrentFeeds() {
             if(document.getElementById('savedPage').style.display === 'block') {
@@ -1891,7 +1905,7 @@ const defaultSubjects = [
  {id:5,title:"Fundamentals of Computer & IT (FCIT)",code:"SUB-105",image:"https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=600&q=80",desc:"Computer Science ka core foundational subject. Isme Computer architecture, memory, software types, OS, aur Internet basics cover kiye gaye hain.",modules:[{unit:"Unit 1",detail:"Fundamentals of Computer: Block diagram of PC, Input/Output devices, CPU"},{unit:"Unit 2",detail:"Data Representation: Binary, Octal, Hexadecimal number systems and logic gates"},{unit:"Unit 3",detail:"Memory & Storage: Primary memory (RAM/ROM), Secondary storage devices"},{unit:"Unit 4",detail:"Basics of OS and Internet: MS Windows, Web browsers, E-mail, Search Engines"}]}
 ];
 
-const defaultNotifs=[{id:"n1",text:"BTEUP Odd Semester Exam Scheme 2026-27 released.",time:"Just now"},{id:"n2",text:"CSE 1st Semester Syllabus officially updated.",time:"1 hour ago"},{id:"n3",text:"Practical Exam schedule announced for Diploma Students.",time:"Yesterday"}];
+const defaultNotifs=[{id:"n1",text:"BTEUP Odd Semester Exam Scheme 2026-27 released.",time:"Just now",timestamp:Date.now()},{id:"n2",text:"CSE 1st Semester Syllabus officially updated.",time:"1 hour ago",timestamp:Date.now()-3600000},{id:"n3",text:"Practical Exam schedule announced for Diploma Students.",time:"Yesterday",timestamp:Date.now()-86400000}];
 const defaultNotices=[{id:"no1",title:"BTEUP Odd Semester Examination Form 2026 Direct Link",date:"20-Aug-2026",isNew:true},{id:"no2",title:"JEECUP Polytechnic Admission Counselling Schedule 2026",date:"18-Aug-2026",isNew:true},{id:"no3",title:"Download Official Diploma CSE 1st Sem Syllabus PDF",date:"15-Aug-2026",isNew:false},{id:"no4",title:"BTEUP Scrutiny & Revaluation Result Declared",date:"10-Aug-2026",isNew:false},{id:"no5",title:"UP Scholarship Online Form 2026-27 Apply Online",date:"05-Aug-2026",isNew:false}];
 
 let onlineData={
@@ -1907,8 +1921,6 @@ let onlineData={
   users:{},
   chats:[]
 };
-
-let lastNotifCount = null;
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function setStatus(t){const e=document.getElementById('adminStatus');if(e)e.textContent=t;}
@@ -1944,17 +1956,9 @@ function applyOnlineData(d){
   const marquee = document.querySelector('.notice-bar marquee');
   if(marquee && onlineData.branding.scrollNotice) marquee.textContent = onlineData.branding.scrollNotice;
 
-  // Filter current user's notifications for badge logic
-  let currentUserNotifs = onlineData.notifications.filter(n => {
-      if (n.targetUser) return window.localUser && n.targetUser === window.localUser.rollNumber;
-      return true;
-  });
-
-  if(lastNotifCount !== null && currentUserNotifs.length > lastNotifCount) {
-      const redDot = document.getElementById('notifRedDot');
-      if(redDot) redDot.style.display = 'block';
-  }
-  lastNotifCount = currentUserNotifs.length;
+  // LocalStorage Red Dot logic check for Notifications & Chat
+  checkUnseenNotifications();
+  checkUnseenChats();
 
   renderOnlineSubjects();
   renderOnlineNotifications();
@@ -1977,7 +1981,56 @@ function applyOnlineData(d){
   }
 }
 
-// ================= BLUE TEXT IN CHAT RENDER UPDATE ================= //
+// LocalStorage Unseen Notification Indicator Red Dot Logic
+function checkUnseenNotifications() {
+    let lastSeenNotifTime = parseInt(localStorage.getItem('lastSeenNotifTime') || '0');
+    let currentUserNotifs = (onlineData.notifications || []).filter(n => {
+        if (n.targetUser) return window.localUser && n.targetUser === window.localUser.rollNumber;
+        return true;
+    });
+
+    let hasUnseen = currentUserNotifs.some(n => {
+        let ts = n.timestamp || 0;
+        return ts > lastSeenNotifTime;
+    });
+
+    const redDot = document.getElementById('notifRedDot');
+    const panel = document.getElementById('notifPanel');
+    if (redDot) {
+        if (hasUnseen && panel && panel.style.display !== 'block') {
+            redDot.style.display = 'block';
+        } else if (panel && panel.style.display === 'block') {
+            redDot.style.display = 'none';
+        }
+    }
+}
+window.checkUnseenNotifications = checkUnseenNotifications;
+
+// LocalStorage Unseen Chat Indicator Red Dot Logic
+function checkUnseenChats() {
+    let lastSeenChatTime = parseInt(localStorage.getItem('lastSeenChatTime') || '0');
+    let isChatPageVisible = document.getElementById('chatPage') && document.getElementById('chatPage').style.display === 'block';
+    
+    if (isChatPageVisible) {
+        localStorage.setItem('lastSeenChatTime', Date.now());
+        const chatDot = document.getElementById('chatRedDot');
+        if (chatDot) chatDot.style.display = 'none';
+        return;
+    }
+
+    let hasUnseen = (onlineData.chats || []).some(c => {
+        let ts = c.timestamp || 0;
+        let isFromOtherUser = !window.localUser || (window.localUser && c.userId !== window.localUser.rollNumber);
+        return ts > lastSeenChatTime && isFromOtherUser;
+    });
+
+    const chatDot = document.getElementById('chatRedDot');
+    if (chatDot) {
+        chatDot.style.display = hasUnseen ? 'block' : 'none';
+    }
+}
+window.checkUnseenChats = checkUnseenChats;
+
 function renderOnlineChats() {
     const msgBox = document.getElementById('chatMessages');
     if(!msgBox) return;
@@ -2013,7 +2066,6 @@ function renderOnlineChats() {
             const rollColor = window.getColorForRoll(chat.userId);
             const timeStr = window.formatChatTime(chat.timestamp);
             
-            // Format text and make @ mentions blue
             let safeText = esc(chat.text);
             safeText = safeText.replace(/@([a-zA-Z0-9_]+)/g, '<span style="color: #007bff; font-weight: bold;">@$1</span>');
 
@@ -2036,7 +2088,6 @@ function renderOnlineChats() {
     }
 }
 window.renderOnlineChats = renderOnlineChats;
-// ================= END BLUE TEXT IN CHAT ================= //
 
 function renderOnlinePosts(){
   window.adminPostsData = onlineData.posts || [];
@@ -2048,7 +2099,6 @@ function renderOnlinePosts(){
   if(typeof window.refreshCurrentFeeds === 'function') window.refreshCurrentFeeds();
 }
 
-// --- NEW UPDATE: Realtime Post Display on Home Page Subjects ---
 function renderOnlineSubjects(){
   const grid = document.getElementById('subjectsGrid');
   if(!grid) return;
@@ -2087,19 +2137,16 @@ function renderOnlineSubjects(){
     `;
   }).join('');
 }
-// ---------------------------------------------------------------
 
-// ================= NOTIFICATION RENDER WITH LONG PRESS ================= //
 function renderOnlineNotifications(){
   const c = document.getElementById('notifList');
   if(!c) return;
   
-  // Filtering notifications mapped directly to the active user
   let userNotifs = onlineData.notifications.filter(n => {
       if (n.targetUser) {
           return window.localUser && n.targetUser === window.localUser.rollNumber;
       }
-      return true; // Keep global notifications visible to all
+      return true;
   });
 
   const sortedNotifs = [...userNotifs].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
@@ -2114,7 +2161,6 @@ function renderOnlineNotifications(){
     </div>
   `).join('') : `<div class="notif-item">No notifications yet.</div>`;
 }
-// ================= END NOTIFICATION RENDER ================= //
 
 function renderOnlineNotices(){
   const c = document.getElementById('sarkariNoticeList');
@@ -2261,7 +2307,6 @@ window.saveSubject = async function(id){
   }
 };
 
-// ================= NEW: MENTION NOTIFICATION FIREBASE FUNCTION ================= //
 window.addMentionNotification = async function(targetRoll, senderRoll) {
     const id = 'notif_' + Date.now() + Math.random().toString(36).substr(2, 5);
     const text = `💬 ${senderRoll} mentioned you in the class discussion.`;
@@ -2272,14 +2317,27 @@ window.addMentionNotification = async function(targetRoll, senderRoll) {
         targetUser: targetRoll
     });
 };
-// ================= END ================= //
 
+// Target Notification Addition by Admin
 window.addOnlineNotification = async function(){
   const text = document.getElementById('newNotifText').value.trim();
+  const targetUserSelect = document.getElementById('newNotifTargetUser').value;
   if(!text) return alert('Notification text likhein.');
   const id = 'n_' + Date.now();
-  await set(ref(db, 'portal/notifications/' + id), { id, text, timestamp: Date.now() });
+  
+  const payload = {
+      id, 
+      text, 
+      timestamp: Date.now()
+  };
+  
+  if (targetUserSelect !== 'ALL') {
+      payload.targetUser = targetUserSelect;
+  }
+  
+  await set(ref(db, 'portal/notifications/' + id), payload);
   document.getElementById('newNotifText').value = '';
+  setStatus('Notification published successfully!');
 };
 window.deleteOnlineNotification = async id => remove(ref(db, 'portal/notifications/' + id));
 
@@ -2429,11 +2487,27 @@ function renderAdminAll(){
    </div>
  `).join('');
 
+ // Dynamic Target User Populate in Admin Panel Notifications Dropdown
+ const targetSelect = document.getElementById('newNotifTargetUser');
+ if (targetSelect) {
+     let optHTML = `<option value="ALL">🌐 Send to All Users (Public Notification)</option>`;
+     Object.values(onlineData.users || {}).forEach(u => {
+         optHTML += `<option value="${esc(u.rollNumber)}">👤 ${esc(u.name)} (${esc(u.rollNumber)})</option>`;
+     });
+     targetSelect.innerHTML = optHTML;
+ }
+
  document.getElementById('adminNotificationsList').innerHTML = [...onlineData.notifications].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).map(n => `
    <div class="admin-card">
-     <div class="admin-row">
-       <strong>${esc(n.text)}</strong>
-       <button class="admin-btn red" onclick="deleteOnlineNotification('${n.id}')">Delete</button>
+     <div class="admin-row" style="justify-content: space-between;">
+       <div>
+         <strong>${esc(n.text)}</strong>
+         <br>
+         <span class="admin-small" style="font-weight:bold; color:var(--primary-blue);">
+            Target: ${n.targetUser ? '👤 User Roll (' + esc(n.targetUser) + ')' : '🌐 All Users'}
+         </span>
+       </div>
+       <button class="admin-btn red" onclick="deleteOnlineNotification('${n.id}')">Delete Notification</button>
      </div>
    </div>
  `).join('');
@@ -2495,29 +2569,25 @@ function renderAdminAll(){
  `).join('');
 }
 
+// Complete Script Initialization and Tab Events
 document.querySelectorAll('.admin-tab').forEach(btn => btn.addEventListener('click', () => {
   document.querySelectorAll('.admin-tab').forEach(x => x.classList.remove('active'));
-  document.querySelectorAll('.admin-section').forEach(x => x.classList.remove('active'));
+  const tabName = btn.getAttribute('data-tab');
   btn.classList.add('active');
-  document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  document.querySelectorAll('.admin-section').forEach(sec => sec.classList.remove('active'));
+  const targetSec = document.getElementById('tab-' + tabName);
+  if(targetSec) targetSec.classList.add('active');
 }));
 
-onAuthStateChanged(auth, async user => {
-  if(user && user.email === ADMIN_EMAIL){
-    document.getElementById('adminLoginView').style.display = 'none';
-    document.getElementById('adminDashboardView').style.display = 'block';
-    setStatus('Admin connected: ' + user.email);
-    try { await seed(); } catch(e) { console.warn('Seed skipped:', e.message); }
-    renderAdminAll();
-  } else {
-    document.getElementById('adminLoginView').style.display = 'block';
-    document.getElementById('adminDashboardView').style.display = 'none';
-    if(user) await signOut(auth);
+onAuthStateChanged(auth, u => {
+  if(document.getElementById('adminModal').classList.contains('active')){
+    document.getElementById('adminLoginView').style.display = u ? 'none' : 'block';
+    document.getElementById('adminDashboardView').style.display = u ? 'block' : 'none';
+    if(u) renderAdminAll();
   }
 });
 
-subscribe();
+seed().then(subscribe);
 </script>
-
 </body>
 </html>
