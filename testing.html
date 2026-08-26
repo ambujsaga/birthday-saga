@@ -1303,7 +1303,6 @@
         ];
 
         function loadSubjects() {
-            // Functionality mostly replaced by Firebase realtime method, but kept for fallback
             const grid = document.getElementById('subjectsGrid');
             if(!grid) return;
             grid.innerHTML = subjects.map(sub => `
@@ -1786,7 +1785,7 @@ function renderOnlinePosts(){
   if(typeof window.refreshCurrentFeeds === 'function') window.refreshCurrentFeeds();
 }
 
-// --- NEW UPDATE: Realtime Post Display on Home Page Subjects ---
+// --- FIXED & UPDATED: Realtime Post Display on Home Page Subjects ---
 function renderOnlineSubjects(){
   const grid = document.getElementById('subjectsGrid');
   if(!grid) return;
