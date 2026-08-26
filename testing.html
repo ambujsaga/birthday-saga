@@ -616,16 +616,6 @@
             box-shadow: 0 3px 10px rgba(0,0,0,0.12);
         }
         /* ================= END MMIT WEBSITE PAGE UPDATE ================= */
-        /* ================= ROLLCOLOR / REALTIME CHAT UPDATE ================= */
-        .user-roll-badge { font-weight: 800; }
-        .chat-msg { position: relative; padding-right: 54px; }
-        .chat-msg .chat-roll { font-weight: 800; }
-        .chat-msg .chat-seen-count { position:absolute; right:7px; bottom:6px; font-size:.72rem; background:rgba(255,255,255,.72); color:#334155; border-radius:10px; padding:2px 6px; min-width:22px; text-align:center; }
-        .chat-msg.received .chat-seen-count { background:#e5e7eb; }
-        .chat-delete-btn { color:#b91c1c; cursor:pointer; font-size:.75rem; margin-left:8px; font-weight:700; }
-        .roll-color-dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:5px; vertical-align:middle; }
-        /* ================= END ROLLCOLOR / REALTIME CHAT UPDATE ================= */
-
 
         /* ================= BOTTOM NAVIGATION BAR ================= */
         .bottom-nav {
@@ -832,6 +822,10 @@
         }
         .chat-msg.received { background: #f1f1f1; align-self: flex-start; border-bottom-left-radius: 0; }
         .chat-msg.sent { background: var(--primary-blue); color: white; align-self: flex-end; border-bottom-right-radius: 0; }
+        
+        .delete-chat-btn { color: #ffcccc; cursor: pointer; font-size: 0.9rem; margin-left: 10px; font-weight: bold; transition: 0.2s; }
+        .delete-chat-btn:hover { color: #ff3333; }
+        
         .chat-input-area {
             display: flex; padding: 10px; border-top: 1px solid #eee; gap: 10px;
         }
@@ -898,7 +892,6 @@
         <a href="#" onclick="openSubjectPage(5)">💻 Fundamentals of IT (FCIT)</a>
     </div>
 
-    <!-- ================= Top Navigation Inside homePage ================= -->
     <div id="homePage">
         
         <header class="navbar">
@@ -1009,8 +1002,7 @@
         </table>
 
         <div class="feed-container" id="subjectFeedContainer">
-            <!-- Posts will render here -->
-        </div>
+            </div>
     </div>
 
     <div id="savedPage" class="container" style="display: none;">
@@ -1019,8 +1011,7 @@
         </div>
         <h2 class="section-title">Saved Posts</h2>
         <div class="feed-container" id="savedFeedContainer">
-            <!-- Saved Posts will render here -->
-        </div>
+            </div>
     </div>
 
     <div id="chatPage" class="container" style="display: none;">
@@ -1030,8 +1021,7 @@
         <h2 class="section-title">Class Discussion</h2>
         <div class="chat-container">
             <div class="chat-messages" id="chatMessages">
-                <div class="chat-msg received"><strong>Admin:</strong> Welcome to the CSE 1st Sem discussion group! Padhai se related koi bhi doubt yahan puchein.</div>
-            </div>
+                </div>
             <div class="chat-input-area">
                 <input type="text" id="chatInput" placeholder="Type your message here..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
                 <button onclick="sendChatMessage()">Send</button>
@@ -1056,7 +1046,6 @@
         </div>
     </div>
 
-    <!-- ================= FIREBASE ONLINE ADMIN PANEL ================= -->
     <div id="adminModal" class="admin-modal">
       <div class="admin-box">
         <div class="admin-head"><h2>⚙️ Online Admin Control Panel</h2><span class="admin-close" onclick="closeAdminPanel()">&times;</span></div>
@@ -1077,7 +1066,8 @@
             <button class="admin-tab" data-tab="notifications">🔔 Notifications</button>
             <button class="admin-tab" data-tab="notices">📢 Notices</button>
             <button class="admin-tab" data-tab="posts">📰 Posts</button>
-            <button class="admin-tab" data-tab="users">👥 Users</button><button class="admin-tab" data-tab="chat">💬 Chat</button>
+            <button class="admin-tab" data-tab="users">👥 Users</button>
+            <button class="admin-tab" data-tab="chats">💬 Chats</button>
           </div>
           <div class="admin-content">
             <div id="adminStatus" class="admin-status">Connecting to Firebase…</div>
@@ -1102,7 +1092,6 @@
               <div id="adminPostsList"></div>
             </section>
             
-            <section id="tab-chat" class="admin-section"><div class="admin-card"><h3>💬 Realtime Class Chat</h3><p class="admin-small">Admin yahan se kisi bhi user ka chat delete kar sakta hai. Users sirf apna chat delete kar sakte hain.</p></div><div id="adminChatList"></div></section>
             <section id="tab-users" class="admin-section">
               <div class="admin-card">
                   <h3>➕ Add / Update User</h3>
@@ -1114,6 +1103,10 @@
               </div>
               <div id="adminUsersList"></div>
             </section>
+            
+            <section id="tab-chats" class="admin-section">
+                <div id="adminChatsList"></div>
+            </section>
 
             <div style="padding-top:10px;border-top:1px solid #ddd"><button class="admin-btn red" onclick="firebaseAdminLogout()">Logout Admin</button></div>
           </div>
@@ -1121,13 +1114,11 @@
       </div>
     </div>
 
-    <!-- ================= FULLSCREEN IMAGE VIEWER MODAL ================= -->
     <div id="imageViewerModal" class="image-viewer-modal" style="display: none;">
         <span class="viewer-close-btn" onclick="closeImageViewer()">&times;</span>
         <img id="viewerImageSrc" class="viewer-img" src="" alt="Original Size Image">
     </div>
 
-    <!-- ================= USER LOGIN MODAL ================= -->
     <div id="userLoginModal" class="user-login-modal">
         <div class="user-login-box">
             <h2>Portal Login</h2>
@@ -1139,7 +1130,6 @@
         </div>
     </div>
 
-    <!-- ================= BOTTOM NAVIGATION BAR ================= -->
     <nav class="bottom-nav">
         <div class="bottom-nav-item active" id="navHome" onclick="openHomePage()">
             <svg viewBox="0 0 24 24"><path d="M12 2.099l-9 6.75v11.151h5.5v-6h7v6h5.5v-11.151z"/></svg>
@@ -1163,14 +1153,11 @@
         // ================= JAVASCRIPT START ================= //
         
         let localUser = JSON.parse(localStorage.getItem('portalUser')) || null;
+        window.localUser = localUser;
         let pendingAction = null;
         
         // --- NEW UPDATE: LocalStorage for Saved Posts ---
-        let savedPostIds = [];
-        let savedPostsListener = null;
-        let chatListener = null;
-        let currentChatData = {};
-        const fallbackSavedPrefix = 'portalSavedPosts_';
+        let savedPostIds = JSON.parse(localStorage.getItem('portalSavedPosts')) || [];
         // ------------------------------------------------
 
         function requireLogin(actionCallback) {
@@ -1189,29 +1176,38 @@
             pendingAction = null;
         }
 
-        async function processUserLogin() {
+        function processUserLogin() {
             const roll = document.getElementById('userLoginPassword').value.trim();
             const err = document.getElementById('userLoginError');
             if(!roll) { err.innerText = "Roll number enter karein."; return; }
+            
             const users = window.onlineUsersData || {};
             if(users[roll]) {
                 localUser = users[roll];
+                window.localUser = localUser;
                 localStorage.setItem('portalUser', JSON.stringify(localUser));
-                localStorage.removeItem('portalSavedPosts');
                 document.getElementById('userLoginModal').style.display = 'none';
+                
                 if(window.setUserActiveStatus) window.setUserActiveStatus(roll, true);
-                if(window.loadUserSavedPosts) await window.loadUserSavedPosts(roll);
-                if(pendingAction) { const action=pendingAction; pendingAction=null; action(); }
-            } else err.innerText = "Invalid Roll Number. Admin dwara user add nahi hai.";
+                if(window.renderOnlineChats) window.renderOnlineChats();
+
+                if(pendingAction) {
+                    pendingAction();
+                    pendingAction = null;
+                }
+            } else {
+                err.innerText = "Invalid Roll Number. Admin dwara user add nahi hai.";
+            }
         }
 
         function userLogout() {
-            if(localUser && window.setUserActiveStatus) window.setUserActiveStatus(localUser.rollNumber, false);
-            if(savedPostsListener) { savedPostsListener(); savedPostsListener=null; }
-            if(chatListener) { chatListener(); chatListener=null; }
+            if(localUser && window.setUserActiveStatus) {
+                window.setUserActiveStatus(localUser.rollNumber, false);
+            }
             localStorage.removeItem('portalUser');
-            localStorage.removeItem('portalSavedPosts');
-            savedPostIds=[]; localUser=null; currentChatData={};
+            localUser = null;
+            window.localUser = null;
+            if(window.renderOnlineChats) window.renderOnlineChats();
             openHomePage();
             alert("Aap successfully log out ho gaye hain.");
         }
@@ -1303,7 +1299,6 @@
         ];
 
         function loadSubjects() {
-            // Functionality mostly replaced by Firebase realtime method, but kept for fallback
             const grid = document.getElementById('subjectsGrid');
             if(!grid) return;
             grid.innerHTML = subjects.map(sub => `
@@ -1387,13 +1382,10 @@
         }
 
         var currentOpenSubjectId = null;
-        // Keep the current subject ID available to both legacy and Firebase realtime code.
-        window.currentOpenSubjectId = null;
         
         function openSubjectPage(id) {
             closeAllSections();
             currentOpenSubjectId = id;
-            window.currentOpenSubjectId = id;
             const sub = (window.subjects && window.subjects.length > 0 ? window.subjects : subjects).find(s => String(s.id) === String(id));
             if(!sub) return;
             
@@ -1418,7 +1410,6 @@
         function openHomePage() {
             closeAllSections();
             currentOpenSubjectId = null;
-            window.currentOpenSubjectId = null;
             document.getElementById('homePage').style.display = 'block';
             window.scrollTo(0, 0);
             updateNavState('navHome');
@@ -1455,28 +1446,45 @@
 
         function openChat() {
             requireLogin(() => {
-                updateNavState('navChat'); closeAllSections();
-                document.getElementById('chatPage').style.display='block'; window.scrollTo(0,0);
-                if(window.startRealtimeChat) window.startRealtimeChat();
-                if(window.markAllChatSeen) window.markAllChatSeen();
+                updateNavState('navChat');
+                closeAllSections();
+                document.getElementById('chatPage').style.display = 'block';
+                if(window.renderOnlineChats) window.renderOnlineChats();
+                window.scrollTo(0, 0);
             });
         }
+
         function openProfile() {
             requireLogin(() => {
-                updateNavState('navProfile'); closeAllSections();
-                document.getElementById('profName').innerText=localUser.name;
-                document.getElementById('profRoll').innerText=localUser.rollNumber;
-                document.getElementById('profAvatar').innerText=localUser.rollNumber;
-                document.getElementById('profilePage').style.display='block'; window.scrollTo(0,0);
+                updateNavState('navProfile');
+                closeAllSections();
+                
+                document.getElementById('profName').innerText = localUser.name;
+                document.getElementById('profRoll').innerText = localUser.rollNumber;
+                document.getElementById('profAvatar').innerText = localUser.rollNumber; 
+                
+                document.getElementById('profilePage').style.display = 'block';
+                window.scrollTo(0, 0);
             });
         }
-        async function sendChatMessage() {
-            requireLogin(async () => {
-                const input=document.getElementById('chatInput'), message=input.value.trim();
-                if(!message || !localUser) return;
-                try { await window.sendOnlineChatMessage(localUser.rollNumber,message); input.value=''; }
-                catch(e){ alert('Chat send failed: '+e.message); }
+
+        function sendChatMessage() {
+            requireLogin(() => {
+                const input = document.getElementById('chatInput');
+                const message = input.value.trim();
+                if(message !== '') {
+                    if(window.addOnlineChat) {
+                        window.addOnlineChat(localUser.rollNumber, message);
+                    }
+                    input.value = '';
+                }
             });
+        }
+        
+        function deleteUserChat(chatId) {
+             if(window.deleteOnlineChat) {
+                 window.deleteOnlineChat(chatId);
+             }
         }
 
         window.onload = function() {
@@ -1499,7 +1507,7 @@
                 text: 'Important Notice: Communication process flow chart. Ise dhyan se padh lijiye exam ke liye jaruri hai.',
                 imgUrl: 'https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=800',
                 comments: [
-                    { id: 'com_1', userId: 'admin_1', userName: 'Admin', text: 'Sabhi students isko download kar lena.' }
+                    { id: 'com_1', userId: 'Admin', userName: 'Admin', text: 'Sabhi students isko download kar lena.' }
                 ]
             }
         ];
@@ -1521,11 +1529,8 @@
                 if(localUser && c.userId === localUser.rollNumber) {
                     deleteHTML = `<span class="delete-comment-btn" onclick="deleteComment('${post.id}', '${c.id}')" title="Delete Comment">✖</span>`;
                 }
-                const roll = c.userId || c.rollNumber || 'ADMIN';
-                const rollColor = window.getRollColor ? window.getRollColor(roll) : '#003366';
-                const label = (roll === 'admin_1' || roll === 'admin' || !c.userId) ? 'ADMIN' : roll;
                 return `<div class="comment-item">
-                            <div><span class="roll-color-dot" style="background:${rollColor}"></span><strong class="user-roll-badge" style="color:${rollColor}">${esc(label)}</strong>: ${esc(c.text)}</div>
+                            <div><strong>${c.userId}</strong>: ${c.text}</div>
                             ${deleteHTML}
                         </div>`;
             }).join('');
@@ -1556,20 +1561,8 @@
         function renderFeed(subjectId, containerId) {
             const container = document.getElementById(containerId);
             if(!container) return;
-
-            // Firebase can return numeric IDs as numbers or strings. Some older
-            // posts may also use subjectID instead of subjectId, so normalize
-            // both without changing the existing post data structure.
-            const wantedSubjectId = String(subjectId);
-            const dataset = Array.isArray(window.adminPostsData)
-                ? window.adminPostsData
-                : (Array.isArray(adminPostsData) ? adminPostsData : []);
-            const posts = dataset.filter(p => {
-                if(!p) return false;
-                const postSubjectId = p.subjectId ?? p.subjectID ?? p.subject;
-                return postSubjectId !== undefined && String(postSubjectId) === wantedSubjectId;
-            });
-
+            const posts = (window.adminPostsData || adminPostsData).filter(p => String(p.subjectId) === String(subjectId));
+            
             if(posts.length === 0) {
                 container.innerHTML = `<p style="text-align:center; color:#777;">No updates in this feed yet.</p>`;
                 return;
@@ -1601,16 +1594,29 @@
         }
 
         function addComment(postId) {
-            requireLogin(async () => {
-                const inputField=document.getElementById(`comment-input-${postId}`), text=inputField.value.trim();
-                if(!text || !localUser) return;
-                const dataset=(window.adminPostsData||adminPostsData), postIndex=dataset.findIndex(p=>p.id===postId);
-                if(postIndex>-1){
-                    if(!dataset[postIndex].comments) dataset[postIndex].comments=[];
-                    const cId='com_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
-                    dataset[postIndex].comments.push({id:cId,userId:localUser.rollNumber,userName:localUser.rollNumber,text});
-                    if(window.addOnlineComment) await window.addOnlineComment(postId,localUser.rollNumber,text,cId);
-                    inputField.value=''; refreshCurrentFeeds();
+            requireLogin(() => {
+                const inputField = document.getElementById(`comment-input-${postId}`);
+                const text = inputField.value.trim();
+                if(!text) return;
+
+                const dataset = (window.adminPostsData || adminPostsData);
+                const postIndex = dataset.findIndex(p => p.id === postId);
+                if(postIndex > -1) {
+                    if(!dataset[postIndex].comments) dataset[postIndex].comments = [];
+                    // Using only Roll Number for Anonymity Update
+                    const formatUserName = `${localUser.rollNumber}`;
+                    dataset[postIndex].comments.push({
+                        id: 'com_' + Date.now(),
+                        userId: localUser.rollNumber,
+                        userName: formatUserName,
+                        text: text
+                    });
+                    
+                    if(window.addOnlineComment) {
+                        window.addOnlineComment(postId, localUser.rollNumber, formatUserName, text);
+                    }
+                    
+                    refreshCurrentFeeds();
                 }
             });
         }
@@ -1626,12 +1632,13 @@
         }
 
         // --- NEW UPDATE: LocalStorage Save Functionality ---
-        async function toggleSavePost(postId) {
-            if(!localUser) return requireLogin(()=>toggleSavePost(postId));
-            const idx=savedPostIds.indexOf(postId);
-            if(idx>=0) savedPostIds.splice(idx,1); else savedPostIds.push(postId);
-            localStorage.setItem(fallbackSavedPrefix+localUser.rollNumber,JSON.stringify(savedPostIds));
-            if(window.setUserSavedPost) await window.setUserSavedPost(localUser.rollNumber,postId,idx<0);
+        function toggleSavePost(postId) {
+            if(savedPostIds.includes(postId)) {
+                savedPostIds = savedPostIds.filter(id => id !== postId);
+            } else {
+                savedPostIds.push(postId);
+            }
+            localStorage.setItem('portalSavedPosts', JSON.stringify(savedPostIds));
             refreshCurrentFeeds();
         }
         // ---------------------------------------------------
@@ -1688,10 +1695,9 @@
         }
     </script>
 
-<!-- ================= FIREBASE REALTIME MODULE SCRIPT ================= -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, get, set, update, remove, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, onValue, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -1727,7 +1733,8 @@ let onlineData={
   notifications:defaultNotifs,
   notices:defaultNotices,
   posts:[],
-  users:{}
+  users:{},
+  chats:[]
 };
 
 let lastNotifCount = null;
@@ -1744,6 +1751,7 @@ function applyOnlineData(d){
   onlineData.notices=arr(d&&d.notices).length?arr(d.notices):((d&&d.notices)?[]:onlineData.notices);
   onlineData.posts=arr(d&&d.posts);
   onlineData.users= (d && d.users) ? d.users : {};
+  onlineData.chats= arr(d&&d.chats);
 
   window.onlineUsersData = onlineData.users;
 
@@ -1775,8 +1783,9 @@ function applyOnlineData(d){
   renderOnlineNotifications();
   renderOnlineNotices();
   renderOnlinePosts();
+  renderOnlineChats();
 
-  if(window.currentOpenSubjectId != null && document.getElementById('subjectPage').style.display === 'block') {
+  if(window.currentOpenSubjectId && document.getElementById('subjectPage').style.display === 'block') {
       const s = onlineData.subjects.find(x => String(x.id) === String(window.currentOpenSubjectId));
       if(s) {
           document.getElementById('detailImg').src = s.image;
@@ -1784,14 +1793,35 @@ function applyOnlineData(d){
           document.getElementById('detailCode').innerText = s.code;
           document.getElementById('detailDesc').innerText = s.desc;
       }
-      renderFeed(window.currentOpenSubjectId, 'subjectFeedContainer');
   }
 
   if(document.getElementById('adminDashboardView') && document.getElementById('adminDashboardView').style.display === 'block') {
       renderAdminAll();
-      renderAdminChat();
   }
 }
+
+function renderOnlineChats() {
+    const msgBox = document.getElementById('chatMessages');
+    if(!msgBox) return;
+    
+    let html = '<div class="chat-msg received"><strong>Admin:</strong> Welcome to the CSE 1st Sem discussion group! Padhai se related koi bhi doubt yahan puchein.</div>';
+    
+    onlineData.chats.forEach(chat => {
+        let isSent = window.localUser && window.localUser.rollNumber === chat.userId;
+        let cssClass = isSent ? 'sent' : 'received';
+        let deleteHtml = isSent ? `<span class="delete-chat-btn" onclick="deleteUserChat('${chat.id}')" title="Delete Chat">✖</span>` : '';
+        html += `<div class="chat-msg ${cssClass}">
+                    <strong>${esc(chat.userId)}:</strong> ${esc(chat.text)} ${deleteHtml}
+                 </div>`;
+    });
+    
+    let isScrolledToBottom = msgBox.scrollHeight - msgBox.clientHeight <= msgBox.scrollTop + 50;
+    msgBox.innerHTML = html;
+    if(isScrolledToBottom) {
+        msgBox.scrollTop = msgBox.scrollHeight;
+    }
+}
+window.renderOnlineChats = renderOnlineChats;
 
 function renderOnlinePosts(){
   window.adminPostsData = onlineData.posts || [];
@@ -1884,8 +1914,7 @@ async function seed(){
   if(!cur.notifications) updates['portal/notifications'] = Object.fromEntries(onlineData.notifications.map(n => [n.id, n]));
   if(!cur.notices) updates['portal/notices'] = Object.fromEntries(onlineData.notices.map(n => [n.id, n]));
   if(!cur.posts) updates['portal/posts'] = {};
-  if(!cur.chat) updates['portal/chat'] = {};
-  if(!cur.savedPosts) updates['portal/savedPosts'] = {};
+  if(!cur.chats) updates['portal/chats'] = {};
   if(Object.keys(updates).length) await update(ref(db), updates);
 }
 
@@ -2062,13 +2091,24 @@ window.replaceOnlinePostImage = async function(id){
   }
 };
 
-window.addOnlineComment = async function(postId, userId, text, cId) {
-    cId = cId || ('com_' + Date.now());
-    await update(ref(db, `portal/posts/${postId}/comments/${cId}`), { id:cId, userId, userName:userId, text });
+window.addOnlineComment = async function(postId, userId, userName, text) {
+    const cId = 'com_' + Date.now();
+    await update(ref(db, `portal/posts/${postId}/comments/${cId}`), {
+        id: cId, userId, userName, text
+    });
 };
 
 window.deleteOnlineComment = async function(postId, commentId) {
     await remove(ref(db, `portal/posts/${postId}/comments/${commentId}`));
+};
+
+window.addOnlineChat = async function(userId, text) {
+    const id = 'chat_' + Date.now();
+    await set(ref(db, 'portal/chats/' + id), { id, userId, text, timestamp: Date.now() });
+};
+
+window.deleteOnlineChat = async function(chatId) {
+    await remove(ref(db, 'portal/chats/' + chatId));
 };
 
 window.saveOnlineUser = async function(){
@@ -2099,34 +2139,6 @@ window.deleteOnlineUser = async function(roll) {
 window.setUserActiveStatus = async function(roll, status) {
     await update(ref(db, 'portal/users/' + roll), { isActive: status });
 };
-
-function getRollColor(roll){
-  const palette=['#2563eb','#dc2626','#059669','#7c3aed','#ea580c','#0891b2','#be123c','#4f46e5','#16a34a','#c026d3','#0f766e','#b45309'];
-  let h=0; for(let i=0;i<String(roll||'').length;i++) h=(h*31+String(roll).charCodeAt(i))>>>0; return palette[h%palette.length];
-}
-window.getRollColor=getRollColor;
-window.loadUserSavedPosts=async function(roll){
-  if(savedPostsListener){savedPostsListener();savedPostsListener=null;}
-  const key=fallbackSavedPrefix+roll; savedPostIds=JSON.parse(localStorage.getItem(key)||'[]');
-  try{const snap=await get(ref(db,'portal/savedPosts/'+roll)); const d=snap.val()||{}; savedPostIds=Object.keys(d).filter(k=>d[k]===true); localStorage.setItem(key,JSON.stringify(savedPostIds));}catch(e){console.warn('Saved posts fallback:',e.message);}
-  savedPostsListener=onValue(ref(db,'portal/savedPosts/'+roll),snap=>{const d=snap.val()||{};savedPostIds=Object.keys(d).filter(k=>d[k]===true);localStorage.setItem(key,JSON.stringify(savedPostIds));refreshCurrentFeeds();});
-  refreshCurrentFeeds();
-};
-window.setUserSavedPost=async function(roll,postId,saved){await set(ref(db,'portal/savedPosts/'+roll+'/'+postId),!!saved);};
-function chatArray(v){return v?Object.entries(v).map(([id,x])=>({id,...x})).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0)):[];}
-function renderRealtimeChat(data){
-  currentChatData=data||{}; const box=document.getElementById('chatMessages'); if(!box)return; const chats=chatArray(data);
-  if(!chats.length){box.innerHTML='<div class="chat-msg received"><strong>ADMIN:</strong> Welcome to the CSE 1st Sem discussion group!</div>';return;}
-  box.innerHTML=chats.map(m=>{const mine=localUser&&m.userId===localUser.rollNumber,color=getRollColor(m.userId||'ADMIN'),seen=Object.keys(m.seenBy||{}).length,del=mine?`<span class="chat-delete-btn" onclick="deleteMyChat('${m.id}')">Delete</span>`:'';return `<div class="chat-msg ${mine?'sent':'received'}"><div><span class="roll-color-dot" style="background:${color}"></span><strong class="chat-roll" style="color:${mine?'inherit':color}">${esc(m.userId||'ADMIN')}</strong>${del}</div><div>${esc(m.text)}</div><span class="chat-seen-count" title="Seen by users">${seen} 👁</span></div>`;}).join('');
-  box.scrollTop=box.scrollHeight; if(document.getElementById('chatPage')?.style.display==='block') markAllChatSeen();
-}
-window.startRealtimeChat=function(){if(chatListener)return;chatListener=onValue(ref(db,'portal/chat'),snap=>{renderRealtimeChat(snap.val()||{});renderAdminChat();},err=>console.error('Chat realtime error',err));};
-window.sendOnlineChatMessage=async function(roll,text){const node=push(ref(db,'portal/chat'));await set(node,{userId:roll,text,createdAt:Date.now(),seenBy:{[roll]:true}});};
-window.markAllChatSeen=async function(){if(!localUser)return;const updates={};chatArray(currentChatData).forEach(m=>{if(!m.seenBy||!m.seenBy[localUser.rollNumber])updates['portal/chat/'+m.id+'/seenBy/'+localUser.rollNumber]=true;});if(Object.keys(updates).length)await update(ref(db),updates);};
-window.deleteMyChat=async function(id){if(!localUser)return;const m=currentChatData&&currentChatData[id];if(!m||m.userId!==localUser.rollNumber)return alert('Aap sirf apna chat delete kar sakte hain.');if(confirm('Apna chat delete karein?'))await remove(ref(db,'portal/chat/'+id));};
-window.adminDeleteChat=async function(id){if(!auth.currentUser||auth.currentUser.email!==ADMIN_EMAIL)return alert('Admin login required.');await remove(ref(db,'portal/chat/'+id));};
-function renderAdminChat(){const c=document.getElementById('adminChatList');if(!c)return;const chats=chatArray(currentChatData);c.innerHTML=chats.length?chats.slice().reverse().map(m=>`<div class="admin-card"><div class="admin-row"><strong style="color:${getRollColor(m.userId)}">${esc(m.userId||'ADMIN')}</strong><span class="admin-small">${m.createdAt?new Date(m.createdAt).toLocaleString():''}</span><button class="admin-btn red" onclick="adminDeleteChat('${m.id}')">Delete Chat</button></div><div style="margin-top:8px">${esc(m.text)}</div></div>`).join(''):'<div class="admin-card">No chat messages.</div>';}
-window.renderAdminChat=renderAdminChat;
 
 function renderAdminAll(){
  const b = onlineData.branding;
@@ -2202,6 +2214,17 @@ function renderAdminAll(){
      </div>
    </div>
  `).join('');
+ 
+ document.getElementById('adminChatsList').innerHTML = (onlineData.chats || []).map(c => `
+   <div class="admin-card">
+     <div class="admin-row" style="justify-content: space-between;">
+       <div>
+         <strong>${esc(c.userId)}:</strong> ${esc(c.text)}
+       </div>
+       <button class="admin-btn red" onclick="deleteOnlineChat('${c.id}')">Delete</button>
+     </div>
+   </div>
+ `).join('');
 }
 
 document.querySelectorAll('.admin-tab').forEach(btn => btn.addEventListener('click', () => {
@@ -2226,7 +2249,6 @@ onAuthStateChanged(auth, async user => {
 });
 
 subscribe();
-if(localUser) setTimeout(()=>{if(window.loadUserSavedPosts)window.loadUserSavedPosts(localUser.rollNumber);if(window.startRealtimeChat)window.startRealtimeChat();},500);
 </script>
 
 </body>
