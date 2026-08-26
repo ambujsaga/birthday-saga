@@ -822,6 +822,10 @@
         }
         .chat-msg.received { background: #f1f1f1; align-self: flex-start; border-bottom-left-radius: 0; }
         .chat-msg.sent { background: var(--primary-blue); color: white; align-self: flex-end; border-bottom-right-radius: 0; }
+        
+        .delete-chat-btn { color: #ffcccc; cursor: pointer; font-size: 0.9rem; margin-left: 6px; font-weight: bold; transition: 0.2s; }
+        .delete-chat-btn:hover { color: #ff3333; }
+        
         .chat-input-area {
             display: flex; padding: 10px; border-top: 1px solid #eee; gap: 10px;
         }
@@ -833,6 +837,53 @@
         }
         .chat-input-area button:hover { background: #e68a00; }
         
+        /* ================= CHAT ENHANCEMENTS ================= */
+        .chat-date-divider {
+            text-align: center;
+            margin: 12px 0 6px 0;
+            position: relative;
+        }
+        .chat-date-divider span {
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .chat-msg-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            margin-top: 4px;
+            font-size: 0.7rem;
+            opacity: 0.85;
+        }
+        .chat-msg.sent .chat-msg-footer {
+            color: #e2e8f0;
+        }
+        .chat-msg.received .chat-msg-footer {
+            color: #64748b;
+        }
+        .chat-time {
+            font-size: 0.7rem;
+        }
+        .chat-seen-count {
+            font-size: 0.7rem;
+            background: rgba(0,0,0,0.08);
+            padding: 1px 5px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .chat-msg.sent .chat-seen-count {
+            background: rgba(255,255,255,0.2);
+        }
+        /* ================= END CHAT ENHANCEMENTS ================= */
+
         .profile-card {
             background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 30px; text-align: center; border-top: 3px solid var(--accent-orange);
         }
@@ -888,7 +939,6 @@
         <a href="#" onclick="openSubjectPage(5)">💻 Fundamentals of IT (FCIT)</a>
     </div>
 
-    <!-- ================= Top Navigation Inside homePage ================= -->
     <div id="homePage">
         
         <header class="navbar">
@@ -999,8 +1049,7 @@
         </table>
 
         <div class="feed-container" id="subjectFeedContainer">
-            <!-- Posts will render here -->
-        </div>
+            </div>
     </div>
 
     <div id="savedPage" class="container" style="display: none;">
@@ -1009,8 +1058,7 @@
         </div>
         <h2 class="section-title">Saved Posts</h2>
         <div class="feed-container" id="savedFeedContainer">
-            <!-- Saved Posts will render here -->
-        </div>
+            </div>
     </div>
 
     <div id="chatPage" class="container" style="display: none;">
@@ -1020,8 +1068,7 @@
         <h2 class="section-title">Class Discussion</h2>
         <div class="chat-container">
             <div class="chat-messages" id="chatMessages">
-                <div class="chat-msg received"><strong>Admin:</strong> Welcome to the CSE 1st Sem discussion group! Padhai se related koi bhi doubt yahan puchein.</div>
-            </div>
+                </div>
             <div class="chat-input-area">
                 <input type="text" id="chatInput" placeholder="Type your message here..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
                 <button onclick="sendChatMessage()">Send</button>
@@ -1046,7 +1093,6 @@
         </div>
     </div>
 
-    <!-- ================= FIREBASE ONLINE ADMIN PANEL ================= -->
     <div id="adminModal" class="admin-modal">
       <div class="admin-box">
         <div class="admin-head"><h2>⚙️ Online Admin Control Panel</h2><span class="admin-close" onclick="closeAdminPanel()">&times;</span></div>
@@ -1068,6 +1114,7 @@
             <button class="admin-tab" data-tab="notices">📢 Notices</button>
             <button class="admin-tab" data-tab="posts">📰 Posts</button>
             <button class="admin-tab" data-tab="users">👥 Users</button>
+            <button class="admin-tab" data-tab="chats">💬 Chats</button>
           </div>
           <div class="admin-content">
             <div id="adminStatus" class="admin-status">Connecting to Firebase…</div>
@@ -1103,6 +1150,10 @@
               </div>
               <div id="adminUsersList"></div>
             </section>
+            
+            <section id="tab-chats" class="admin-section">
+                <div id="adminChatsList"></div>
+            </section>
 
             <div style="padding-top:10px;border-top:1px solid #ddd"><button class="admin-btn red" onclick="firebaseAdminLogout()">Logout Admin</button></div>
           </div>
@@ -1110,13 +1161,11 @@
       </div>
     </div>
 
-    <!-- ================= FULLSCREEN IMAGE VIEWER MODAL ================= -->
     <div id="imageViewerModal" class="image-viewer-modal" style="display: none;">
         <span class="viewer-close-btn" onclick="closeImageViewer()">&times;</span>
         <img id="viewerImageSrc" class="viewer-img" src="" alt="Original Size Image">
     </div>
 
-    <!-- ================= USER LOGIN MODAL ================= -->
     <div id="userLoginModal" class="user-login-modal">
         <div class="user-login-box">
             <h2>Portal Login</h2>
@@ -1128,7 +1177,6 @@
         </div>
     </div>
 
-    <!-- ================= BOTTOM NAVIGATION BAR ================= -->
     <nav class="bottom-nav">
         <div class="bottom-nav-item active" id="navHome" onclick="openHomePage()">
             <svg viewBox="0 0 24 24"><path d="M12 2.099l-9 6.75v11.151h5.5v-6h7v6h5.5v-11.151z"/></svg>
@@ -1152,7 +1200,54 @@
         // ================= JAVASCRIPT START ================= //
         
         let localUser = JSON.parse(localStorage.getItem('portalUser')) || null;
+        window.localUser = localUser;
         let pendingAction = null;
+
+        // --- NEW UPDATE: Dynamic Unique Color Generator per Roll Number ---
+        function getColorForRoll(roll) {
+            if (!roll) return '#003366';
+            let hash = 0;
+            const str = String(roll);
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const colors = [
+                '#d90429', '#0077b6', '#2b9348', '#d62828', '#8338ec',
+                '#e63946', '#2a9d8f', '#f4a261', '#e76f51', '#6a0572',
+                '#118ab2', '#3a86ff', '#9b5de5', '#c7253e', '#10b981'
+            ];
+            return colors[Math.abs(hash) % colors.length];
+        }
+        window.getColorForRoll = getColorForRoll;
+
+        function formatChatTime(ts) {
+            if (!ts) return '';
+            const d = new Date(ts);
+            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+        }
+        window.formatChatTime = formatChatTime;
+
+        function getChatDateLabel(ts) {
+            if (!ts) return 'Today';
+            const msgDate = new Date(ts);
+            const today = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(today.getDate() - 1);
+
+            const isSameDay = (d1, d2) =>
+                d1.getFullYear() === d2.getFullYear() &&
+                d1.getMonth() === d2.getMonth() &&
+                d1.getDate() === d2.getDate();
+
+            if (isSameDay(msgDate, today)) {
+                return 'Today';
+            } else if (isSameDay(msgDate, yesterday)) {
+                return 'Yesterday';
+            } else {
+                return msgDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            }
+        }
+        window.getChatDateLabel = getChatDateLabel;
         
         // --- NEW UPDATE: LocalStorage for Saved Posts ---
         let savedPostIds = JSON.parse(localStorage.getItem('portalSavedPosts')) || [];
@@ -1182,10 +1277,12 @@
             const users = window.onlineUsersData || {};
             if(users[roll]) {
                 localUser = users[roll];
+                window.localUser = localUser;
                 localStorage.setItem('portalUser', JSON.stringify(localUser));
                 document.getElementById('userLoginModal').style.display = 'none';
                 
                 if(window.setUserActiveStatus) window.setUserActiveStatus(roll, true);
+                if(window.renderOnlineChats) window.renderOnlineChats();
 
                 if(pendingAction) {
                     pendingAction();
@@ -1202,6 +1299,8 @@
             }
             localStorage.removeItem('portalUser');
             localUser = null;
+            window.localUser = null;
+            if(window.renderOnlineChats) window.renderOnlineChats();
             openHomePage();
             alert("Aap successfully log out ho gaye hain.");
         }
@@ -1293,7 +1392,6 @@
         ];
 
         function loadSubjects() {
-            // Functionality mostly replaced by Firebase realtime method, but kept for fallback
             const grid = document.getElementById('subjectsGrid');
             if(!grid) return;
             grid.innerHTML = subjects.map(sub => `
@@ -1444,6 +1542,7 @@
                 updateNavState('navChat');
                 closeAllSections();
                 document.getElementById('chatPage').style.display = 'block';
+                if(window.renderOnlineChats) window.renderOnlineChats();
                 window.scrollTo(0, 0);
             });
         }
@@ -1467,12 +1566,18 @@
                 const input = document.getElementById('chatInput');
                 const message = input.value.trim();
                 if(message !== '') {
-                    const msgBox = document.getElementById('chatMessages');
-                    msgBox.innerHTML += `<div class="chat-msg sent"><strong>${localUser.name} (${localUser.rollNumber}):</strong> ${message}</div>`;
+                    if(window.addOnlineChat) {
+                        window.addOnlineChat(localUser.rollNumber, message);
+                    }
                     input.value = '';
-                    msgBox.scrollTop = msgBox.scrollHeight;
                 }
             });
+        }
+        
+        function deleteUserChat(chatId) {
+             if(window.deleteOnlineChat) {
+                 window.deleteOnlineChat(chatId);
+             }
         }
 
         window.onload = function() {
@@ -1495,7 +1600,7 @@
                 text: 'Important Notice: Communication process flow chart. Ise dhyan se padh lijiye exam ke liye jaruri hai.',
                 imgUrl: 'https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=800',
                 comments: [
-                    { id: 'com_1', userId: 'admin_1', userName: 'Admin', text: 'Sabhi students isko download kar lena.' }
+                    { id: 'com_1', userId: 'Admin', userName: 'Admin', text: 'Sabhi students isko download kar lena.' }
                 ]
             }
         ];
@@ -1517,8 +1622,10 @@
                 if(localUser && c.userId === localUser.rollNumber) {
                     deleteHTML = `<span class="delete-comment-btn" onclick="deleteComment('${post.id}', '${c.id}')" title="Delete Comment">✖</span>`;
                 }
+                const userRoll = c.userId || c.userName;
+                const rollColor = getColorForRoll(userRoll);
                 return `<div class="comment-item">
-                            <div><strong>${c.userName}</strong>: ${c.text}</div>
+                            <div><strong style="color: ${rollColor};">${userRoll}</strong>: ${c.text}</div>
                             ${deleteHTML}
                         </div>`;
             }).join('');
@@ -1591,7 +1698,8 @@
                 const postIndex = dataset.findIndex(p => p.id === postId);
                 if(postIndex > -1) {
                     if(!dataset[postIndex].comments) dataset[postIndex].comments = [];
-                    const formatUserName = `${localUser.name} (${localUser.rollNumber})`;
+                    // Using only Roll Number for Anonymity Update
+                    const formatUserName = `${localUser.rollNumber}`;
                     dataset[postIndex].comments.push({
                         id: 'com_' + Date.now(),
                         userId: localUser.rollNumber,
@@ -1682,7 +1790,6 @@
         }
     </script>
 
-<!-- ================= FIREBASE REALTIME MODULE SCRIPT ================= -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -1721,7 +1828,8 @@ let onlineData={
   notifications:defaultNotifs,
   notices:defaultNotices,
   posts:[],
-  users:{}
+  users:{},
+  chats:[]
 };
 
 let lastNotifCount = null;
@@ -1738,6 +1846,7 @@ function applyOnlineData(d){
   onlineData.notices=arr(d&&d.notices).length?arr(d.notices):((d&&d.notices)?[]:onlineData.notices);
   onlineData.posts=arr(d&&d.posts);
   onlineData.users= (d && d.users) ? d.users : {};
+  onlineData.chats= arr(d&&d.chats);
 
   window.onlineUsersData = onlineData.users;
 
@@ -1769,6 +1878,7 @@ function applyOnlineData(d){
   renderOnlineNotifications();
   renderOnlineNotices();
   renderOnlinePosts();
+  renderOnlineChats();
 
   if(window.currentOpenSubjectId && document.getElementById('subjectPage').style.display === 'block') {
       const s = onlineData.subjects.find(x => String(x.id) === String(window.currentOpenSubjectId));
@@ -1784,6 +1894,61 @@ function applyOnlineData(d){
       renderAdminAll();
   }
 }
+
+function renderOnlineChats() {
+    const msgBox = document.getElementById('chatMessages');
+    if(!msgBox) return;
+    
+    let html = '';
+    let lastDateLabel = '';
+
+    const sortedChats = [...onlineData.chats].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+    if(sortedChats.length === 0) {
+        html = '<div class="chat-msg received"><strong>Admin:</strong> Welcome to the CSE 1st Sem discussion group! Padhai se related koi bhi doubt yahan puchein.</div>';
+    } else {
+        sortedChats.forEach(chat => {
+            const dateLabel = window.getChatDateLabel(chat.timestamp);
+            if (dateLabel !== lastDateLabel) {
+                html += `<div class="chat-date-divider"><span>${dateLabel}</span></div>`;
+                lastDateLabel = dateLabel;
+            }
+
+            let isSent = window.localUser && window.localUser.rollNumber === chat.userId;
+            let cssClass = isSent ? 'sent' : 'received';
+            let deleteHtml = isSent ? `<span class="delete-chat-btn" onclick="deleteUserChat('${chat.id}')" title="Delete Chat">✖</span>` : '';
+
+            let seenObj = chat.seenBy || {};
+            let seenCount = Object.keys(seenObj).length;
+
+            if (window.localUser && window.localUser.rollNumber && !seenObj[window.localUser.rollNumber]) {
+                if (window.markChatSeen) {
+                    window.markChatSeen(chat.id, window.localUser.rollNumber);
+                }
+            }
+
+            const rollColor = window.getColorForRoll(chat.userId);
+            const timeStr = window.formatChatTime(chat.timestamp);
+
+            html += `<div class="chat-msg ${cssClass}">
+                        <div style="font-weight: bold; margin-bottom: 3px; color: ${rollColor};">${esc(chat.userId)}</div>
+                        <div style="word-break: break-word;">${esc(chat.text)}</div>
+                        <div class="chat-msg-footer">
+                            <span class="chat-time">${timeStr}</span>
+                            <span class="chat-seen-count" title="Seen by ${seenCount} people">👁️ ${seenCount}</span>
+                            ${deleteHtml}
+                        </div>
+                     </div>`;
+        });
+    }
+    
+    let isScrolledToBottom = msgBox.scrollHeight - msgBox.clientHeight <= msgBox.scrollTop + 50;
+    msgBox.innerHTML = html;
+    if(isScrolledToBottom) {
+        msgBox.scrollTop = msgBox.scrollHeight;
+    }
+}
+window.renderOnlineChats = renderOnlineChats;
 
 function renderOnlinePosts(){
   window.adminPostsData = onlineData.posts || [];
@@ -1876,6 +2041,7 @@ async function seed(){
   if(!cur.notifications) updates['portal/notifications'] = Object.fromEntries(onlineData.notifications.map(n => [n.id, n]));
   if(!cur.notices) updates['portal/notices'] = Object.fromEntries(onlineData.notices.map(n => [n.id, n]));
   if(!cur.posts) updates['portal/posts'] = {};
+  if(!cur.chats) updates['portal/chats'] = {};
   if(Object.keys(updates).length) await update(ref(db), updates);
 }
 
@@ -2063,6 +2229,28 @@ window.deleteOnlineComment = async function(postId, commentId) {
     await remove(ref(db, `portal/posts/${postId}/comments/${commentId}`));
 };
 
+window.addOnlineChat = async function(userId, text) {
+    const id = 'chat_' + Date.now();
+    const seenBy = {};
+    if (userId) seenBy[userId] = true;
+    await set(ref(db, 'portal/chats/' + id), { 
+        id, 
+        userId, 
+        text, 
+        timestamp: Date.now(),
+        seenBy 
+    });
+};
+
+window.markChatSeen = async function(chatId, rollNumber) {
+    if (!chatId || !rollNumber) return;
+    await update(ref(db, `portal/chats/${chatId}/seenBy`), { [rollNumber]: true });
+};
+
+window.deleteOnlineChat = async function(chatId) {
+    await remove(ref(db, 'portal/chats/' + chatId));
+};
+
 window.saveOnlineUser = async function(){
     const name = document.getElementById('adminNewUserName').value.trim();
     const roll = document.getElementById('adminNewUserRoll').value.trim();
@@ -2163,6 +2351,17 @@ function renderAdminAll(){
      <div style="margin-top: 15px;">
        <button class="admin-btn" onclick="editOnlineUser('${u.rollNumber}')">Edit User</button>
        <button class="admin-btn red" onclick="deleteOnlineUser('${u.rollNumber}')">Delete User</button>
+     </div>
+   </div>
+ `).join('');
+ 
+ document.getElementById('adminChatsList').innerHTML = (onlineData.chats || []).map(c => `
+   <div class="admin-card">
+     <div class="admin-row" style="justify-content: space-between;">
+       <div>
+         <strong>${esc(c.userId)}:</strong> ${esc(c.text)}
+       </div>
+       <button class="admin-btn red" onclick="deleteOnlineChat('${c.id}')">Delete</button>
      </div>
    </div>
  `).join('');
