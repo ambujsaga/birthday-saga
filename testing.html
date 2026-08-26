@@ -3378,5 +3378,54 @@ onAuthStateChanged(auth, user => {
   setInterval(function(){syncFeedAndProfileMeta();ensureLongPress();},1000);
 })();
 </script>
+
+<!-- ================= ADDITIVE GLOBAL FEED ORIGINAL IMAGE LONG-PRESS UPDATE ================= -->
+
+<!-- ================= ADDITIVE GLOBAL FEED ORIGINAL IMAGE LONG-PRESS UPDATE ================= -->
+<style>
+/* Global Feed photos stay 4:3 normally; original-size viewer is opened only after 3 seconds. */
+.global-user-post .user-post-carousel img{
+  aspect-ratio:4/3;
+  object-fit:cover;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+#userPostOriginalModal .user-post-original-image{
+  max-width:96vw;
+  max-height:92vh;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+}
+</style>
+<script>
+/* Additive safety layer: do not replace the old renderer/methods.
+   Feed images use the existing bindLongPress() method, which is exactly 3 seconds.
+   Once opened, tapping the original-size viewer returns to the normal 4:3 feed. */
+(function(){
+  function ensureGlobalFeedOriginalLongPress(){
+    document.querySelectorAll('#globalFeedList [data-userpost-img]').forEach(function(img){
+      if(img.dataset.globalOriginalLongPressBound === '1') return;
+      if(typeof bindLongPress === 'function'){
+        bindLongPress(img, img.getAttribute('data-userpost-img'));
+        img.dataset.globalOriginalLongPressBound = '1';
+      }
+    });
+  }
+
+  var oldRenderGlobalFeed = window.renderGlobalFeed;
+  if(typeof oldRenderGlobalFeed === 'function'){
+    window.renderGlobalFeed = function(){
+      oldRenderGlobalFeed();
+      setTimeout(ensureGlobalFeedOriginalLongPress, 0);
+    };
+  }
+
+  /* Re-bind after realtime/feed refreshes without changing existing feed logic. */
+  setInterval(ensureGlobalFeedOriginalLongPress, 1000);
+})();
+</script>
+
 </body>
 </html>
