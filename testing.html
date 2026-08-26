@@ -156,15 +156,40 @@
         }
 
         .notif-item {
+            position: relative;
             padding: 12px 15px;
             border-bottom: 1px solid #eee;
             font-size: 0.85rem;
             color: #333;
             transition: background 0.2s;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .notif-item:hover {
             background-color: #f8f9fa;
+        }
+
+        .notif-item.long-pressing {
+            background-color: #fff3cd !important;
+        }
+
+        .notif-delete-pop {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            background: var(--sarkari-red);
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            animation: fadeIn 0.2s ease-in-out;
+            z-index: 10;
         }
 
         .notif-item .notif-time {
@@ -1070,7 +1095,7 @@
             <div class="chat-messages" id="chatMessages">
                 </div>
             <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Type your message here..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                <input type="text" id="chatInput" placeholder="Type your message here... (use @RollNo to mention)" onkeypress="if(event.key === 'Enter') sendChatMessage()">
                 <button onclick="sendChatMessage()">Send</button>
             </div>
         </div>
@@ -1203,7 +1228,7 @@
         window.localUser = localUser;
         let pendingAction = null;
 
-        // --- NEW UPDATE: Dynamic Unique Color Generator per Roll Number ---
+        // Dynamic Unique Color Generator per Roll Number
         function getColorForRoll(roll) {
             if (!roll) return '#003366';
             let hash = 0;
@@ -1271,9 +1296,7 @@
         }
         window.getChatDateLabel = getChatDateLabel;
         
-        // --- NEW UPDATE: LocalStorage for Saved Posts ---
         let savedPostIds = JSON.parse(localStorage.getItem('portalSavedPosts')) || [];
-        // ------------------------------------------------
 
         function requireLogin(actionCallback) {
             if (localUser) {
@@ -1430,6 +1453,39 @@
             `).join('');
         }
 
+        // 3-SECOND LONG PRESS TO DELETE NOTIFICATION IMPLEMENTATION
+        let notifPressTimer = null;
+        window.handleNotifTouchStart = function(id, elem) {
+            document.querySelectorAll('.notif-delete-pop').forEach(p => p.remove());
+            elem.classList.add('long-pressing');
+            notifPressTimer = setTimeout(() => {
+                elem.classList.remove('long-pressing');
+                window.showNotifDeletePop(id, elem);
+            }, 3000); // 3 Seconds Long Press Trigger
+        };
+
+        window.handleNotifTouchEnd = function(elem) {
+            if(notifPressTimer) {
+                clearTimeout(notifPressTimer);
+                notifPressTimer = null;
+            }
+            if(elem) elem.classList.remove('long-pressing');
+        };
+
+        window.showNotifDeletePop = function(id, elem) {
+            document.querySelectorAll('.notif-delete-pop').forEach(p => p.remove());
+            const btn = document.createElement('button');
+            btn.className = 'notif-delete-pop';
+            btn.innerHTML = '🗑️ Delete';
+            btn.onclick = function(e) {
+                e.stopPropagation();
+                if(window.deleteOnlineNotification) {
+                    window.deleteOnlineNotification(id);
+                }
+            };
+            elem.appendChild(btn);
+        };
+
         function renderNotifications() {
             const listContainer = document.getElementById('notifList');
             if(!listContainer) return;
@@ -1438,8 +1494,14 @@
                 return;
             }
             listContainer.innerHTML = notifications.map(n => `
-                <div class="notif-item">
-                    <div>${n.text}</div>
+                <div class="notif-item" id="notif-item-${n.id}"
+                     onmousedown="window.handleNotifTouchStart('${n.id}', this)"
+                     onmouseup="window.handleNotifTouchEnd(this)"
+                     onmouseleave="window.handleNotifTouchEnd(this)"
+                     ontouchstart="window.handleNotifTouchStart('${n.id}', this)"
+                     ontouchend="window.handleNotifTouchEnd(this)"
+                     ontouchcancel="window.handleNotifTouchEnd(this)">
+                    <div style="padding-right: 50px;">${n.text}</div>
                     <div class="notif-time">${n.time}</div>
                 </div>
             `).join('');
@@ -1720,7 +1782,6 @@
                 const postIndex = dataset.findIndex(p => p.id === postId);
                 if(postIndex > -1) {
                     if(!dataset[postIndex].comments) dataset[postIndex].comments = [];
-                    // Using only Roll Number for Anonymity Update
                     const formatUserName = `${localUser.rollNumber}`;
                     dataset[postIndex].comments.push({
                         id: 'com_' + Date.now(),
@@ -1748,7 +1809,6 @@
             }
         }
 
-        // --- NEW UPDATE: LocalStorage Save Functionality ---
         function toggleSavePost(postId) {
             if(savedPostIds.includes(postId)) {
                 savedPostIds = savedPostIds.filter(id => id !== postId);
@@ -1758,7 +1818,6 @@
             localStorage.setItem('portalSavedPosts', JSON.stringify(savedPostIds));
             refreshCurrentFeeds();
         }
-        // ---------------------------------------------------
 
         function refreshCurrentFeeds() {
             if(document.getElementById('savedPage').style.display === 'block') {
@@ -1982,7 +2041,6 @@ function renderOnlinePosts(){
   if(typeof window.refreshCurrentFeeds === 'function') window.refreshCurrentFeeds();
 }
 
-// --- NEW UPDATE: Realtime Post Display on Home Page Subjects ---
 function renderOnlineSubjects(){
   const grid = document.getElementById('subjectsGrid');
   if(!grid) return;
@@ -2021,17 +2079,26 @@ function renderOnlineSubjects(){
     `;
   }).join('');
 }
-// ---------------------------------------------------------------
 
 function renderOnlineNotifications(){
   const c = document.getElementById('notifList');
   if(!c) return;
   
-  const sortedNotifs = [...onlineData.notifications].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  const currentUserRoll = window.localUser ? String(window.localUser.rollNumber) : null;
+
+  const sortedNotifs = [...onlineData.notifications]
+    .filter(n => !n.targetRoll || (currentUserRoll && String(n.targetRoll) === currentUserRoll))
+    .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
   c.innerHTML = sortedNotifs.length ? sortedNotifs.map(n => `
-    <div class="notif-item">
-      <div>${esc(n.text)}</div>
+    <div class="notif-item" id="notif-item-${esc(n.id)}"
+         onmousedown="window.handleNotifTouchStart('${esc(n.id)}', this)"
+         onmouseup="window.handleNotifTouchEnd(this)"
+         onmouseleave="window.handleNotifTouchEnd(this)"
+         ontouchstart="window.handleNotifTouchStart('${esc(n.id)}', this)"
+         ontouchend="window.handleNotifTouchEnd(this)"
+         ontouchcancel="window.handleNotifTouchEnd(this)">
+      <div style="padding-right: 55px;">${esc(n.text)}</div>
       <div class="notif-time">${n.timestamp ? window.formatNotificationTime(n.timestamp) : esc(n.time||'')}</div>
     </div>
   `).join('') : `<div class="notif-item">No notifications yet.</div>`;
@@ -2189,6 +2256,7 @@ window.addOnlineNotification = async function(){
   await set(ref(db, 'portal/notifications/' + id), { text, timestamp: Date.now() });
   document.getElementById('newNotifText').value = '';
 };
+
 window.deleteOnlineNotification = async id => remove(ref(db, 'portal/notifications/' + id));
 
 window.addOnlineNotice = async function(){
@@ -2265,6 +2333,7 @@ window.deleteOnlineComment = async function(postId, commentId) {
     await remove(ref(db, `portal/posts/${postId}/comments/${commentId}`));
 };
 
+// AUTOMATIC MENTION NOTIFICATION IN CHAT FEED
 window.addOnlineChat = async function(userId, text) {
     const id = 'chat_' + Date.now();
     const seenBy = {};
@@ -2275,6 +2344,28 @@ window.addOnlineChat = async function(userId, text) {
         text, 
         timestamp: Date.now(),
         seenBy 
+    });
+
+    // Detect @mention (e.g. @21001 or @rollNumber)
+    const mentionRegex = /@([a-zA-Z0-9_-]+)/g;
+    let match;
+    const mentionedRolls = new Set();
+    while ((match = mentionRegex.exec(text)) !== null) {
+        mentionedRolls.add(match[1]);
+    }
+
+    mentionedRolls.forEach(async (targetRoll) => {
+        const notifId = 'n_mention_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+        const snippetText = text.length > 35 ? text.substring(0, 35) + '...' : text;
+        const notifText = `💬 Roll No. ${userId} mentioned you (@${targetRoll}) in Chat: "${snippetText}"`;
+        
+        await set(ref(db, 'portal/notifications/' + notifId), {
+            id: notifId,
+            text: notifText,
+            timestamp: Date.now(),
+            targetRoll: targetRoll,
+            senderRoll: userId
+        });
     });
 };
 
