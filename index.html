@@ -837,9 +837,6 @@
         .profile-card {
             background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 30px; text-align: center; border-top: 3px solid var(--accent-orange);
         }
-        .profile-avatar {
-            font-size: 4rem; margin-bottom: 15px; display: inline-block; background: #f4f6f9; border-radius: 50%; padding: 20px;
-        }
         .profile-name { color: var(--primary-blue); font-size: 1.5rem; margin-bottom: 5px; }
         .profile-role { color: #666; margin-bottom: 20px; font-weight: 500; }
         .profile-details { text-align: left; background: #f9f9f9; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #eee; }
@@ -862,6 +859,18 @@
     </style>
 </head>
 <body>
+
+    <!-- ================= USER LOGIN PAGE ================= -->
+    <div id="loginPage" class="container" style="display: none;">
+        <div class="profile-card" style="max-width: 400px; margin: 40px auto; border-top: 5px solid var(--primary-blue);">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🔐</div>
+            <h2 style="color: var(--primary-blue); margin-bottom: 15px;">Student Portal Login</h2>
+            <p style="margin-bottom: 25px; color: #666; font-size: 0.95rem;">Please enter your assigned Roll Number to access your account.</p>
+            <input type="text" id="loginRollNumber" placeholder="Enter Roll Number" autocomplete="off" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; text-align: center; font-weight: bold;">
+            <button class="mmit-back-btn" style="width: 100%; font-size: 1rem;" onclick="performLogin()">Login Access</button>
+            <p id="loginError" style="color: red; margin-top: 15px; font-size: 0.9rem; display: none;">Invalid Roll Number! Not found in system.</p>
+        </div>
+    </div>
 
     <div id="sideMenu" class="side-menu">
         <span class="close-menu" onclick="toggleMenu()">&times;</span>
@@ -1024,16 +1033,16 @@
         </div>
         <h2 class="section-title">Student Profile</h2>
         <div class="profile-card">
-            <div class="profile-avatar">👨‍💻</div>
-            <h3 class="profile-name">Ambuj Kumar Saga</h3>
+            <!-- Avatar updated to show Roll Number -->
+            <div id="profileAvatar" style="font-size: 1.8rem; font-weight: bold; color: white; background: var(--primary-blue); border-radius: 50%; width: 100px; height: 100px; line-height: 100px; margin: 0 auto 15px auto; overflow: hidden;">---</div>
+            <h3 class="profile-name" id="profileName">Loading...</h3>
             <p class="profile-role">Diploma in CSE (1st Sem)</p>
             <div class="profile-details">
-                <p><strong>Registration No:</strong> <span>UP2026CSE101</span></p>
-                <p><strong>Email ID:</strong> <span>ambuj.saga@student.bteup.ac.in</span></p>
+                <p><strong>Roll No (ID):</strong> <span id="profileRoll">---</span></p>
                 <p><strong>College:</strong> <span>MMIT Gorakhpur</span></p>
                 <p><strong>Status:</strong> <span style="color: green; font-weight: bold;">Active</span></p>
             </div>
-            <button class="logout-btn" onclick="alert('Logging out...')">Log Out</button>
+            <button class="logout-btn" onclick="performLogout()">Log Out</button>
         </div>
     </div>
 
@@ -1058,6 +1067,7 @@
             <button class="admin-tab" data-tab="notifications">🔔 Notifications</button>
             <button class="admin-tab" data-tab="notices">📢 Notices</button>
             <button class="admin-tab" data-tab="posts">📰 Posts</button>
+            <button class="admin-tab" data-tab="users">👥 Users</button> <!-- NAYA TAB -->
           </div>
           <div class="admin-content">
             <div id="adminStatus" class="admin-status">Connecting to Firebase…</div>
@@ -1081,6 +1091,22 @@
               <div class="admin-card"><h3>➕ Create Feed Post</h3><select id="newPostSubject"></select><textarea id="newPostText" placeholder="Post text"></textarea><input id="newPostFile" type="file" accept="image/*"><p class="admin-small">Photo compress hokar Firebase Realtime Database me save hogi.</p><button class="admin-btn" onclick="createOnlinePost()">Publish Post Online</button></div>
               <div id="adminPostsList"></div>
             </section>
+            
+            <!-- ================= USER MANAGEMENT TAB START ================= -->
+            <section id="tab-users" class="admin-section">
+              <div class="admin-card" style="border-top: 4px solid var(--accent-orange);">
+                <h3>➕ Add New User</h3>
+                <input id="newUserName" type="text" placeholder="Enter Full Name (e.g. Rahul Kumar)">
+                <input id="newUserRoll" type="text" placeholder="Assign Unique Roll Number (Serves as Password)">
+                <button class="admin-btn" onclick="addOnlineUser()">Add User to System</button>
+              </div>
+              <h3>Active & Registered Users</h3>
+              <div id="adminUsersList" style="margin-top: 15px;">
+                <!-- Users will map here -->
+              </div>
+            </section>
+            <!-- ================= USER MANAGEMENT TAB END ================= -->
+
             <div style="padding-top:10px;border-top:1px solid #ddd"><button class="admin-btn red" onclick="firebaseAdminLogout()">Logout Admin</button></div>
           </div>
         </div>
@@ -1116,20 +1142,10 @@
     <script>
         // ================= JAVASCRIPT START ================= //
         
-        let notifications = [
-            { id: 1, text: "BTEUP Odd Semester Exam Scheme 2026-27 released.", time: "Just now" },
-            { id: 2, text: "CSE 1st Semester Syllabus officially updated.", time: "1 hour ago" },
-            { id: 3, text: "Practical Exam schedule announced for Diploma Students.", time: "Yesterday" }
-        ];
+        let currentUser = null; // Dynamically generated upon user login
 
-        const officialNotices = [
-            { title: "BTEUP Odd Semester Examination Form 2026 Direct Link", date: "20-Aug-2026", isNew: true },
-            { title: "JEECUP Polytechnic Admission Counselling Schedule 2026", date: "18-Aug-2026", isNew: true },
-            { title: "Download Official Diploma CSE 1st Sem Syllabus PDF", date: "15-Aug-2026", isNew: false },
-            { title: "BTEUP Scrutiny & Revaluation Result Declared", date: "10-Aug-2026", isNew: false },
-            { title: "UP Scholarship Online Form 2026-27 Apply Online", date: "05-Aug-2026", isNew: false }
-        ];
-
+        let notifications = [];
+        const officialNotices = [];
         const subjects = [
             {
                 id: 1,
@@ -1143,65 +1159,14 @@
                     { unit: "Unit 3", detail: "Reading Skill: Unseen passage for comprehension" },
                     { unit: "Unit 4", detail: "Writing Skill: Picture composition, Paragraph writing, Notice writing" }
                 ]
-            },
-            {
-                id: 2,
-                title: "Applied Mathematics - I",
-                code: "SUB-102",
-                image: "https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?auto=format&fit=crop&w=600&q=80",
-                desc: "Diploma engineering ke basics ko strong karne ke liye Mathematics. Isme Algebra, Trigonometry, aur Differential Calculus ke fundamentals cover hote hain.",
-                modules: [
-                    { unit: "Unit 1", detail: "Algebra-I: Arithmetic Progression (A.P.), Geometric Progression (G.P.), Binomial Theorem" },
-                    { unit: "Unit 2", detail: "Algebra-II: Determinants, Cramer's Rule" },
-                    { unit: "Unit 3", detail: "Trigonometry: Inverse circular functions, Properties of Triangles" },
-                    { unit: "Unit 4", detail: "Differential Calculus-I: Functions, Limits, Continuity, Basics of Differentiation" }
-                ]
-            },
-            {
-                id: 3,
-                title: "Applied Physics - I",
-                code: "SUB-103",
-                image: "https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&w=600&q=80",
-                desc: "Engineering applications ke liye Physics ka basic knowledge. Units, dimensions, mechanics aur properties of matter par focus.",
-                modules: [
-                    { unit: "Unit 1", detail: "Units and Dimensions: SI units, Dimensional formula and their applications" },
-                    { unit: "Unit 2", detail: "Force and Motion: Scalar and Vector quantities, Circular motion, Newton's Laws" },
-                    { unit: "Unit 3", detail: "Work, Power and Energy: Kinetic & Potential Energy, Conservation of energy" },
-                    { unit: "Unit 4", detail: "Rotational Motion & Properties of Matter: Moment of Inertia, Surface tension, Viscosity" }
-                ]
-            },
-            {
-                id: 4,
-                title: "Applied Chemistry",
-                code: "SUB-104",
-                image: "https://images.unsplash.com/photo-1603126857599-f6e1570d8136?auto=format&fit=crop&w=600&q=80",
-                desc: "Engineering materials ki properties samajhne ke liye Chemistry. Water treatment, polymers, aur electrochemistry iske main topics hain.",
-                modules: [
-                    { unit: "Unit 1", detail: "Atomic Structure, Periodic Table and Chemical Bonding" },
-                    { unit: "Unit 2", detail: "Fuels and Lubricants: Types of fuels, Properties of good lubricants" },
-                    { unit: "Unit 3", detail: "Water: Hardness of water, Water treatment, Boiler feed water" },
-                    { unit: "Unit 4", detail: "Electrochemistry & Corrosion: Galvanic cell, Causes and prevention of corrosion" }
-                ]
-            },
-            {
-                id: 5,
-                title: "Fundamentals of Computer & IT (FCIT)",
-                code: "SUB-105",
-                image: "https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=600&q=80",
-                desc: "Computer Science ka core foundational subject. Isme Computer architecture, memory, software types, OS, aur Internet basics cover kiye gaye hain.",
-                modules: [
-                    { unit: "Unit 1", detail: "Fundamentals of Computer: Block diagram of PC, Input/Output devices, CPU" },
-                    { unit: "Unit 2", detail: "Data Representation: Binary, Octal, Hexadecimal number systems and logic gates" },
-                    { unit: "Unit 3", detail: "Memory & Storage: Primary memory (RAM/ROM), Secondary storage devices" },
-                    { unit: "Unit 4", detail: "Basics of OS and Internet: MS Windows, Web browsers, E-mail, Search Engines" }
-                ]
             }
         ];
 
         function loadSubjects() {
             const grid = document.getElementById('subjectsGrid');
             if(!grid) return;
-            grid.innerHTML = subjects.map(sub => `
+            const subData = window.subjects || subjects; // fallback
+            grid.innerHTML = subData.map(sub => `
                 <div class="card" onclick="openSubjectPage(${sub.id})">
                     <div class="card-img-container">
                         <img src="${sub.image}" alt="${sub.title}">
@@ -1215,20 +1180,50 @@
             `).join('');
         }
 
-        function renderNotifications() {
-            const listContainer = document.getElementById('notifList');
-            if(!listContainer) return;
-            if(notifications.length === 0) {
-                listContainer.innerHTML = `<div class="notif-item">No notifications yet.</div>`;
+        // --- NEW USER LOGIN LOGIC ---
+        window.performLogin = function() {
+            const roll = document.getElementById('loginRollNumber').value.trim();
+            if(!roll) return;
+            
+            if(!window.portalUsers) {
+                alert("Connecting to server, please wait a moment and try again.");
                 return;
             }
-            listContainer.innerHTML = notifications.map(n => `
-                <div class="notif-item">
-                    <div>${n.text}</div>
-                    <div class="notif-time">${n.time}</div>
-                </div>
-            `).join('');
-        }
+
+            if(window.portalUsers[roll]) {
+                currentUser = window.portalUsers[roll];
+                currentUser.roll = roll;
+                localStorage.setItem('polyUserRoll', roll);
+                
+                // Update Firebase Active status
+                if(window.setUserActiveStatus) window.setUserActiveStatus(roll, true);
+
+                // Build User Profile
+                document.getElementById('profileAvatar').innerText = roll;
+                document.getElementById('profileName').innerText = currentUser.name;
+                document.getElementById('profileRoll').innerText = roll;
+
+                document.getElementById('loginError').style.display = 'none';
+                document.getElementById('loginPage').style.display = 'none';
+                document.querySelector('.bottom-nav').style.display = 'flex';
+                openHomePage();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        };
+
+        window.performLogout = function() {
+            if(currentUser && window.setUserActiveStatus) {
+                window.setUserActiveStatus(currentUser.roll, false);
+            }
+            currentUser = null;
+            localStorage.removeItem('polyUserRoll');
+            closeAllSections();
+            document.getElementById('loginRollNumber').value = '';
+            document.getElementById('loginPage').style.display = 'block';
+            document.querySelector('.bottom-nav').style.display = 'none';
+        };
+        // ------------------------------
 
         function toggleNotifPanel() {
             const panel = document.getElementById('notifPanel');
@@ -1237,30 +1232,6 @@
             if (!isVisible) {
                 document.getElementById('notifRedDot').style.display = 'none';
             }
-        }
-
-        function addNewNotification(text) {
-            notifications.unshift({
-                id: Date.now(),
-                text: text,
-                time: "Just now"
-            });
-            renderNotifications();
-            document.getElementById('notifRedDot').style.display = 'block';
-        }
-
-        function renderNoticeBoard() {
-            const noticeList = document.getElementById('sarkariNoticeList');
-            if(!noticeList) return;
-            noticeList.innerHTML = officialNotices.map(notice => `
-                <li>
-                    <a href="#" onclick="alert('Opening official notification PDF for: ${notice.title}')">
-                        👉 ${notice.title} 
-                        ${notice.isNew ? '<span class="badge-new">NEW</span>' : ''}
-                    </a>
-                    <span class="notice-date">📅 ${notice.date}</span>
-                </li>
-            `).join('');
         }
 
         function openNoticePage() {
@@ -1283,30 +1254,6 @@
 
         var currentOpenSubjectId = null;
         
-        function openSubjectPage(id) {
-            closeAllSections();
-            currentOpenSubjectId = id;
-            const sub = subjects.find(s => s.id === id);
-            if(!sub) return;
-            
-            document.getElementById('detailImg').src = sub.image;
-            document.getElementById('detailTitle').innerText = sub.title;
-            document.getElementById('detailCode').innerText = sub.code;
-            document.getElementById('detailDesc').innerText = sub.desc;
-            
-            const list = document.getElementById('moduleList');
-            list.innerHTML = sub.modules.map(mod => `
-                <tr>
-                    <td><strong>${mod.unit}</strong></td>
-                    <td>${mod.detail}</td>
-                </tr>
-            `).join('');
-
-            renderFeed(id, 'subjectFeedContainer');
-            document.getElementById('subjectPage').style.display = 'block';
-            window.scrollTo(0, 0);
-        }
-
         function openHomePage() {
             closeAllSections();
             currentOpenSubjectId = null;
@@ -1318,6 +1265,7 @@
         function closeAllSections() {
             document.getElementById('sideMenu').classList.remove('active');
             document.getElementById('notifPanel').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'none';
             document.getElementById('homePage').style.display = 'none';
             document.getElementById('subjectPage').style.display = 'none';
             document.getElementById('noticePage').style.display = 'none';
@@ -1361,51 +1309,23 @@
         function sendChatMessage() {
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
-            if(message !== '') {
+            if(message !== '' && currentUser) {
                 const msgBox = document.getElementById('chatMessages');
-                msgBox.innerHTML += `<div class="chat-msg sent">${message}</div>`;
+                // Added Roll Number along with Name in Chat
+                msgBox.innerHTML += `<div class="chat-msg sent"><strong>${currentUser.name} (${currentUser.roll})</strong><br>${message}</div>`;
                 input.value = '';
                 msgBox.scrollTop = msgBox.scrollHeight;
             }
         }
 
         window.onload = function() {
-            loadSubjects();
-            renderNotifications();
-            renderNoticeBoard();
+            // First time load block - Show login page only
+            closeAllSections();
+            document.querySelector('.bottom-nav').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'block';
         };
 
-        const currentUser = { id: 'user_123', name: 'Ambuj Kumar Saga', role: 'user' }; 
-
-        let adminPostsData = [
-            {
-                id: 'post_1',
-                subjectId: 1,
-                type: 'photo',
-                text: 'Important Notice: Communication process flow chart. Ise dhyan se padh lijiye exam ke liye jaruri hai.',
-                imgUrl: 'https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=800',
-                comments: [
-                    { id: 'com_1', userId: 'admin_1', userName: 'Admin', text: 'Sabhi students isko download kar lena.' }
-                ]
-            },
-            {
-                id: 'post_2',
-                subjectId: 1,
-                type: 'text',
-                text: 'Aaj ki class suspend kar di gayi hai, kal se regular classes wapas chalengi apne time par.',
-                imgUrl: '',
-                comments: []
-            },
-            {
-                id: 'post_3',
-                subjectId: 2,
-                type: 'photo',
-                text: 'Chapter 1 ke formulas revision notes.',
-                imgUrl: 'https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?w=800',
-                comments: []
-            }
-        ];
-
+        let adminPostsData = [];
         let savedPostIds = [];
 
         function generatePostHTML(post) {
@@ -1422,11 +1342,12 @@
 
             let commentsHTML = (post.comments || []).map(c => {
                 let deleteHTML = '';
-                if(currentUser.role === 'admin' || currentUser.id === c.userId) {
+                if(currentUser && (currentUser.role === 'admin' || currentUser.roll === c.userId)) {
                     deleteHTML = `<span class="delete-comment-btn" onclick="deleteComment('${post.id}', '${c.id}')" title="Delete Comment">✖</span>`;
                 }
+                // Updated comment visual to include Roll Number
                 return `<div class="comment-item">
-                            <div><strong>${c.userName}</strong>: ${c.text}</div>
+                            <div><strong>${c.userName} (${c.userId})</strong>: ${c.text}</div>
                             ${deleteHTML}
                         </div>`;
             }).join('');
@@ -1488,6 +1409,7 @@
         }
 
         function addComment(postId) {
+            if(!currentUser) return alert('Login Required');
             const inputField = document.getElementById(`comment-input-${postId}`);
             const text = inputField.value.trim();
             if(!text) return;
@@ -1497,7 +1419,7 @@
                 if(!adminPostsData[postIndex].comments) adminPostsData[postIndex].comments = [];
                 adminPostsData[postIndex].comments.push({
                     id: 'com_' + Date.now(),
-                    userId: currentUser.id,
+                    userId: currentUser.roll, // Roll Number set
                     userName: currentUser.name,
                     text: text
                 });
@@ -1522,7 +1444,7 @@
             refreshCurrentFeeds();
         }
 
-        function refreshCurrentFeeds() {
+        window.refreshCurrentFeeds = function() {
             if(document.getElementById('savedPage').style.display === 'block') {
                 renderSavedFeed();
             } else if (document.getElementById('subjectPage').style.display === 'block' && currentOpenSubjectId) {
@@ -1610,7 +1532,8 @@ let onlineData={
   subjects:defaultSubjects,
   notifications:defaultNotifs,
   notices:defaultNotices,
-  posts:[]
+  posts:[],
+  users: {} // Nayi Property
 };
 
 let lastNotifCount = null;
@@ -1626,9 +1549,20 @@ function applyOnlineData(d){
   onlineData.notifications=arr(d&&d.notifications).length?arr(d.notifications):((d&&d.notifications)?[]:onlineData.notifications);
   onlineData.notices=arr(d&&d.notices).length?arr(d.notices):((d&&d.notices)?[]:onlineData.notices);
   onlineData.posts=arr(d&&d.posts);
+  onlineData.users = (d && d.users) ? d.users : {}; // Load Users
 
-  // Synchronize global arrays
+  // Globally expose users safely for standard JS methods
+  window.portalUsers = onlineData.users;
   window.notifications = onlineData.notifications;
+
+  // Attempt auto login on first load sync if saved
+  if(document.getElementById('loginPage').style.display !== 'none' && !window.currentUser) {
+      const savedRoll = localStorage.getItem('polyUserRoll');
+      if(savedRoll && window.portalUsers[savedRoll]) {
+          document.getElementById('loginRollNumber').value = savedRoll;
+          if(window.performLogin) window.performLogin();
+      }
+  }
 
   // Realtime UI updates
   const logoImg = document.querySelector('.navbar .logo-container img');
@@ -1640,7 +1574,6 @@ function applyOnlineData(d){
   const marquee = document.querySelector('.notice-bar marquee');
   if(marquee && onlineData.branding.scrollNotice) marquee.textContent = onlineData.branding.scrollNotice;
 
-  // Red dot trigger on new notification in realtime
   if(lastNotifCount !== null && onlineData.notifications.length > lastNotifCount) {
       const redDot = document.getElementById('notifRedDot');
       if(redDot) redDot.style.display = 'block';
@@ -1652,7 +1585,6 @@ function applyOnlineData(d){
   renderOnlineNotices();
   renderOnlinePosts();
 
-  // Active Subject Page Realtime Refresh
   if(window.currentOpenSubjectId && document.getElementById('subjectPage').style.display === 'block') {
       const s = onlineData.subjects.find(x => String(x.id) === String(window.currentOpenSubjectId));
       if(s) {
@@ -1752,6 +1684,7 @@ async function seed(){
   if(!cur.notifications) updates['portal/notifications'] = Object.fromEntries(onlineData.notifications.map(n => [n.id, n]));
   if(!cur.notices) updates['portal/notices'] = Object.fromEntries(onlineData.notices.map(n => [n.id, n]));
   if(!cur.posts) updates['portal/posts'] = {};
+  if(!cur.users) updates['portal/users'] = {}; // Seed blank users if none
   if(Object.keys(updates).length) await update(ref(db), updates);
 }
 
@@ -1794,13 +1727,7 @@ function firebaseAuthError(e){
   const m = {
     "auth/invalid-credential": "Email ya password galat hai.",
     "auth/user-not-found": "Admin account nahi mila. Pehle Create Admin Account dabayein.",
-    "auth/wrong-password": "Password galat hai.",
-    "auth/invalid-email": "Email address sahi nahi hai.",
-    "auth/email-already-in-use": "Ye admin email pehle se registered hai. Login karein.",
-    "auth/weak-password": "Password kam se kam 6 characters ka rakhein.",
-    "auth/operation-not-allowed": "Firebase Console me Authentication → Sign-in method → Email/Password enable karein.",
-    "auth/network-request-failed": "Internet connection check karein.",
-    "auth/unauthorized-domain": "Firebase Authentication me Vercel domain Authorized domains me add karein."
+    "auth/wrong-password": "Password galat hai."
   };
   return m[e.code] || e.message || "Firebase Authentication error.";
 }
@@ -1836,6 +1763,42 @@ window.createFirebaseAdmin = async function(){
 };
 
 window.firebaseAdminLogout = () => signOut(auth);
+
+// --- NAYE USER METHODS (ADMIN K LIYE) ---
+window.setUserActiveStatus = async function(roll, status) {
+    if(!roll) return;
+    try {
+        await update(ref(db, 'portal/users/' + roll), { isActive: status });
+    } catch(e) { console.error('Status Error', e); }
+};
+
+window.addOnlineUser = async function() {
+    const name = document.getElementById('newUserName').value.trim();
+    const roll = document.getElementById('newUserRoll').value.trim();
+    if(!name || !roll) return alert('Name and Roll Number dono enter karein.');
+    if(onlineData.users && onlineData.users[roll]) return alert('Yeh Roll Number pahle se exist karta hai!');
+    
+    await set(ref(db, 'portal/users/' + roll), { name: name, roll: roll, isActive: false });
+    document.getElementById('newUserName').value = '';
+    document.getElementById('newUserRoll').value = '';
+    alert('User successfully add ho gaya!');
+};
+
+window.editOnlineUser = async function(roll) {
+    const user = onlineData.users[roll];
+    if(!user) return;
+    const newName = prompt('Enter new name for Roll Number ' + roll + ':', user.name);
+    if(newName && newName.trim() !== '') {
+        await update(ref(db, 'portal/users/' + roll), { name: newName.trim() });
+    }
+};
+
+window.deleteOnlineUser = async function(roll) {
+    if(confirm('Are you sure? User ' + roll + ' ko delete karna chahte hain?')) {
+        await remove(ref(db, 'portal/users/' + roll));
+    }
+};
+// ------------------------------------------
 
 window.uploadBrandImage = async function(kind){
   if(!auth.currentUser) return alert('Admin login required.');
@@ -1874,7 +1837,6 @@ window.addOnlineNotification = async function(){
   await set(ref(db, 'portal/notifications/' + id), { text, time: 'Just now' });
   document.getElementById('newNotifText').value = '';
 };
-
 window.deleteOnlineNotification = async id => remove(ref(db, 'portal/notifications/' + id));
 
 window.addOnlineNotice = async function(){
@@ -1888,7 +1850,6 @@ window.addOnlineNotice = async function(){
   });
   document.getElementById('newNoticeTitle').value = '';
 };
-
 window.deleteOnlineNotice = async id => remove(ref(db, 'portal/notices/' + id));
 
 window.saveScrollNotice = async function(){
@@ -1913,25 +1874,18 @@ window.createOnlinePost = async function(){
     setStatus('Post failed: ' + e.message);
   }
 };
-
 window.deleteOnlinePost = async id => remove(ref(db, 'portal/posts/' + id));
-
 window.updateOnlinePostText = async function(id){
   const text = document.getElementById('pt-' + id).value.trim();
   await update(ref(db, 'portal/posts/' + id), { text });
 };
-
 window.replaceOnlinePostImage = async function(id){
   const f = document.getElementById('pf-' + id).files[0];
   if(!f) return alert('New photo select karein.');
   try {
-    setStatus('Photo compress karke database me save ho rahi hai…');
     const url = await fileToDataURL(f, 950, 0.64);
     await update(ref(db, 'portal/posts/' + id), { imgUrl: url, type: 'photo' });
-    setStatus('Post photo online update ho gayi.');
-  } catch(e) {
-    setStatus('Photo update failed: ' + e.message);
-  }
+  } catch(e) { setStatus('Photo update failed: ' + e.message); }
 };
 
 function renderAdminAll(){
@@ -1985,11 +1939,33 @@ function renderAdminAll(){
      <div>
        <button class="admin-btn" onclick="updateOnlinePostText('${p.id}')">Save Text</button>
        <input id="pf-${p.id}" type="file" accept="image/*">
-       <button class="admin-btn orange" onclick="replaceOnlinePostImage('${p.id}')">Update Photo Online</button>
+       <button class="admin-btn orange" onclick="replaceOnlinePostImage('${p.id}')">Update Photo</button>
        <button class="admin-btn red" onclick="deleteOnlinePost('${p.id}')">Delete Post</button>
      </div>
    </div>
  `).join('');
+
+ // Naya Admin User Section
+ const userList = document.getElementById('adminUsersList');
+ if(userList) {
+   const users = Object.values(onlineData.users || {});
+   userList.innerHTML = users.length === 0 ? `<p class="admin-small">No users registered yet.</p>` : users.map(u => `
+       <div class="admin-card">
+           <div class="admin-row" style="justify-content: space-between;">
+               <div>
+                   <strong>${esc(u.name)}</strong> (Roll: <span>${esc(u.roll)}</span>)<br>
+                   <span class="badge-new" style="background: ${u.isActive ? 'green' : '#999'}; padding: 3px 8px; margin-top: 5px; display: inline-block;">
+                       ${u.isActive ? 'Active Now' : 'Offline'}
+                   </span>
+               </div>
+               <div>
+                   <button class="admin-btn orange" onclick="editOnlineUser('${u.roll}')">Edit Profile</button>
+                   <button class="admin-btn red" onclick="deleteOnlineUser('${u.roll}')">Delete User</button>
+               </div>
+           </div>
+       </div>
+   `).join('');
+ }
 }
 
 document.querySelectorAll('.admin-tab').forEach(btn => btn.addEventListener('click', () => {
