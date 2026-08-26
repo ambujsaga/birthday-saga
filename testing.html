@@ -823,7 +823,7 @@
         .chat-msg.received { background: #f1f1f1; align-self: flex-start; border-bottom-left-radius: 0; }
         .chat-msg.sent { background: var(--primary-blue); color: white; align-self: flex-end; border-bottom-right-radius: 0; }
         
-        .delete-chat-btn { color: #ffcccc; cursor: pointer; font-size: 0.9rem; margin-left: 10px; font-weight: bold; transition: 0.2s; }
+        .delete-chat-btn { color: #ffcccc; cursor: pointer; font-size: 0.9rem; margin-left: 6px; font-weight: bold; transition: 0.2s; }
         .delete-chat-btn:hover { color: #ff3333; }
         
         .chat-input-area {
@@ -837,6 +837,53 @@
         }
         .chat-input-area button:hover { background: #e68a00; }
         
+        /* ================= CHAT ENHANCEMENTS ================= */
+        .chat-date-divider {
+            text-align: center;
+            margin: 12px 0 6px 0;
+            position: relative;
+        }
+        .chat-date-divider span {
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .chat-msg-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            margin-top: 4px;
+            font-size: 0.7rem;
+            opacity: 0.85;
+        }
+        .chat-msg.sent .chat-msg-footer {
+            color: #e2e8f0;
+        }
+        .chat-msg.received .chat-msg-footer {
+            color: #64748b;
+        }
+        .chat-time {
+            font-size: 0.7rem;
+        }
+        .chat-seen-count {
+            font-size: 0.7rem;
+            background: rgba(0,0,0,0.08);
+            padding: 1px 5px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .chat-msg.sent .chat-seen-count {
+            background: rgba(255,255,255,0.2);
+        }
+        /* ================= END CHAT ENHANCEMENTS ================= */
+
         .profile-card {
             background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 30px; text-align: center; border-top: 3px solid var(--accent-orange);
         }
@@ -1083,7 +1130,7 @@
               <div id="adminNotificationsList"></div>
             </section>
             <section id="tab-notices" class="admin-section">
-              <div class="admin-card"><h3>➕ Add Notice</h3><input id="newNoticeTitle" placeholder="Notice title"><input id="newNoticeDate" placeholder="25-Aug-2026"><label><input id="newNoticeNew" type="checkbox"> Mark as NEW</label><button class="admin-btn" onclick="addOnlineNotice()">Publish Notice</button></div>
+              <div class="admin-card"><h3>➕ Add Notice</h3><input id="newNoticeTitle" placeholder="Notice title"><input id="newNoticeLink" placeholder="Notice Link (URL) e.g. https://..."><label><input id="newNoticeNew" type="checkbox" checked> Mark as NEW</label><button class="admin-btn" onclick="addOnlineNotice()">Publish Notice</button></div>
               <div class="admin-card"><h3>📜 Scrolling Notice Bar</h3><textarea id="scrollNoticeText" placeholder="Scrolling notice text"></textarea><button class="admin-btn" onclick="saveScrollNotice()">Save Notice Bar</button></div>
               <div id="adminNoticesList"></div>
             </section>
@@ -1155,6 +1202,74 @@
         let localUser = JSON.parse(localStorage.getItem('portalUser')) || null;
         window.localUser = localUser;
         let pendingAction = null;
+
+        // --- NEW UPDATE: Dynamic Unique Color Generator per Roll Number ---
+        function getColorForRoll(roll) {
+            if (!roll) return '#003366';
+            let hash = 0;
+            const str = String(roll);
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const colors = [
+                '#d90429', '#0077b6', '#2b9348', '#d62828', '#8338ec',
+                '#e63946', '#2a9d8f', '#f4a261', '#e76f51', '#6a0572',
+                '#118ab2', '#3a86ff', '#9b5de5', '#c7253e', '#10b981'
+            ];
+            return colors[Math.abs(hash) % colors.length];
+        }
+        window.getColorForRoll = getColorForRoll;
+
+        function formatChatTime(ts) {
+            if (!ts) return '';
+            const d = new Date(ts);
+            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+        }
+        window.formatChatTime = formatChatTime;
+
+        function formatNotificationTime(ts) {
+            if (!ts) return '';
+            if (typeof ts === 'string') return ts; 
+            const date = new Date(ts);
+            const today = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(today.getDate() - 1);
+
+            const isSameDay = (d1, d2) => d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
+
+            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+
+            if (isSameDay(date, today)) {
+                return `Today, ${timeStr}`;
+            } else if (isSameDay(date, yesterday)) {
+                return `Yesterday, ${timeStr}`;
+            } else {
+                return `${date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-')}, ${timeStr}`;
+            }
+        }
+        window.formatNotificationTime = formatNotificationTime;
+
+        function getChatDateLabel(ts) {
+            if (!ts) return 'Today';
+            const msgDate = new Date(ts);
+            const today = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(today.getDate() - 1);
+
+            const isSameDay = (d1, d2) =>
+                d1.getFullYear() === d2.getFullYear() &&
+                d1.getMonth() === d2.getMonth() &&
+                d1.getDate() === d2.getDate();
+
+            if (isSameDay(msgDate, today)) {
+                return 'Today';
+            } else if (isSameDay(msgDate, yesterday)) {
+                return 'Yesterday';
+            } else {
+                return msgDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            }
+        }
+        window.getChatDateLabel = getChatDateLabel;
         
         // --- NEW UPDATE: LocalStorage for Saved Posts ---
         let savedPostIds = JSON.parse(localStorage.getItem('portalSavedPosts')) || [];
@@ -1529,8 +1644,10 @@
                 if(localUser && c.userId === localUser.rollNumber) {
                     deleteHTML = `<span class="delete-comment-btn" onclick="deleteComment('${post.id}', '${c.id}')" title="Delete Comment">✖</span>`;
                 }
+                const userRoll = c.userId || c.userName;
+                const rollColor = getColorForRoll(userRoll);
                 return `<div class="comment-item">
-                            <div><strong>${c.userId}</strong>: ${c.text}</div>
+                            <div><strong style="color: ${rollColor};">${userRoll}</strong>: ${c.text}</div>
                             ${deleteHTML}
                         </div>`;
             }).join('');
@@ -1804,16 +1921,48 @@ function renderOnlineChats() {
     const msgBox = document.getElementById('chatMessages');
     if(!msgBox) return;
     
-    let html = '<div class="chat-msg received"><strong>Admin:</strong> Welcome to the CSE 1st Sem discussion group! Padhai se related koi bhi doubt yahan puchein.</div>';
-    
-    onlineData.chats.forEach(chat => {
-        let isSent = window.localUser && window.localUser.rollNumber === chat.userId;
-        let cssClass = isSent ? 'sent' : 'received';
-        let deleteHtml = isSent ? `<span class="delete-chat-btn" onclick="deleteUserChat('${chat.id}')" title="Delete Chat">✖</span>` : '';
-        html += `<div class="chat-msg ${cssClass}">
-                    <strong>${esc(chat.userId)}:</strong> ${esc(chat.text)} ${deleteHtml}
-                 </div>`;
-    });
+    let html = '';
+    let lastDateLabel = '';
+
+    const sortedChats = [...onlineData.chats].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+    if(sortedChats.length === 0) {
+        html = '<div class="chat-msg received"><strong>Admin:</strong> Welcome to the CSE 1st Sem discussion group! Padhai se related koi bhi doubt yahan puchein.</div>';
+    } else {
+        sortedChats.forEach(chat => {
+            const dateLabel = window.getChatDateLabel(chat.timestamp);
+            if (dateLabel !== lastDateLabel) {
+                html += `<div class="chat-date-divider"><span>${dateLabel}</span></div>`;
+                lastDateLabel = dateLabel;
+            }
+
+            let isSent = window.localUser && window.localUser.rollNumber === chat.userId;
+            let cssClass = isSent ? 'sent' : 'received';
+            let deleteHtml = isSent ? `<span class="delete-chat-btn" onclick="deleteUserChat('${chat.id}')" title="Delete Chat">✖</span>` : '';
+
+            let seenObj = chat.seenBy || {};
+            let seenCount = Object.keys(seenObj).length;
+
+            if (window.localUser && window.localUser.rollNumber && !seenObj[window.localUser.rollNumber]) {
+                if (window.markChatSeen) {
+                    window.markChatSeen(chat.id, window.localUser.rollNumber);
+                }
+            }
+
+            const rollColor = window.getColorForRoll(chat.userId);
+            const timeStr = window.formatChatTime(chat.timestamp);
+
+            html += `<div class="chat-msg ${cssClass}">
+                        <div style="font-weight: bold; margin-bottom: 3px; color: ${rollColor};">${esc(chat.userId)}</div>
+                        <div style="word-break: break-word;">${esc(chat.text)}</div>
+                        <div class="chat-msg-footer">
+                            <span class="chat-time">${timeStr}</span>
+                            <span class="chat-seen-count" title="Seen by ${seenCount} people">👁️ ${seenCount}</span>
+                            ${deleteHtml}
+                        </div>
+                     </div>`;
+        });
+    }
     
     let isScrolledToBottom = msgBox.scrollHeight - msgBox.clientHeight <= msgBox.scrollTop + 50;
     msgBox.innerHTML = html;
@@ -1877,10 +2026,13 @@ function renderOnlineSubjects(){
 function renderOnlineNotifications(){
   const c = document.getElementById('notifList');
   if(!c) return;
-  c.innerHTML = onlineData.notifications.length ? onlineData.notifications.map(n => `
+  
+  const sortedNotifs = [...onlineData.notifications].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+  c.innerHTML = sortedNotifs.length ? sortedNotifs.map(n => `
     <div class="notif-item">
       <div>${esc(n.text)}</div>
-      <div class="notif-time">${esc(n.time||'')}</div>
+      <div class="notif-time">${n.timestamp ? window.formatNotificationTime(n.timestamp) : esc(n.time||'')}</div>
     </div>
   `).join('') : `<div class="notif-item">No notifications yet.</div>`;
 }
@@ -1888,9 +2040,12 @@ function renderOnlineNotifications(){
 function renderOnlineNotices(){
   const c = document.getElementById('sarkariNoticeList');
   if(!c) return;
-  c.innerHTML = onlineData.notices.map(n => `
+  
+  const sortedNotices = [...onlineData.notices].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+  c.innerHTML = sortedNotices.map(n => `
     <li>
-      <a href="#" onclick="event.preventDefault();alert('Opening official notification: ${esc(n.title)}')">
+      <a href="${esc(n.link && n.link !== '#' ? n.link : '#')}" ${n.link && n.link !== '#' ? 'target="_blank"' : `onclick="event.preventDefault();alert('Opening official notification: ${esc(n.title)}')"`}>
         👉 ${esc(n.title)} ${n.isNew ? '<span class="badge-new">NEW</span>' : ''}
       </a>
       <span class="notice-date">📅 ${esc(n.date)}</span>
@@ -2031,21 +2186,29 @@ window.addOnlineNotification = async function(){
   const text = document.getElementById('newNotifText').value.trim();
   if(!text) return alert('Notification text likhein.');
   const id = 'n_' + Date.now();
-  await set(ref(db, 'portal/notifications/' + id), { text, time: 'Just now' });
+  await set(ref(db, 'portal/notifications/' + id), { text, timestamp: Date.now() });
   document.getElementById('newNotifText').value = '';
 };
 window.deleteOnlineNotification = async id => remove(ref(db, 'portal/notifications/' + id));
 
 window.addOnlineNotice = async function(){
   const title = document.getElementById('newNoticeTitle').value.trim();
+  const link = document.getElementById('newNoticeLink').value.trim();
   if(!title) return alert('Notice title likhein.');
   const id = 'no_' + Date.now();
+  
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-');
+
   await set(ref(db, 'portal/notices/' + id), {
     title,
-    date: document.getElementById('newNoticeDate').value.trim() || new Date().toLocaleDateString('en-GB'),
+    link: link || '#',
+    date: dateStr,
+    timestamp: Date.now(),
     isNew: document.getElementById('newNoticeNew').checked
   });
   document.getElementById('newNoticeTitle').value = '';
+  document.getElementById('newNoticeLink').value = '';
 };
 window.deleteOnlineNotice = async id => remove(ref(db, 'portal/notices/' + id));
 
@@ -2104,7 +2267,20 @@ window.deleteOnlineComment = async function(postId, commentId) {
 
 window.addOnlineChat = async function(userId, text) {
     const id = 'chat_' + Date.now();
-    await set(ref(db, 'portal/chats/' + id), { id, userId, text, timestamp: Date.now() });
+    const seenBy = {};
+    if (userId) seenBy[userId] = true;
+    await set(ref(db, 'portal/chats/' + id), { 
+        id, 
+        userId, 
+        text, 
+        timestamp: Date.now(),
+        seenBy 
+    });
+};
+
+window.markChatSeen = async function(chatId, rollNumber) {
+    if (!chatId || !rollNumber) return;
+    await update(ref(db, `portal/chats/${chatId}/seenBy`), { [rollNumber]: true });
 };
 
 window.deleteOnlineChat = async function(chatId) {
@@ -2161,7 +2337,7 @@ function renderAdminAll(){
    </div>
  `).join('');
 
- document.getElementById('adminNotificationsList').innerHTML = onlineData.notifications.map(n => `
+ document.getElementById('adminNotificationsList').innerHTML = [...onlineData.notifications].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).map(n => `
    <div class="admin-card">
      <div class="admin-row">
        <strong>${esc(n.text)}</strong>
@@ -2170,7 +2346,7 @@ function renderAdminAll(){
    </div>
  `).join('');
 
- document.getElementById('adminNoticesList').innerHTML = onlineData.notices.map(n => `
+ document.getElementById('adminNoticesList').innerHTML = [...onlineData.notices].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).map(n => `
    <div class="admin-card">
      <div class="admin-row">
        <strong>${esc(n.title)}</strong>
