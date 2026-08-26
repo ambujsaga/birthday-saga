@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BTEUP / JEECUP Portal - CSE 1st Sem</title>
+    <title>MMITcs - Portal</title>
     
     <style>
         /* ================= CSS START ================= */
@@ -334,7 +334,7 @@
             max-width: 100% !important;
             margin: 0 !important;
             padding: 1rem !important;
-            min-height: calc(100vh - 70px);
+            min-height: calc(100vh - 135px); /* adjusted for global navbar */
         }
 
         .section-title {
@@ -653,12 +653,13 @@
 
         .mmit-frame {
             width: 100%;
-            height: calc(100vh - 150px);
+            height: calc(100vh - 190px); /* fixed height taking global navbar into account */
             min-height: 500px;
-            border: 1px solid #ddd;
+            border: none;
             border-radius: 8px;
             background: #fff;
             box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+            display: block;
         }
 
         /* BOTTOM NAVIGATION BAR & ANIMATIONS */
@@ -894,7 +895,7 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
             display: flex; 
             flex-direction: column; 
-            height: calc(100vh - 160px) !important; 
+            height: calc(100vh - 230px) !important; /* adjusted for global navbar */
             border-top: 3px solid var(--primary-blue);
         }
         .chat-messages {
@@ -1007,6 +1008,37 @@
 </head>
 <body>
 
+    <!-- GLOBAL NAVBAR (Fixes Chat & Iframe Pages rendering) -->
+    <header class="navbar">
+        <div class="logo-container" onclick="openHomePage()">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Emblem_of_Uttar_Pradesh.svg/1200px-Emblem_of_Uttar_Pradesh.svg.png" alt="Govt Logo">
+            <div class="logo-text">
+                <h1>MMITcs</h1>
+                <p>Computer Science & Engineering (1st Sem)</p>
+            </div>
+        </div>
+        
+        <div class="nav-actions">
+            <div class="notif-bell-container" onclick="toggleNotifPanel()" title="Notifications">
+                🔔
+                <span id="notifRedDot" class="red-dot"></span>
+            </div>
+            
+            <div class="website-icon" onclick="openMMITPage()" title="Open MMIT Website">🌐</div>
+            <div class="website-icon" onclick="openAdminLogin()" title="Admin Panel">⚙️</div>
+            <div class="menu-icon" onclick="toggleMenu()">☰</div>
+        </div>
+    </header>
+
+    <div id="notifPanel" class="notif-panel">
+        <div class="notif-header">
+            <span>📢 Recent Notifications</span>
+            <span style="cursor: pointer; font-size: 1.2rem;" onclick="toggleNotifPanel()">&times;</span>
+        </div>
+        <div class="notif-body" id="notifList">
+        </div>
+    </div>
+
     <div id="sideMenu" class="side-menu">
         <span class="close-menu" onclick="toggleMenu()">&times;</span>
         <div class="menu-header">
@@ -1022,37 +1054,6 @@
     </div>
 
     <div id="homePage">
-        
-        <header class="navbar">
-            <div class="logo-container" onclick="openHomePage()">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Emblem_of_Uttar_Pradesh.svg/1200px-Emblem_of_Uttar_Pradesh.svg.png" alt="Govt Logo">
-                <div class="logo-text">
-                    <h1>POLYTECHNIC ACADEMIC PORTAL</h1>
-                    <p>Computer Science & Engineering (1st Semester)</p>
-                </div>
-            </div>
-            
-            <div class="nav-actions">
-                <div class="notif-bell-container" onclick="toggleNotifPanel()" title="Notifications">
-                    🔔
-                    <span id="notifRedDot" class="red-dot"></span>
-                </div>
-                
-                <div class="website-icon" onclick="openMMITPage()" title="Open MMIT Website">🌐</div>
-                <div class="website-icon" onclick="openAdminLogin()" title="Admin Panel">⚙️</div>
-                <div class="menu-icon" onclick="toggleMenu()">☰</div>
-            </div>
-        </header>
-
-        <div id="notifPanel" class="notif-panel">
-            <div class="notif-header">
-                <span>📢 Recent Notifications</span>
-                <span style="cursor: pointer; font-size: 1.2rem;" onclick="toggleNotifPanel()">&times;</span>
-            </div>
-            <div class="notif-body" id="notifList">
-            </div>
-        </div>
-
         <div class="notice-bar">
             <span class="notice-btn" onclick="openNoticePage()">NEW NOTICE 🚀</span>
             <marquee behavior="scroll" direction="left">
@@ -1097,7 +1098,7 @@
         <iframe
             class="mmit-frame"
             src="https://mmitgp.ac.in/"
-            title="MMIT Gorakhpur Website"
+            title="MMITcs Website"
             loading="lazy"
             allowfullscreen>
         </iframe>
@@ -2454,177 +2455,6 @@ window.replaceOnlinePostImage = async function(id){
   }
 };
 
-window.addOnlineComment = async function(postId, userId, userName, text) {
-    const cId = 'com_' + Date.now();
-    await update(ref(db, `portal/posts/${postId}/comments/${cId}`), {
-        id: cId, userId, userName, text
-    });
-};
-
-window.deleteOnlineComment = async function(postId, commentId) {
-    await remove(ref(db, `portal/posts/${postId}/comments/${commentId}`));
-};
-
-window.addOnlineChat = async function(userId, text) {
-    const id = 'chat_' + Date.now();
-    const seenBy = {};
-    if (userId) seenBy[userId] = true;
-    await set(ref(db, 'portal/chats/' + id), { 
-        id, 
-        userId, 
-        text, 
-        timestamp: Date.now(),
-        seenBy 
-    });
-};
-
-window.markChatSeen = async function(chatId, rollNumber) {
-    if (!chatId || !rollNumber) return;
-    await update(ref(db, `portal/chats/${chatId}/seenBy`), { [rollNumber]: true });
-};
-
-window.deleteOnlineChat = async function(chatId) {
-    await remove(ref(db, 'portal/chats/' + chatId));
-};
-
-window.saveOnlineUser = async function(){
-    const name = document.getElementById('adminNewUserName').value.trim();
-    const roll = document.getElementById('adminNewUserRoll').value.trim();
-    if(!name || !roll) return alert('Name aur Roll Number dono fill karein.');
-    await update(ref(db, 'portal/users/' + roll), { name, rollNumber: roll });
-    document.getElementById('adminNewUserName').value = '';
-    document.getElementById('adminNewUserRoll').value = '';
-    setStatus('User save ho gaya.');
-};
-
-window.renderAdminAll = function() {
-    if(!auth.currentUser) return;
-    const logoP = document.getElementById('adminLogoPreview');
-    if(logoP) logoP.src = onlineData.branding.logo || '';
-    const heroP = document.getElementById('adminHeroPreview');
-    if(heroP) heroP.src = onlineData.branding.hero || '';
-    const scrollN = document.getElementById('scrollNoticeText');
-    if(scrollN) scrollN.value = onlineData.branding.scrollNotice || '';
-
-    // Render subjects admin
-    const subContainer = document.getElementById('adminSubjectsList');
-    if(subContainer) {
-        subContainer.innerHTML = onlineData.subjects.map(s => `
-            <div class="admin-card">
-                <h3>Subject ${s.id}: ${esc(s.title)}</h3>
-                <div class="admin-form">
-                    <label>Title</label><input id="st-${s.id}" value="${esc(s.title)}">
-                    <label>Description</label><textarea id="sd-${s.id}">${esc(s.desc)}</textarea>
-                    <label>Image</label><input id="sf-${s.id}" type="file" accept="image/*">
-                    <button class="admin-btn" onclick="saveSubject(${s.id})">Save Subject</button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // Target Notification User Select Population
-    const notifUserSelect = document.getElementById('newNotifTargetUser');
-    if(notifUserSelect) {
-        let options = '<option value="ALL">🌐 Send to All Users (Public Notification)</option>';
-        Object.values(onlineData.users || {}).forEach(u => {
-            options += `<option value="${esc(u.rollNumber)}">👤 ${esc(u.name)} (${esc(u.rollNumber)})</option>`;
-        });
-        notifUserSelect.innerHTML = options;
-    }
-
-    // Render notifications admin
-    const notifContainer = document.getElementById('adminNotificationsList');
-    if(notifContainer) {
-        notifContainer.innerHTML = onlineData.notifications.map(n => `
-            <div class="admin-card">
-                <p><strong>${esc(n.text)}</strong></p>
-                <p class="admin-small">Target: ${n.targetUser ? esc(n.targetUser) : 'ALL'} | ${n.timestamp ? window.formatNotificationTime(n.timestamp) : esc(n.time||'')}</p>
-                <button class="admin-btn red" onclick="deleteOnlineNotification('${n.id}')">Delete</button>
-            </div>
-        `).join('');
-    }
-
-    // Render notices admin
-    const noticeContainer = document.getElementById('adminNoticesList');
-    if(noticeContainer) {
-        noticeContainer.innerHTML = onlineData.notices.map(n => `
-            <div class="admin-card">
-                <p><strong>${esc(n.title)}</strong> ${n.isNew ? '🆕' : ''}</p>
-                <p class="admin-small">Link: ${esc(n.link)} | Date: ${esc(n.date)}</p>
-                <button class="admin-btn red" onclick="deleteOnlineNotice('${n.id}')">Delete</button>
-            </div>
-        `).join('');
-    }
-
-    // Render posts select & posts admin
-    const postSubSelect = document.getElementById('newPostSubject');
-    if(postSubSelect) {
-        postSubSelect.innerHTML = onlineData.subjects.map(s => `<option value="${s.id}">${esc(s.title)}</option>`).join('');
-    }
-
-    const postsContainer = document.getElementById('adminPostsList');
-    if(postsContainer) {
-        postsContainer.innerHTML = onlineData.posts.map(p => `
-            <div class="admin-card">
-                <p><strong>Post ID:</strong> ${p.id} (Subject ${p.subjectId})</p>
-                <div class="admin-form">
-                    <textarea id="pt-${p.id}">${esc(p.text)}</textarea>
-                    <button class="admin-btn" onclick="updateOnlinePostText('${p.id}')">Update Text</button>
-                    ${p.imgUrl ? `<img src="${p.imgUrl}" class="admin-preview"><input id="pf-${p.id}" type="file" accept="image/*"><button class="admin-btn orange" onclick="replaceOnlinePostImage('${p.id}')">Replace Image</button>` : ''}
-                    <button class="admin-btn red" onclick="deleteOnlinePost('${p.id}')">Delete Post</button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // Render users admin
-    const usersContainer = document.getElementById('adminUsersList');
-    if(usersContainer) {
-        usersContainer.innerHTML = Object.values(onlineData.users || {}).map(u => `
-            <div class="admin-card">
-                <p><strong>Name:</strong> ${esc(u.name)} | <strong>Roll No:</strong> ${esc(u.rollNumber)}</p>
-            </div>
-        `).join('');
-    }
-
-    // Render chats admin
-    const chatsContainer = document.getElementById('adminChatsList');
-    if(chatsContainer) {
-        chatsContainer.innerHTML = onlineData.chats.map(c => `
-            <div class="admin-card">
-                <p><strong>${esc(c.userId)}:</strong> ${esc(c.text)}</p>
-                <p class="admin-small">${window.formatChatTime(c.timestamp)}</p>
-                <button class="admin-btn red" onclick="deleteOnlineChat('${c.id}')">Delete Chat</button>
-            </div>
-        `).join('');
-    }
-};
-
-// Admin Tab Switcher Logic
-document.querySelectorAll('.admin-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-        tab.classList.add('active');
-        const target = tab.getAttribute('data-tab');
-        const sec = document.getElementById('tab-' + target);
-        if(sec) sec.classList.add('active');
-    });
-});
-
-onAuthStateChanged(auth, user => {
-    if(user && user.email === ADMIN_EMAIL) {
-        document.getElementById('adminLoginView').style.display = 'none';
-        document.getElementById('adminDashboardView').style.display = 'block';
-        setStatus('Admin logged in: ' + user.email);
-        seed().then(() => subscribe());
-        renderAdminAll();
-    } else {
-        document.getElementById('adminLoginView').style.display = 'block';
-        document.getElementById('adminDashboardView').style.display = 'none';
-        subscribe();
-    }
-});
 </script>
 </body>
 </html>
