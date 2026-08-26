@@ -1303,6 +1303,7 @@
         ];
 
         function loadSubjects() {
+            // Functionality mostly replaced by Firebase realtime method, but kept for fallback
             const grid = document.getElementById('subjectsGrid');
             if(!grid) return;
             grid.innerHTML = subjects.map(sub => `
@@ -1386,10 +1387,13 @@
         }
 
         var currentOpenSubjectId = null;
+        // Keep the current subject ID available to both legacy and Firebase realtime code.
+        window.currentOpenSubjectId = null;
         
         function openSubjectPage(id) {
             closeAllSections();
             currentOpenSubjectId = id;
+            window.currentOpenSubjectId = id;
             const sub = (window.subjects && window.subjects.length > 0 ? window.subjects : subjects).find(s => String(s.id) === String(id));
             if(!sub) return;
             
@@ -1414,6 +1418,7 @@
         function openHomePage() {
             closeAllSections();
             currentOpenSubjectId = null;
+            window.currentOpenSubjectId = null;
             document.getElementById('homePage').style.display = 'block';
             window.scrollTo(0, 0);
             updateNavState('navHome');
@@ -1551,8 +1556,20 @@
         function renderFeed(subjectId, containerId) {
             const container = document.getElementById(containerId);
             if(!container) return;
-            const posts = (window.adminPostsData || adminPostsData).filter(p => String(p.subjectId) === String(subjectId));
-            
+
+            // Firebase can return numeric IDs as numbers or strings. Some older
+            // posts may also use subjectID instead of subjectId, so normalize
+            // both without changing the existing post data structure.
+            const wantedSubjectId = String(subjectId);
+            const dataset = Array.isArray(window.adminPostsData)
+                ? window.adminPostsData
+                : (Array.isArray(adminPostsData) ? adminPostsData : []);
+            const posts = dataset.filter(p => {
+                if(!p) return false;
+                const postSubjectId = p.subjectId ?? p.subjectID ?? p.subject;
+                return postSubjectId !== undefined && String(postSubjectId) === wantedSubjectId;
+            });
+
             if(posts.length === 0) {
                 container.innerHTML = `<p style="text-align:center; color:#777;">No updates in this feed yet.</p>`;
                 return;
@@ -1759,7 +1776,7 @@ function applyOnlineData(d){
   renderOnlineNotices();
   renderOnlinePosts();
 
-  if(window.currentOpenSubjectId && document.getElementById('subjectPage').style.display === 'block') {
+  if(window.currentOpenSubjectId != null && document.getElementById('subjectPage').style.display === 'block') {
       const s = onlineData.subjects.find(x => String(x.id) === String(window.currentOpenSubjectId));
       if(s) {
           document.getElementById('detailImg').src = s.image;
@@ -1767,6 +1784,7 @@ function applyOnlineData(d){
           document.getElementById('detailCode').innerText = s.code;
           document.getElementById('detailDesc').innerText = s.desc;
       }
+      renderFeed(window.currentOpenSubjectId, 'subjectFeedContainer');
   }
 
   if(document.getElementById('adminDashboardView') && document.getElementById('adminDashboardView').style.display === 'block') {
@@ -1785,7 +1803,7 @@ function renderOnlinePosts(){
   if(typeof window.refreshCurrentFeeds === 'function') window.refreshCurrentFeeds();
 }
 
-// --- FIXED & UPDATED: Realtime Post Display on Home Page Subjects ---
+// --- NEW UPDATE: Realtime Post Display on Home Page Subjects ---
 function renderOnlineSubjects(){
   const grid = document.getElementById('subjectsGrid');
   if(!grid) return;
