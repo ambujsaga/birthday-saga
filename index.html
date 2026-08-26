@@ -8,8 +8,8 @@
     <style>
         /* ================= CSS START ================= */
         :root {
-            --primary-blue: #003366; /* Official Govt Blue */
-            --accent-orange: #ff9900; /* Official Accent */
+            --primary-blue: #003366; 
+            --accent-orange: #ff9900; 
             --bg-color: #f4f6f9;
             --text-dark: #333;
             --card-bg: #ffffff;
@@ -27,7 +27,6 @@
             background-color: var(--bg-color);
             color: var(--text-dark);
             overflow-x: hidden;
-            /* Added padding-bottom so content doesn't hide behind bottom nav */
             padding-bottom: 70px; 
         }
 
@@ -1068,7 +1067,7 @@
             <button class="admin-tab" data-tab="notifications">🔔 Notifications</button>
             <button class="admin-tab" data-tab="notices">📢 Notices</button>
             <button class="admin-tab" data-tab="posts">📰 Posts</button>
-            <button class="admin-tab" data-tab="users">👥 Users</button> <!-- NEW TAB -->
+            <button class="admin-tab" data-tab="users">👥 Users</button>
           </div>
           <div class="admin-content">
             <div id="adminStatus" class="admin-status">Connecting to Firebase…</div>
@@ -1093,7 +1092,6 @@
               <div id="adminPostsList"></div>
             </section>
             
-            <!-- NEW SECTION FOR USERS -->
             <section id="tab-users" class="admin-section">
               <div class="admin-card">
                   <h3>➕ Add / Update User</h3>
@@ -1153,9 +1151,12 @@
     <script>
         // ================= JAVASCRIPT START ================= //
         
-        // --- NEW USER LOGIN LOGIC ---
         let localUser = JSON.parse(localStorage.getItem('portalUser')) || null;
         let pendingAction = null;
+        
+        // --- NEW UPDATE: LocalStorage for Saved Posts ---
+        let savedPostIds = JSON.parse(localStorage.getItem('portalSavedPosts')) || [];
+        // ------------------------------------------------
 
         function requireLogin(actionCallback) {
             if (localUser) {
@@ -1184,7 +1185,6 @@
                 localStorage.setItem('portalUser', JSON.stringify(localUser));
                 document.getElementById('userLoginModal').style.display = 'none';
                 
-                // set active online
                 if(window.setUserActiveStatus) window.setUserActiveStatus(roll, true);
 
                 if(pendingAction) {
@@ -1209,8 +1209,6 @@
         window.addEventListener('beforeunload', () => {
              if(localUser && window.setUserActiveStatus) window.setUserActiveStatus(localUser.rollNumber, false);
         });
-        // --- END USER LOGIN LOGIC ---
-
 
         let notifications = [
             { id: 1, text: "BTEUP Odd Semester Exam Scheme 2026-27 released.", time: "Just now" },
@@ -1295,6 +1293,7 @@
         ];
 
         function loadSubjects() {
+            // Functionality mostly replaced by Firebase realtime method, but kept for fallback
             const grid = document.getElementById('subjectsGrid');
             if(!grid) return;
             grid.innerHTML = subjects.map(sub => `
@@ -1382,7 +1381,7 @@
         function openSubjectPage(id) {
             closeAllSections();
             currentOpenSubjectId = id;
-            const sub = subjects.find(s => s.id === id);
+            const sub = (window.subjects && window.subjects.length > 0 ? window.subjects : subjects).find(s => String(s.id) === String(id));
             if(!sub) return;
             
             document.getElementById('detailImg').src = sub.image;
@@ -1391,7 +1390,7 @@
             document.getElementById('detailDesc').innerText = sub.desc;
             
             const list = document.getElementById('moduleList');
-            list.innerHTML = sub.modules.map(mod => `
+            list.innerHTML = (sub.modules || []).map(mod => `
                 <tr>
                     <td><strong>${mod.unit}</strong></td>
                     <td>${mod.detail}</td>
@@ -1454,10 +1453,9 @@
                 updateNavState('navProfile');
                 closeAllSections();
                 
-                // Profile UI Updates using localUser data
                 document.getElementById('profName').innerText = localUser.name;
                 document.getElementById('profRoll').innerText = localUser.rollNumber;
-                document.getElementById('profAvatar').innerText = localUser.rollNumber; // Profile pic me roll number digit
+                document.getElementById('profAvatar').innerText = localUser.rollNumber; 
                 
                 document.getElementById('profilePage').style.display = 'block';
                 window.scrollTo(0, 0);
@@ -1482,7 +1480,6 @@
             renderNotifications();
             renderNoticeBoard();
             
-            // Set user online gracefully if they reopen the page
             setTimeout(() => {
                 if(localUser && window.setUserActiveStatus) {
                     window.setUserActiveStatus(localUser.rollNumber, true);
@@ -1500,26 +1497,8 @@
                 comments: [
                     { id: 'com_1', userId: 'admin_1', userName: 'Admin', text: 'Sabhi students isko download kar lena.' }
                 ]
-            },
-            {
-                id: 'post_2',
-                subjectId: 1,
-                type: 'text',
-                text: 'Aaj ki class suspend kar di gayi hai, kal se regular classes wapas chalengi apne time par.',
-                imgUrl: '',
-                comments: []
-            },
-            {
-                id: 'post_3',
-                subjectId: 2,
-                type: 'photo',
-                text: 'Chapter 1 ke formulas revision notes.',
-                imgUrl: 'https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?w=800',
-                comments: []
             }
         ];
-
-        let savedPostIds = [];
 
         function generatePostHTML(post) {
             let isSaved = savedPostIds.includes(post.id);
@@ -1528,14 +1507,13 @@
             let mediaHTML = '';
             let viewBtnHTML = '';
             
-            if(post.type === 'photo' && post.imgUrl) {
+            if((post.type === 'photo' || post.imgUrl) && post.imgUrl) {
                 mediaHTML = `<img src="${post.imgUrl}" class="post-img" alt="Post Image">`;
                 viewBtnHTML = `<button class="post-action-btn" onclick="openImageViewer('${post.imgUrl}')">👁️ View</button>`;
             }
 
             let commentsHTML = (post.comments || []).map(c => {
                 let deleteHTML = '';
-                // Since everyone uses roll number, check if owner
                 if(localUser && c.userId === localUser.rollNumber) {
                     deleteHTML = `<span class="delete-comment-btn" onclick="deleteComment('${post.id}', '${c.id}')" title="Delete Comment">✖</span>`;
                 }
@@ -1571,7 +1549,7 @@
         function renderFeed(subjectId, containerId) {
             const container = document.getElementById(containerId);
             if(!container) return;
-            const posts = adminPostsData.filter(p => String(p.subjectId) === String(subjectId));
+            const posts = (window.adminPostsData || adminPostsData).filter(p => String(p.subjectId) === String(subjectId));
             
             if(posts.length === 0) {
                 container.innerHTML = `<p style="text-align:center; color:#777;">No updates in this feed yet.</p>`;
@@ -1583,7 +1561,7 @@
         function renderSavedFeed() {
             const container = document.getElementById('savedFeedContainer');
             if(!container) return;
-            const posts = adminPostsData.filter(p => savedPostIds.includes(p.id));
+            const posts = (window.adminPostsData || adminPostsData).filter(p => savedPostIds.includes(p.id));
             
             if(posts.length === 0) {
                 container.innerHTML = `<p style="text-align:center; color:#777;">No saved posts found.</p>`;
@@ -1609,19 +1587,18 @@
                 const text = inputField.value.trim();
                 if(!text) return;
 
-                const postIndex = adminPostsData.findIndex(p => p.id === postId);
+                const dataset = (window.adminPostsData || adminPostsData);
+                const postIndex = dataset.findIndex(p => p.id === postId);
                 if(postIndex > -1) {
-                    if(!adminPostsData[postIndex].comments) adminPostsData[postIndex].comments = [];
-                    // Comment username me roll number dikhana
+                    if(!dataset[postIndex].comments) dataset[postIndex].comments = [];
                     const formatUserName = `${localUser.name} (${localUser.rollNumber})`;
-                    adminPostsData[postIndex].comments.push({
+                    dataset[postIndex].comments.push({
                         id: 'com_' + Date.now(),
                         userId: localUser.rollNumber,
                         userName: formatUserName,
                         text: text
                     });
                     
-                    // Offline code sync (If firebase available sync it)
                     if(window.addOnlineComment) {
                         window.addOnlineComment(postId, localUser.rollNumber, formatUserName, text);
                     }
@@ -1632,22 +1609,26 @@
         }
 
         function deleteComment(postId, commentId) {
-            const postIndex = adminPostsData.findIndex(p => p.id === postId);
-            if(postIndex > -1 && adminPostsData[postIndex].comments) {
-                adminPostsData[postIndex].comments = adminPostsData[postIndex].comments.filter(c => c.id !== commentId);
+            const dataset = (window.adminPostsData || adminPostsData);
+            const postIndex = dataset.findIndex(p => p.id === postId);
+            if(postIndex > -1 && dataset[postIndex].comments) {
+                dataset[postIndex].comments = dataset[postIndex].comments.filter(c => c.id !== commentId);
                 if (window.deleteOnlineComment) window.deleteOnlineComment(postId, commentId);
                 refreshCurrentFeeds();
             }
         }
 
+        // --- NEW UPDATE: LocalStorage Save Functionality ---
         function toggleSavePost(postId) {
             if(savedPostIds.includes(postId)) {
                 savedPostIds = savedPostIds.filter(id => id !== postId);
             } else {
                 savedPostIds.push(postId);
             }
+            localStorage.setItem('portalSavedPosts', JSON.stringify(savedPostIds));
             refreshCurrentFeeds();
         }
+        // ---------------------------------------------------
 
         function refreshCurrentFeeds() {
             if(document.getElementById('savedPage').style.display === 'block') {
@@ -1656,6 +1637,8 @@
                 renderFeed(currentOpenSubjectId, 'subjectFeedContainer');
             }
         }
+
+        window.refreshCurrentFeeds = refreshCurrentFeeds;
 
         function openSavePage() {
             updateNavState('navSave');
@@ -1676,7 +1659,7 @@
         }
 
         function downloadPostMedia(type, imgUrl) {
-            if(type === 'photo' && imgUrl) {
+            if((type === 'photo' || imgUrl) && imgUrl) {
                 fetch(imgUrl)
                 .then(response => response.blob())
                 .then(blob => {
@@ -1756,14 +1739,11 @@ function applyOnlineData(d){
   onlineData.posts=arr(d&&d.posts);
   onlineData.users= (d && d.users) ? d.users : {};
 
-  // Expose users for standard script
   window.onlineUsersData = onlineData.users;
 
-  // Sync admin edits instantly to local user
   if(window.localUser && window.onlineUsersData[window.localUser.rollNumber]) {
       window.localUser.name = window.onlineUsersData[window.localUser.rollNumber].name;
       localStorage.setItem('portalUser', JSON.stringify(window.localUser));
-      // update UI if on profile
       const profN = document.getElementById('profName');
       if(profN) profN.innerText = window.localUser.name;
   }
@@ -1807,7 +1787,6 @@ function applyOnlineData(d){
 
 function renderOnlinePosts(){
   window.adminPostsData = onlineData.posts || [];
-  // transform comments object to array
   window.adminPostsData.forEach(p => {
      if(p.comments && typeof p.comments === 'object' && !Array.isArray(p.comments)) {
          p.comments = Object.values(p.comments);
@@ -1816,11 +1795,31 @@ function renderOnlinePosts(){
   if(typeof window.refreshCurrentFeeds === 'function') window.refreshCurrentFeeds();
 }
 
+// --- NEW UPDATE: Realtime Post Display on Home Page Subjects ---
 function renderOnlineSubjects(){
   const grid = document.getElementById('subjectsGrid');
   if(!grid) return;
   window.subjects = onlineData.subjects;
-  grid.innerHTML = onlineData.subjects.map(s => `
+  
+  grid.innerHTML = onlineData.subjects.map(s => {
+    const subjectPosts = (onlineData.posts || []).filter(p => String(p.subjectId) === String(s.id));
+    const latestPost = subjectPosts[subjectPosts.length - 1]; 
+    
+    let latestUpdateHTML = '';
+    if(latestPost) {
+        let snippetStr = '';
+        if(latestPost.text) {
+            snippetStr = latestPost.text.length > 40 ? latestPost.text.substring(0, 40) + '...' : latestPost.text;
+        } else if(latestPost.type === 'photo' || latestPost.imgUrl) {
+            snippetStr = '📷 New Photo Uploaded';
+        }
+        latestUpdateHTML = `
+        <div style="margin-top:12px; font-size:0.85rem; padding:8px; background:#eef6ff; border-radius:4px; border-left:3px solid var(--accent-orange); color:var(--primary-blue);">
+            <strong style="color:var(--sarkari-red);">🔴 Live Update:</strong> ${esc(snippetStr)}
+        </div>`;
+    }
+
+    return `
     <div class="card" onclick="openSubjectPage(${s.id})">
       <div class="card-img-container">
         <img src="${esc(s.image)}" alt="${esc(s.title)}">
@@ -1829,10 +1828,13 @@ function renderOnlineSubjects(){
       <div class="card-body">
         <h3>${esc(s.title)}</h3>
         <p>BTEUP prescribed syllabus aur study material ke liye click karein.</p>
+        ${latestUpdateHTML}
       </div>
     </div>
-  `).join('');
+    `;
+  }).join('');
 }
+// ---------------------------------------------------------------
 
 function renderOnlineNotifications(){
   const c = document.getElementById('notifList');
@@ -1857,27 +1859,6 @@ function renderOnlineNotices(){
     </li>
   `).join('');
 }
-
-window.openSubjectPage = function(id){
-    window.closeAllSections();
-    const s = onlineData.subjects.find(x => String(x.id) === String(id));
-    if(!s) return;
-    window.currentOpenSubjectId = id;
-    document.getElementById('detailImg').src = s.image;
-    document.getElementById('detailTitle').innerText = s.title;
-    document.getElementById('detailCode').innerText = s.code;
-    document.getElementById('detailDesc').innerText = s.desc;
-    document.getElementById('moduleList').innerHTML = (s.modules || []).map(m => `
-      <tr><td><strong>${esc(m.unit)}</strong></td><td>${esc(m.detail)}</td></tr>
-    `).join('');
-    
-    if(typeof window.renderFeed === 'function') {
-        window.renderFeed(id, 'subjectFeedContainer');
-    }
-    
-    document.getElementById('subjectPage').style.display = 'block';
-    window.scrollTo(0,0);
-};
 
 function subscribe(){
   onValue(ref(db,'portal'), snap => applyOnlineData(snap.val() || {}), err => {
@@ -2082,7 +2063,6 @@ window.deleteOnlineComment = async function(postId, commentId) {
     await remove(ref(db, `portal/posts/${postId}/comments/${commentId}`));
 };
 
-// --- NEW USER ADMIN MODULE ---
 window.saveOnlineUser = async function(){
     const name = document.getElementById('adminNewUserName').value.trim();
     const roll = document.getElementById('adminNewUserRoll').value.trim();
@@ -2111,8 +2091,6 @@ window.deleteOnlineUser = async function(roll) {
 window.setUserActiveStatus = async function(roll, status) {
     await update(ref(db, 'portal/users/' + roll), { isActive: status });
 };
-// --- END USER ADMIN MODULE ---
-
 
 function renderAdminAll(){
  const b = onlineData.branding;
@@ -2171,7 +2149,6 @@ function renderAdminAll(){
    </div>
  `).join('');
 
- // RENDER ADMIN USERS
  document.getElementById('adminUsersList').innerHTML = Object.values(onlineData.users || {}).map(u => `
    <div class="admin-card">
      <div class="admin-row" style="justify-content: space-between;">
