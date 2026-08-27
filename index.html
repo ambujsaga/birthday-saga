@@ -1577,7 +1577,7 @@
             <img id="detailImg" src="" alt="Subject Image">
             <div class="subject-info">
                 <h1 id="detailTitle">Subject Title</h1>
-                <p><strong>Subject Code:</strong> <span id="detailCode">1001</span></p>
+                <p style="display:none;"><strong>Subject Code:</strong> <span id="detailCode">1001</span></p>
                 <p style="margin-top: 10px;" id="detailDesc">Subject description...</p>
             </div>
         </div>
@@ -2036,7 +2036,6 @@
                 <div class="card" onclick="openSubjectPage(${sub.id})">
                     <div class="card-img-container">
                         <img src="${sub.image}" alt="${sub.title}">
-                        <div class="card-code">${sub.code}</div>
                     </div>
                     <div class="card-body">
                         <h3>${sub.title}</h3>
@@ -2191,6 +2190,11 @@
                 localStorage.setItem('lastSeenChatTime', Date.now());
 
                 if(window.renderOnlineChats) window.renderOnlineChats();
+                // Chat hamesa latest/current (aaj ke) message se start ho -
+                // WhatsApp jaisa: neeche (sabse naya) scroll ho jaaye, user
+                // upar scroll karke purana chat dekh sakta hai.
+                const chatMsgBox = document.getElementById('chatMessages');
+                if(chatMsgBox) chatMsgBox.scrollTop = chatMsgBox.scrollHeight;
                 window.scrollTo(0, 0);
             });
         }
@@ -2710,7 +2714,6 @@ function renderOnlineSubjects(){
     <div class="card" onclick="openSubjectPage(${s.id})">
       <div class="card-img-container">
         <img src="${esc(s.image)}" alt="${esc(s.title)}">
-        <div class="card-code">${esc(s.code)}</div>
       </div>
       <div class="card-body">
         <h3>${esc(s.title)}</h3>
@@ -4418,7 +4421,7 @@ onAuthStateChanged(auth, user => {
    ADDITIVE: "DOWNLOAD APP" TOP POPUP (every 3 minutes) + PWA INSTALL
    Purely additive module. Nothing above this block is edited or removed.
 
-   - Har 3 minute me app ke upar ek popup aayega: "Download App" +
+   - Har 90 second me app ke upar ek popup aayega: "Download App" +
      ek Download button.
    - Download button dabane par browser (Chrome) ka built-in
      "Install App" (Add to Home Screen) prompt open hoga. Accept karte
@@ -4436,7 +4439,7 @@ onAuthStateChanged(auth, user => {
      na is session me, na future me (localStorage me flag save hota hai).
 ===================================================================== */
 (function(){
-  const POPUP_INTERVAL_MS = 3 * 60 * 1000; // 3 minutes
+  const POPUP_INTERVAL_MS = 90 * 1000; // 90 seconds
   const INSTALLED_FLAG_KEY = 'pwaAppInstalledFlag';
   let deferredInstallPrompt = null;
   let popupTimer = null;
