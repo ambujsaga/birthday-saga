@@ -1083,6 +1083,29 @@
 @media(max-width:480px){.profile-post-plus{right:14px;bottom:80px;width:50px;height:50px}.global-feed-page{padding:.75rem}.user-post-carousel-nav button{width:26px;height:26px;font-size:16px}}
 
 </style>
+<style>
+/* ================= ADDITIVE: POST AUDIO FEATURE (new CSS only, old CSS untouched) ================= */
+.user-post-audio-row{display:flex;align-items:center;gap:10px;margin:4px 0 12px}
+.user-post-audio-btn{display:inline-flex;align-items:center;gap:7px;background:#f1f5f9;border:1px solid #cbd5e1;color:#003366;padding:9px 12px;border-radius:8px;font-weight:700;cursor:pointer}
+.user-post-audio-hint{font-size:.78rem;color:#64748b}
+.user-post-audio-panel{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;margin:0 0 12px;display:none}
+.user-post-audio-panel.active{display:block}
+.user-post-audio-file-name{font-size:.85rem;font-weight:700;color:#003366;margin-bottom:8px;word-break:break-all}
+.user-post-audio-trim-row{margin-bottom:10px}
+.user-post-audio-trim-row label{display:flex;justify-content:space-between;font-size:.78rem;color:#475569;margin-bottom:3px;font-weight:700}
+.user-post-audio-trim-row input[type=range]{width:100%}
+.user-post-audio-actions{display:flex;gap:8px;margin-top:10px}
+.user-post-audio-actions button{flex:1;border:0;border-radius:8px;padding:9px;font-weight:700;cursor:pointer}
+.user-post-audio-preview-btn{background:#e0e7ff;color:#1e3a8a}
+.user-post-audio-confirm-btn{background:var(--primary-blue);color:#fff}
+.user-post-audio-cancel-btn{background:#fee2e2;color:#b91c1c}
+.user-post-audio-chip{display:none;align-items:center;gap:8px;background:#eef2ff;border:1px solid #c7d2fe;color:#1e3a8a;padding:7px 10px;border-radius:8px;font-size:.82rem;font-weight:700;margin:0 0 12px}
+.user-post-audio-chip.active{display:inline-flex}
+.user-post-audio-chip .user-post-audio-remove{cursor:pointer;color:#b91c1c;font-weight:900;margin-left:4px}
+.user-post-music-icon{border:0;background:rgba(0,51,102,0.08);color:var(--primary-blue);width:26px;height:26px;border-radius:50%;font-size:.85rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin-right:8px;flex:0 0 auto;transition:background .2s,transform .2s}
+.user-post-music-icon.playing{background:var(--accent-orange);color:#fff;animation:userPostMusicPulse 1s infinite}
+@keyframes userPostMusicPulse{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+</style>
 </head>
 <body>
 
@@ -3219,6 +3242,374 @@ onAuthStateChanged(auth, user => {
   window.refreshCurrentFeeds=function(){
     if(typeof oldRefresh==='function') oldRefresh();
     if(document.getElementById('globalFeedPage')?.style.display==='block') renderGlobalFeed();
+  };
+})();
+
+
+/* ================= ADDITIVE: CUSTOM POST AUDIO FEATURE (Instagram-style) =================
+   Purely additive module. Nothing above this block is edited or removed.
+   - Composer: user apne phone se ek downloaded audio file choose karta hai,
+     phir trim-range slider se decide karta hai ki post par audio kitne se kitne
+     second tak chalega, "Confirm Audio" par done hone ke baad woh audio post ke
+     saath attach ho jaata hai.
+   - Feed/Profile: audio wale post ke footer me right side par ek 🎵 icon dikhta
+     hai. Tap karne par sirf uss post ka trimmed audio play hota hai, dobara tap
+     par band ho jaata hai. Ek time me sirf ek hi post ka audio bajta hai — jaise
+     hi doosre post ka audio play hota hai pehla apne aap ruk jaata hai. Jis post
+     par audio add nahi kiya gaya, uspar music icon bilkul nahi dikhta.
+================================================================================= */
+(function(){
+  const USER_POST_MAX_AUDIO_BYTES = 4*1024*1024; // ~4MB raw audio file safety cap
+
+  let pendingAudio = null; // {dataUrl, duration, start, end, name}
+  let selectedAudioFile = null;
+  let previewAudioEl = null;
+
+  function fmtSec(s){
+    s = Math.max(0, Math.round(s||0));
+    const m = Math.floor(s/60), r = s%60;
+    return m + ':' + String(r).padStart(2,'0');
+  }
+
+  function resetAudioComposerUI(){
+    pendingAudio = null;
+    selectedAudioFile = null;
+    if(previewAudioEl){ try{ previewAudioEl.pause(); }catch(e){} previewAudioEl=null; }
+    const fileInput = document.getElementById('userPostAudioFile');
+    if(fileInput) fileInput.value='';
+    const panel = document.getElementById('userPostAudioPanel');
+    if(panel) panel.classList.remove('active');
+    const chip = document.getElementById('userPostAudioChip');
+    if(chip) chip.classList.remove('active');
+  }
+
+  function openAudioPanelWithFile(file){
+    selectedAudioFile = file;
+    const panel = document.getElementById('userPostAudioPanel');
+    const nameEl = document.getElementById('userPostAudioFileName');
+    const startRange = document.getElementById('userPostAudioStart');
+    const endRange = document.getElementById('userPostAudioEnd');
+    const startLbl = document.getElementById('userPostAudioStartLabel');
+    const endLbl = document.getElementById('userPostAudioEndLabel');
+    if(!panel || !nameEl || !startRange || !endRange) return;
+
+    const objUrl = URL.createObjectURL(file);
+    const probe = new Audio();
+    probe.preload='metadata';
+    probe.src = objUrl;
+    probe.onloadedmetadata = function(){
+      const dur = isFinite(probe.duration) ? probe.duration : 0;
+      URL.revokeObjectURL(objUrl);
+      nameEl.textContent = '🎧 ' + file.name;
+      startRange.min = 0; startRange.max = Math.max(0, Math.floor(dur)); startRange.value = 0;
+      endRange.min = 0; endRange.max = Math.max(1, Math.floor(dur)); endRange.value = Math.max(1, Math.floor(dur));
+      startLbl.textContent = 'Start: ' + fmtSec(0);
+      endLbl.textContent = 'End: ' + fmtSec(dur);
+      panel.dataset.duration = String(dur);
+      panel.classList.add('active');
+      document.getElementById('userPostAudioChip')?.classList.remove('active');
+    };
+    probe.onerror = function(){
+      URL.revokeObjectURL(objUrl);
+      alert('Audio file load nahi ho payi, dusri file try karein.');
+    };
+  }
+
+  function currentTrimRange(){
+    const panel = document.getElementById('userPostAudioPanel');
+    const startRange = document.getElementById('userPostAudioStart');
+    const endRange = document.getElementById('userPostAudioEnd');
+    const dur = parseFloat(panel?.dataset.duration || '0');
+    let start = parseFloat(startRange?.value || '0');
+    let end = parseFloat(endRange?.value || String(dur));
+    if(end <= start) end = Math.min(dur, start+1);
+    return {start, end, duration:dur};
+  }
+
+  function previewTrimmedAudio(){
+    if(!selectedAudioFile) return;
+    const {start,end} = currentTrimRange();
+    if(previewAudioEl){ try{ previewAudioEl.pause(); }catch(e){} previewAudioEl=null; }
+    const url = URL.createObjectURL(selectedAudioFile);
+    const a = new Audio(url);
+    previewAudioEl = a;
+    a.currentTime = start;
+    a.play().catch(()=>{});
+    const stopAt = ()=>{
+      if(a.currentTime >= end){ a.pause(); a.removeEventListener('timeupdate', stopAt); URL.revokeObjectURL(url); }
+    };
+    a.addEventListener('timeupdate', stopAt);
+    a.addEventListener('ended', ()=>URL.revokeObjectURL(url));
+  }
+
+  async function audioFileToDataURL(file){
+    if(!file || !file.type.startsWith('audio/')) throw new Error('Sirf audio file select karein.');
+    if(file.size > USER_POST_MAX_AUDIO_BYTES) throw new Error('Audio file 4MB se choti honi chahiye.');
+    return new Promise((resolve,reject)=>{
+      const reader = new FileReader();
+      reader.onerror = ()=>reject(new Error('Audio read nahi ho payi.'));
+      reader.onload = ()=>resolve(reader.result);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function confirmAudioSelection(){
+    if(!selectedAudioFile) return;
+    const {start,end,duration} = currentTrimRange();
+    const btn = document.getElementById('userPostAudioConfirmBtn');
+    if(btn){ btn.disabled=true; btn.textContent='Adding…'; }
+    try{
+      const dataUrl = await audioFileToDataURL(selectedAudioFile);
+      pendingAudio = { dataUrl, duration, start, end, name: selectedAudioFile.name };
+      document.getElementById('userPostAudioPanel')?.classList.remove('active');
+      const chip = document.getElementById('userPostAudioChip');
+      const chipLabel = document.getElementById('userPostAudioChipLabel');
+      if(chipLabel) chipLabel.textContent = '🎵 ' + selectedAudioFile.name + ' (' + fmtSec(start) + '–' + fmtSec(end) + ')';
+      chip?.classList.add('active');
+      if(previewAudioEl){ try{ previewAudioEl.pause(); }catch(e){} previewAudioEl=null; }
+    }catch(e){
+      alert('Audio add nahi ho paya: ' + e.message);
+    }finally{
+      if(btn){ btn.disabled=false; btn.textContent='✓ Done'; }
+    }
+  }
+
+  function cancelAudioSelection(){
+    if(previewAudioEl){ try{ previewAudioEl.pause(); }catch(e){} previewAudioEl=null; }
+    selectedAudioFile = null;
+    document.getElementById('userPostAudioPanel')?.classList.remove('active');
+    const fileInput = document.getElementById('userPostAudioFile');
+    if(fileInput) fileInput.value='';
+  }
+
+  function removeConfirmedAudio(){
+    pendingAudio = null;
+    document.getElementById('userPostAudioChip')?.classList.remove('active');
+    const fileInput = document.getElementById('userPostAudioFile');
+    if(fileInput) fileInput.value='';
+  }
+
+  window.userPostAudioPreview = previewTrimmedAudio;
+  window.userPostAudioConfirm = confirmAudioSelection;
+  window.userPostAudioCancel = cancelAudioSelection;
+  window.userPostAudioRemove = removeConfirmedAudio;
+
+  function ensureAudioComposerUI(){
+    const composer = document.getElementById('userPostComposer');
+    if(!composer || document.getElementById('userPostAudioRow')) return;
+
+    const photoRow = composer.querySelector('.user-post-photo-row');
+    const audioRow = document.createElement('div');
+    audioRow.className = 'user-post-audio-row';
+    audioRow.id = 'userPostAudioRow';
+    audioRow.innerHTML = `
+      <label class="user-post-audio-btn" for="userPostAudioFile">🎵 Add Audio</label>
+      <input id="userPostAudioFile" type="file" accept="audio/*" hidden>
+      <span class="user-post-audio-hint">apne download audio se</span>
+    `;
+
+    const chip = document.createElement('div');
+    chip.className = 'user-post-audio-chip';
+    chip.id = 'userPostAudioChip';
+    chip.innerHTML = `<span id="userPostAudioChipLabel"></span><span class="user-post-audio-remove" onclick="userPostAudioRemove()">✕</span>`;
+
+    const panel = document.createElement('div');
+    panel.className = 'user-post-audio-panel';
+    panel.id = 'userPostAudioPanel';
+    panel.innerHTML = `
+      <div class="user-post-audio-file-name" id="userPostAudioFileName"></div>
+      <div class="user-post-audio-trim-row">
+        <label><span id="userPostAudioStartLabel">Start: 0:00</span></label>
+        <input type="range" id="userPostAudioStart">
+      </div>
+      <div class="user-post-audio-trim-row">
+        <label><span id="userPostAudioEndLabel">End: 0:00</span></label>
+        <input type="range" id="userPostAudioEnd">
+      </div>
+      <div class="user-post-audio-actions">
+        <button type="button" class="user-post-audio-preview-btn" onclick="userPostAudioPreview()">▶️ Preview</button>
+        <button type="button" class="user-post-audio-confirm-btn" id="userPostAudioConfirmBtn" onclick="userPostAudioConfirm()">✓ Done</button>
+        <button type="button" class="user-post-audio-cancel-btn" onclick="userPostAudioCancel()">✕ Cancel</button>
+      </div>
+    `;
+
+    if(photoRow && photoRow.parentNode===composer){
+      photoRow.insertAdjacentElement('afterend', panel);
+      photoRow.insertAdjacentElement('afterend', chip);
+      photoRow.insertAdjacentElement('afterend', audioRow);
+    } else {
+      composer.appendChild(audioRow);
+      composer.appendChild(chip);
+      composer.appendChild(panel);
+    }
+
+    document.getElementById('userPostAudioFile').addEventListener('change', function(){
+      const file = this.files && this.files[0];
+      if(!file) return;
+      if(file.size > USER_POST_MAX_AUDIO_BYTES){
+        alert('Audio file 4MB se choti honi chahiye.');
+        this.value='';
+        return;
+      }
+      openAudioPanelWithFile(file);
+    });
+
+    document.getElementById('userPostAudioStart').addEventListener('input', function(){
+      const dur = parseFloat(panel.dataset.duration||'0');
+      let v = parseFloat(this.value);
+      const endRange = document.getElementById('userPostAudioEnd');
+      if(v >= parseFloat(endRange.value)) { v = Math.max(0, parseFloat(endRange.value)-1); this.value=v; }
+      document.getElementById('userPostAudioStartLabel').textContent = 'Start: ' + fmtSec(v);
+    });
+    document.getElementById('userPostAudioEnd').addEventListener('input', function(){
+      let v = parseFloat(this.value);
+      const startRange = document.getElementById('userPostAudioStart');
+      if(v <= parseFloat(startRange.value)) { v = parseFloat(startRange.value)+1; this.value=v; }
+      document.getElementById('userPostAudioEndLabel').textContent = 'End: ' + fmtSec(v);
+    });
+
+    // Take over the Publish button's click so audio can be attached after the
+    // original publish flow finishes — publishUserProfilePost() itself is
+    // never modified.
+    const submitBtn = document.getElementById('userPostSubmit');
+    if(submitBtn){
+      submitBtn.onclick = function(e){
+        e.preventDefault();
+        publishUserProfilePostWithAudio();
+      };
+    }
+  }
+
+  const oldEnsureProfilePostUI = window.ensureProfilePostUI;
+  window.ensureProfilePostUI = function(){
+    if(typeof oldEnsureProfilePostUI==='function') oldEnsureProfilePostUI();
+    ensureAudioComposerUI();
+  };
+
+  async function publishUserProfilePostWithAudio(){
+    if(!pendingAudio){
+      return window.publishUserProfilePost();
+    }
+    if(!window.localUser) return requireLogin(publishUserProfilePostWithAudio);
+
+    const audioToAttach = pendingAudio;
+    const roll = String(window.localUser.rollNumber);
+    const startedAt = Date.now();
+
+    await window.publishUserProfilePost();
+
+    // Find the just-created post for this user and attach the confirmed
+    // audio to it, without touching how the post itself was created.
+    let attempts = 0;
+    const tryAttach = async ()=>{
+      attempts++;
+      const all = (window.adminPostsData || onlineData.posts || []);
+      const own = all.filter(p=>String(p.authorRoll||p.userId||p.createdBy||'')===roll && (p.timestamp||0)>=startedAt-1000 && !p.audioUrl);
+      own.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+      const target = own[0];
+      if(target && target.id){
+        try{
+          await update(ref(db,'portal/posts/'+target.id), {
+            audioUrl: audioToAttach.dataUrl,
+            audioStart: audioToAttach.start,
+            audioEnd: audioToAttach.end,
+            audioDuration: audioToAttach.duration,
+            audioName: audioToAttach.name
+          });
+        }catch(e){ console.warn('Post audio attach failed', e); }
+        resetAudioComposerUI();
+        if(typeof window.renderUserProfilePosts==='function') window.renderUserProfilePosts();
+        return;
+      }
+      if(attempts < 8){ setTimeout(tryAttach, 500); }
+      else { resetAudioComposerUI(); }
+    };
+    setTimeout(tryAttach, 400);
+  }
+  window.publishUserProfilePostWithAudio = publishUserProfilePostWithAudio;
+
+  // ---------- Playback: music icon on posts, one-at-a-time ----------
+  let activeAudioEl = null;
+  let activeAudioId = null;
+  let activeAudioBtn = null;
+
+  function stopActiveAudio(){
+    if(activeAudioEl){ try{ activeAudioEl.pause(); }catch(e){} }
+    if(activeAudioBtn) activeAudioBtn.classList.remove('playing');
+    activeAudioEl = null;
+    activeAudioId = null;
+    activeAudioBtn = null;
+  }
+
+  window.toggleUserPostAudioPlay = function(id, btn){
+    if(activeAudioId === id){
+      stopActiveAudio();
+      return;
+    }
+    stopActiveAudio();
+    const all = (window.adminPostsData || onlineData.posts || []);
+    const post = all.find(p=>String(p.id)===String(id));
+    if(!post || !post.audioUrl) return;
+    const a = new Audio(post.audioUrl);
+    const start = post.audioStart || 0;
+    const end = post.audioEnd || (post.audioDuration || 0) || start+1;
+    a.addEventListener('loadedmetadata', ()=>{ a.currentTime = start; });
+    a.addEventListener('timeupdate', ()=>{
+      if(a.currentTime >= end){ stopActiveAudio(); }
+    });
+    a.addEventListener('ended', ()=>{ stopActiveAudio(); });
+    a.play().then(()=>{
+      activeAudioEl = a;
+      activeAudioId = id;
+      activeAudioBtn = btn;
+      btn.classList.add('playing');
+    }).catch(()=>{});
+  };
+
+  function injectAudioIcons(containerId){
+    const container = document.getElementById(containerId);
+    if(!container) return;
+    const all = (window.adminPostsData || onlineData.posts || []);
+    container.querySelectorAll('[data-user-post-id]').forEach(card=>{
+      const id = card.getAttribute('data-user-post-id');
+      if(!id) return;
+      const footer = card.querySelector('.user-post-footer');
+      if(!footer) return;
+      const existing = footer.querySelector('.user-post-music-icon');
+      const post = all.find(p=>String(p.id)===String(id));
+      if(!post || !post.audioUrl){
+        if(existing) existing.remove();
+        return;
+      }
+      if(existing) return; // already has the icon
+      const icon = document.createElement('button');
+      icon.type = 'button';
+      icon.className = 'user-post-music-icon' + (activeAudioId===id ? ' playing' : '');
+      icon.textContent = '🎵';
+      icon.title = 'Play post audio';
+      icon.onclick = function(e){ e.stopPropagation(); window.toggleUserPostAudioPlay(id, icon); };
+      footer.insertBefore(icon, footer.firstChild);
+    });
+  }
+
+  const oldRenderUserProfilePosts = window.renderUserProfilePosts;
+  window.renderUserProfilePosts = function(){
+    if(typeof oldRenderUserProfilePosts==='function') oldRenderUserProfilePosts();
+    injectAudioIcons('userProfilePostsList');
+  };
+
+  const oldRenderGlobalFeed = window.renderGlobalFeed;
+  window.renderGlobalFeed = function(){
+    if(typeof oldRenderGlobalFeed==='function') oldRenderGlobalFeed();
+    injectAudioIcons('globalFeedList');
+  };
+
+  // If the create page is closed/left, stop any preview/composer audio state
+  // without touching the original close handler.
+  const oldCloseCreatePage = window.closeUserPostCreatePage;
+  window.closeUserPostCreatePage = function(){
+    if(previewAudioEl){ try{ previewAudioEl.pause(); }catch(e){} previewAudioEl=null; }
+    if(typeof oldCloseCreatePage==='function') oldCloseCreatePage();
   };
 })();
 
