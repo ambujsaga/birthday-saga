@@ -1315,6 +1315,27 @@
 }
 
 #blBootLoader.bl-fade-out { opacity: 0; pointer-events: none; }
+
+#blBootLoader .bl-from-brand {
+    position: absolute;
+    bottom: 22px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #8a8a8a;
+    letter-spacing: 0.3px;
+    z-index: 10;
+}
+
+#blBootLoader .bl-from-brand a {
+    color: #6a5cff;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+#blBootLoader .bl-from-brand a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -1345,6 +1366,8 @@
             <div class="bl-percent" id="blPercent">0%</div>
             <div class="bl-status-text" id="blStatusText">Initializing IDE...</div>
         </div>
+
+        <div class="bl-from-brand">from <a href="https://reeworld.vercel.app" target="_blank" rel="noopener noreferrer">ree</a></div>
     </div>
 
     <script>
@@ -1482,7 +1505,6 @@
                 </div>
                 
                 <div class="website-icon" onclick="openMMITPage()" title="Open MMIT Website"><svg class="ui-icon"><use href="#icon-globe"></use></svg></div>
-                <div class="website-icon" onclick="openAdminLogin()" title="Admin Panel"><svg class="ui-icon"><use href="#icon-gear"></use></svg></div>
                 <div class="menu-icon" onclick="toggleMenu()">☰</div>
             </div>
         </header>
@@ -1876,7 +1898,7 @@
                     const allowed = await window.checkAndSetActiveSession(roll, deviceId);
                     if(!allowed) {
                         err.innerText = "";
-                        alert("Yeh Roll Number pehle se kisi anya device/system par login hai. Ek Roll Number se ek samay me sirf ek hi device par login kiya ja sakta hai.");
+                        alert("This Roll Number is already logged in on another device/system. A Roll Number can only be logged in on one device at a time.");
                         return;
                     }
                 }
@@ -1946,7 +1968,7 @@
             closeAllSections();
             openHomePage();
             if(window.renderOnlineChats) window.renderOnlineChats();
-            alert("Aapka Roll Number kisi anya device/system par login kiya gaya hai. Suraksha karno se aapko is device se logout kar diya gaya hai.");
+            alert("Your Roll Number is logged in on another device/system. For security reasons, you have been logged out from this device.");
         }
         window.forceLogoutDifferentDevice = forceLogoutDifferentDevice;
 
@@ -1957,51 +1979,51 @@
         ];
 
         const officialNotices = [
-            { title: "BTEUP Odd Semester Examination Form 2026 Direct Link", date: "20-Aug-2026", isNew: true },
-            { title: "JEECUP Polytechnic Admission Counselling Schedule 2026", date: "18-Aug-2026", isNew: true },
-            { title: "Download Official Diploma CSE 1st Sem Syllabus PDF", date: "15-Aug-2026", isNew: false },
-            { title: "BTEUP Scrutiny & Revaluation Result Declared", date: "10-Aug-2026", isNew: false },
-            { title: "UP Scholarship Online Form 2026-27 Apply Online", date: "05-Aug-2026", isNew: false }
+            { title: "", date: "", isNew: true },
+            { title: "", date: "", isNew: true },
+            { title: "", date: "", isNew: false },
+            { title: "", date: "", isNew: false },
+            { title: "", date: "", isNew: false }
         ];
 
         const subjects = [
             {
                 id: 1,
                 title: "Communication Skills - I",
-                code: "SUB-101",
-                image: "https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=600&q=80",
+                code: "SUB-...",
+                image: "",
                 desc: "Understanding the importance of effective communication in technical education. This subject focuses on grammar, reading, and writing skills that will also help with job placement later on."
                 
             },
             {
                 id: 2,
                 title: "Applied Mathematics - I",
-                code: "SUB-102",
-                image: "https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?auto=format&fit=crop&w=600&q=80",
+                code: "SUB-...",
+                image: "",
                 desc: "Mathematics for strengthening the basics of diploma engineering. It covers the fundamentals of Algebra, Trigonometry, and Differential Calculus."
                 
             },
             {
                 id: 3,
                 title: "Applied Physics - I",
-                code: "SUB-103",
-                image: "https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&w=600&q=80",
+                code: "SUB-...",
+                image: "",
                 desc: "Basic knowledge of Physics for engineering applications. Focuses on units, dimensions, mechanics, and properties of matter."
                 
             },
             {
                 id: 4,
-                title: "Applied Chemistry",
-                code: "SUB-104",
-                image: "https://images.unsplash.com/photo-1603126857599-f6e1570d8136?auto=format&fit=crop&w=600&q=80",
+                title: "___",
+                code: "SUB-...",
+                image: "",
                 desc: "Chemistry for understanding the properties of engineering materials. Water treatment, polymers, and electrochemistry are its main topics."
                 
             },
             {
                 id: 5,
-                title: "Fundamentals of Computer & IT (FCIT)",
-                code: "SUB-105",
-                image: "https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=600&q=80",
+                title: "Fundamentals of Computer & IT",
+                code: "SUB-...",
+                image: "",
                 desc: "A core foundational subject in Computer Science. It covers computer architecture, memory, software types, OS, and Internet basics."
                 
             }
