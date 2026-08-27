@@ -762,6 +762,13 @@
             margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+        }
+
+        .post-header .post-time {
+            font-weight: 400;
+            font-size: 0.72rem;
+            color: #64748b;
         }
 
         .post-text {
@@ -778,6 +785,9 @@
             border-radius: 6px;
             margin-bottom: 15px;
             border: 1px solid #eee;
+            user-select: none;
+            -webkit-user-drag: none;
+            touch-action: manipulation;
         }
 
         .post-actions {
@@ -1837,7 +1847,7 @@
             let viewBtnHTML = '';
             
             if((post.type === 'photo' || post.imgUrl) && post.imgUrl) {
-                mediaHTML = `<img src="${post.imgUrl}" class="post-img" alt="Post Image">`;
+                mediaHTML = `<img src="${post.imgUrl}" class="post-img" alt="Post Image" data-userpost-img="${post.imgUrl}">`;
                 viewBtnHTML = `<button class="post-action-btn" onclick="openImageViewer('${post.imgUrl}')">👁️ View</button>`;
             }
 
@@ -1856,7 +1866,7 @@
 
             return `
             <div class="post-card" id="post-${post.id}">
-                <div class="post-header"><span>Admin Update</span></div>
+                <div class="post-header"><span>Admin Update</span><span class="post-time">${(window.userPostTime && post.timestamp) ? window.userPostTime(post.timestamp) : ''}</span></div>
                 <div class="post-text">${post.text}</div>
                 ${mediaHTML}
                 <div class="post-actions">
@@ -1887,6 +1897,9 @@
                 return;
             }
             container.innerHTML = posts.map(p => generatePostHTML(p)).join('');
+            container.querySelectorAll('[data-userpost-img]').forEach(img => {
+                if(typeof bindLongPress === 'function') bindLongPress(img, img.getAttribute('data-userpost-img'));
+            });
         }
 
         function renderSavedFeed() {
@@ -1899,6 +1912,9 @@
                 return;
             }
             container.innerHTML = posts.map(p => generatePostHTML(p)).join('');
+            container.querySelectorAll('[data-userpost-img]').forEach(img => {
+                if(typeof bindLongPress === 'function') bindLongPress(img, img.getAttribute('data-userpost-img'));
+            });
         }
 
         function toggleCommentSection(postId) {
@@ -2507,7 +2523,7 @@ window.createOnlinePost = async function(){
     let imgUrl = '';
     if(file) imgUrl = await fileToDataURL(file, 950, 0.64);
     const id = 'post_' + Date.now();
-    await set(ref(db, 'portal/posts/' + id), { subjectId, text, type: imgUrl ? 'photo' : 'text', imgUrl, comments: [] });
+    await set(ref(db, 'portal/posts/' + id), { subjectId, text, type: imgUrl ? 'photo' : 'text', imgUrl, comments: [], timestamp: Date.now() });
     document.getElementById('newPostText').value = '';
     document.getElementById('newPostFile').value = '';
     setStatus('Post online publish ho gaya.');
@@ -2772,7 +2788,12 @@ onAuthStateChanged(auth, user => {
     postsBox.id = 'userProfilePosts';
     postsBox.innerHTML = '<h3 class="user-profile-posts-title">📌 My Posts</h3><div id="userProfilePostsList"></div>';
 
-    card.appendChild(composer);
+    // The composer is intentionally placed inside the (hidden) post-create page holder,
+    // not the profile card, so it only becomes visible when the user taps the "+" icon
+    // and openUserPostCreatePage() opens that page. The "My Posts" list still stays
+    // visible in the profile card as before.
+    const createHolderForComposer = document.getElementById('userPostCreateHolder');
+    if(createHolderForComposer) createHolderForComposer.appendChild(composer); else card.appendChild(composer);
     card.appendChild(postsBox);
 
     const text = document.getElementById('userPostText');
@@ -2949,7 +2970,7 @@ onAuthStateChanged(auth, user => {
       userPostLongPressTimer=setTimeout(()=>{
         userPostLongPressTriggered=true;
         openUserPostOriginal(src);
-      },3000);
+      },2000);
     };
     const end=()=>clearTimeout(userPostLongPressTimer);
     img.addEventListener('pointerdown',start);
@@ -3044,6 +3065,10 @@ onAuthStateChanged(auth, user => {
 
   const oldApplyOnlineData=window.applyOnlineData;
   window.renderUserProfilePosts=renderUserProfilePosts;
+  window.userPostTime=userPostTime;
+  window.bindLongPress=bindLongPress;
+  window.ensureOriginalModal=ensureOriginalModal;
+  ensureOriginalModal();
 
   const refreshObserver=setInterval(()=>{
     if(document.getElementById('profilePage')?.style.display==='block'){
@@ -3077,10 +3102,14 @@ onAuthStateChanged(auth, user => {
   function moveProfilePostComposerBack(){
     const composer=document.getElementById('userPostComposer');
     const posts=document.getElementById('userProfilePosts');
+    const holder=document.getElementById('userPostCreateHolder');
     const card=document.querySelector('#profilePage .profile-card');
-    if(!composer || !card) return;
-    card.appendChild(composer);
+    if(!card) return;
+    // Only the "My Posts" list returns to the profile card. The composer stays parked
+    // inside the hidden create-page holder so it does not appear in the profile again
+    // until the "+" icon is tapped.
     if(posts) card.appendChild(posts);
+    if(composer && holder) holder.appendChild(composer);
   }
   window.moveProfilePostComposerToCreatePage=moveProfilePostComposerToCreatePage;
   window.moveProfilePostComposerBack=moveProfilePostComposerBack;
