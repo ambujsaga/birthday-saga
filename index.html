@@ -1159,8 +1159,264 @@
 .post-card .post-reaction-bar{margin-top:10px}
 .user-post-card .post-reaction-bar{border-top:none;margin-top:0;padding-top:0;margin-bottom:6px}
 </style>
+<style>
+/* ================= ADDITIVE: BOOT LOADER (8s intro animation) ================= */
+/* All selectors are prefixed with "bl-" and scoped under #blBootLoader so
+   nothing here can clash with any existing class/id in the app. */
+#blBootLoader {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999999;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #333333;
+    transition: opacity 0.5s ease;
+}
+
+#blBootLoader .bl-logo-text {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, #6a5cff, #00c9ff, #27c93f, #6a5cff);
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: blShine 3s linear infinite, blPulseText 2s ease-in-out infinite;
+    margin-bottom: 22px;
+    text-shadow: 0px 4px 15px rgba(106, 92, 255, 0.3);
+    text-align: center;
+}
+
+@keyframes blShine { to { background-position: 300% center; } }
+@keyframes blPulseText { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+
+#blBootLoader .bl-computer-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+}
+
+#blBootLoader .bl-monitor {
+    width: 300px;
+    height: 200px;
+    background: #2b2b2b;
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2), 0 0 20px rgba(106, 92, 255, 0.1);
+    border: 2px solid #3d3d3d;
+    position: relative;
+}
+
+#blBootLoader .bl-screen {
+    width: 100%;
+    height: 100%;
+    background: #1e1e1e;
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+}
+
+#blBootLoader .bl-window-bar {
+    height: 24px;
+    background: #333333;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 6px;
+    border-bottom: 1px solid #111;
+    flex-shrink: 0;
+}
+
+#blBootLoader .bl-dot { width: 10px; height: 10px; border-radius: 50%; }
+#blBootLoader .bl-dot.bl-red { background: #ff5f56; }
+#blBootLoader .bl-dot.bl-yellow { background: #ffbd2e; }
+#blBootLoader .bl-dot.bl-green { background: #27c93f; }
+
+#blBootLoader .bl-window-title {
+    margin-left: 10px;
+    color: #888;
+    font-size: 11px;
+    font-family: monospace;
+}
+
+#blBootLoader .bl-code-editor {
+    padding: 10px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #d4d4d4;
+    white-space: pre-wrap;
+    text-align: left;
+    flex-grow: 1;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+#blBootLoader .bl-code-editor::-webkit-scrollbar { display: none; }
+
+#blBootLoader .bl-kw { color: #569cd6; font-weight: bold; }
+#blBootLoader .bl-str { color: #ce9178; }
+#blBootLoader .bl-com { color: #6a9955; font-style: italic; }
+#blBootLoader .bl-func { color: #dcdcaa; }
+#blBootLoader .bl-num { color: #b5cea8; }
+
+#blBootLoader .bl-cursor {
+    display: inline-block;
+    width: 7px;
+    height: 14px;
+    background: #d4d4d4;
+    vertical-align: middle;
+    animation: blBlink 0.8s step-end infinite;
+}
+@keyframes blBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+#blBootLoader .bl-stand {
+    width: 46px;
+    height: 32px;
+    background: linear-gradient(to bottom, #555555, #333333);
+}
+
+#blBootLoader .bl-base {
+    width: 130px;
+    height: 8px;
+    background: #444444;
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+#blBootLoader .bl-percent-container {
+    margin-top: 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#blBootLoader .bl-percent { font-size: 22px; font-weight: 700; color: #6a5cff; }
+
+#blBootLoader .bl-status-text {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #555555;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: opacity 0.3s;
+}
+
+#blBootLoader.bl-fade-out { opacity: 0; pointer-events: none; }
+</style>
 </head>
 <body>
+
+    <!-- ================= ADDITIVE: 8-second boot loading animation =================
+         Shows on top of everything for 8 seconds while the app loads underneath,
+         then fades out and reveals the app. Nothing about the app below is changed. -->
+    <div id="blBootLoader">
+        <div class="bl-logo-text"></div>
+
+        <div class="bl-computer-wrapper">
+            <div class="bl-monitor">
+                <div class="bl-screen">
+                    <div class="bl-window-bar">
+                        <span class="bl-dot bl-red"></span>
+                        <span class="bl-dot bl-yellow"></span>
+                        <span class="bl-dot bl-green"></span>
+                        <span class="bl-window-title">main.py - MMITcs</span>
+                    </div>
+                    <div class="bl-code-editor" id="blCodeEditor"><span class="bl-cursor"></span></div>
+                </div>
+            </div>
+            <div class="bl-stand"></div>
+            <div class="bl-base"></div>
+        </div>
+
+        <div class="bl-percent-container">
+            <div class="bl-percent" id="blPercent">0%</div>
+            <div class="bl-status-text" id="blStatusText">Initializing IDE...</div>
+        </div>
+    </div>
+
+    <script>
+    (function(){
+        var blPythonCode = "import sys\nimport time\nfrom portal import core\n\n# Booting Environment\nprint(\"Welcome to the Portal!\")\nprint(\"Initializing modules...\")\n\ndef load_system():\n    engine = core.Engine()\n    engine.connect(host='localhost', port=8080)\n    \n    print(\"Checking dependencies...\")\n    for i in range(3):\n        print(f\"Loading module {i}...\")\n        \n    while progress != 100:\n        engine.compile()\n        \nload_system()\nprint(\"System Ready.\")";
+
+        var blEditor = document.getElementById('blCodeEditor');
+
+        function blApplySyntaxHighlight(text) {
+            return text
+                .replace(/\b(import|from|def|while|if|else|return|class|for|in)\b/g, '<span class="bl-kw">$1</span>')
+                .replace(/(".+?"|'.+?')/g, '<span class="bl-str">$1</span>')
+                .replace(/(#.+)/g, '<span class="bl-com">$1</span>')
+                .replace(/\b(print|sys|time|core|Engine|connect|compile|range)\b/g, '<span class="bl-func">$1</span>')
+                .replace(/\b(100|8080|3)\b/g, '<span class="bl-num">$1</span>');
+        }
+
+        var BL_TOTAL_MS = 8000;
+        var blPercentEl = document.getElementById('blPercent');
+        var blStatusEl = document.getElementById('blStatusText');
+        var blStatusMessages = ['Writing code...', 'Importing modules...', 'Compiling script...', 'Executing program...', 'Finishing up...'];
+        var blStatusIndex = 0;
+        var blStartTime = null;
+
+        function blUpdateProgress(now) {
+            if (!blStartTime) blStartTime = now;
+            var elapsed = now - blStartTime;
+
+            var pct = Math.min(100, Math.floor((elapsed / BL_TOTAL_MS) * 100));
+            blPercentEl.textContent = pct + '%';
+
+            var expectedChars = Math.floor((elapsed / BL_TOTAL_MS) * blPythonCode.length);
+            expectedChars = Math.min(expectedChars, blPythonCode.length);
+
+            var typedText = blPythonCode.substring(0, expectedChars);
+            blEditor.innerHTML = blApplySyntaxHighlight(typedText) + '<span class="bl-cursor"></span>';
+            blEditor.scrollTop = blEditor.scrollHeight;
+
+            if (elapsed < BL_TOTAL_MS) {
+                requestAnimationFrame(blUpdateProgress);
+            } else {
+                blPercentEl.textContent = '100%';
+                blPercentEl.style.color = '#27c93f';
+                blStatusEl.textContent = 'SYSTEM READY';
+                blStatusEl.style.color = '#27c93f';
+                blEditor.innerHTML = blApplySyntaxHighlight(blPythonCode) + '<span class="bl-cursor"></span>';
+                blEditor.scrollTop = blEditor.scrollHeight;
+            }
+        }
+
+        requestAnimationFrame(blUpdateProgress);
+
+        var blStatusTimer = setInterval(function(){
+            blStatusIndex = (blStatusIndex + 1) % blStatusMessages.length;
+            blStatusEl.style.opacity = 0;
+            setTimeout(function(){
+                blStatusEl.textContent = blStatusMessages[blStatusIndex];
+                blStatusEl.style.opacity = 1;
+            }, 300);
+        }, 1500);
+
+        // Exactly at 8 seconds: stop the loader and open the app underneath.
+        setTimeout(function(){
+            clearInterval(blStatusTimer);
+            var loader = document.getElementById('blBootLoader');
+            if (loader) {
+                loader.classList.add('bl-fade-out');
+                setTimeout(function(){ loader.style.display = 'none'; }, 500);
+            }
+        }, BL_TOTAL_MS);
+    })();
+    </script>
 
     <!-- Shared inline-SVG icon sprite. Used everywhere the app previously showed a
          decorative emoji (nav, admin panel, notices, chat, etc). Emoji used *inside*
@@ -1284,7 +1540,7 @@
         <iframe
             class="mmit-frame"
             src="https://mmitgp.ac.in/"
-            title="MMIT Gorakhpur Website"
+            title="MMIT MRJ Website"
             loading="lazy"
             allowfullscreen>
         </iframe>
@@ -1293,7 +1549,6 @@
     <div id="subjectPage" class="container full-screen-container" style="display: none;">
         <div class="action-bar">
             <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard">←</button>
-            <button class="download-btn" onclick="alert('Syllabus PDF downloading...')">⬇ Download Syllabus</button>
         </div>
         
         <div class="subject-header">
@@ -1304,18 +1559,6 @@
                 <p style="margin-top: 10px;" id="detailDesc">Subject description...</p>
             </div>
         </div>
-        
-        <h2 style="color: var(--primary-blue); margin-bottom: 1rem;">Detailed Syllabus</h2>
-        <table class="syllabus-table">
-            <thead>
-                <tr>
-                    <th width="15%">Unit No.</th>
-                    <th>Topic / Chapter Details</th>
-                </tr>
-            </thead>
-            <tbody id="moduleList">
-            </tbody>
-        </table>
 
         <div class="feed-container" id="subjectFeedContainer">
             </div>
@@ -1539,6 +1782,18 @@
         }
         window.getColorForRoll = getColorForRoll;
 
+        // Single-Device Login Lock: a persistent, random ID unique to this browser/device.
+        // Stored separately from the login itself so it survives logout/login on the same device.
+        function getDeviceId() {
+            let id = localStorage.getItem('portalDeviceId');
+            if (!id) {
+                id = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('portalDeviceId', id);
+            }
+            return id;
+        }
+        window.getDeviceId = getDeviceId;
+
         function formatChatTime(ts) {
             if (!ts) return '';
             const d = new Date(ts);
@@ -1608,19 +1863,31 @@
             pendingAction = null;
         }
 
-        function processUserLogin() {
+        async function processUserLogin() {
             const roll = document.getElementById('userLoginPassword').value.trim();
             const err = document.getElementById('userLoginError');
             if(!roll) { err.innerText = "Please enter your Roll Number."; return; }
             
             const users = window.onlineUsersData || {};
             if(users[roll]) {
+                // Single-Device Login Lock: check this before finishing login.
+                const deviceId = getDeviceId();
+                if(window.checkAndSetActiveSession) {
+                    const allowed = await window.checkAndSetActiveSession(roll, deviceId);
+                    if(!allowed) {
+                        err.innerText = "";
+                        alert("Yeh Roll Number pehle se kisi anya device/system par login hai. Ek Roll Number se ek samay me sirf ek hi device par login kiya ja sakta hai.");
+                        return;
+                    }
+                }
+
                 localUser = users[roll];
                 window.localUser = localUser;
                 localStorage.setItem('portalUser', JSON.stringify(localUser));
                 document.getElementById('userLoginModal').style.display = 'none';
                 
                 if(window.setUserActiveStatus) window.setUserActiveStatus(roll, true);
+                if(window.watchActiveSession) window.watchActiveSession(roll, deviceId);
                 if(window.renderOnlineChats) window.renderOnlineChats();
                 if(window.checkUnseenNotifications) window.checkUnseenNotifications();
 
@@ -1637,6 +1904,10 @@
             if(localUser && window.setUserActiveStatus) {
                 window.setUserActiveStatus(localUser.rollNumber, false);
             }
+            if(localUser && window.releaseActiveSession) {
+                window.releaseActiveSession(localUser.rollNumber, getDeviceId());
+            }
+            if(window.unwatchActiveSession) window.unwatchActiveSession();
             localStorage.removeItem('portalUser');
             localUser = null;
             window.localUser = null;
@@ -1653,6 +1924,7 @@
         // logged-in user's profile, or changes their Roll Number (login key).
         // Logs the user out of the app immediately, without the manual-logout alert.
         function forceLogoutDeletedUser() {
+            if(window.unwatchActiveSession) window.unwatchActiveSession();
             localStorage.removeItem('portalUser');
             localUser = null;
             window.localUser = null;
@@ -1662,6 +1934,21 @@
             alert("Your profile has been removed/updated by the admin. You have been logged out automatically. Please log in again.");
         }
         window.forceLogoutDeletedUser = forceLogoutDeletedUser;
+
+        // Single-Device Login Lock: called (via watchActiveSession) when another
+        // device/system logs in with the same Roll Number while this device is
+        // still logged in. This device is logged out immediately with an alert.
+        function forceLogoutDifferentDevice() {
+            if(window.unwatchActiveSession) window.unwatchActiveSession();
+            localStorage.removeItem('portalUser');
+            localUser = null;
+            window.localUser = null;
+            closeAllSections();
+            openHomePage();
+            if(window.renderOnlineChats) window.renderOnlineChats();
+            alert("Aapka Roll Number kisi anya device/system par login kiya gaya hai. Suraksha karno se aapko is device se logout kar diya gaya hai.");
+        }
+        window.forceLogoutDifferentDevice = forceLogoutDifferentDevice;
 
         let notifications = [
             { id: 1, text: "BTEUP Odd Semester Exam Scheme 2026-27 released.", time: "Just now", timestamp: Date.now() },
@@ -1683,65 +1970,40 @@
                 title: "Communication Skills - I",
                 code: "SUB-101",
                 image: "https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=600&q=80",
-                desc: "Understanding the importance of effective communication in technical education. This subject focuses on grammar, reading, and writing skills that will also help with job placement later on.",
-                modules: [
-                    { unit: "Unit 1", detail: "Basics of Communication: Definition, Process, and Types (Verbal & Non-Verbal)" },
-                    { unit: "Unit 2", detail: "Application of Grammar: Parts of Speech, Tenses, Active-Passive Voice" },
-                    { unit: "Unit 3", detail: "Reading Skill: Unseen passage for comprehension" },
-                    { unit: "Unit 4", detail: "Writing Skill: Picture composition, Paragraph writing, Notice writing" }
-                ]
+                desc: "Understanding the importance of effective communication in technical education. This subject focuses on grammar, reading, and writing skills that will also help with job placement later on."
+                
             },
             {
                 id: 2,
                 title: "Applied Mathematics - I",
                 code: "SUB-102",
                 image: "https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?auto=format&fit=crop&w=600&q=80",
-                desc: "Mathematics for strengthening the basics of diploma engineering. It covers the fundamentals of Algebra, Trigonometry, and Differential Calculus.",
-                modules: [
-                    { unit: "Unit 1", detail: "Algebra-I: Arithmetic Progression (A.P.), Geometric Progression (G.P.), Binomial Theorem" },
-                    { unit: "Unit 2", detail: "Algebra-II: Determinants, Cramer's Rule" },
-                    { unit: "Unit 3", detail: "Trigonometry: Inverse circular functions, Properties of Triangles" },
-                    { unit: "Unit 4", detail: "Differential Calculus-I: Functions, Limits, Continuity, Basics of Differentiation" }
-                ]
+                desc: "Mathematics for strengthening the basics of diploma engineering. It covers the fundamentals of Algebra, Trigonometry, and Differential Calculus."
+                
             },
             {
                 id: 3,
                 title: "Applied Physics - I",
                 code: "SUB-103",
                 image: "https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&w=600&q=80",
-                desc: "Basic knowledge of Physics for engineering applications. Focuses on units, dimensions, mechanics, and properties of matter.",
-                modules: [
-                    { unit: "Unit 1", detail: "Units and Dimensions: SI units, Dimensional formula and their applications" },
-                    { unit: "Unit 2", detail: "Force and Motion: Scalar and Vector quantities, Circular motion, Newton's Laws" },
-                    { unit: "Unit 3", detail: "Work, Power and Energy: Kinetic & Potential Energy, Conservation of energy" },
-                    { unit: "Unit 4", detail: "Rotational Motion & Properties of Matter: Moment of Inertia, Surface tension, Viscosity" }
-                ]
+                desc: "Basic knowledge of Physics for engineering applications. Focuses on units, dimensions, mechanics, and properties of matter."
+                
             },
             {
                 id: 4,
                 title: "Applied Chemistry",
                 code: "SUB-104",
                 image: "https://images.unsplash.com/photo-1603126857599-f6e1570d8136?auto=format&fit=crop&w=600&q=80",
-                desc: "Chemistry for understanding the properties of engineering materials. Water treatment, polymers, and electrochemistry are its main topics.",
-                modules: [
-                    { unit: "Unit 1", detail: "Atomic Structure, Periodic Table and Chemical Bonding" },
-                    { unit: "Unit 2", detail: "Fuels and Lubricants: Types of fuels, Properties of good lubricants" },
-                    { unit: "Unit 3", detail: "Water: Hardness of water, Water treatment, Boiler feed water" },
-                    { unit: "Unit 4", detail: "Electrochemistry & Corrosion: Galvanic cell, Causes and prevention of corrosion" }
-                ]
+                desc: "Chemistry for understanding the properties of engineering materials. Water treatment, polymers, and electrochemistry are its main topics."
+                
             },
             {
                 id: 5,
                 title: "Fundamentals of Computer & IT (FCIT)",
                 code: "SUB-105",
                 image: "https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=600&q=80",
-                desc: "A core foundational subject in Computer Science. It covers computer architecture, memory, software types, OS, and Internet basics.",
-                modules: [
-                    { unit: "Unit 1", detail: "Fundamentals of Computer: Block diagram of PC, Input/Output devices, CPU" },
-                    { unit: "Unit 2", detail: "Data Representation: Binary, Octal, Hexadecimal number systems and logic gates" },
-                    { unit: "Unit 3", detail: "Memory & Storage: Primary memory (RAM/ROM), Secondary storage devices" },
-                    { unit: "Unit 4", detail: "Basics of OS and Internet: MS Windows, Web browsers, E-mail, Search Engines" }
-                ]
+                desc: "A core foundational subject in Computer Science. It covers computer architecture, memory, software types, OS, and Internet basics."
+                
             }
         ];
 
@@ -1851,14 +2113,6 @@
             document.getElementById('detailCode').innerText = sub.code;
             document.getElementById('detailDesc').innerText = sub.desc;
             
-            const list = document.getElementById('moduleList');
-            list.innerHTML = (sub.modules || []).map(mod => `
-                <tr>
-                    <td><strong>${mod.unit}</strong></td>
-                    <td>${mod.detail}</td>
-                </tr>
-            `).join('');
-
             renderFeed(id, 'subjectFeedContainer');
             document.getElementById('subjectPage').style.display = 'block';
             window.scrollTo(0, 0);
@@ -1970,6 +2224,11 @@
             setTimeout(() => {
                 if(localUser && window.setUserActiveStatus) {
                     window.setUserActiveStatus(localUser.rollNumber, true);
+                }
+                // Single-Device Login Lock: resume watching this roll's session
+                // (e.g. after a page refresh) so a takeover by another device is still caught.
+                if(localUser && window.watchActiveSession) {
+                    window.watchActiveSession(localUser.rollNumber, getDeviceId());
                 }
             }, 2500);
         };
@@ -2193,11 +2452,11 @@ const auth = getAuth(app);
 const ADMIN_EMAIL = "admin@mmitsce.com";
 
 const defaultSubjects = [
- {id:1,title:"Communication Skills - I",code:"SUB-101",image:"https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=600&q=80",desc:"Understanding the importance of effective communication in technical education. This subject focuses on grammar, reading, and writing skills.",modules:[{unit:"Unit 1",detail:"Basics of Communication: Definition, Process, and Types (Verbal & Non-Verbal)"},{unit:"Unit 2",detail:"Application of Grammar: Parts of Speech, Tenses, Active-Passive Voice"},{unit:"Unit 3",detail:"Reading Skill: Unseen passage for comprehension"},{unit:"Unit 4",detail:"Writing Skill: Picture composition, Paragraph writing, Notice writing"}]},
- {id:2,title:"Applied Mathematics - I",code:"SUB-102",image:"https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?auto=format&fit=crop&w=600&q=80",desc:"Mathematics for strengthening the basics of diploma engineering. It covers the fundamentals of Algebra, Trigonometry, and Differential Calculus.",modules:[{unit:"Unit 1",detail:"Algebra-I: Arithmetic Progression (A.P.), Geometric Progression (G.P.), Binomial Theorem"},{unit:"Unit 2",detail:"Algebra-II: Determinants, Cramer's Rule"},{unit:"Unit 3",detail:"Trigonometry: Inverse circular functions, Properties of Triangles"},{unit:"Unit 4",detail:"Differential Calculus-I: Functions, Limits, Continuity, Basics of Differentiation"}]},
- {id:3,title:"Applied Physics - I",code:"SUB-103",image:"https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&w=600&q=80",desc:"Basic knowledge of Physics for engineering applications. Focuses on units, dimensions, mechanics, and properties of matter.",modules:[{unit:"Unit 1",detail:"Units and Dimensions: SI units, Dimensional formula and their applications"},{unit:"Unit 2",detail:"Force and Motion: Scalar and Vector quantities, Circular motion, Newton's Laws"},{unit:"Unit 3",detail:"Work, Power and Energy: Kinetic & Potential Energy, Conservation of energy"},{unit:"Unit 4",detail:"Rotational Motion & Properties of Matter: Moment of Inertia, Surface tension, Viscosity"}]},
- {id:4,title:"Applied Chemistry",code:"SUB-104",image:"https://images.unsplash.com/photo-1603126857599-f6e1570d8136?auto=format&fit=crop&w=600&q=80",desc:"Chemistry for understanding the properties of engineering materials. Water treatment, polymers, and electrochemistry are its main topics.",modules:[{unit:"Unit 1",detail:"Atomic Structure, Periodic Table and Chemical Bonding"},{unit:"Unit 2",detail:"Fuels and Lubricants: Types of fuels, Properties of good lubricants"},{unit:"Unit 3",detail:"Water: Hardness of water, Water treatment, Boiler feed water"},{unit:"Unit 4",detail:"Electrochemistry & Corrosion: Galvanic cell, Causes and prevention of corrosion"}]},
- {id:5,title:"Fundamentals of Computer & IT (FCIT)",code:"SUB-105",image:"https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=600&q=80",desc:"A core foundational subject in Computer Science. It covers computer architecture, memory, software types, OS, and Internet basics.",modules:[{unit:"Unit 1",detail:"Fundamentals of Computer: Block diagram of PC, Input/Output devices, CPU"},{unit:"Unit 2",detail:"Data Representation: Binary, Octal, Hexadecimal number systems and logic gates"},{unit:"Unit 3",detail:"Memory & Storage: Primary memory (RAM/ROM), Secondary storage devices"},{unit:"Unit 4",detail:"Basics of OS and Internet: MS Windows, Web browsers, E-mail, Search Engines"}]}
+ {id:1,title:"Communication Skills - I",code:"SUB-101",image:"https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=600&q=80",desc:"Understanding the importance of effective communication in technical education. This subject focuses on grammar, reading, and writing skills."},
+ {id:2,title:"Applied Mathematics - I",code:"SUB-102",image:"https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?auto=format&fit=crop&w=600&q=80",desc:"Mathematics for strengthening the basics of diploma engineering. It covers the fundamentals of Algebra, Trigonometry, and Differential Calculus."},
+ {id:3,title:"Applied Physics - I",code:"SUB-103",image:"https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&w=600&q=80",desc:"Basic knowledge of Physics for engineering applications. Focuses on units, dimensions, mechanics, and properties of matter."},
+ {id:4,title:"Applied Chemistry",code:"SUB-104",image:"https://images.unsplash.com/photo-1603126857599-f6e1570d8136?auto=format&fit=crop&w=600&q=80",desc:"Chemistry for understanding the properties of engineering materials. Water treatment, polymers, and electrochemistry are its main topics."},
+ {id:5,title:"Fundamentals of Computer & IT (FCIT)",code:"SUB-105",image:"https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=600&q=80",desc:"A core foundational subject in Computer Science. It covers computer architecture, memory, software types, OS, and Internet basics."}
 ];
 
 const defaultNotifs=[{id:"n1",text:"BTEUP Odd Semester Exam Scheme 2026-27 released.",time:"Just now",timestamp:Date.now()},{id:"n2",text:"CSE 1st Semester Syllabus officially updated.",time:"1 hour ago",timestamp:Date.now()-3600000},{id:"n3",text:"Practical Exam schedule announced for Diploma Students.",time:"Yesterday",timestamp:Date.now()-86400000}];
@@ -2500,6 +2759,69 @@ async function seed(){
   if(!cur.chats) updates['portal/chats'] = {};
   if(Object.keys(updates).length) await update(ref(db), updates);
 }
+
+// ================= Single-Device Login Lock ================= //
+// New, additive feature: a given Roll Number may only be actively logged in on
+// ONE device/system at a time. Nothing about the existing login/logout flow
+// above is changed — these functions are only called from processUserLogin(),
+// userLogout(), forceLogoutDeletedUser() and window.onload as extra steps.
+let activeSessionUnsub = null;
+
+// Called right before finishing login. Returns true if this device is allowed
+// to log in (no other device is currently active for this roll, or none was
+// recorded yet), false if another device already holds the session.
+window.checkAndSetActiveSession = async function(roll, deviceId){
+  try {
+    const snap = await get(ref(db, 'portal/activeSessions/' + roll));
+    const val = snap.val();
+    if(val && val.deviceId && val.deviceId !== deviceId){
+      return false;
+    }
+    await set(ref(db, 'portal/activeSessions/' + roll), { deviceId, timestamp: Date.now() });
+    return true;
+  } catch(e){
+    console.error('Active session check failed:', e);
+    return true; // Fail-open so a temporary network issue doesn't lock a user out entirely.
+  }
+};
+
+// Releases the session lock, but only if it still belongs to this device
+// (so we never accidentally remove a lock that another device rightfully took over).
+window.releaseActiveSession = async function(roll, deviceId){
+  try {
+    const snap = await get(ref(db, 'portal/activeSessions/' + roll));
+    const val = snap.val();
+    if(!val || val.deviceId === deviceId){
+      await remove(ref(db, 'portal/activeSessions/' + roll));
+    }
+  } catch(e){
+    console.error('Active session release failed:', e);
+  }
+};
+
+// Watches this roll's session in realtime. If another device claims the
+// session while we're logged in here, this device is force-logged-out with
+// an alert. If no session is recorded yet (e.g. right after login, or an
+// older saved login from before this feature existed), this device silently
+// claims it.
+window.watchActiveSession = function(roll, deviceId){
+  if(!roll) return;
+  if(activeSessionUnsub){ activeSessionUnsub(); activeSessionUnsub = null; }
+  activeSessionUnsub = onValue(ref(db, 'portal/activeSessions/' + roll), snap => {
+    const val = snap.val();
+    if(!val){
+      set(ref(db, 'portal/activeSessions/' + roll), { deviceId, timestamp: Date.now() }).catch(()=>{});
+      return;
+    }
+    if(val.deviceId && val.deviceId !== deviceId && window.localUser && String(window.localUser.rollNumber) === String(roll)){
+      if(typeof window.forceLogoutDifferentDevice === 'function') window.forceLogoutDifferentDevice();
+    }
+  });
+};
+
+window.unwatchActiveSession = function(){
+  if(activeSessionUnsub){ activeSessionUnsub(); activeSessionUnsub = null; }
+};
 
 async function fileToDataURL(file, maxSize=1000, quality=0.68){
   if(!file) throw new Error('Please select a photo.');
