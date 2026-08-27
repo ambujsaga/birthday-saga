@@ -1372,7 +1372,7 @@
 
     <script>
     (function(){
-        var blPythonCode = "import sys\nimport time\nfrom portal import core\n\n# Booting Environment\nprint(\"Welcome to the Portal!\")\nprint(\"Initializing modules...\")\n\ndef load_system():\n    engine = core.Engine()\n    engine.connect(host='localhost', port=8080)\n    \n    print(\"Checking dependencies...\")\n    for i in range(3):\n        print(f\"Loading module {i}...\")\n        \n    while progress != 100:\n        engine.compile()\n        \nload_system()\nprint(\"System Ready.\")";
+        var blPythonCode = "import sys\nimport time\nfrom portal import core\n\n# Booting Environment\nprint(\"Welcome to the MMITcs Portal!\")\nprint(\"Initializing modules...\")\n\ndef load_system():\n    engine = core.Engine()\n    engine.connect(host='localhost', port=8080)\n    \n    print(\"Checking dependencies...\")\n    for i in range(3):\n        print(f\"Loading module {i}...\")\n        \n    while progress != 100:\n        engine.compile()\n        \nload_system()\nprint(\"System Ready.\")";
 
         var blEditor = document.getElementById('blCodeEditor');
 
@@ -4533,6 +4533,136 @@ onAuthStateChanged(auth, user => {
   }
 
   startPopupCycle();
+})();
+
+/* =====================================================================
+   ADDITIVE: REALTIME BROWSER / OS PUSH-STYLE NOTIFICATIONS
+   Purely additive module. Nothing above this block is edited or removed.
+
+   Koi bhi purana feature/method chhua nahi gaya hai — sirf upar wale
+   "applyOnlineData" function ko (jo already defined hai) safely wrap
+   kiya gaya hai, taaki jab bhi Firebase se naya data aaye, us par nazar
+   rakh kar user ke phone/browser me ek real system-level notification
+   (jaise Chrome/koi bhi browser me sabhi normal app ka aata hai) bheja
+   ja sake. Agar service worker available hai to us ke through
+   showNotification() use hota hai (jyada reliable, background me bhi
+   kaam karta hai), warna seedhe browser Notification API fallback ke
+   roop me use hoti hai.
+
+   4 notification types (jaisa maanga gaya, sab automatically detect
+   hote hain jab bhi Firebase par naya data save hota hai):
+   1) Naya chat message aane par        -> "New Chat On Chat Discussion"
+   2) Kisi subject me naya post/update  -> "New Update On #SubjectName"
+   3) Naya online notification aane par -> notification panel me jo
+      text hai wahi same-to-same phone/browser notification me aayega
+   4) Nayi notice aane par              -> "New Notice"
+
+   Pehli baar app open hone par (baseline load) purana/existing data ke
+   liye notification NAHI aayega — sirf uske BAAD jo bhi naya add hota
+   hai uske liye hi real-time notification fire hoga.
+===================================================================== */
+(function(){
+  // ---- Browser/OS notification permission (silent request) ----
+  function ensurePushPermission(){
+    if(typeof Notification === 'undefined') return;
+    if(Notification.permission === 'default'){
+      Notification.requestPermission().catch(function(){});
+    }
+  }
+  ensurePushPermission();
+  // Kuch browsers user-gesture ke bina permission popup nahi dikhate,
+  // isliye pehle click/tap par bhi ek baar (silently) try kar liya jaata
+  // hai — agar user pehle hi allow/deny kar chuka ho to kuch nahi hoga.
+  document.addEventListener('click', ensurePushPermission, { once: true, capture: true });
+
+  // ---- Actual system/browser notification dikhane ka helper ----
+  function firePortalNotification(title, body){
+    if(typeof Notification === 'undefined') return;
+    if(Notification.permission !== 'granted') return;
+    const opts = { body: body || '', icon: 'logo.jpg', badge: 'logo.jpg' };
+    if('serviceWorker' in navigator && navigator.serviceWorker.ready){
+      navigator.serviceWorker.ready.then(function(reg){
+        if(reg && typeof reg.showNotification === 'function'){
+          reg.showNotification(title, opts);
+        } else {
+          try{ new Notification(title, opts); }catch(e){}
+        }
+      }).catch(function(){
+        try{ new Notification(title, opts); }catch(e){}
+      });
+    } else {
+      try{ new Notification(title, opts); }catch(e){}
+    }
+  }
+
+  // ---- Already-known IDs track karo taaki sirf NAYE item par hi notify ho ----
+  let pushBaselineReady = false;
+  const knownChatIds = new Set();
+  const knownPostIds = new Set();
+  const knownNotifIds = new Set();
+  const knownNoticeIds = new Set();
+
+  function runPushNotifyDiff(){
+    const currentChats = onlineData.chats || [];
+    const currentPosts = onlineData.posts || [];
+    const currentNotifs = onlineData.notifications || [];
+    const currentNotices = onlineData.notices || [];
+
+    if(!pushBaselineReady){
+      // Pehla load — sirf baseline record karo, notification mat bhejo.
+      currentChats.forEach(function(c){ if(c && c.id) knownChatIds.add(c.id); });
+      currentPosts.forEach(function(p){ if(p && p.id) knownPostIds.add(p.id); });
+      currentNotifs.forEach(function(n){ if(n && n.id) knownNotifIds.add(n.id); });
+      currentNotices.forEach(function(n){ if(n && n.id) knownNoticeIds.add(n.id); });
+      pushBaselineReady = true;
+      return;
+    }
+
+    const myRoll = window.localUser ? String(window.localUser.rollNumber) : null;
+
+    // (1) Naya Chat Message
+    currentChats.forEach(function(c){
+      if(!c || !c.id || knownChatIds.has(c.id)) return;
+      knownChatIds.add(c.id);
+      if(!myRoll || String(c.userId) !== myRoll){
+        firePortalNotification('New Chat On Chat Discussion', c.text || '');
+      }
+    });
+
+    // (2) Kisi Subject me Naya Post/Update
+    currentPosts.forEach(function(p){
+      if(!p || !p.id || knownPostIds.has(p.id)) return;
+      knownPostIds.add(p.id);
+      const subj = (onlineData.subjects || []).find(function(s){ return String(s.id) === String(p.subjectId); });
+      const subjName = subj ? subj.title : 'Subject';
+      firePortalNotification('New Update On #' + subjName, p.text || '');
+    });
+
+    // (3) Naya Online Notification — panel wala text hi same-to-same
+    currentNotifs.forEach(function(n){
+      if(!n || !n.id || knownNotifIds.has(n.id)) return;
+      knownNotifIds.add(n.id);
+      if(!n.targetUser || (myRoll && String(n.targetUser) === myRoll)){
+        firePortalNotification(n.text || 'New Notification', '');
+      }
+    });
+
+    // (4) Nayi Notice
+    currentNotices.forEach(function(n){
+      if(!n || !n.id || knownNoticeIds.has(n.id)) return;
+      knownNoticeIds.add(n.id);
+      firePortalNotification('New Notice', n.title || '');
+    });
+  }
+
+  // "applyOnlineData" (upar already defined) ko purely additively wrap
+  // kiya gaya hai — uska original code ek bhi line chheda nahi gaya,
+  // bas realtime data aane ke baad ek extra hook chala diya gaya hai.
+  const originalApplyOnlineDataForPush = applyOnlineData;
+  applyOnlineData = function(d){
+    originalApplyOnlineDataForPush(d);
+    try{ runPushNotifyDiff(); }catch(e){ console.warn('push notify diff failed', e); }
+  };
 })();
 
 </script>
