@@ -4414,6 +4414,124 @@ onAuthStateChanged(auth, user => {
   };
 })();
 
+/* =====================================================================
+   ADDITIVE: "DOWNLOAD APP" TOP POPUP (every 3 minutes) + PWA INSTALL
+   Purely additive module. Nothing above this block is edited or removed.
+
+   - Har 3 minute me app ke upar ek popup aayega: "Download App" +
+     ek Download button.
+   - Download button dabane par browser (Chrome) ka built-in
+     "Install App" (Add to Home Screen) prompt open hoga. Accept karte
+     hi app real app ki tarah phone/home-screen par install ho jaata
+     hai (offline bhi chalta hai, full-screen khulta hai).
+   - NOTE (important, please read): Chrome/koi bhi browser website ko
+     live .apk file me convert NAHI kar sakta - yeh browser security
+     ki wajah se possible nahi hai. Jo sabse close aur asli/legal tareeka
+     hai wahi hai jo yaha diya gaya hai: PWA install (Chrome ka
+     "Add to Home Screen" / "Install app" feature) - isse app icon
+     home screen par aa jaata hai aur app normal app ki tarah open
+     hota hai.
+   - Jaise hi user install kar leta hai (ya pehle se installed hai /
+     standalone mode me khula hai), yeh popup fir kabhi nahi aayega -
+     na is session me, na future me (localStorage me flag save hota hai).
+===================================================================== */
+(function(){
+  const POPUP_INTERVAL_MS = 3 * 60 * 1000; // 3 minutes
+  const INSTALLED_FLAG_KEY = 'pwaAppInstalledFlag';
+  let deferredInstallPrompt = null;
+  let popupTimer = null;
+
+  function isAppInstalled(){
+    try{ if(localStorage.getItem(INSTALLED_FLAG_KEY) === '1') return true; }catch(e){}
+    if(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return true;
+    if(window.navigator.standalone === true) return true; // iOS Safari standalone
+    return false;
+  }
+
+  function markInstalled(){
+    try{ localStorage.setItem(INSTALLED_FLAG_KEY, '1'); }catch(e){}
+    stopPopupCycle();
+    hideDownloadPopup();
+  }
+
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    deferredInstallPrompt = e;
+  });
+
+  window.addEventListener('appinstalled', function(){
+    markInstalled();
+  });
+
+  function buildPopup(){
+    if(document.getElementById('pwaDownloadPopup')) return;
+    const wrap = document.createElement('div');
+    wrap.id = 'pwaDownloadPopup';
+    wrap.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:var(--primary-blue,#003366);color:#fff;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 4px 10px rgba(0,0,0,0.25);font-size:0.9rem;animation:fadeIn 0.25s ease-in-out;';
+    wrap.innerHTML =
+      '<span style="font-weight:bold;">\uD83D\uDCF2 Download App</span>' +
+      '<span style="display:flex;align-items:center;gap:10px;">' +
+        '<button id="pwaDownloadBtn" style="background:var(--accent-orange,#ff9900);color:#000;border:none;padding:7px 16px;border-radius:6px;font-weight:bold;cursor:pointer;">Download</button>' +
+        '<span id="pwaDownloadClose" style="cursor:pointer;font-size:1.2rem;line-height:1;padding:0 4px;">&times;</span>' +
+      '</span>';
+    document.body.appendChild(wrap);
+
+    document.getElementById('pwaDownloadClose').addEventListener('click', hideDownloadPopup);
+    document.getElementById('pwaDownloadBtn').addEventListener('click', async function(){
+      if(deferredInstallPrompt){
+        deferredInstallPrompt.prompt();
+        try{
+          const choice = await deferredInstallPrompt.userChoice;
+          deferredInstallPrompt = null;
+          if(choice && choice.outcome === 'accepted'){
+            markInstalled();
+            return;
+          }
+        }catch(e){}
+        hideDownloadPopup();
+      } else {
+        // Prompt abhi available nahi hai (already installed / browser
+        // supported nahi / installability criteria pending)
+        hideDownloadPopup();
+      }
+    });
+  }
+
+  function showDownloadPopup(){
+    if(isAppInstalled()) return;
+    buildPopup();
+  }
+
+  function hideDownloadPopup(){
+    const el = document.getElementById('pwaDownloadPopup');
+    if(el) el.remove();
+  }
+
+  function stopPopupCycle(){
+    if(popupTimer){ clearInterval(popupTimer); popupTimer = null; }
+  }
+
+  function startPopupCycle(){
+    if(isAppInstalled()) return;
+    stopPopupCycle();
+    popupTimer = setInterval(function(){
+      if(isAppInstalled()){ stopPopupCycle(); return; }
+      showDownloadPopup();
+    }, POPUP_INTERVAL_MS);
+  }
+
+  // Register a minimal service worker (additive, does not touch any
+  // existing app logic/caching) - Chrome requires an active service
+  // worker before it allows the install ("Add to Home Screen") prompt.
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('sw.js').catch(function(){ /* ignore */ });
+    });
+  }
+
+  startPopupCycle();
+})();
+
 </script>
 </body>
 </html>
