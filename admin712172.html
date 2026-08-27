@@ -1,0 +1,4397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="logo.jpg?v=1.1">
+    <link rel="apple-touch-icon" sizes="192x192" href="logo.jpg?v=1.1">
+    <link rel="manifest" href="manifest.json">
+    <title>CSE 1st Sem</title>
+    
+    <style>
+        /* ================= CSS START ================= */
+        :root {
+            --primary-blue: #003366; 
+            --accent-orange: #ff9900; 
+            --bg-color: #f4f6f9;
+            --text-dark: #333;
+            --card-bg: #ffffff;
+            --sarkari-red: #c0392b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            padding-bottom: 70px; 
+        }
+
+        /* Main Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary-blue);
+            padding: 0.8rem 1.5rem;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .navbar .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .navbar .logo-container img {
+            width: 45px;
+            height: 45px;
+            background: #fff;
+            border-radius: 50%;
+            padding: 3px;
+        }
+
+        .navbar .logo-text h1 {
+            font-size: 1.1rem;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .navbar .logo-text p {
+            font-size: 0.75rem;
+            color: #cbd5e1;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        /* Notification Icon & Badge */
+        .notif-bell-container {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .notif-bell-container:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .red-dot {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            width: 10px;
+            height: 10px;
+            background-color: #ff3333;
+            border-radius: 50%;
+            border: 2px solid var(--primary-blue);
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+            animation: pulse 1.5s infinite;
+            display: none;
+        }
+
+        .chat-red-dot {
+            position: absolute;
+            top: 4px;
+            right: 28%;
+            width: 9px;
+            height: 9px;
+            background-color: #ff3333;
+            border-radius: 50%;
+            border: 1.5px solid #fff;
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+            animation: pulse 1.5s infinite;
+            display: none;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(255, 82, 82, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 82, 82, 0); }
+        }
+
+        .menu-icon {
+            font-size: 1.8rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Notification Panel Dropdown */
+        .notif-panel {
+            display: none;
+            position: fixed;
+            top: 65px;
+            right: 15px;
+            width: 320px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            border: 1px solid #ddd;
+            z-index: 105;
+            overflow: hidden;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .notif-header {
+            background: var(--primary-blue);
+            color: #fff;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+
+        .notif-body {
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .notif-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.85rem;
+            color: #333;
+            transition: background 0.2s;
+            position: relative;
+            user-select: none;
+        }
+
+        .notif-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .notif-item .notif-time {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .delete-notif-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ff3333;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            z-index: 10;
+            display: none;
+            animation: fadeIn 0.2s;
+        }
+        .delete-notif-btn:hover { background: #d60000; }
+
+        /* Scrolling Notice Bar */
+        .notice-bar {
+            background: var(--accent-orange);
+            color: #000;
+            padding: 8px 15px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .notice-bar .notice-btn {
+            background: var(--sarkari-red);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin-right: 10px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.1s, background 0.2s;
+            user-select: none;
+        }
+
+        .notice-bar .notice-btn:hover {
+            background: #a93226;
+            transform: scale(1.03);
+        }
+
+        /* Side Menu */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100vh;
+            background-color: #f8f9fa;
+            border-left: 3px solid var(--primary-blue);
+            padding-top: 60px;
+            transition: 0.3s ease-in-out;
+            z-index: 101;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+        }
+
+        .side-menu.active {
+            right: 0;
+        }
+
+        .menu-header {
+            padding: 0 20px 20px 20px;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 10px;
+        }
+
+        .menu-header h2 {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+        }
+
+        .side-menu a {
+            padding: 12px 25px;
+            text-decoration: none;
+            font-size: 1rem;
+            color: var(--text-dark);
+            display: block;
+            transition: 0.2s;
+            border-bottom: 1px solid #eee;
+            font-weight: 500;
+        }
+
+        .side-menu a:hover {
+            color: var(--primary-blue);
+            background-color: #e2e8f0;
+            padding-left: 30px;
+        }
+
+        .close-menu {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            color: var(--primary-blue);
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            background: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80') center/cover;
+            position: relative;
+            color: white;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 51, 102, 0.85);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent-orange);
+        }
+
+        /* Container & Grid */
+        .container {
+            max-width: 1200px;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+        }
+
+        /* FULL SCREEN OVERRIDES FOR SECTION PAGES, CHAT & IFRAME */
+        .full-screen-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 1rem !important;
+            min-height: calc(100vh - 70px);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--primary-blue);
+            border-bottom: 3px solid var(--accent-orange);
+            display: inline-block;
+            padding-bottom: 5px;
+            left: 50%;
+            position: relative;
+            transform: translateX(-50%);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-top: 4px solid var(--primary-blue);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,33,102,0.15);
+        }
+
+        .card-img-container {
+            height: 160px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-code {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--accent-orange);
+            color: #000;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-top-left-radius: 8px;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-body h3 {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .card-body p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Action Bar & Compact Back Icon Button */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .back-btn, .mmit-back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-blue);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 1.25rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0;
+            line-height: 1;
+        }
+
+        .back-btn:hover, .mmit-back-btn:hover {
+            background-color: var(--accent-orange);
+            color: #000;
+            transform: scale(1.1);
+        }
+
+        .back-btn:active, .mmit-back-btn:active {
+            transform: scale(0.95);
+        }
+
+        .download-btn {
+            padding: 0.6rem 1.2rem;
+            background-color: var(--accent-orange);
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .subject-header {
+            display: flex;
+            gap: 20px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 5px solid var(--primary-blue);
+            margin-bottom: 2rem;
+        }
+
+        .subject-header img {
+            width: 250px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .subject-info h1 {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .subject-info p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .syllabus-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .syllabus-table th, .syllabus-table td {
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .syllabus-table th {
+            background-color: var(--primary-blue);
+            color: #fff;
+        }
+
+        .syllabus-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        /* Sarkari Result Style Notice Board Page */
+        .sarkari-card {
+            background: #fff;
+            border: 2px solid var(--sarkari-red);
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .sarkari-header {
+            background: var(--sarkari-red);
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .sarkari-header h2 {
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .sarkari-header p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .sarkari-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sarkari-list li {
+            padding: 12px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .sarkari-list li:nth-child(even) {
+            background-color: #fff9f9;
+        }
+
+        .sarkari-list li:hover {
+            background-color: #f0f4f8;
+        }
+
+        .sarkari-list a {
+            color: #0000cc;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sarkari-list a:hover {
+            text-decoration: underline;
+            color: var(--sarkari-red);
+        }
+
+        .badge-new {
+            background: red;
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.3; }
+        }
+
+        .notice-date {
+            font-size: 0.8rem;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        /* Responsive */
+        @media(max-width: 768px) {
+            .subject-header {
+                flex-direction: column;
+            }
+            .subject-header img {
+                width: 100%;
+                height: auto;
+            }
+            .sarkari-list li {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .notif-panel {
+                width: 90%;
+                right: 5%;
+            }
+        }
+        
+        .download-btn {
+            min-width: 190px;
+        }
+
+        .menu-icon {
+            display: none !important;
+        }
+
+        /* Shared inline-icon style (replaces decorative emoji app-wide, except inside posts) */
+        .ui-icon {
+            width: 1em;
+            height: 1em;
+            display: inline-block;
+            vertical-align: -0.15em;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex: none;
+        }
+        .ui-icon--fill {
+            fill: currentColor;
+            stroke: none;
+        }
+
+        .website-icon {
+            font-size: 1.55rem;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .website-icon:hover {
+            transform: scale(1.08);
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        .mmit-page {
+            width: 100%;
+            max-width: 100%;
+            padding: 0.8rem 1rem;
+        }
+
+        .mmit-action-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .mmit-frame {
+            width: 100%;
+            height: calc(100vh - 150px);
+            min-height: 500px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+        }
+
+        /* BOTTOM NAVIGATION BAR & ANIMATIONS */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 65px;
+            z-index: 999;
+            border-top: 1px solid #eaeaea;
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #64748b;
+            font-size: 0.75rem;
+            font-weight: 600;
+            width: 25%;
+            height: 100%;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .bottom-nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 0%;
+            height: 3px;
+            background-color: var(--accent-orange);
+            border-radius: 0 0 4px 4px;
+            transition: width 0.3s ease;
+        }
+
+        .bottom-nav-item:hover, .bottom-nav-item.active {
+            color: var(--primary-blue); 
+        }
+
+        .bottom-nav-item.active::before {
+            width: 50%;
+        }
+
+        .bottom-nav-item.active svg {
+            transform: translateY(-2px) scale(1.12);
+            fill: var(--primary-blue);
+            filter: drop-shadow(0 2px 4px rgba(0, 51, 102, 0.25));
+        }
+
+        /* Touch / Click Professional Animation */
+        .bottom-nav-item:active svg {
+            animation: navTouchAnim 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes navTouchAnim {
+            0% { transform: scale(1); }
+            40% { transform: scale(0.8) translateY(2px); }
+            80% { transform: scale(1.2) translateY(-4px); }
+            100% { transform: scale(1.12) translateY(-2px); }
+        }
+
+        .bottom-nav-item svg {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 3px;
+            fill: currentColor;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), fill 0.2s ease;
+        }
+
+        /* FEED & POST STYLES */
+        .feed-container {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .post-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            padding: 1.2rem;
+            border-top: 3px solid var(--accent-orange);
+        }
+
+        .post-header {
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .post-header .post-time {
+            font-weight: 400;
+            font-size: 0.72rem;
+            color: #64748b;
+        }
+
+        .post-text {
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        .post-img {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+            user-select: none;
+            -webkit-user-drag: none;
+            touch-action: manipulation;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .post-action-btn {
+            background: #f4f6f9;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--primary-blue);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+
+        .post-action-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .comments-section {
+            margin-top: 15px;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .comment-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comment-item:last-child {
+            border-bottom: none;
+        }
+
+        .delete-comment-btn {
+            color: red;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-left: 10px;
+        }
+
+        .comment-input-box {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .comment-input-box input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .comment-input-box button {
+            background: var(--primary-blue);
+            color: #fff;
+            border: none;
+            padding: 0 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Image Viewer Modal Styles */
+        .image-viewer-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .viewer-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .viewer-img {
+            max-width: 95%;
+            max-height: 85vh;
+            object-fit: contain;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+        
+        /* CHAT FULL SCREEN STYLES */
+        .chat-container {
+            background: #fff; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: flex; 
+            flex-direction: column; 
+            height: calc(100vh - 160px) !important; 
+            border-top: 3px solid var(--primary-blue);
+        }
+        .chat-messages {
+            flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+        }
+        .chat-msg {
+            max-width: 75%; padding: 10px; border-radius: 8px; font-size: 0.9rem;
+        }
+        .chat-msg.received { background: #f1f1f1; align-self: flex-start; border-bottom-left-radius: 0; }
+        .chat-msg.sent { background: var(--primary-blue); color: white; align-self: flex-end; border-bottom-right-radius: 0; }
+        
+        .delete-chat-btn { color: #ffcccc; cursor: pointer; font-size: 0.9rem; margin-left: 6px; font-weight: bold; transition: 0.2s; }
+        .delete-chat-btn:hover { color: #ff3333; }
+        
+        .chat-input-area {
+            display: flex; padding: 10px; border-top: 1px solid #eee; gap: 10px;
+        }
+        .chat-input-area input {
+            flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; outline: none; font-size: 0.9rem;
+        }
+        .chat-input-area button {
+            background: var(--accent-orange); color: #000; border: none; padding: 0 20px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .chat-input-area button:hover { background: #e68a00; }
+        
+        /* CHAT ENHANCEMENTS */
+        .chat-date-divider {
+            text-align: center;
+            margin: 12px 0 6px 0;
+            position: relative;
+        }
+        .chat-date-divider span {
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .chat-msg-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            margin-top: 4px;
+            font-size: 0.7rem;
+            opacity: 0.85;
+        }
+        .chat-msg.sent .chat-msg-footer {
+            color: #e2e8f0;
+        }
+        .chat-msg.received .chat-msg-footer {
+            color: #64748b;
+        }
+        .chat-time {
+            font-size: 0.7rem;
+        }
+        .chat-seen-count {
+            font-size: 0.7rem;
+            background: rgba(0,0,0,0.08);
+            padding: 1px 5px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .chat-msg.sent .chat-seen-count {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .profile-card {
+            background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 30px; text-align: center; border-top: 3px solid var(--accent-orange);
+        }
+        .profile-avatar {
+            font-size: 1.8rem; margin-bottom: 15px; display: inline-flex; align-items: center; justify-content: center; background: #f4f6f9; border-radius: 50%; width: 100px; height: 100px; color: var(--primary-blue); font-weight: bold;
+        }
+        .profile-name { color: var(--primary-blue); font-size: 1.5rem; margin-bottom: 5px; }
+        .profile-role { color: #666; margin-bottom: 20px; font-weight: 500; }
+        .profile-details { text-align: left; background: #f9f9f9; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #eee; }
+        .profile-details p { margin-bottom: 12px; font-size: 0.95rem; display: flex; justify-content: space-between;}
+        .logout-btn {
+            background: var(--sarkari-red); color: white; border: none; padding: 10px 25px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+        .logout-btn:hover { background: #a93226; }
+    
+        /* FIREBASE ONLINE ADMIN PANEL */
+        .admin-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:12000;display:none;align-items:center;justify-content:center;padding:15px}
+        .admin-modal.active{display:flex}
+        .admin-box{width:min(1050px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+        .admin-head{position:sticky;top:0;z-index:2;background:var(--primary-blue);color:#fff;padding:15px 18px;display:flex;justify-content:space-between;align-items:center}
+        .admin-head h2{font-size:1.15rem}.admin-close{font-size:28px;cursor:pointer}
+        .admin-login{padding:25px}.admin-login input,.admin-form input,.admin-form textarea,.admin-form select{width:100%;padding:11px;border:1px solid #ccc;border-radius:7px;margin:6px 0 12px;outline:none}
+        .admin-form textarea{min-height:90px;resize:vertical}.admin-btn{border:0;border-radius:7px;padding:10px 15px;background:var(--primary-blue);color:#fff;font-weight:700;cursor:pointer;margin:4px}.admin-btn.orange{background:var(--accent-orange);color:#000}.admin-btn.red{background:var(--sarkari-red)}
+        .admin-tabs{display:flex;gap:7px;flex-wrap:wrap;padding:12px 15px;border-bottom:1px solid #ddd;background:#f7f9fc;position:sticky;top:57px;z-index:2}.admin-tab{border:1px solid #ccd4df;background:#fff;padding:8px 11px;border-radius:20px;cursor:pointer;font-weight:700;color:#334155}.admin-tab.active{background:var(--primary-blue);color:#fff}
+        .admin-content{padding:18px}.admin-section{display:none}.admin-section.active{display:block}.admin-card{border:1px solid #e2e8f0;border-radius:10px;padding:15px;margin-bottom:14px;background:#fff}.admin-card h3{color:var(--primary-blue);margin-bottom:10px}.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.admin-preview{width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #ddd;margin:5px 0 10px}.admin-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.admin-status{padding:9px 12px;background:#eef6ff;border-radius:7px;margin-bottom:12px;font-size:.9rem}.admin-small{font-size:.8rem;color:#666}.admin-post-img{width:90px;height:65px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:8px}
+
+        /* USER LOGIN MODAL */
+        .user-login-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 15px; }
+        .user-login-box { background: #fff; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .user-login-box h2 { color: var(--primary-blue); margin-bottom: 10px; }
+        .user-login-box p { color: #666; margin-bottom: 20px; font-size: 0.95rem; }
+        .user-login-box input { width: 100%; padding: 12px; margin: 10px 0 20px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; outline: none; text-align: center; font-weight: bold; }
+        .user-login-box input:focus { border-color: var(--primary-blue); }
+        .user-login-box button { background: var(--primary-blue); color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 10px; font-size: 1rem; transition: 0.2s; }
+        .user-login-box button:hover { background: #002244; }
+        .user-login-box .cancel-btn { background: #e2e8f0; color: #333; }
+        .user-login-box .cancel-btn:hover { background: #cbd5e1; }
+    </style>
+<style>
+
+
+/* ================= ADDITIVE USER PROFILE POSTS UPDATE ================= */
+.user-post-composer{margin-top:22px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;box-shadow:0 3px 12px rgba(0,0,0,.08);text-align:left}
+.user-post-composer h3{color:var(--primary-blue);margin-bottom:10px;font-size:1.05rem}
+.user-post-text-wrap{position:relative}
+.user-post-text{width:100%;min-height:90px;resize:none;padding:12px 12px 30px;border:1px solid #cbd5e1;border-radius:9px;outline:none;font-size:.95rem;line-height:1.45}
+.user-post-text:focus{border-color:var(--primary-blue);box-shadow:0 0 0 2px rgba(0,51,102,.08)}
+.user-post-counter{position:absolute;right:10px;bottom:8px;font-size:.75rem;color:#64748b;font-weight:700}
+.user-post-counter.limit{color:#c0392b}
+.user-post-photo-row{display:flex;align-items:center;gap:10px;margin:12px 0}
+.user-post-photo-btn{display:inline-flex;align-items:center;gap:7px;background:#f1f5f9;border:1px solid #cbd5e1;color:#003366;padding:9px 12px;border-radius:8px;font-weight:700;cursor:pointer}
+.user-post-selected{font-size:.8rem;color:#64748b}
+.user-post-preview{display:flex;gap:7px;overflow-x:auto;padding:2px 0 7px}
+.user-post-preview img{width:72px;height:54px;object-fit:cover;border-radius:6px;border:1px solid #ddd;flex:0 0 auto}
+.user-post-submit{width:100%;border:0;border-radius:8px;background:var(--primary-blue);color:#fff;padding:11px;font-weight:700;cursor:pointer}
+.user-post-submit:disabled{opacity:.55;cursor:not-allowed}
+.user-profile-posts{margin-top:22px;text-align:left}
+.user-profile-posts-title{color:var(--primary-blue);margin-bottom:12px}
+.user-post-card{background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:12px;margin-bottom:15px;border-top:3px solid var(--accent-orange)}
+.user-post-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+.user-post-author{font-weight:700;color:var(--primary-blue)}
+.user-post-time{font-size:.75rem;color:#64748b;margin-top:3px}
+.user-post-delete{border:0;background:#fee2e2;color:#b91c1c;border-radius:7px;padding:6px 9px;font-weight:700;cursor:pointer}
+.user-post-body{font-size:.95rem;line-height:1.5;color:#374151;white-space:pre-wrap;word-break:break-word;margin-bottom:10px}
+.user-post-carousel{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:thin;margin:0 -1px 10px}
+.user-post-carousel::-webkit-scrollbar{height:5px}
+.user-post-carousel img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:7px;border:1px solid #eee;flex:0 0 100%;scroll-snap-align:center;user-select:none;-webkit-user-drag:none;touch-action:pan-x}
+.user-post-photo-count{text-align:center;font-size:.72rem;color:#64748b;margin-top:-5px;margin-bottom:8px}
+.user-post-footer{display:flex;justify-content:flex-end;align-items:center;border-top:1px solid #eee;padding-top:8px;font-size:.78rem;color:#64748b}
+.user-post-seen{font-weight:700}
+.user-post-empty{text-align:center;color:#777;padding:15px;background:#f8fafc;border-radius:8px}
+.user-post-original-modal{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:15000;display:none;align-items:center;justify-content:center;padding:20px;cursor:pointer}
+.user-post-original-modal.active{display:flex}
+.user-post-original-modal img{max-width:96vw;max-height:92vh;width:auto;height:auto;object-fit:contain;box-shadow:0 0 30px rgba(255,255,255,.12);user-select:none}
+.user-post-original-hint{position:absolute;top:16px;left:50%;transform:translateX(-50%);color:#fff;font-size:.78rem;background:rgba(0,0,0,.45);padding:6px 10px;border-radius:14px}
+@media(max-width:480px){
+  .user-post-composer{padding:12px}
+  .user-post-delete{font-size:.72rem;padding:5px 7px}
+}
+
+
+/* ================= ADDITIVE PROFILE CREATE PAGE + GLOBAL USER FEED UPDATE ================= */
+.user-post-create-page{width:100%;max-width:720px;margin:0 auto;padding:1rem;min-height:calc(100vh - 135px)}
+.user-post-create-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.user-post-create-header h2{color:var(--primary-blue);font-size:1.2rem;margin:0}
+.user-post-create-back{width:40px;height:40px;border:0;border-radius:50%;background:var(--primary-blue);color:#fff;font-size:1.25rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.user-post-create-holder{width:100%}
+.user-post-create-page .user-post-composer{margin-top:0}
+.profile-post-plus{position:fixed;right:18px;bottom:85px;width:52px;height:52px;border:0;border-radius:50%;background:var(--primary-blue);color:#fff;font-size:2rem;line-height:1;box-shadow:0 5px 16px rgba(0,0,0,.25);cursor:pointer;z-index:500}
+.profile-card{position:relative}
+.global-feed-page{width:100%;max-width:760px;margin:0 auto;padding:1rem;min-height:calc(100vh - 135px)}
+.global-feed-list{display:flex;flex-direction:column;gap:1rem;margin-top:1rem}
+.global-feed-empty{text-align:center;color:#777;padding:25px;background:#f8fafc;border-radius:10px}
+.global-user-post{background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:12px;border-top:3px solid var(--accent-orange)}
+.global-user-post .user-post-carousel{position:relative}
+.user-post-carousel{position:relative}
+.user-post-carousel-nav{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;pointer-events:none;padding:0 7px;z-index:2}
+.user-post-carousel-nav button{pointer-events:auto;width:28px;height:28px;border:0;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;font-size:18px;font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.user-post-carousel-nav button:active{transform:scale(.9)}
+.user-post-photo-dots{display:flex;justify-content:center;gap:4px;margin:-3px 0 8px}
+.user-post-photo-dots span{width:5px;height:5px;border-radius:50%;background:#cbd5e1;display:block}
+.user-post-photo-dots span.active{background:var(--primary-blue);transform:scale(1.15)}
+#navFeed{width:20%}
+.bottom-nav-item{width:20%}
+@media(max-width:480px){.profile-post-plus{right:14px;bottom:80px;width:50px;height:50px}.global-feed-page{padding:.75rem}.user-post-carousel-nav button{width:26px;height:26px;font-size:16px}}
+
+</style>
+<style>
+/* ================= ADDITIVE: POST AUDIO FEATURE (new CSS only, old CSS untouched) ================= */
+.user-post-audio-row{display:flex;align-items:center;gap:10px;margin:4px 0 12px}
+.user-post-audio-btn{display:inline-flex;align-items:center;gap:7px;background:#f1f5f9;border:1px solid #cbd5e1;color:#003366;padding:9px 12px;border-radius:8px;font-weight:700;cursor:pointer}
+.user-post-audio-hint{font-size:.78rem;color:#64748b}
+.user-post-audio-panel{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;margin:0 0 12px;display:none}
+.user-post-audio-panel.active{display:block}
+.user-post-audio-file-name{font-size:.85rem;font-weight:700;color:#003366;margin-bottom:8px;word-break:break-all}
+.user-post-audio-trim-row{margin-bottom:10px}
+.user-post-audio-trim-row label{display:flex;justify-content:space-between;font-size:.78rem;color:#475569;margin-bottom:3px;font-weight:700}
+.user-post-audio-trim-row input[type=range]{width:100%}
+.user-post-audio-actions{display:flex;gap:8px;margin-top:10px}
+.user-post-audio-actions button{flex:1;border:0;border-radius:8px;padding:9px;font-weight:700;cursor:pointer}
+.user-post-audio-preview-btn{background:#e0e7ff;color:#1e3a8a}
+.user-post-audio-confirm-btn{background:var(--primary-blue);color:#fff}
+.user-post-audio-cancel-btn{background:#fee2e2;color:#b91c1c}
+.user-post-audio-chip{display:none;align-items:center;gap:8px;background:#eef2ff;border:1px solid #c7d2fe;color:#1e3a8a;padding:7px 10px;border-radius:8px;font-size:.82rem;font-weight:700;margin:0 0 12px}
+.user-post-audio-chip.active{display:inline-flex}
+.user-post-audio-chip .user-post-audio-remove{cursor:pointer;color:#b91c1c;font-weight:900;margin-left:4px}
+.user-post-music-icon{border:0;background:rgba(0,51,102,0.08);color:var(--primary-blue);width:26px;height:26px;border-radius:50%;font-size:.85rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin-right:8px;flex:0 0 auto;transition:background .2s,transform .2s}
+.user-post-music-icon.playing{background:var(--accent-orange);color:#fff;animation:userPostMusicPulse 1s infinite}
+@keyframes userPostMusicPulse{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+</style>
+<style>
+/* ================= ADDITIVE: FEED SEARCH (users by name/roll) ================= */
+.feed-page-header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.feed-search-trigger{width:40px;height:40px;flex:0 0 auto;border:0;border-radius:50%;background:#f1f5f9;border:1px solid #cbd5e1;color:var(--primary-blue);font-size:1.15rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.feed-search-trigger:hover{background:#e2e8f0}
+.feed-search-overlay{margin-top:1rem}
+.feed-search-bar{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #cbd5e1;border-radius:10px;padding:6px 10px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.feed-search-back{width:34px;height:34px;flex:0 0 auto;border:0;border-radius:50%;background:#f1f5f9;color:var(--primary-blue);font-size:1.1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.feed-search-input{flex:1;border:0;outline:none;padding:9px 4px;font-size:.95rem}
+.feed-search-suggestions{margin-top:.6rem;background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.08);overflow:hidden}
+.feed-search-suggestion-item{display:flex;align-items:center;gap:12px;padding:11px 14px;cursor:pointer;border-bottom:1px solid #f1f5f9;transition:background .15s}
+.feed-search-suggestion-item:last-child{border-bottom:0}
+.feed-search-suggestion-item:hover{background:#f8fafc}
+.feed-search-suggestion-avatar{width:38px;height:38px;border-radius:50%;background:var(--primary-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex:0 0 auto}
+.feed-search-suggestion-name{font-weight:700;color:#1e293b;font-size:.92rem}
+.feed-search-suggestion-roll{font-size:.78rem;color:#64748b;margin-top:2px}
+.feed-search-empty{padding:16px;text-align:center;color:#777;font-size:.88rem}
+.feed-user-posts-header{display:flex;align-items:center;gap:12px;margin-bottom:1rem}
+.feed-user-posts-info{display:flex;align-items:center;gap:12px}
+.feed-user-posts-avatar{width:46px;height:46px;border-radius:50%;background:var(--primary-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex:0 0 auto}
+.feed-user-posts-name{font-weight:700;color:#1e293b;font-size:1rem}
+.feed-user-posts-roll{font-size:.8rem;color:#64748b;margin-top:2px}
+
+/* ================= ADDITIVE: POST EMOJI REACTIONS ================= */
+.post-reaction-bar{display:flex;align-items:center;gap:4px;flex-wrap:wrap;border-top:1px solid #eee;margin-top:8px;padding-top:8px}
+.post-reaction-btn{display:inline-flex;align-items:center;gap:4px;border:1px solid #e2e8f0;background:#f8fafc;border-radius:16px;padding:4px 9px;font-size:1rem;line-height:1;cursor:pointer;user-select:none;transition:background .15s,transform .1s,border-color .15s}
+.post-reaction-btn:active{transform:scale(.92)}
+.post-reaction-btn.active{background:#e0e7ff;border-color:#6366f1}
+.post-reaction-count{font-size:.72rem;font-weight:700;color:#334155}
+.post-card .post-reaction-bar{margin-top:10px}
+.user-post-card .post-reaction-bar{border-top:none;margin-top:0;padding-top:0;margin-bottom:6px}
+</style>
+<style>
+/* ================= ADDITIVE: BOOT LOADER (8s intro animation) ================= */
+/* All selectors are prefixed with "bl-" and scoped under #blBootLoader so
+   nothing here can clash with any existing class/id in the app. */
+#blBootLoader {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999999;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #333333;
+    transition: opacity 0.5s ease;
+}
+
+#blBootLoader .bl-logo-text {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, #6a5cff, #00c9ff, #27c93f, #6a5cff);
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: blShine 3s linear infinite, blPulseText 2s ease-in-out infinite;
+    margin-bottom: 22px;
+    text-shadow: 0px 4px 15px rgba(106, 92, 255, 0.3);
+    text-align: center;
+}
+
+@keyframes blShine { to { background-position: 300% center; } }
+@keyframes blPulseText { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+
+#blBootLoader .bl-computer-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+}
+
+#blBootLoader .bl-monitor {
+    width: 300px;
+    height: 200px;
+    background: #2b2b2b;
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2), 0 0 20px rgba(106, 92, 255, 0.1);
+    border: 2px solid #3d3d3d;
+    position: relative;
+}
+
+#blBootLoader .bl-screen {
+    width: 100%;
+    height: 100%;
+    background: #1e1e1e;
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+}
+
+#blBootLoader .bl-window-bar {
+    height: 24px;
+    background: #333333;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 6px;
+    border-bottom: 1px solid #111;
+    flex-shrink: 0;
+}
+
+#blBootLoader .bl-dot { width: 10px; height: 10px; border-radius: 50%; }
+#blBootLoader .bl-dot.bl-red { background: #ff5f56; }
+#blBootLoader .bl-dot.bl-yellow { background: #ffbd2e; }
+#blBootLoader .bl-dot.bl-green { background: #27c93f; }
+
+#blBootLoader .bl-window-title {
+    margin-left: 10px;
+    color: #888;
+    font-size: 11px;
+    font-family: monospace;
+}
+
+#blBootLoader .bl-code-editor {
+    padding: 10px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #d4d4d4;
+    white-space: pre-wrap;
+    text-align: left;
+    flex-grow: 1;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+#blBootLoader .bl-code-editor::-webkit-scrollbar { display: none; }
+
+#blBootLoader .bl-kw { color: #569cd6; font-weight: bold; }
+#blBootLoader .bl-str { color: #ce9178; }
+#blBootLoader .bl-com { color: #6a9955; font-style: italic; }
+#blBootLoader .bl-func { color: #dcdcaa; }
+#blBootLoader .bl-num { color: #b5cea8; }
+
+#blBootLoader .bl-cursor {
+    display: inline-block;
+    width: 7px;
+    height: 14px;
+    background: #d4d4d4;
+    vertical-align: middle;
+    animation: blBlink 0.8s step-end infinite;
+}
+@keyframes blBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+#blBootLoader .bl-stand {
+    width: 46px;
+    height: 32px;
+    background: linear-gradient(to bottom, #555555, #333333);
+}
+
+#blBootLoader .bl-base {
+    width: 130px;
+    height: 8px;
+    background: #444444;
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+#blBootLoader .bl-percent-container {
+    margin-top: 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#blBootLoader .bl-percent { font-size: 22px; font-weight: 700; color: #6a5cff; }
+
+#blBootLoader .bl-status-text {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #555555;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: opacity 0.3s;
+}
+
+#blBootLoader.bl-fade-out { opacity: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+
+    <!-- ================= ADDITIVE: 8-second boot loading animation =================
+         Shows on top of everything for 8 seconds while the app loads underneath,
+         then fades out and reveals the app. Nothing about the app below is changed. -->
+    <div id="blBootLoader">
+        <div class="bl-logo-text"></div>
+
+        <div class="bl-computer-wrapper">
+            <div class="bl-monitor">
+                <div class="bl-screen">
+                    <div class="bl-window-bar">
+                        <span class="bl-dot bl-red"></span>
+                        <span class="bl-dot bl-yellow"></span>
+                        <span class="bl-dot bl-green"></span>
+                        <span class="bl-window-title">main.py - MMITcs</span>
+                    </div>
+                    <div class="bl-code-editor" id="blCodeEditor"><span class="bl-cursor"></span></div>
+                </div>
+            </div>
+            <div class="bl-stand"></div>
+            <div class="bl-base"></div>
+        </div>
+
+        <div class="bl-percent-container">
+            <div class="bl-percent" id="blPercent">0%</div>
+            <div class="bl-status-text" id="blStatusText">Initializing IDE...</div>
+        </div>
+    </div>
+
+    <script>
+    (function(){
+        var blPythonCode = "import sys\nimport time\nfrom portal import core\n\n# Booting Environment\nprint(\"Welcome to the Portal!\")\nprint(\"Initializing modules...\")\n\ndef load_system():\n    engine = core.Engine()\n    engine.connect(host='localhost', port=8080)\n    \n    print(\"Checking dependencies...\")\n    for i in range(3):\n        print(f\"Loading module {i}...\")\n        \n    while progress != 100:\n        engine.compile()\n        \nload_system()\nprint(\"System Ready.\")";
+
+        var blEditor = document.getElementById('blCodeEditor');
+
+        function blApplySyntaxHighlight(text) {
+            return text
+                .replace(/\b(import|from|def|while|if|else|return|class|for|in)\b/g, '<span class="bl-kw">$1</span>')
+                .replace(/(".+?"|'.+?')/g, '<span class="bl-str">$1</span>')
+                .replace(/(#.+)/g, '<span class="bl-com">$1</span>')
+                .replace(/\b(print|sys|time|core|Engine|connect|compile|range)\b/g, '<span class="bl-func">$1</span>')
+                .replace(/\b(100|8080|3)\b/g, '<span class="bl-num">$1</span>');
+        }
+
+        var BL_TOTAL_MS = 8000;
+        var blPercentEl = document.getElementById('blPercent');
+        var blStatusEl = document.getElementById('blStatusText');
+        var blStatusMessages = ['Writing code...', 'Importing modules...', 'Compiling script...', 'Executing program...', 'Finishing up...'];
+        var blStatusIndex = 0;
+        var blStartTime = null;
+
+        function blUpdateProgress(now) {
+            if (!blStartTime) blStartTime = now;
+            var elapsed = now - blStartTime;
+
+            var pct = Math.min(100, Math.floor((elapsed / BL_TOTAL_MS) * 100));
+            blPercentEl.textContent = pct + '%';
+
+            var expectedChars = Math.floor((elapsed / BL_TOTAL_MS) * blPythonCode.length);
+            expectedChars = Math.min(expectedChars, blPythonCode.length);
+
+            var typedText = blPythonCode.substring(0, expectedChars);
+            blEditor.innerHTML = blApplySyntaxHighlight(typedText) + '<span class="bl-cursor"></span>';
+            blEditor.scrollTop = blEditor.scrollHeight;
+
+            if (elapsed < BL_TOTAL_MS) {
+                requestAnimationFrame(blUpdateProgress);
+            } else {
+                blPercentEl.textContent = '100%';
+                blPercentEl.style.color = '#27c93f';
+                blStatusEl.textContent = 'SYSTEM READY';
+                blStatusEl.style.color = '#27c93f';
+                blEditor.innerHTML = blApplySyntaxHighlight(blPythonCode) + '<span class="bl-cursor"></span>';
+                blEditor.scrollTop = blEditor.scrollHeight;
+            }
+        }
+
+        requestAnimationFrame(blUpdateProgress);
+
+        var blStatusTimer = setInterval(function(){
+            blStatusIndex = (blStatusIndex + 1) % blStatusMessages.length;
+            blStatusEl.style.opacity = 0;
+            setTimeout(function(){
+                blStatusEl.textContent = blStatusMessages[blStatusIndex];
+                blStatusEl.style.opacity = 1;
+            }, 300);
+        }, 1500);
+
+        // Exactly at 8 seconds: stop the loader and open the app underneath.
+        setTimeout(function(){
+            clearInterval(blStatusTimer);
+            var loader = document.getElementById('blBootLoader');
+            if (loader) {
+                loader.classList.add('bl-fade-out');
+                setTimeout(function(){ loader.style.display = 'none'; }, 500);
+            }
+        }, BL_TOTAL_MS);
+    })();
+    </script>
+
+    <!-- Shared inline-SVG icon sprite. Used everywhere the app previously showed a
+         decorative emoji (nav, admin panel, notices, chat, etc). Emoji used *inside*
+         posts themselves (post actions, reactions, audio attachment) are left as-is. -->
+    <svg style="display:none" aria-hidden="true">
+      <defs>
+        <symbol id="icon-home" viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5"/><path d="M6 10v9h5v-5h2v5h5v-9"/></symbol>
+        <symbol id="icon-megaphone" viewBox="0 0 24 24"><path d="M3 10v4h3l5 4V6L6 10H3z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/></symbol>
+        <symbol id="icon-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21z"/><path d="M4 5.5v13"/></symbol>
+        <symbol id="icon-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+        <symbol id="icon-atom" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="9" ry="4"/><ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(120 12 12)"/></symbol>
+        <symbol id="icon-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></symbol>
+        <symbol id="icon-monitor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></symbol>
+        <symbol id="icon-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></symbol>
+        <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18"/></symbol>
+        <symbol id="icon-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></symbol>
+        <symbol id="icon-star" viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.6-5.2 4.6 1.6 6.8L12 16.9 5.8 20.3l1.6-6.8L2.2 8.9l6.9-.6z"/></symbol>
+        <symbol id="icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></symbol>
+        <symbol id="icon-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.5 3-5.5 6-5.5s6 2 6 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.2c2.4.3 4.5 2 4.5 5.8"/></symbol>
+        <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+        <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+        <symbol id="icon-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M10.5 12.5 20 3M17 6l2 2M14 9l2 2"/></symbol>
+        <symbol id="icon-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5.5-5.5L4 21"/></symbol>
+        <symbol id="icon-scroll" viewBox="0 0 24 24"><path d="M6 3h9l5 5v13H6z"/><path d="M15 3v5h5"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></symbol>
+        <symbol id="icon-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></symbol>
+        <symbol id="icon-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+        <symbol id="icon-live" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="9"/></symbol>
+        <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></symbol>
+        <symbol id="icon-chat" viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/></symbol>
+        <symbol id="icon-chevron-right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+      </defs>
+    </svg>
+
+    <div id="sideMenu" class="side-menu">
+        <span class="close-menu" onclick="toggleMenu()">&times;</span>
+        <div class="menu-header">
+            <h2>Course Modules</h2>
+        </div>
+        <a href="#" onclick="openHomePage()"><svg class="ui-icon"><use href="#icon-home"></use></svg> Dashboard (Home)</a>
+        <a href="#" onclick="openNoticePage()"><svg class="ui-icon"><use href="#icon-megaphone"></use></svg> Notice Board (Official)</a>
+        <a href="#" onclick="openSubjectPage(1)"><svg class="ui-icon"><use href="#icon-book"></use></svg> Communication Skills-I</a>
+        <a href="#" onclick="openSubjectPage(2)"><svg class="ui-icon"><use href="#icon-plus"></use></svg> Applied Mathematics-I</a>
+        <a href="#" onclick="openSubjectPage(3)"><svg class="ui-icon"><use href="#icon-atom"></use></svg> Applied Physics-I</a>
+        <a href="#" onclick="openSubjectPage(4)"><svg class="ui-icon"><use href="#icon-flask"></use></svg> Applied Chemistry</a>
+        <a href="#" onclick="openSubjectPage(5)"><svg class="ui-icon"><use href="#icon-monitor"></use></svg> Fundamentals of IT (FCIT)</a>
+    </div>
+
+    <div id="homePage">
+        
+        <header class="navbar">
+            <div class="logo-container" onclick="openHomePage()">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Emblem_of_Uttar_Pradesh.svg/1200px-Emblem_of_Uttar_Pradesh.svg.png" alt="Govt Logo">
+                <div class="logo-text">
+                    <h1>POLYTECHNIC ACADEMIC PORTAL</h1>
+                    <p>Computer Science & Engineering (1st Semester)</p>
+                </div>
+            </div>
+            
+            <div class="nav-actions">
+                <div class="notif-bell-container" onclick="toggleNotifPanel()" title="Notifications">
+                    <svg class="ui-icon"><use href="#icon-bell"></use></svg>
+                    <span id="notifRedDot" class="red-dot"></span>
+                </div>
+                
+                <div class="website-icon" onclick="openMMITPage()" title="Open MMIT Website"><svg class="ui-icon"><use href="#icon-globe"></use></svg></div>
+                <div class="website-icon" onclick="openAdminLogin()" title="Admin Panel"><svg class="ui-icon"><use href="#icon-gear"></use></svg></div>
+                <div class="menu-icon" onclick="toggleMenu()">☰</div>
+            </div>
+        </header>
+
+        <div id="notifPanel" class="notif-panel">
+            <div class="notif-header">
+                <span><svg class="ui-icon"><use href="#icon-megaphone"></use></svg> Recent Notifications</span>
+                <span style="cursor: pointer; font-size: 1.2rem;" onclick="toggleNotifPanel()">&times;</span>
+            </div>
+            <div class="notif-body" id="notifList">
+            </div>
+        </div>
+
+        <div class="notice-bar">
+            <span class="notice-btn" onclick="openNoticePage()">NEW NOTICE <svg class="ui-icon ui-icon--fill"><use href="#icon-star"></use></svg></span>
+            <marquee behavior="scroll" direction="left">
+                Welcome to the official study material portal for Diploma in CSE 1st Semester. All subjects' syllabus and notes are updated as per the latest BTEUP curriculum.
+            </marquee>
+        </div>
+
+        <section class="hero">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h2>Diploma in Computer Science & Engineering</h2>
+                <p>1st Semester Syllabus, Notes & Study Material (As per BTEUP Guidelines)</p>
+            </div>
+        </section>
+
+        <section class="container">
+            <h2 class="section-title">Academic Subjects (Semester-I)</h2>
+            <div class="grid" id="subjectsGrid">
+            </div>
+        </section>
+    </div>
+
+    <div id="noticePage" class="container full-screen-container" style="display: none;">
+        <div class="action-bar">
+            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard">←</button>
+        </div>
+
+        <div class="sarkari-card">
+            <div class="sarkari-header">
+                <h2>BTEUP / MMIT OFFICIAL NOTICES & UPDATES</h2>
+                <p>Latest Board Notifications, Exam Schedules & Circulars</p>
+            </div>
+            <ul class="sarkari-list" id="sarkariNoticeList">
+            </ul>
+        </div>
+    </div>
+
+    <div id="mmitPage" class="mmit-page full-screen-container" style="display: none;">
+        <div class="mmit-action-bar">
+            <button class="mmit-back-btn" onclick="openHomePage()" title="Back to Home">←</button>
+        </div>
+        <iframe
+            class="mmit-frame"
+            src="https://mmitgp.ac.in/"
+            title="MMIT MRJ Website"
+            loading="lazy"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <div id="subjectPage" class="container full-screen-container" style="display: none;">
+        <div class="action-bar">
+            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard">←</button>
+        </div>
+        
+        <div class="subject-header">
+            <img id="detailImg" src="" alt="Subject Image">
+            <div class="subject-info">
+                <h1 id="detailTitle">Subject Title</h1>
+                <p><strong>Subject Code:</strong> <span id="detailCode">1001</span></p>
+                <p style="margin-top: 10px;" id="detailDesc">Subject description...</p>
+            </div>
+        </div>
+
+        <div class="feed-container" id="subjectFeedContainer">
+            </div>
+    </div>
+
+    <div id="savedPage" class="container full-screen-container" style="display: none;">
+        <h2 class="section-title">Saved Posts</h2>
+        <div class="feed-container" id="savedFeedContainer">
+            </div>
+    </div>
+
+    <div id="chatPage" class="container full-screen-container" style="display: none;">
+        <h2 class="section-title">Class Discussion</h2>
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Type your message here..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                <button onclick="sendChatMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="profilePage" class="container full-screen-container" style="display: none;">
+        <h2 class="section-title">Student Profile</h2>
+        <div class="profile-card">
+            <div class="profile-avatar" id="profAvatar"><svg class="ui-icon" style="width:1.5em;height:1.5em;"><use href="#icon-user"></use></svg></div>
+            <h3 class="profile-name" id="profName">Student Name</h3>
+            <p class="profile-role">Diploma in CSE (1st Sem)</p>
+            <div class="profile-details">
+                <p><strong>Registration No:</strong> <span id="profRoll">Roll Number</span></p>
+                <p><strong>Status:</strong> <span style="color: green; font-weight: bold;">Active</span></p>
+            </div>
+            <button class="logout-btn" onclick="userLogout()">Log Out</button>
+            <button class="profile-post-plus" onclick="openUserPostCreatePage()" title="Create Post">+</button>
+        </div>
+    </div>
+
+
+    <div id="userPostCreatePage" class="user-post-create-page full-screen-container" style="display:none;">
+        <div class="user-post-create-header">
+            <button class="user-post-create-back" onclick="closeUserPostCreatePage()" title="Back to Profile">←</button>
+            <h2>Create Post</h2>
+        </div>
+        <div id="userPostCreateHolder" class="user-post-create-holder"></div>
+    </div>
+
+    <div id="globalFeedPage" class="global-feed-page full-screen-container" style="display:none;">
+        <div class="feed-page-header">
+            <h2 class="section-title" style="margin-bottom:0;">All Users Feed</h2>
+            <button type="button" class="feed-search-trigger" id="feedSearchTrigger" title="Search users" onclick="openFeedSearch()"><svg class="ui-icon"><use href="#icon-search"></use></svg></button>
+        </div>
+
+        <div id="feedSearchOverlay" class="feed-search-overlay" style="display:none;">
+            <div class="feed-search-bar">
+                <button type="button" class="feed-search-back" onclick="closeFeedSearch()" title="Back">←</button>
+                <input type="text" id="feedSearchInput" class="feed-search-input" placeholder="Search by Name or Roll Number..." autocomplete="off">
+            </div>
+            <div id="feedSearchSuggestions" class="feed-search-suggestions"></div>
+        </div>
+
+        <div id="feedUserPostsView" class="feed-user-posts-view" style="display:none;">
+            <div class="feed-user-posts-header">
+                <button type="button" class="feed-search-back" onclick="closeFeedUserPostsView()" title="Back">←</button>
+                <div class="feed-user-posts-info">
+                    <div class="feed-user-posts-avatar" id="feedUserPostsAvatar"><svg class="ui-icon"><use href="#icon-user"></use></svg></div>
+                    <div>
+                        <div class="feed-user-posts-name" id="feedUserPostsName"></div>
+                        <div class="feed-user-posts-roll" id="feedUserPostsRoll"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="feedUserPostsList" class="global-feed-list"></div>
+        </div>
+
+        <div id="globalFeedList" class="global-feed-list"></div>
+    </div>
+
+    <div id="adminModal" class="admin-modal">
+      <div class="admin-box">
+        <div class="admin-head"><h2><svg class="ui-icon"><use href="#icon-gear"></use></svg> Online Admin Control Panel</h2><span class="admin-close" onclick="closeAdminPanel()">&times;</span></div>
+        <div id="adminLoginView" class="admin-login">
+          <div class="admin-status"><svg class="ui-icon"><use href="#icon-lock"></use></svg> Firebase Admin Login — text and photos sync online in real time via the Firebase Realtime Database.</div>
+          <div class="admin-form">
+            <label>Admin Email</label><input id="adminEmail" type="email" placeholder="admin@mmitsce.com" autocomplete="username">
+            <label>Password</label><input id="adminPassword" type="password" placeholder="Firebase Authentication password" autocomplete="current-password">
+            <button class="admin-btn" onclick="firebaseAdminLogin()"><svg class="ui-icon"><use href="#icon-key"></use></svg> Login</button><button class="admin-btn orange" onclick="createFirebaseAdmin()"><svg class="ui-icon ui-icon--fill"><use href="#icon-star"></use></svg> Create Admin Account</button>
+            <button class="admin-btn orange" onclick="closeAdminPanel()">Cancel</button>
+            <p id="adminLoginMsg" class="admin-small"></p>
+          </div>
+        </div>
+        <div id="adminDashboardView" style="display:none">
+          <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="branding"><svg class="ui-icon"><use href="#icon-image"></use></svg> Photos</button>
+            <button class="admin-tab" data-tab="subjects"><svg class="ui-icon"><use href="#icon-book"></use></svg> Subjects</button>
+            <button class="admin-tab" data-tab="notifications"><svg class="ui-icon"><use href="#icon-bell"></use></svg> Notifications</button>
+            <button class="admin-tab" data-tab="notices"><svg class="ui-icon"><use href="#icon-megaphone"></use></svg> Notices</button>
+            <button class="admin-tab" data-tab="posts"><svg class="ui-icon"><use href="#icon-scroll"></use></svg> Posts</button>
+            <button class="admin-tab" data-tab="users"><svg class="ui-icon"><use href="#icon-users"></use></svg> Users</button>
+            <button class="admin-tab" data-tab="chats"><svg class="ui-icon"><use href="#icon-chat"></use></svg> Chats</button>
+          </div>
+          <div class="admin-content">
+            <div id="adminStatus" class="admin-status">Connecting to Firebase…</div>
+            <section id="tab-branding" class="admin-section active">
+              <div class="admin-grid">
+                <div class="admin-card"><h3>Portal Logo</h3><img id="adminLogoPreview" class="admin-preview"><input id="adminLogoFile" type="file" accept="image/*"><button class="admin-btn" onclick="uploadBrandImage('logo')"><svg class="ui-icon"><use href="#icon-globe"></use></svg> Save Logo Online</button></div>
+                <div class="admin-card"><h3>Hero / Banner Photo</h3><img id="adminHeroPreview" class="admin-preview"><input id="adminHeroFile" type="file" accept="image/*"><button class="admin-btn" onclick="uploadBrandImage('hero')"><svg class="ui-icon"><use href="#icon-globe"></use></svg> Save Hero Online</button></div>
+              </div>
+            </section>
+            <section id="tab-subjects" class="admin-section"><div id="adminSubjectsList"></div></section>
+            
+            <section id="tab-notifications" class="admin-section">
+              <div class="admin-card">
+                <h3><svg class="ui-icon"><use href="#icon-plus"></use></svg> Add / Send Target Notification</h3>
+                <div class="admin-form">
+                  <label>Select Recipient User (Target User Profile):</label>
+                  <select id="newNotifTargetUser" style="margin-bottom:12px; padding:11px; width:100%; border-radius:7px; border:1px solid #ccc;">
+                    <option value="ALL">Send to All Users (Public Notification)</option>
+                  </select>
+                  <label>Notification Text:</label>
+                  <input id="newNotifText" placeholder="Enter notification message here...">
+                  <button class="admin-btn" onclick="addOnlineNotification()">Publish Notification</button>
+                </div>
+              </div>
+              <div id="adminNotificationsList"></div>
+            </section>
+
+            <section id="tab-notices" class="admin-section">
+              <div class="admin-card"><h3><svg class="ui-icon"><use href="#icon-plus"></use></svg> Add Notice</h3><input id="newNoticeTitle" placeholder="Notice title"><input id="newNoticeLink" placeholder="Notice Link (URL) e.g. https://..."><label><input id="newNoticeNew" type="checkbox" checked> Mark as NEW</label><button class="admin-btn" onclick="addOnlineNotice()">Publish Notice</button></div>
+              <div class="admin-card"><h3><svg class="ui-icon"><use href="#icon-scroll"></use></svg> Scrolling Notice Bar</h3><textarea id="scrollNoticeText" placeholder="Scrolling notice text"></textarea><button class="admin-btn" onclick="saveScrollNotice()">Save Notice Bar</button></div>
+              <div id="adminNoticesList"></div>
+            </section>
+            <section id="tab-posts" class="admin-section">
+              <div class="admin-card"><h3><svg class="ui-icon"><use href="#icon-plus"></use></svg> Create Feed Post</h3><select id="newPostSubject"></select><textarea id="newPostText" placeholder="Post text"></textarea><input id="newPostFile" type="file" accept="image/*"><p class="admin-small">The photo is compressed and saved to the Firebase Realtime Database.</p><button class="admin-btn" onclick="createOnlinePost()">Publish Post Online</button></div>
+              <div id="adminPostsList"></div>
+            </section>
+            
+            <section id="tab-users" class="admin-section">
+              <div class="admin-card">
+                  <h3><svg class="ui-icon"><use href="#icon-plus"></use></svg> Add / Update User</h3>
+                  <div class="admin-form">
+                      <input id="adminNewUserName" placeholder="Student Name (e.g. Ambuj Kumar)">
+                      <input id="adminNewUserRoll" type="text" placeholder="Roll Number (Acts as Password for Login)">
+                      <button class="admin-btn" onclick="saveOnlineUser()">Save User</button>
+                  </div>
+              </div>
+              <div id="adminUsersList"></div>
+            </section>
+            
+            <section id="tab-chats" class="admin-section">
+                <div id="adminChatsList"></div>
+            </section>
+
+            <div style="padding-top:10px;border-top:1px solid #ddd"><button class="admin-btn red" onclick="firebaseAdminLogout()">Logout Admin</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="imageViewerModal" class="image-viewer-modal" style="display: none;">
+        <span class="viewer-close-btn" onclick="closeImageViewer()">&times;</span>
+        <img id="viewerImageSrc" class="viewer-img" src="" alt="Original Size Image">
+    </div>
+
+    <div id="userLoginModal" class="user-login-modal">
+        <div class="user-login-box">
+            <h2>Portal Login</h2>
+            <p>Please enter your Roll Number to access your student profile.</p>
+            <input type="password" id="userLoginPassword" placeholder="Enter Roll Number" onkeypress="if(event.key === 'Enter') processUserLogin()">
+            <button onclick="processUserLogin()">Secure Login</button>
+            <button class="cancel-btn" onclick="closeUserLogin()">Cancel</button>
+            <p id="userLoginError" style="color: red; font-size: 0.85rem; margin-top: 10px;"></p>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="bottom-nav-item active" id="navHome" onclick="openHomePage()">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span>Home</span>
+        </div>
+        <div class="bottom-nav-item" id="navChat" onclick="openChat()">
+            <span id="chatRedDot" class="chat-red-dot"></span>
+            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>
+            <span>Chat</span>
+        </div>
+        <div class="bottom-nav-item" id="navFeed" onclick="openGlobalFeed()">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm2 2h8v2H8V8zm0 4h8v2H8v-2z"/></svg>
+            <span>Feed</span>
+        </div>
+        <div class="bottom-nav-item" id="navSave" onclick="openSavePage()">
+            <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+            <span>Save</span>
+        </div>
+        <div class="bottom-nav-item" id="navProfile" onclick="openProfile()">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+            <span>Profile</span>
+        </div>
+    </nav>
+
+    <script>
+        // ================= JAVASCRIPT START ================= //
+        
+        let localUser = JSON.parse(localStorage.getItem('portalUser')) || null;
+        window.localUser = localUser;
+        let pendingAction = null;
+
+        // Dynamic Unique Color Generator per Roll Number
+        function getColorForRoll(roll) {
+            if (!roll) return '#003366';
+            let hash = 0;
+            const str = String(roll);
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const colors = [
+                '#d90429', '#0077b6', '#2b9348', '#d62828', '#8338ec',
+                '#e63946', '#2a9d8f', '#f4a261', '#e76f51', '#6a0572',
+                '#118ab2', '#3a86ff', '#9b5de5', '#c7253e', '#10b981'
+            ];
+            return colors[Math.abs(hash) % colors.length];
+        }
+        window.getColorForRoll = getColorForRoll;
+
+        // Single-Device Login Lock: a persistent, random ID unique to this browser/device.
+        // Stored separately from the login itself so it survives logout/login on the same device.
+        function getDeviceId() {
+            let id = localStorage.getItem('portalDeviceId');
+            if (!id) {
+                id = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('portalDeviceId', id);
+            }
+            return id;
+        }
+        window.getDeviceId = getDeviceId;
+
+        function formatChatTime(ts) {
+            if (!ts) return '';
+            const d = new Date(ts);
+            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+        }
+        window.formatChatTime = formatChatTime;
+
+        function formatNotificationTime(ts) {
+            if (!ts) return '';
+            if (typeof ts === 'string') return ts; 
+            const date = new Date(ts);
+            const today = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(today.getDate() - 1);
+
+            const isSameDay = (d1, d2) => d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
+
+            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+
+            if (isSameDay(date, today)) {
+                return `Today, ${timeStr}`;
+            } else if (isSameDay(date, yesterday)) {
+                return `Yesterday, ${timeStr}`;
+            } else {
+                return `${date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-')}, ${timeStr}`;
+            }
+        }
+        window.formatNotificationTime = formatNotificationTime;
+
+        function getChatDateLabel(ts) {
+            if (!ts) return 'Today';
+            const msgDate = new Date(ts);
+            const today = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(today.getDate() - 1);
+
+            const isSameDay = (d1, d2) =>
+                d1.getFullYear() === d2.getFullYear() &&
+                d1.getMonth() === d2.getMonth() &&
+                d1.getDate() === d2.getDate();
+
+            if (isSameDay(msgDate, today)) {
+                return 'Today';
+            } else if (isSameDay(msgDate, yesterday)) {
+                return 'Yesterday';
+            } else {
+                return msgDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            }
+        }
+        window.getChatDateLabel = getChatDateLabel;
+        
+        let savedPostIds = JSON.parse(localStorage.getItem('portalSavedPosts')) || [];
+
+        function requireLogin(actionCallback) {
+            if (localUser) {
+                actionCallback();
+            } else {
+                pendingAction = actionCallback;
+                document.getElementById('userLoginPassword').value = '';
+                document.getElementById('userLoginError').innerText = '';
+                document.getElementById('userLoginModal').style.display = 'flex';
+            }
+        }
+
+        function closeUserLogin() {
+            document.getElementById('userLoginModal').style.display = 'none';
+            pendingAction = null;
+        }
+
+        async function processUserLogin() {
+            const roll = document.getElementById('userLoginPassword').value.trim();
+            const err = document.getElementById('userLoginError');
+            if(!roll) { err.innerText = "Please enter your Roll Number."; return; }
+            
+            const users = window.onlineUsersData || {};
+            if(users[roll]) {
+                // Single-Device Login Lock: check this before finishing login.
+                const deviceId = getDeviceId();
+                if(window.checkAndSetActiveSession) {
+                    const allowed = await window.checkAndSetActiveSession(roll, deviceId);
+                    if(!allowed) {
+                        err.innerText = "";
+                        alert("Yeh Roll Number pehle se kisi anya device/system par login hai. Ek Roll Number se ek samay me sirf ek hi device par login kiya ja sakta hai.");
+                        return;
+                    }
+                }
+
+                localUser = users[roll];
+                window.localUser = localUser;
+                localStorage.setItem('portalUser', JSON.stringify(localUser));
+                document.getElementById('userLoginModal').style.display = 'none';
+                
+                if(window.setUserActiveStatus) window.setUserActiveStatus(roll, true);
+                if(window.watchActiveSession) window.watchActiveSession(roll, deviceId);
+                if(window.renderOnlineChats) window.renderOnlineChats();
+                if(window.checkUnseenNotifications) window.checkUnseenNotifications();
+
+                if(pendingAction) {
+                    pendingAction();
+                    pendingAction = null;
+                }
+            } else {
+                err.innerText = "Invalid Roll Number. This user has not been added by the admin.";
+            }
+        }
+
+        function userLogout() {
+            if(localUser && window.setUserActiveStatus) {
+                window.setUserActiveStatus(localUser.rollNumber, false);
+            }
+            if(localUser && window.releaseActiveSession) {
+                window.releaseActiveSession(localUser.rollNumber, getDeviceId());
+            }
+            if(window.unwatchActiveSession) window.unwatchActiveSession();
+            localStorage.removeItem('portalUser');
+            localUser = null;
+            window.localUser = null;
+            if(window.renderOnlineChats) window.renderOnlineChats();
+            openHomePage();
+            alert("You have been logged out successfully.");
+        }
+
+        window.addEventListener('beforeunload', () => {
+             if(localUser && window.setUserActiveStatus) window.setUserActiveStatus(localUser.rollNumber, false);
+        });
+
+        // Called automatically (realtime) when the admin deletes the currently
+        // logged-in user's profile, or changes their Roll Number (login key).
+        // Logs the user out of the app immediately, without the manual-logout alert.
+        function forceLogoutDeletedUser() {
+            if(window.unwatchActiveSession) window.unwatchActiveSession();
+            localStorage.removeItem('portalUser');
+            localUser = null;
+            window.localUser = null;
+            closeAllSections();
+            openHomePage();
+            if(window.renderOnlineChats) window.renderOnlineChats();
+            alert("Your profile has been removed/updated by the admin. You have been logged out automatically. Please log in again.");
+        }
+        window.forceLogoutDeletedUser = forceLogoutDeletedUser;
+
+        // Single-Device Login Lock: called (via watchActiveSession) when another
+        // device/system logs in with the same Roll Number while this device is
+        // still logged in. This device is logged out immediately with an alert.
+        function forceLogoutDifferentDevice() {
+            if(window.unwatchActiveSession) window.unwatchActiveSession();
+            localStorage.removeItem('portalUser');
+            localUser = null;
+            window.localUser = null;
+            closeAllSections();
+            openHomePage();
+            if(window.renderOnlineChats) window.renderOnlineChats();
+            alert("Aapka Roll Number kisi anya device/system par login kiya gaya hai. Suraksha karno se aapko is device se logout kar diya gaya hai.");
+        }
+        window.forceLogoutDifferentDevice = forceLogoutDifferentDevice;
+
+        let notifications = [
+            { id: 1, text: "BTEUP Odd Semester Exam Scheme 2026-27 released.", time: "Just now", timestamp: Date.now() },
+            { id: 2, text: "CSE 1st Semester Syllabus officially updated.", time: "1 hour ago", timestamp: Date.now() - 3600000 },
+            { id: 3, text: "Practical Exam schedule announced for Diploma Students.", time: "Yesterday", timestamp: Date.now() - 86400000 }
+        ];
+
+        const officialNotices = [
+            { title: "BTEUP Odd Semester Examination Form 2026 Direct Link", date: "20-Aug-2026", isNew: true },
+            { title: "JEECUP Polytechnic Admission Counselling Schedule 2026", date: "18-Aug-2026", isNew: true },
+            { title: "Download Official Diploma CSE 1st Sem Syllabus PDF", date: "15-Aug-2026", isNew: false },
+            { title: "BTEUP Scrutiny & Revaluation Result Declared", date: "10-Aug-2026", isNew: false },
+            { title: "UP Scholarship Online Form 2026-27 Apply Online", date: "05-Aug-2026", isNew: false }
+        ];
+
+        const subjects = [
+            {
+                id: 1,
+                title: "Communication Skills - I",
+                code: "SUB-101",
+                image: "https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=600&q=80",
+                desc: "Understanding the importance of effective communication in technical education. This subject focuses on grammar, reading, and writing skills that will also help with job placement later on."
+                
+            },
+            {
+                id: 2,
+                title: "Applied Mathematics - I",
+                code: "SUB-102",
+                image: "https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?auto=format&fit=crop&w=600&q=80",
+                desc: "Mathematics for strengthening the basics of diploma engineering. It covers the fundamentals of Algebra, Trigonometry, and Differential Calculus."
+                
+            },
+            {
+                id: 3,
+                title: "Applied Physics - I",
+                code: "SUB-103",
+                image: "https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&w=600&q=80",
+                desc: "Basic knowledge of Physics for engineering applications. Focuses on units, dimensions, mechanics, and properties of matter."
+                
+            },
+            {
+                id: 4,
+                title: "Applied Chemistry",
+                code: "SUB-104",
+                image: "https://images.unsplash.com/photo-1603126857599-f6e1570d8136?auto=format&fit=crop&w=600&q=80",
+                desc: "Chemistry for understanding the properties of engineering materials. Water treatment, polymers, and electrochemistry are its main topics."
+                
+            },
+            {
+                id: 5,
+                title: "Fundamentals of Computer & IT (FCIT)",
+                code: "SUB-105",
+                image: "https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=600&q=80",
+                desc: "A core foundational subject in Computer Science. It covers computer architecture, memory, software types, OS, and Internet basics."
+                
+            }
+        ];
+
+        function loadSubjects() {
+            const grid = document.getElementById('subjectsGrid');
+            if(!grid) return;
+            grid.innerHTML = subjects.map(sub => `
+                <div class="card" onclick="openSubjectPage(${sub.id})">
+                    <div class="card-img-container">
+                        <img src="${sub.image}" alt="${sub.title}">
+                        <div class="card-code">${sub.code}</div>
+                    </div>
+                    <div class="card-body">
+                        <h3>${sub.title}</h3>
+                        <p>Click for the BTEUP prescribed syllabus and study material.</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Long Press Delete Notification
+        let notifPressTimer;
+        window.startNotifPress = function(id) {
+            notifPressTimer = setTimeout(() => {
+                const delBtn = document.getElementById('del-notif-' + id);
+                if(delBtn) delBtn.style.display = 'block';
+            }, 1000); 
+        };
+        window.endNotifPress = function() {
+            clearTimeout(notifPressTimer);
+        };
+        
+        window.deleteUserNotification = function(id) {
+            if(window.deleteOnlineNotification) {
+                window.deleteOnlineNotification(id);
+            }
+        };
+
+        function renderNotifications() {
+            const listContainer = document.getElementById('notifList');
+            if(!listContainer) return;
+            if(notifications.length === 0) {
+                listContainer.innerHTML = `<div class="notif-item">No notifications yet.</div>`;
+                return;
+            }
+            listContainer.innerHTML = notifications.map(n => `
+                <div class="notif-item">
+                    <div>${n.text}</div>
+                    <div class="notif-time">${n.time}</div>
+                </div>
+            `).join('');
+        }
+
+        // LocalStorage Red Dot logic for Notifications
+        function toggleNotifPanel() {
+            const panel = document.getElementById('notifPanel');
+            const isVisible = panel.style.display === 'block';
+            panel.style.display = isVisible ? 'none' : 'block';
+            if (!isVisible) {
+                document.getElementById('notifRedDot').style.display = 'none';
+                localStorage.setItem('lastSeenNotifTime', Date.now());
+            }
+        }
+
+        function renderNoticeBoard() {
+            const noticeList = document.getElementById('sarkariNoticeList');
+            if(!noticeList) return;
+            noticeList.innerHTML = officialNotices.map(notice => `
+                <li>
+                    <a href="#" onclick="alert('Opening official notification PDF for: ${notice.title}')">
+                        <svg class="ui-icon"><use href="#icon-chevron-right"></use></svg> ${notice.title} 
+                        ${notice.isNew ? '<span class="badge-new">NEW</span>' : ''}
+                    </a>
+                    <span class="notice-date"><svg class="ui-icon"><use href="#icon-calendar"></use></svg> ${notice.date}</span>
+                </li>
+            `).join('');
+        }
+
+        function openNoticePage() {
+            closeAllSections();
+            document.getElementById('noticePage').style.display = 'block';
+            window.scrollTo(0, 0);
+            updateNavState('navHome'); 
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('sideMenu');
+            menu.classList.toggle('active');
+        }
+
+        function openMMITPage() {
+            closeAllSections();
+            document.getElementById('mmitPage').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        var currentOpenSubjectId = null;
+        
+        function openSubjectPage(id) {
+            closeAllSections();
+            currentOpenSubjectId = id;
+            const sub = (window.subjects && window.subjects.length > 0 ? window.subjects : subjects).find(s => String(s.id) === String(id));
+            if(!sub) return;
+            
+            document.getElementById('detailImg').src = sub.image;
+            document.getElementById('detailTitle').innerText = sub.title;
+            document.getElementById('detailCode').innerText = sub.code;
+            document.getElementById('detailDesc').innerText = sub.desc;
+            
+            renderFeed(id, 'subjectFeedContainer');
+            document.getElementById('subjectPage').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function openHomePage() {
+            closeAllSections();
+            currentOpenSubjectId = null;
+            document.getElementById('homePage').style.display = 'block';
+            window.scrollTo(0, 0);
+            updateNavState('navHome');
+        }
+
+        function closeAllSections() {
+            document.getElementById('sideMenu').classList.remove('active');
+            document.getElementById('notifPanel').style.display = 'none';
+            document.getElementById('homePage').style.display = 'none';
+            document.getElementById('subjectPage').style.display = 'none';
+            document.getElementById('noticePage').style.display = 'none';
+            document.getElementById('mmitPage').style.display = 'none';
+            document.getElementById('savedPage').style.display = 'none';
+            document.getElementById('chatPage').style.display = 'none'; 
+            document.getElementById('profilePage').style.display = 'none';
+            document.getElementById('userPostCreatePage').style.display = 'none';
+            document.getElementById('globalFeedPage').style.display = 'none'; 
+        }
+
+        window.onclick = function(event) {
+            const panel = document.getElementById('notifPanel');
+            const bell = document.querySelector('.notif-bell-container');
+            if (panel && panel.style.display === 'block' && !panel.contains(event.target) && !bell.contains(event.target)) {
+                panel.style.display = 'none';
+            }
+        };
+
+        function updateNavState(activeId) {
+            document.querySelectorAll('.bottom-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            if(activeId) {
+                document.getElementById(activeId).classList.add('active');
+            }
+        }
+
+        // LocalStorage Red Dot logic for Chat Icon
+        function openChat() {
+            requireLogin(() => {
+                updateNavState('navChat');
+                closeAllSections();
+                document.getElementById('chatPage').style.display = 'block';
+                
+                // Seen chat action
+                document.getElementById('chatRedDot').style.display = 'none';
+                localStorage.setItem('lastSeenChatTime', Date.now());
+
+                if(window.renderOnlineChats) window.renderOnlineChats();
+                window.scrollTo(0, 0);
+            });
+        }
+
+        function openProfile() {
+            requireLogin(() => {
+                updateNavState('navProfile');
+                closeAllSections();
+                
+                document.getElementById('profName').innerText = localUser.name;
+                document.getElementById('profRoll').innerText = localUser.rollNumber;
+                document.getElementById('profAvatar').innerText = localUser.rollNumber; 
+                
+                document.getElementById('profilePage').style.display = 'block';
+                window.scrollTo(0, 0);
+            });
+        }
+
+        function sendChatMessage() {
+            requireLogin(() => {
+                const input = document.getElementById('chatInput');
+                const message = input.value.trim();
+                if(message !== '') {
+                    if(window.addOnlineChat) {
+                        window.addOnlineChat(localUser.rollNumber, message);
+                    }
+                    
+                    const mentionRegex = /@([a-zA-Z0-9_]+)/g;
+                    let match;
+                    while ((match = mentionRegex.exec(message)) !== null) {
+                        const mentionedRoll = match[1];
+                        if (window.addMentionNotification && mentionedRoll !== localUser.rollNumber) {
+                            window.addMentionNotification(mentionedRoll, localUser.rollNumber);
+                        }
+                    }
+                    
+                    input.value = '';
+                }
+            });
+        }
+        
+        function deleteUserChat(chatId) {
+             if(window.deleteOnlineChat) {
+                 window.deleteOnlineChat(chatId);
+             }
+        }
+
+        window.onload = function() {
+            loadSubjects();
+            renderNotifications();
+            renderNoticeBoard();
+            
+            setTimeout(() => {
+                if(localUser && window.setUserActiveStatus) {
+                    window.setUserActiveStatus(localUser.rollNumber, true);
+                }
+                // Single-Device Login Lock: resume watching this roll's session
+                // (e.g. after a page refresh) so a takeover by another device is still caught.
+                if(localUser && window.watchActiveSession) {
+                    window.watchActiveSession(localUser.rollNumber, getDeviceId());
+                }
+            }, 2500);
+        };
+
+        let adminPostsData = [
+            {
+                id: 'post_1',
+                subjectId: 1,
+                type: 'photo',
+                text: 'Important Notice: Communication process flow chart. Please read this carefully, it is important for the exam.',
+                imgUrl: 'https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=800',
+                comments: [
+                    { id: 'com_1', userId: 'Admin', userName: 'Admin', text: 'All students should download this.' }
+                ]
+            }
+        ];
+
+        function generatePostHTML(post) {
+            let isSaved = savedPostIds.includes(post.id);
+            let saveText = isSaved ? '💾 Saved' : '🔖 Save';
+            
+            let mediaHTML = '';
+            let viewBtnHTML = '';
+            
+            if((post.type === 'photo' || post.imgUrl) && post.imgUrl) {
+                mediaHTML = `<img src="${post.imgUrl}" class="post-img" alt="Post Image" data-userpost-img="${post.imgUrl}">`;
+                viewBtnHTML = `<button class="post-action-btn" onclick="openImageViewer('${post.imgUrl}')">👁️ View</button>`;
+            }
+
+            let commentsHTML = (post.comments || []).map(c => {
+                let deleteHTML = '';
+                if(localUser && c.userId === localUser.rollNumber) {
+                    deleteHTML = `<span class="delete-comment-btn" onclick="deleteComment('${post.id}', '${c.id}')" title="Delete Comment">✖</span>`;
+                }
+                const userRoll = c.userId || c.userName;
+                const rollColor = getColorForRoll(userRoll);
+                return `<div class="comment-item">
+                            <div><strong style="color: ${rollColor};">${userRoll}</strong>: ${c.text}</div>
+                            ${deleteHTML}
+                        </div>`;
+            }).join('');
+
+            return `
+            <div class="post-card" id="post-${post.id}">
+                <div class="post-header"><span>Admin Update</span><span class="post-time">${(window.userPostTime && post.timestamp) ? window.userPostTime(post.timestamp) : ''}</span></div>
+                <div class="post-text">${post.text}</div>
+                ${mediaHTML}
+                <div class="post-actions">
+                    <button class="post-action-btn" onclick="toggleCommentSection('${post.id}')">💬 Comment</button>
+                    <button class="post-action-btn" onclick="toggleSavePost('${post.id}')">${saveText}</button>
+                    ${viewBtnHTML}
+                    <button class="post-action-btn" onclick="downloadPostMedia('${post.type}', '${post.imgUrl}')">⬇️ Download</button>
+                </div>
+                
+                <div class="comments-section" id="comments-sec-${post.id}" style="display: none;">
+                    <div id="comments-list-${post.id}">${commentsHTML}</div>
+                    <div class="comment-input-box">
+                        <input type="text" id="comment-input-${post.id}" placeholder="Write a comment...">
+                        <button onclick="addComment('${post.id}')">Post</button>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+
+        function renderFeed(subjectId, containerId) {
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            const posts = (window.adminPostsData || adminPostsData).filter(p => String(p.subjectId) === String(subjectId));
+            
+            if(posts.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:#777;">No updates in this feed yet.</p>`;
+                return;
+            }
+            container.innerHTML = posts.map(p => generatePostHTML(p)).join('');
+            container.querySelectorAll('[data-userpost-img]').forEach(img => {
+                if(typeof bindLongPress === 'function') bindLongPress(img, img.getAttribute('data-userpost-img'));
+            });
+        }
+
+        function renderSavedFeed() {
+            const container = document.getElementById('savedFeedContainer');
+            if(!container) return;
+            const posts = (window.adminPostsData || adminPostsData).filter(p => savedPostIds.includes(p.id));
+            
+            if(posts.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:#777;">No saved posts found.</p>`;
+                return;
+            }
+            container.innerHTML = posts.map(p => generatePostHTML(p)).join('');
+            container.querySelectorAll('[data-userpost-img]').forEach(img => {
+                if(typeof bindLongPress === 'function') bindLongPress(img, img.getAttribute('data-userpost-img'));
+            });
+        }
+
+        function toggleCommentSection(postId) {
+            requireLogin(() => {
+                const sec = document.getElementById(`comments-sec-${postId}`);
+                if (sec.style.display === 'none') {
+                    sec.style.display = 'block';
+                } else {
+                    sec.style.display = 'none';
+                }
+            });
+        }
+
+        function addComment(postId) {
+            requireLogin(() => {
+                const inputField = document.getElementById(`comment-input-${postId}`);
+                const text = inputField.value.trim();
+                if(!text) return;
+
+                const dataset = (window.adminPostsData || adminPostsData);
+                const postIndex = dataset.findIndex(p => p.id === postId);
+                if(postIndex > -1) {
+                    if(!dataset[postIndex].comments) dataset[postIndex].comments = [];
+                    const formatUserName = `${localUser.rollNumber}`;
+                    dataset[postIndex].comments.push({
+                        id: 'com_' + Date.now(),
+                        userId: localUser.rollNumber,
+                        userName: formatUserName,
+                        text: text
+                    });
+                    
+                    if(window.addOnlineComment) {
+                        window.addOnlineComment(postId, localUser.rollNumber, formatUserName, text);
+                    }
+                    
+                    refreshCurrentFeeds();
+                }
+            });
+        }
+
+        function deleteComment(postId, commentId) {
+            const dataset = (window.adminPostsData || adminPostsData);
+            const postIndex = dataset.findIndex(p => p.id === postId);
+            if(postIndex > -1 && dataset[postIndex].comments) {
+                dataset[postIndex].comments = dataset[postIndex].comments.filter(c => c.id !== commentId);
+                if (window.deleteOnlineComment) window.deleteOnlineComment(postId, commentId);
+                refreshCurrentFeeds();
+            }
+        }
+
+        function toggleSavePost(postId) {
+            if(savedPostIds.includes(postId)) {
+                savedPostIds = savedPostIds.filter(id => id !== postId);
+            } else {
+                savedPostIds.push(postId);
+            }
+            localStorage.setItem('portalSavedPosts', JSON.stringify(savedPostIds));
+            refreshCurrentFeeds();
+        }
+
+        function refreshCurrentFeeds() {
+            if(document.getElementById('savedPage').style.display === 'block') {
+                renderSavedFeed();
+            } else if (document.getElementById('subjectPage').style.display === 'block' && currentOpenSubjectId) {
+                renderFeed(currentOpenSubjectId, 'subjectFeedContainer');
+            }
+        }
+
+        window.refreshCurrentFeeds = refreshCurrentFeeds;
+
+        function openSavePage() {
+            updateNavState('navSave');
+            closeAllSections();
+            document.getElementById('savedPage').style.display = 'block';
+            renderSavedFeed();
+            window.scrollTo(0, 0);
+        }
+
+        function openImageViewer(imgUrl) {
+            document.getElementById('viewerImageSrc').src = imgUrl;
+            document.getElementById('imageViewerModal').style.display = 'flex';
+        }
+
+        function closeImageViewer() {
+            document.getElementById('imageViewerModal').style.display = 'none';
+            document.getElementById('viewerImageSrc').src = '';
+        }
+
+        function downloadPostMedia(type, imgUrl) {
+            if((type === 'photo' || imgUrl) && imgUrl) {
+                fetch(imgUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'polytechnic-post-image.jpg';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                })
+                .catch(() => {
+                    window.open(imgUrl, '_blank');
+                });
+            } else {
+                alert("Only photo posts can be downloaded.");
+            }
+        }
+    </script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAegYu-tHbS662BnPV3pyTFBGoKw1jomMQ",
+  authDomain: "mmitsce.firebaseapp.com",
+  databaseURL: "https://mmitsce-default-rtdb.firebaseio.com",
+  projectId: "mmitsce",
+  storageBucket: "mmitsce.firebasestorage.app"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+const ADMIN_EMAIL = "admin@mmitsce.com";
+
+const defaultSubjects = [
+ {id:1,title:"Communication Skills - I",code:"SUB-101",image:"https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=600&q=80",desc:"Understanding the importance of effective communication in technical education. This subject focuses on grammar, reading, and writing skills."},
+ {id:2,title:"Applied Mathematics - I",code:"SUB-102",image:"https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?auto=format&fit=crop&w=600&q=80",desc:"Mathematics for strengthening the basics of diploma engineering. It covers the fundamentals of Algebra, Trigonometry, and Differential Calculus."},
+ {id:3,title:"Applied Physics - I",code:"SUB-103",image:"https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&w=600&q=80",desc:"Basic knowledge of Physics for engineering applications. Focuses on units, dimensions, mechanics, and properties of matter."},
+ {id:4,title:"Applied Chemistry",code:"SUB-104",image:"https://images.unsplash.com/photo-1603126857599-f6e1570d8136?auto=format&fit=crop&w=600&q=80",desc:"Chemistry for understanding the properties of engineering materials. Water treatment, polymers, and electrochemistry are its main topics."},
+ {id:5,title:"Fundamentals of Computer & IT (FCIT)",code:"SUB-105",image:"https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=600&q=80",desc:"A core foundational subject in Computer Science. It covers computer architecture, memory, software types, OS, and Internet basics."}
+];
+
+const defaultNotifs=[{id:"n1",text:"BTEUP Odd Semester Exam Scheme 2026-27 released.",time:"Just now",timestamp:Date.now()},{id:"n2",text:"CSE 1st Semester Syllabus officially updated.",time:"1 hour ago",timestamp:Date.now()-3600000},{id:"n3",text:"Practical Exam schedule announced for Diploma Students.",time:"Yesterday",timestamp:Date.now()-86400000}];
+const defaultNotices=[{id:"no1",title:"BTEUP Odd Semester Examination Form 2026 Direct Link",date:"20-Aug-2026",isNew:true},{id:"no2",title:"JEECUP Polytechnic Admission Counselling Schedule 2026",date:"18-Aug-2026",isNew:true},{id:"no3",title:"Download Official Diploma CSE 1st Sem Syllabus PDF",date:"15-Aug-2026",isNew:false},{id:"no4",title:"BTEUP Scrutiny & Revaluation Result Declared",date:"10-Aug-2026",isNew:false},{id:"no5",title:"UP Scholarship Online Form 2026-27 Apply Online",date:"05-Aug-2026",isNew:false}];
+
+let onlineData={
+  branding:{
+    logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Emblem_of_Uttar_Pradesh.svg/1200px-Emblem_of_Uttar_Pradesh.svg.png",
+    hero:"https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80",
+    scrollNotice:"Welcome to the official study material portal for Diploma in CSE 1st Semester. All subjects' syllabus and notes are updated as per the latest BTEUP curriculum."
+  },
+  subjects:defaultSubjects,
+  notifications:defaultNotifs,
+  notices:defaultNotices,
+  posts:[],
+  users:{},
+  chats:[]
+};
+
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function setStatus(t){const e=document.getElementById('adminStatus');if(e)e.textContent=t;}
+function arr(v){return v?Object.entries(v).map(([id,x])=>({id,...x})):[]}
+
+function applyOnlineData(d){
+  onlineData={...onlineData,...(d||{})};
+  onlineData.branding={...onlineData.branding,...((d&&d.branding)||{})};
+  onlineData.subjects=arr(d&&d.subjects).length?arr(d.subjects):onlineData.subjects;
+  onlineData.notifications=arr(d&&d.notifications).length?arr(d.notifications):((d&&d.notifications)?[]:onlineData.notifications);
+  onlineData.notices=arr(d&&d.notices).length?arr(d.notices):((d&&d.notices)?[]:onlineData.notices);
+  onlineData.posts=arr(d&&d.posts);
+  onlineData.users= (d && d.users) ? d.users : {};
+  onlineData.chats= arr(d&&d.chats);
+
+  window.onlineUsersData = onlineData.users;
+
+  if(window.localUser) {
+      const liveUser = window.onlineUsersData[window.localUser.rollNumber];
+      if(liveUser) {
+          // Realtime profile update: agar admin ne naam update kiya hai to turant reflect ho.
+          window.localUser.name = liveUser.name;
+          localStorage.setItem('portalUser', JSON.stringify(window.localUser));
+          const profN = document.getElementById('profName');
+          if(profN) profN.innerText = window.localUser.name;
+      } else if(typeof window.forceLogoutDeletedUser === 'function') {
+          // Realtime delete detection: admin ne is user ka profile delete kar diya
+          // (ya Roll Number change kar diya), isliye app se automatic logout kar do.
+          window.forceLogoutDeletedUser();
+      }
+  }
+
+  window.notifications = onlineData.notifications;
+
+  const logoImg = document.querySelector('.navbar .logo-container img');
+  if(logoImg && onlineData.branding.logo) logoImg.src = onlineData.branding.logo;
+
+  const heroSec = document.querySelector('.hero');
+  if(heroSec && onlineData.branding.hero) heroSec.style.backgroundImage = `url('${onlineData.branding.hero}')`;
+
+  const marquee = document.querySelector('.notice-bar marquee');
+  if(marquee && onlineData.branding.scrollNotice) marquee.textContent = onlineData.branding.scrollNotice;
+
+  // LocalStorage Red Dot logic check for Notifications & Chat
+  checkUnseenNotifications();
+  checkUnseenChats();
+
+  renderOnlineSubjects();
+  renderOnlineNotifications();
+  renderOnlineNotices();
+  renderOnlinePosts();
+  renderOnlineChats();
+
+  if(window.currentOpenSubjectId && document.getElementById('subjectPage').style.display === 'block') {
+      const s = onlineData.subjects.find(x => String(x.id) === String(window.currentOpenSubjectId));
+      if(s) {
+          document.getElementById('detailImg').src = s.image;
+          document.getElementById('detailTitle').innerText = s.title;
+          document.getElementById('detailCode').innerText = s.code;
+          document.getElementById('detailDesc').innerText = s.desc;
+      }
+  }
+
+  if(document.getElementById('adminDashboardView') && document.getElementById('adminDashboardView').style.display === 'block') {
+      renderAdminAll();
+  }
+}
+
+// LocalStorage Unseen Notification Indicator Red Dot Logic
+function checkUnseenNotifications() {
+    let lastSeenNotifTime = parseInt(localStorage.getItem('lastSeenNotifTime') || '0');
+    let currentUserNotifs = (onlineData.notifications || []).filter(n => {
+        if (n.targetUser) return window.localUser && n.targetUser === window.localUser.rollNumber;
+        return true;
+    });
+
+    let hasUnseen = currentUserNotifs.some(n => {
+        let ts = n.timestamp || 0;
+        return ts > lastSeenNotifTime;
+    });
+
+    const redDot = document.getElementById('notifRedDot');
+    const panel = document.getElementById('notifPanel');
+    if (redDot) {
+        if (hasUnseen && panel && panel.style.display !== 'block') {
+            redDot.style.display = 'block';
+        } else if (panel && panel.style.display === 'block') {
+            redDot.style.display = 'none';
+        }
+    }
+}
+window.checkUnseenNotifications = checkUnseenNotifications;
+
+// LocalStorage Unseen Chat Indicator Red Dot Logic
+function checkUnseenChats() {
+    let lastSeenChatTime = parseInt(localStorage.getItem('lastSeenChatTime') || '0');
+    let isChatPageVisible = document.getElementById('chatPage') && document.getElementById('chatPage').style.display === 'block';
+    
+    if (isChatPageVisible) {
+        localStorage.setItem('lastSeenChatTime', Date.now());
+        const chatDot = document.getElementById('chatRedDot');
+        if (chatDot) chatDot.style.display = 'none';
+        return;
+    }
+
+    let hasUnseen = (onlineData.chats || []).some(c => {
+        let ts = c.timestamp || 0;
+        let isFromOtherUser = !window.localUser || (window.localUser && c.userId !== window.localUser.rollNumber);
+        return ts > lastSeenChatTime && isFromOtherUser;
+    });
+
+    const chatDot = document.getElementById('chatRedDot');
+    if (chatDot) {
+        chatDot.style.display = hasUnseen ? 'block' : 'none';
+    }
+}
+window.checkUnseenChats = checkUnseenChats;
+
+function renderOnlineChats() {
+    const msgBox = document.getElementById('chatMessages');
+    if(!msgBox) return;
+    
+    let html = '';
+    let lastDateLabel = '';
+
+    const sortedChats = [...onlineData.chats].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+    if(sortedChats.length === 0) {
+        html = '<div class="chat-msg received"><strong>Admin:</strong> Welcome to the CSE 1st Sem discussion group! Ask any study-related doubts here.</div>';
+    } else {
+        sortedChats.forEach(chat => {
+            const dateLabel = window.getChatDateLabel(chat.timestamp);
+            if (dateLabel !== lastDateLabel) {
+                html += `<div class="chat-date-divider"><span>${dateLabel}</span></div>`;
+                lastDateLabel = dateLabel;
+            }
+
+            let isSent = window.localUser && window.localUser.rollNumber === chat.userId;
+            let cssClass = isSent ? 'sent' : 'received';
+            let deleteHtml = isSent ? `<span class="delete-chat-btn" onclick="deleteUserChat('${chat.id}')" title="Delete Chat">✖</span>` : '';
+
+            let seenObj = chat.seenBy || {};
+            let seenCount = Object.keys(seenObj).length;
+
+            if (window.localUser && window.localUser.rollNumber && !seenObj[window.localUser.rollNumber]) {
+                if (window.markChatSeen) {
+                    window.markChatSeen(chat.id, window.localUser.rollNumber);
+                }
+            }
+
+            const rollColor = window.getColorForRoll(chat.userId);
+            const timeStr = window.formatChatTime(chat.timestamp);
+            
+            let safeText = esc(chat.text);
+            safeText = safeText.replace(/@([a-zA-Z0-9_]+)/g, '<span style="color: #007bff; font-weight: bold;">@$1</span>');
+
+            html += `<div class="chat-msg ${cssClass}">
+                        <div style="font-weight: bold; margin-bottom: 3px; color: ${rollColor};">${esc(chat.userId)}</div>
+                        <div style="word-break: break-word;">${safeText}</div>
+                        <div class="chat-msg-footer">
+                            <span class="chat-time">${timeStr}</span>
+                            <span class="chat-seen-count" title="Seen by ${seenCount} people"><svg class="ui-icon"><use href="#icon-user"></use></svg> ${seenCount}</span>
+                            ${deleteHtml}
+                        </div>
+                     </div>`;
+        });
+    }
+    
+    let isScrolledToBottom = msgBox.scrollHeight - msgBox.clientHeight <= msgBox.scrollTop + 50;
+    msgBox.innerHTML = html;
+    if(isScrolledToBottom) {
+        msgBox.scrollTop = msgBox.scrollHeight;
+    }
+}
+window.renderOnlineChats = renderOnlineChats;
+
+function renderOnlinePosts(){
+  window.adminPostsData = onlineData.posts || [];
+  window.adminPostsData.forEach(p => {
+     if(p.comments && typeof p.comments === 'object' && !Array.isArray(p.comments)) {
+         p.comments = Object.values(p.comments);
+     }
+  });
+  if(typeof window.refreshCurrentFeeds === 'function') window.refreshCurrentFeeds();
+}
+
+function renderOnlineSubjects(){
+  const grid = document.getElementById('subjectsGrid');
+  if(!grid) return;
+  window.subjects = onlineData.subjects;
+  
+  grid.innerHTML = onlineData.subjects.map(s => {
+    const subjectPosts = (onlineData.posts || []).filter(p => String(p.subjectId) === String(s.id));
+    const latestPost = subjectPosts[subjectPosts.length - 1]; 
+    
+    let latestUpdateHTML = '';
+    if(latestPost) {
+        let snippetStr = '';
+        if(latestPost.text) {
+            snippetStr = latestPost.text.length > 40 ? latestPost.text.substring(0, 40) + '...' : latestPost.text;
+        } else if(latestPost.type === 'photo' || latestPost.imgUrl) {
+            snippetStr = 'New Photo Uploaded';
+        }
+        latestUpdateHTML = `
+        <div style="margin-top:12px; font-size:0.85rem; padding:8px; background:#eef6ff; border-radius:4px; border-left:3px solid var(--accent-orange); color:var(--primary-blue);">
+            <strong style="color:var(--sarkari-red);"><svg class="ui-icon ui-icon--fill"><use href="#icon-live"></use></svg> Live Update:</strong> ${esc(snippetStr)}
+        </div>`;
+    }
+
+    return `
+    <div class="card" onclick="openSubjectPage(${s.id})">
+      <div class="card-img-container">
+        <img src="${esc(s.image)}" alt="${esc(s.title)}">
+        <div class="card-code">${esc(s.code)}</div>
+      </div>
+      <div class="card-body">
+        <h3>${esc(s.title)}</h3>
+        <p>Click for the BTEUP prescribed syllabus and study material.</p>
+        ${latestUpdateHTML}
+      </div>
+    </div>
+    `;
+  }).join('');
+}
+
+function renderOnlineNotifications(){
+  const c = document.getElementById('notifList');
+  if(!c) return;
+  
+  let userNotifs = onlineData.notifications.filter(n => {
+      if (n.targetUser) {
+          return window.localUser && n.targetUser === window.localUser.rollNumber;
+      }
+      return true;
+  });
+
+  const sortedNotifs = [...userNotifs].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+  c.innerHTML = sortedNotifs.length ? sortedNotifs.map(n => `
+    <div class="notif-item" id="notif-item-${n.id}" 
+         onmousedown="startNotifPress('${n.id}')" onmouseup="endNotifPress()" onmouseleave="endNotifPress()"
+         ontouchstart="startNotifPress('${n.id}')" ontouchend="endNotifPress()" ontouchcancel="endNotifPress()">
+      <div>${esc(n.text)}</div>
+      <div class="notif-time">${n.timestamp ? window.formatNotificationTime(n.timestamp) : esc(n.time||'')}</div>
+      <div class="delete-notif-btn" id="del-notif-${n.id}" onclick="deleteUserNotification('${n.id}')"><svg class="ui-icon"><use href="#icon-trash"></use></svg> Delete</div>
+    </div>
+  `).join('') : `<div class="notif-item">No notifications yet.</div>`;
+}
+
+function renderOnlineNotices(){
+  const c = document.getElementById('sarkariNoticeList');
+  if(!c) return;
+  
+  const sortedNotices = [...onlineData.notices].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+  c.innerHTML = sortedNotices.map(n => `
+    <li>
+      <a href="${esc(n.link && n.link !== '#' ? n.link : '#')}" ${n.link && n.link !== '#' ? 'target="_blank"' : `onclick="event.preventDefault();alert('Opening official notification: ${esc(n.title)}')"`}>
+        <svg class="ui-icon"><use href="#icon-chevron-right"></use></svg> ${esc(n.title)} ${n.isNew ? '<span class="badge-new">NEW</span>' : ''}
+      </a>
+      <span class="notice-date"><svg class="ui-icon"><use href="#icon-calendar"></use></svg> ${esc(n.date)}</span>
+    </li>
+  `).join('');
+}
+
+function subscribe(){
+  onValue(ref(db,'portal'), snap => applyOnlineData(snap.val() || {}), err => {
+    console.error(err);
+    setStatus('Firebase read error: ' + err.message);
+  });
+}
+
+async function seed(){
+  const snap = await get(ref(db,'portal'));
+  const cur = snap.val() || {};
+  const updates = {};
+  if(!cur.branding) updates['portal/branding'] = onlineData.branding;
+  if(!cur.subjects) updates['portal/subjects'] = Object.fromEntries(onlineData.subjects.map(s => [s.id, s]));
+  if(!cur.notifications) updates['portal/notifications'] = Object.fromEntries(onlineData.notifications.map(n => [n.id, n]));
+  if(!cur.notices) updates['portal/notices'] = Object.fromEntries(onlineData.notices.map(n => [n.id, n]));
+  if(!cur.posts) updates['portal/posts'] = {};
+  if(!cur.chats) updates['portal/chats'] = {};
+  if(Object.keys(updates).length) await update(ref(db), updates);
+}
+
+// ================= Single-Device Login Lock ================= //
+// New, additive feature: a given Roll Number may only be actively logged in on
+// ONE device/system at a time. Nothing about the existing login/logout flow
+// above is changed — these functions are only called from processUserLogin(),
+// userLogout(), forceLogoutDeletedUser() and window.onload as extra steps.
+let activeSessionUnsub = null;
+
+// Called right before finishing login. Returns true if this device is allowed
+// to log in (no other device is currently active for this roll, or none was
+// recorded yet), false if another device already holds the session.
+window.checkAndSetActiveSession = async function(roll, deviceId){
+  try {
+    const snap = await get(ref(db, 'portal/activeSessions/' + roll));
+    const val = snap.val();
+    if(val && val.deviceId && val.deviceId !== deviceId){
+      return false;
+    }
+    await set(ref(db, 'portal/activeSessions/' + roll), { deviceId, timestamp: Date.now() });
+    return true;
+  } catch(e){
+    console.error('Active session check failed:', e);
+    return true; // Fail-open so a temporary network issue doesn't lock a user out entirely.
+  }
+};
+
+// Releases the session lock, but only if it still belongs to this device
+// (so we never accidentally remove a lock that another device rightfully took over).
+window.releaseActiveSession = async function(roll, deviceId){
+  try {
+    const snap = await get(ref(db, 'portal/activeSessions/' + roll));
+    const val = snap.val();
+    if(!val || val.deviceId === deviceId){
+      await remove(ref(db, 'portal/activeSessions/' + roll));
+    }
+  } catch(e){
+    console.error('Active session release failed:', e);
+  }
+};
+
+// Watches this roll's session in realtime. If another device claims the
+// session while we're logged in here, this device is force-logged-out with
+// an alert. If no session is recorded yet (e.g. right after login, or an
+// older saved login from before this feature existed), this device silently
+// claims it.
+window.watchActiveSession = function(roll, deviceId){
+  if(!roll) return;
+  if(activeSessionUnsub){ activeSessionUnsub(); activeSessionUnsub = null; }
+  activeSessionUnsub = onValue(ref(db, 'portal/activeSessions/' + roll), snap => {
+    const val = snap.val();
+    if(!val){
+      set(ref(db, 'portal/activeSessions/' + roll), { deviceId, timestamp: Date.now() }).catch(()=>{});
+      return;
+    }
+    if(val.deviceId && val.deviceId !== deviceId && window.localUser && String(window.localUser.rollNumber) === String(roll)){
+      if(typeof window.forceLogoutDifferentDevice === 'function') window.forceLogoutDifferentDevice();
+    }
+  });
+};
+
+window.unwatchActiveSession = function(){
+  if(activeSessionUnsub){ activeSessionUnsub(); activeSessionUnsub = null; }
+};
+
+async function fileToDataURL(file, maxSize=1000, quality=0.68){
+  if(!file) throw new Error('Please select a photo.');
+  if(!file.type.startsWith('image/')) throw new Error('Please select an image file only.');
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onerror = () => reject(new Error('Could not read the photo.'));
+    r.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('Invalid image.'));
+      img.onload = () => {
+        const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+        const w = Math.max(1, Math.round(img.width * scale)), h = Math.max(1, Math.round(img.height * scale));
+        const c = document.createElement('canvas'); c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        let data = c.toDataURL('image/jpeg', quality);
+        if(data.length > 850000) data = c.toDataURL('image/jpeg', 0.52);
+        resolve(data);
+      };
+      img.src = r.result;
+    };
+    r.readAsDataURL(file);
+  });
+}
+
+window.openAdminLogin = function(){
+  document.getElementById('adminModal').classList.add('active');
+  document.getElementById('adminLoginView').style.display = auth.currentUser ? 'none' : 'block';
+  document.getElementById('adminDashboardView').style.display = auth.currentUser ? 'block' : 'none';
+  if(auth.currentUser) renderAdminAll();
+};
+
+window.closeAdminPanel = function(){
+  document.getElementById('adminModal').classList.remove('active');
+};
+
+function firebaseAuthError(e){
+  const m = {
+    "auth/invalid-credential": "Email or password is incorrect.",
+    "auth/user-not-found": "Admin account not found. Please tap Create Admin Account first.",
+    "auth/wrong-password": "Incorrect password.",
+    "auth/invalid-email": "Email address is not valid.",
+    "auth/email-already-in-use": "This admin email is already registered. Please log in.",
+    "auth/weak-password": "Password should be at least 6 characters long."
+  };
+  return m[e.code] || e.message || "Firebase Authentication error.";
+}
+
+window.firebaseAdminLogin = async function(){
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass = document.getElementById('adminPassword').value;
+  const msg = document.getElementById('adminLoginMsg');
+  if(email !== ADMIN_EMAIL){ msg.textContent = 'Only the configured admin email ' + ADMIN_EMAIL + ' is allowed to log in.'; return; }
+  if(!pass){ msg.textContent = 'Please enter your password.'; return; }
+  msg.textContent = 'Logging in…';
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+    msg.textContent = 'Login successful…';
+  } catch(e) {
+    msg.textContent = 'Login failed: ' + firebaseAuthError(e);
+  }
+};
+
+window.createFirebaseAdmin = async function(){
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass = document.getElementById('adminPassword').value;
+  const msg = document.getElementById('adminLoginMsg');
+  if(email !== ADMIN_EMAIL){ msg.textContent = 'Admin email must be exactly ' + ADMIN_EMAIL + '.'; return; }
+  if(!pass || pass.length < 6){ msg.textContent = 'Password should be at least 6 characters long.'; return; }
+  msg.textContent = 'Creating admin account…';
+  try {
+    await createUserWithEmailAndPassword(auth, email, pass);
+    msg.textContent = 'Admin account created. You are now logged in.';
+  } catch(e) {
+    msg.textContent = 'Account creation failed: ' + firebaseAuthError(e);
+  }
+};
+
+window.firebaseAdminLogout = () => signOut(auth);
+
+window.uploadBrandImage = async function(kind){
+  if(!auth.currentUser) return alert('Admin login required.');
+  const file = document.getElementById(kind === 'logo' ? 'adminLogoFile' : 'adminHeroFile').files[0];
+  try {
+    setStatus('Compressing photo and saving to the Realtime Database…');
+    const data = await fileToDataURL(file, kind === 'logo' ? 650 : 1050, 0.68);
+    await update(ref(db, 'portal/branding'), { [kind]: data });
+    setStatus('Photo updated online. Firebase Storage is not required.');
+  } catch(e) {
+    setStatus('Photo save failed: ' + e.message);
+  }
+};
+
+window.saveSubject = async function(id){
+  const s = onlineData.subjects.find(x => String(x.id) === String(id));
+  if(!s) return;
+  const title = document.getElementById('st-' + id).value.trim();
+  const desc = document.getElementById('sd-' + id).value.trim();
+  const file = document.getElementById('sf-' + id).files[0];
+  try {
+    setStatus('Saving subject…');
+    let image = s.image;
+    if(file) image = await fileToDataURL(file, 900, 0.65);
+    await update(ref(db, 'portal/subjects/' + id), { title, desc, image });
+    setStatus('Subject and photo updated online.');
+  } catch(e) {
+    setStatus('Save failed: ' + e.message);
+  }
+};
+
+window.addMentionNotification = async function(targetRoll, senderRoll) {
+    const id = 'notif_' + Date.now() + Math.random().toString(36).substr(2, 5);
+    const text = `${senderRoll} mentioned you in the class discussion.`;
+    await set(ref(db, 'portal/notifications/' + id), { 
+        id: id,
+        text: text, 
+        timestamp: Date.now(),
+        targetUser: targetRoll
+    });
+};
+
+// Target Notification Addition by Admin
+window.addOnlineNotification = async function(){
+  const text = document.getElementById('newNotifText').value.trim();
+  const targetUserSelect = document.getElementById('newNotifTargetUser').value;
+  if(!text) return alert('Please write the notification text.');
+  const id = 'n_' + Date.now();
+  
+  const payload = {
+      id, 
+      text, 
+      timestamp: Date.now()
+  };
+  
+  if (targetUserSelect !== 'ALL') {
+      payload.targetUser = targetUserSelect;
+  }
+  
+  await set(ref(db, 'portal/notifications/' + id), payload);
+  document.getElementById('newNotifText').value = '';
+  setStatus('Notification published successfully!');
+};
+window.deleteOnlineNotification = async id => remove(ref(db, 'portal/notifications/' + id));
+
+window.addOnlineNotice = async function(){
+  const title = document.getElementById('newNoticeTitle').value.trim();
+  const link = document.getElementById('newNoticeLink').value.trim();
+  if(!title) return alert('Please write the notice title.');
+  const id = 'no_' + Date.now();
+  
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-');
+
+  await set(ref(db, 'portal/notices/' + id), {
+    title,
+    link: link || '#',
+    date: dateStr,
+    timestamp: Date.now(),
+    isNew: document.getElementById('newNoticeNew').checked
+  });
+  document.getElementById('newNoticeTitle').value = '';
+  document.getElementById('newNoticeLink').value = '';
+};
+window.deleteOnlineNotice = async id => remove(ref(db, 'portal/notices/' + id));
+
+window.saveScrollNotice = async function(){
+  await update(ref(db, 'portal/branding'), { scrollNotice: document.getElementById('scrollNoticeText').value.trim() });
+};
+
+window.createOnlinePost = async function(){
+  const subjectId = Number(document.getElementById('newPostSubject').value);
+  const text = document.getElementById('newPostText').value.trim();
+  const file = document.getElementById('newPostFile').files[0];
+  if(!text) return alert('Please write the post text.');
+  try {
+    setStatus('Saving post…');
+    let imgUrl = '';
+    if(file) imgUrl = await fileToDataURL(file, 950, 0.64);
+    const id = 'post_' + Date.now();
+    await set(ref(db, 'portal/posts/' + id), { subjectId, text, type: imgUrl ? 'photo' : 'text', imgUrl, comments: [], timestamp: Date.now() });
+    document.getElementById('newPostText').value = '';
+    document.getElementById('newPostFile').value = '';
+    setStatus('Post published online.');
+  } catch(e) {
+    setStatus('Post failed: ' + e.message);
+  }
+};
+window.deleteOnlinePost = async id => remove(ref(db, 'portal/posts/' + id));
+
+window.updateOnlinePostText = async function(id){
+  const text = document.getElementById('pt-' + id).value.trim();
+  await update(ref(db, 'portal/posts/' + id), { text });
+};
+
+window.replaceOnlinePostImage = async function(id){
+  const f = document.getElementById('pf-' + id).files[0];
+  if(!f) return alert('Please select a new photo.');
+  try {
+    setStatus('Compressing photo and saving to the database…');
+    const url = await fileToDataURL(f, 950, 0.64);
+    await update(ref(db, 'portal/posts/' + id), { imgUrl: url, type: 'photo' });
+    setStatus('Post photo updated online.');
+  } catch(e) {
+    setStatus('Photo update failed: ' + e.message);
+  }
+};
+
+window.addOnlineComment = async function(postId, userId, userName, text) {
+    const cId = 'com_' + Date.now();
+    await update(ref(db, `portal/posts/${postId}/comments/${cId}`), {
+        id: cId, userId, userName, text
+    });
+};
+
+window.deleteOnlineComment = async function(postId, commentId) {
+    await remove(ref(db, `portal/posts/${postId}/comments/${commentId}`));
+};
+
+window.addOnlineChat = async function(userId, text) {
+    const id = 'chat_' + Date.now();
+    const seenBy = {};
+    if (userId) seenBy[userId] = true;
+    await set(ref(db, 'portal/chats/' + id), { 
+        id, 
+        userId, 
+        text, 
+        timestamp: Date.now(),
+        seenBy 
+    });
+};
+
+window.markChatSeen = async function(chatId, rollNumber) {
+    if (!chatId || !rollNumber) return;
+    await update(ref(db, `portal/chats/${chatId}/seenBy`), { [rollNumber]: true });
+};
+
+window.deleteOnlineChat = async function(chatId) {
+    await remove(ref(db, 'portal/chats/' + chatId));
+};
+
+window.saveOnlineUser = async function(){
+    const name = document.getElementById('adminNewUserName').value.trim();
+    const roll = document.getElementById('adminNewUserRoll').value.trim();
+    if(!name || !roll) return alert('Please fill in both Name and Roll Number.');
+    await update(ref(db, 'portal/users/' + roll), { name, rollNumber: roll });
+    document.getElementById('adminNewUserName').value = '';
+    document.getElementById('adminNewUserRoll').value = '';
+    setStatus('User saved successfully.');
+};
+
+// Edit an existing user's name and/or roll number. Roll number is the user's
+// login key, so if it changes we move the record to the new key (this also
+// means any device currently logged in with the old roll number will be
+// logged out automatically, same as a deleted account - see applyOnlineData).
+window.updateOnlineUser = async function(oldRoll){
+    const nameInput = document.getElementById('un-' + oldRoll);
+    const rollInput = document.getElementById('ur-' + oldRoll);
+    if(!nameInput || !rollInput) return;
+    const name = nameInput.value.trim();
+    const newRoll = rollInput.value.trim();
+    if(!name || !newRoll) return alert('Please fill in both Name and Roll Number.');
+
+    if(newRoll === oldRoll){
+        await update(ref(db, 'portal/users/' + oldRoll), { name, rollNumber: newRoll });
+    } else {
+        if(onlineData.users && onlineData.users[newRoll]){
+            return alert('This Roll Number is already used by another user.');
+        }
+        await set(ref(db, 'portal/users/' + newRoll), { name, rollNumber: newRoll });
+        await remove(ref(db, 'portal/users/' + oldRoll));
+    }
+    setStatus('User updated successfully.');
+};
+
+window.deleteOnlineUser = async function(roll){
+    if(!confirm('Are you sure you want to delete this user?')) return;
+    await remove(ref(db, 'portal/users/' + roll));
+    setStatus('User deleted successfully.');
+};
+
+window.renderAdminAll = function() {
+    if(!auth.currentUser) return;
+    const logoP = document.getElementById('adminLogoPreview');
+    if(logoP) logoP.src = onlineData.branding.logo || '';
+    const heroP = document.getElementById('adminHeroPreview');
+    if(heroP) heroP.src = onlineData.branding.hero || '';
+    const scrollN = document.getElementById('scrollNoticeText');
+    if(scrollN) scrollN.value = onlineData.branding.scrollNotice || '';
+
+    // Render subjects admin
+    const subContainer = document.getElementById('adminSubjectsList');
+    if(subContainer) {
+        subContainer.innerHTML = onlineData.subjects.map(s => `
+            <div class="admin-card">
+                <h3>Subject ${s.id}: ${esc(s.title)}</h3>
+                <div class="admin-form">
+                    <label>Title</label><input id="st-${s.id}" value="${esc(s.title)}">
+                    <label>Description</label><textarea id="sd-${s.id}">${esc(s.desc)}</textarea>
+                    <label>Image</label><input id="sf-${s.id}" type="file" accept="image/*">
+                    <button class="admin-btn" onclick="saveSubject(${s.id})">Save Subject</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Target Notification User Select Population
+    const notifUserSelect = document.getElementById('newNotifTargetUser');
+    if(notifUserSelect) {
+        let options = '<option value="ALL">Send to All Users (Public Notification)</option>';
+        Object.values(onlineData.users || {}).forEach(u => {
+            options += `<option value="${esc(u.rollNumber)}">${esc(u.name)} (${esc(u.rollNumber)})</option>`;
+        });
+        notifUserSelect.innerHTML = options;
+    }
+
+    // Render notifications admin
+    const notifContainer = document.getElementById('adminNotificationsList');
+    if(notifContainer) {
+        notifContainer.innerHTML = onlineData.notifications.map(n => `
+            <div class="admin-card">
+                <p><strong>${esc(n.text)}</strong></p>
+                <p class="admin-small">Target: ${n.targetUser ? esc(n.targetUser) : 'ALL'} | ${n.timestamp ? window.formatNotificationTime(n.timestamp) : esc(n.time||'')}</p>
+                <button class="admin-btn red" onclick="deleteOnlineNotification('${n.id}')">Delete</button>
+            </div>
+        `).join('');
+    }
+
+    // Render notices admin
+    const noticeContainer = document.getElementById('adminNoticesList');
+    if(noticeContainer) {
+        noticeContainer.innerHTML = onlineData.notices.map(n => `
+            <div class="admin-card">
+                <p><strong>${esc(n.title)}</strong> ${n.isNew ? '🆕' : ''}</p>
+                <p class="admin-small">Link: ${esc(n.link)} | Date: ${esc(n.date)}</p>
+                <button class="admin-btn red" onclick="deleteOnlineNotice('${n.id}')">Delete</button>
+            </div>
+        `).join('');
+    }
+
+    // Render posts select & posts admin
+    const postSubSelect = document.getElementById('newPostSubject');
+    if(postSubSelect) {
+        postSubSelect.innerHTML = onlineData.subjects.map(s => `<option value="${s.id}">${esc(s.title)}</option>`).join('');
+    }
+
+    const postsContainer = document.getElementById('adminPostsList');
+    if(postsContainer) {
+        postsContainer.innerHTML = onlineData.posts.map(p => `
+            <div class="admin-card">
+                <p><strong>Post ID:</strong> ${p.id} (Subject ${p.subjectId})</p>
+                <div class="admin-form">
+                    <textarea id="pt-${p.id}">${esc(p.text)}</textarea>
+                    <button class="admin-btn" onclick="updateOnlinePostText('${p.id}')">Update Text</button>
+                    ${p.imgUrl ? `<img src="${p.imgUrl}" class="admin-preview"><input id="pf-${p.id}" type="file" accept="image/*"><button class="admin-btn orange" onclick="replaceOnlinePostImage('${p.id}')">Replace Image</button>` : ''}
+                    <button class="admin-btn red" onclick="deleteOnlinePost('${p.id}')">Delete Post</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Render users admin
+    const usersContainer = document.getElementById('adminUsersList');
+    if(usersContainer) {
+        usersContainer.innerHTML = Object.values(onlineData.users || {}).map(u => `
+            <div class="admin-card">
+                <div class="admin-form">
+                    <label>Name</label><input id="un-${esc(u.rollNumber)}" value="${esc(u.name)}">
+                    <label>Roll Number</label><input id="ur-${esc(u.rollNumber)}" value="${esc(u.rollNumber)}">
+                    <div class="admin-row">
+                        <button class="admin-btn" onclick="updateOnlineUser('${esc(u.rollNumber)}')">Update User</button>
+                        <button class="admin-btn red" onclick="deleteOnlineUser('${esc(u.rollNumber)}')">Delete User</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Render chats admin
+    const chatsContainer = document.getElementById('adminChatsList');
+    if(chatsContainer) {
+        chatsContainer.innerHTML = onlineData.chats.map(c => `
+            <div class="admin-card">
+                <p><strong>${esc(c.userId)}:</strong> ${esc(c.text)}</p>
+                <p class="admin-small">${window.formatChatTime(c.timestamp)}</p>
+                <button class="admin-btn red" onclick="deleteOnlineChat('${c.id}')">Delete Chat</button>
+            </div>
+        `).join('');
+    }
+};
+
+// Admin Tab Switcher Logic
+document.querySelectorAll('.admin-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+        tab.classList.add('active');
+        const target = tab.getAttribute('data-tab');
+        const sec = document.getElementById('tab-' + target);
+        if(sec) sec.classList.add('active');
+    });
+});
+
+onAuthStateChanged(auth, user => {
+    if(user && user.email === ADMIN_EMAIL) {
+        document.getElementById('adminLoginView').style.display = 'none';
+        document.getElementById('adminDashboardView').style.display = 'block';
+        setStatus('Admin logged in: ' + user.email);
+        seed().then(() => subscribe());
+        renderAdminAll();
+    } else {
+        document.getElementById('adminLoginView').style.display = 'block';
+        document.getElementById('adminDashboardView').style.display = 'none';
+        subscribe();
+    }
+});
+
+/* ================= ADDITIVE USER PROFILE POSTS UPDATE ================= */
+(function(){
+  const USER_POST_MAX_TEXT = 90;
+  const USER_POST_MAX_PHOTOS = 5;
+  let userPostObserver = null;
+  let userPostLongPressTimer = null;
+  let userPostLongPressTriggered = false;
+
+  function userPostTime(ts){
+    if(!ts) return '';
+    const d = new Date(ts);
+    const now = new Date();
+    // Calendar-day based (not a rolling 24hr window), so "Today" always means
+    // the current calendar date, "Yesterday" means the previous calendar date,
+    // and anything older always shows the exact date it was posted on.
+    const sameDay = (a,b)=>a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+    const y = new Date(now); y.setDate(now.getDate()-1);
+    const time = d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:true});
+    if(sameDay(d, now)) return 'Today, ' + time;
+    if(sameDay(d, y)) return 'Yesterday, ' + time;
+    return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}).replace(/ /g,'-') + ', ' + time;
+  }
+
+  function userPostEsc(v){
+    return String(v ?? '').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  function getUserPostAuthor(p){
+    return p.authorRoll || p.userId || p.createdBy || '';
+  }
+
+  function getUserPostPhotos(p){
+    if(Array.isArray(p.imgUrls)) return p.imgUrls.filter(Boolean);
+    if(p.imgUrl) return [p.imgUrl];
+    return [];
+  }
+
+  function ensureProfilePostUI(){
+    const profile = document.getElementById('profilePage');
+    if(!profile || document.getElementById('userPostComposer')) return;
+
+    const card = profile.querySelector('.profile-card');
+    if(!card) return;
+
+    const composer = document.createElement('div');
+    composer.className = 'user-post-composer';
+    composer.id = 'userPostComposer';
+    composer.innerHTML = `
+      <h3>📝 Create Your Post</h3>
+      <div class="user-post-text-wrap">
+        <textarea id="userPostText" class="user-post-text" maxlength="90" placeholder="Apna text likhiye (maximum 90 characters)..."></textarea>
+        <span id="userPostCounter" class="user-post-counter">0/90</span>
+      </div>
+      <div class="user-post-photo-row">
+        <label class="user-post-photo-btn" for="userPostPhotos">📷 Add Photos</label>
+        <input id="userPostPhotos" type="file" accept="image/*" multiple hidden>
+        <span id="userPostSelected" class="user-post-selected">0/5 photos</span>
+      </div>
+      <div id="userPostPreview" class="user-post-preview"></div>
+      <button id="userPostSubmit" class="user-post-submit" onclick="publishUserProfilePost()">Publish Post</button>
+    `;
+
+    const postsBox = document.createElement('div');
+    postsBox.className = 'user-profile-posts';
+    postsBox.id = 'userProfilePosts';
+    postsBox.innerHTML = '<h3 class="user-profile-posts-title">📌 My Posts</h3><div id="userProfilePostsList"></div>';
+
+    // The composer is intentionally placed inside the (hidden) post-create page holder,
+    // not the profile card, so it only becomes visible when the user taps the "+" icon
+    // and openUserPostCreatePage() opens that page. The "My Posts" list still stays
+    // visible in the profile card as before.
+    const createHolderForComposer = document.getElementById('userPostCreateHolder');
+    if(createHolderForComposer) createHolderForComposer.appendChild(composer); else card.appendChild(composer);
+    card.appendChild(postsBox);
+
+    const text = document.getElementById('userPostText');
+    const counter = document.getElementById('userPostCounter');
+    text.addEventListener('input', function(){
+      if(this.value.length > USER_POST_MAX_TEXT) {
+        this.value = this.value.slice(0, USER_POST_MAX_TEXT);
+        alert('Post text can be a maximum of 90 characters.');
+      }
+      counter.textContent = this.value.length + '/90';
+      counter.classList.toggle('limit', this.value.length >= USER_POST_MAX_TEXT);
+    });
+    text.addEventListener('paste', function(){
+      setTimeout(()=>{
+        if(this.value.length > USER_POST_MAX_TEXT){
+          this.value=this.value.slice(0,USER_POST_MAX_TEXT);
+          counter.textContent=this.value.length+'/90';
+          counter.classList.add('limit');
+          alert('Post text can be a maximum of 90 characters.');
+        }
+      },0);
+    });
+
+    document.getElementById('userPostPhotos').addEventListener('change', function(){
+      const files = Array.from(this.files || []);
+      if(files.length > USER_POST_MAX_PHOTOS){
+        alert('You can upload a maximum of 5 photos per post.');
+        this.value='';
+        renderUserPhotoPreview([]);
+        return;
+      }
+      renderUserPhotoPreview(files);
+    });
+  }
+
+  window.ensureProfilePostUI=ensureProfilePostUI;
+
+  function renderUserPhotoPreview(files){
+    const box=document.getElementById('userPostPreview');
+    const label=document.getElementById('userPostSelected');
+    if(!box || !label) return;
+    label.textContent=(files.length||0) + '/5 photos';
+    box.innerHTML='';
+    files.forEach(file=>{
+      const img=document.createElement('img');
+      img.src=URL.createObjectURL(file);
+      img.onload=()=>URL.revokeObjectURL(img.src);
+      box.appendChild(img);
+    });
+  }
+
+  async function userPostFileToDataURL(file){
+    if(!file || !file.type.startsWith('image/')) throw new Error('Please select an image file only.');
+    return new Promise((resolve,reject)=>{
+      const reader=new FileReader();
+      reader.onerror=()=>reject(new Error('Could not read the photo.'));
+      reader.onload=()=>{
+        const img=new Image();
+        img.onerror=()=>reject(new Error('Invalid image.'));
+        img.onload=()=>{
+          const maxSize=760;
+          const scale=Math.min(1,maxSize/Math.max(img.width,img.height));
+          const w=Math.max(1,Math.round(img.width*scale));
+          const h=Math.max(1,Math.round(img.height*scale));
+          const c=document.createElement('canvas');
+          c.width=w;c.height=h;
+          c.getContext('2d').drawImage(img,0,0,w,h);
+          let data=c.toDataURL('image/jpeg',0.58);
+          if(data.length>650000) data=c.toDataURL('image/jpeg',0.45);
+          resolve(data);
+        };
+        img.src=reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  window.publishUserProfilePost = async function(){
+    if(!window.localUser) return requireLogin(window.publishUserProfilePost);
+    const textEl=document.getElementById('userPostText');
+    const fileEl=document.getElementById('userPostPhotos');
+    if(!textEl || !fileEl) return;
+    const text=textEl.value.trim();
+    const files=Array.from(fileEl.files || []);
+    if(text.length>USER_POST_MAX_TEXT){
+      textEl.value=text.slice(0,USER_POST_MAX_TEXT);
+      document.getElementById('userPostCounter').textContent=USER_POST_MAX_TEXT+'/90';
+      alert('Post text can be a maximum of 90 characters.');
+      return;
+    }
+    if(!text && files.length===0) return alert('Please add text or at least 1 photo to the post.');
+    if(files.length>USER_POST_MAX_PHOTOS) return alert('You can upload a maximum of 5 photos per post.');
+
+    const btn=document.getElementById('userPostSubmit');
+    btn.disabled=true;
+    btn.textContent='Uploading…';
+    try{
+      const imgUrls=[];
+      for(const f of files) imgUrls.push(await userPostFileToDataURL(f));
+      const id='userpost_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+      const authorRoll=String(window.localUser.rollNumber);
+      const payload={
+        id,
+        subjectId:null,
+        type:imgUrls.length ? 'photo' : 'text',
+        text,
+        imgUrls,
+        imgUrl:imgUrls[0] || '',
+        authorRoll,
+        authorName:window.localUser.name || authorRoll,
+        timestamp:Date.now(),
+        seenBy:{},
+        comments:[]
+      };
+      payload.seenBy[authorRoll]=true;
+      await set(ref(db,'portal/posts/'+id),payload);
+      textEl.value='';
+      fileEl.value='';
+      document.getElementById('userPostCounter').textContent='0/90';
+      document.getElementById('userPostCounter').classList.remove('limit');
+      renderUserPhotoPreview([]);
+      alert('Post successfully publish ho gaya.');
+    }catch(e){
+      alert('Post upload failed: '+e.message);
+    }finally{
+      btn.disabled=false;
+      btn.textContent='Publish Post';
+    }
+  };
+
+  async function deleteOwnUserPost(id){
+    if(!window.localUser) return requireLogin(()=>deleteOwnUserPost(id));
+    const posts=(window.adminPostsData || onlineData.posts || []);
+    const post=posts.find(p=>String(p.id)===String(id));
+    if(!post) return;
+    if(String(getUserPostAuthor(post))!==String(window.localUser.rollNumber)){
+      return alert('You can only delete your own posts.');
+    }
+    if(!confirm('Delete your post?')) return;
+    try{
+      await remove(ref(db,'portal/posts/'+id));
+    }catch(e){ alert('Post delete failed: '+e.message); }
+  }
+  window.deleteOwnUserPost=deleteOwnUserPost;
+
+  window.markUserPostSeen=async function(id){
+    if(!window.localUser || !id) return;
+    const roll=String(window.localUser.rollNumber);
+    try{
+      await update(ref(db,'portal/posts/'+id+'/seenBy'),{[roll]:true});
+    }catch(e){ console.warn('Post seen update failed',e); }
+  };
+
+  function openUserPostOriginal(src){
+    const modal=document.getElementById('userPostOriginalModal');
+    const img=document.getElementById('userPostOriginalImage');
+    if(!modal||!img) return;
+    img.src=src;
+    modal.classList.add('active');
+  }
+
+  function closeUserPostOriginal(){
+    const modal=document.getElementById('userPostOriginalModal');
+    const img=document.getElementById('userPostOriginalImage');
+    if(modal) modal.classList.remove('active');
+    if(img) img.src='';
+  }
+  window.closeUserPostOriginal=closeUserPostOriginal;
+
+  function bindLongPress(img,src){
+    const start=()=>{
+      clearTimeout(userPostLongPressTimer);
+      userPostLongPressTriggered=false;
+      userPostLongPressTimer=setTimeout(()=>{
+        userPostLongPressTriggered=true;
+        openUserPostOriginal(src);
+      },2000);
+    };
+    const end=()=>clearTimeout(userPostLongPressTimer);
+    img.addEventListener('pointerdown',start);
+    img.addEventListener('pointerup',end);
+    img.addEventListener('pointercancel',end);
+    img.addEventListener('pointerleave',end);
+    img.addEventListener('contextmenu',e=>e.preventDefault());
+  }
+
+  function renderUserProfilePosts(){
+    const list=document.getElementById('userProfilePostsList');
+    if(!list || !window.localUser) return;
+    const roll=String(window.localUser.rollNumber);
+    const all=(window.adminPostsData || onlineData.posts || []);
+    const posts=all.filter(p=>String(getUserPostAuthor(p))===roll && (p.timestamp || p.imgUrls || p.authorRoll))
+                    .sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    if(!posts.length){
+      list.innerHTML='<div class="user-post-empty">You haven\'t published any posts yet.</div>';
+      return;
+    }
+    list.innerHTML=posts.map(p=>{
+      const photos=getUserPostPhotos(p);
+      const seenCount=p.seenBy ? Object.keys(p.seenBy).filter(k=>p.seenBy[k]).length : 0;
+      const photoHTML=photos.length ? `
+        <div class="user-post-carousel" data-post-carousel="${userPostEsc(p.id)}">
+          ${photos.map((src,i)=>`<img data-userpost-img="${userPostEsc(src)}" src="${userPostEsc(src)}" alt="Post photo ${i+1}" loading="lazy">`).join('')}
+          ${photos.length>1 ? `<div class="user-post-carousel-nav"><button type="button" aria-label="Previous photo" onclick="userProfilePostPrev(this)">&lt;</button><button type="button" aria-label="Next photo" onclick="userProfilePostNext(this)">&gt;</button></div>` : ''}
+        </div>
+        ${photos.length>1 ? `<div class="user-post-photo-dots">${photos.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('')}</div><div class="user-post-photo-count">📷 ${photos.length} photos • swipe left/right</div>` : ''}
+      ` : '';
+      return `
+        <article class="user-post-card" data-user-post-id="${userPostEsc(p.id)}">
+          <div class="user-post-head">
+            <div>
+              <div class="user-post-author">${userPostEsc(p.authorName || roll)}</div>
+              <div class="user-post-time">${userPostTime(p.timestamp)}</div>
+            </div>
+            <button class="user-post-delete" onclick="deleteOwnUserPost('${userPostEsc(p.id)}')">🗑️ Delete</button>
+          </div>
+          ${p.text ? `<div class="user-post-body">${userPostEsc(p.text)}</div>` : ''}
+          ${photoHTML}
+          <div class="user-post-footer"><span class="user-post-seen">👁️ ${seenCount} seen</span></div>
+        </article>`;
+    }).join('');
+
+    list.querySelectorAll('[data-userpost-img]').forEach(img=>{
+      bindLongPress(img,img.getAttribute('data-userpost-img'));
+    });
+
+    if(userPostObserver) userPostObserver.disconnect();
+    userPostObserver=new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting && entry.intersectionRatio>=0.55){
+          const id=entry.target.getAttribute('data-user-post-id');
+          if(id) window.markUserPostSeen(id);
+        }
+      });
+    },{threshold:[0.55]});
+    list.querySelectorAll('[data-user-post-id]').forEach(el=>userPostObserver.observe(el));
+  }
+
+
+  window.userProfilePostPrev=function(btn){
+    const c=btn.closest('.user-post-carousel'); if(!c) return;
+    c.scrollBy({left:-c.clientWidth,behavior:'smooth'});
+  };
+  window.userProfilePostNext=function(btn){
+    const c=btn.closest('.user-post-carousel'); if(!c) return;
+    c.scrollBy({left:c.clientWidth,behavior:'smooth'});
+  };
+
+  function ensureOriginalModal(){
+    if(document.getElementById('userPostOriginalModal')) return;
+    const modal=document.createElement('div');
+    modal.id='userPostOriginalModal';
+    modal.className='user-post-original-modal';
+    modal.innerHTML='<span class="user-post-original-hint">Tap to return</span><img id="userPostOriginalImage" alt="Original size">';
+    modal.addEventListener('click',closeUserPostOriginal);
+    document.body.appendChild(modal);
+  }
+
+  const oldOpenProfile=window.openProfile;
+  window.openProfile=function(){
+    if(typeof moveProfilePostComposerBack==='function') moveProfilePostComposerBack();
+    if(typeof oldOpenProfile==='function') oldOpenProfile();
+    setTimeout(()=>{
+      ensureProfilePostUI();
+      ensureOriginalModal();
+      renderUserProfilePosts();
+    },40);
+  };
+
+  const oldApplyOnlineData=window.applyOnlineData;
+  window.renderUserProfilePosts=renderUserProfilePosts;
+  window.userPostTime=userPostTime;
+  window.bindLongPress=bindLongPress;
+  window.ensureOriginalModal=ensureOriginalModal;
+  ensureOriginalModal();
+
+  const refreshObserver=setInterval(()=>{
+    if(document.getElementById('profilePage')?.style.display==='block'){
+      ensureProfilePostUI();
+      ensureOriginalModal();
+      renderUserProfilePosts();
+    }
+  },1200);
+
+  // Add a dedicated profile-post view to the existing realtime feed renderer without changing its old methods.
+  const originalRenderOnlinePosts=window.renderOnlinePosts;
+  if(typeof originalRenderOnlinePosts==='function'){
+    window.renderOnlinePosts=function(){
+      originalRenderOnlinePosts();
+      if(document.getElementById('profilePage')?.style.display==='block') renderUserProfilePosts();
+    };
+  }
+})();
+
+
+/* ================= ADDITIVE PROFILE CREATE PAGE + GLOBAL FEED ================= */
+(function(){
+  function moveProfilePostComposerToCreatePage(){
+    const composer=document.getElementById('userPostComposer');
+    const posts=document.getElementById('userProfilePosts');
+    const holder=document.getElementById('userPostCreateHolder');
+    if(!composer || !holder) return;
+    holder.appendChild(composer);
+    if(posts) holder.appendChild(posts);
+  }
+  function moveProfilePostComposerBack(){
+    const composer=document.getElementById('userPostComposer');
+    const posts=document.getElementById('userProfilePosts');
+    const holder=document.getElementById('userPostCreateHolder');
+    const card=document.querySelector('#profilePage .profile-card');
+    if(!card) return;
+    // Only the "My Posts" list returns to the profile card. The composer stays parked
+    // inside the hidden create-page holder so it does not appear in the profile again
+    // until the "+" icon is tapped.
+    if(posts) card.appendChild(posts);
+    if(composer && holder) holder.appendChild(composer);
+  }
+  window.moveProfilePostComposerToCreatePage=moveProfilePostComposerToCreatePage;
+  window.moveProfilePostComposerBack=moveProfilePostComposerBack;
+
+  window.openUserPostCreatePage=function(){
+    requireLogin(()=>{
+      ensureProfilePostUI();
+      moveProfilePostComposerToCreatePage();
+      closeAllSections();
+      document.getElementById('userPostCreatePage').style.display='block';
+      updateNavState('navProfile');
+      window.scrollTo(0,0);
+    });
+  };
+  window.closeUserPostCreatePage=function(){
+    moveProfilePostComposerBack();
+    closeAllSections();
+    document.getElementById('profilePage').style.display='block';
+    updateNavState('navProfile');
+    if(window.renderUserProfilePosts) window.renderUserProfilePosts();
+    window.scrollTo(0,0);
+  };
+
+  const baseOpenProfile=window.openProfile;
+  window.openProfile=function(){
+    moveProfilePostComposerBack();
+    if(typeof baseOpenProfile==='function') baseOpenProfile();
+  };
+
+  function userFeedPhotos(p){
+    if(Array.isArray(p.imgUrls)) return p.imgUrls.filter(Boolean);
+    return p.imgUrl ? [p.imgUrl] : [];
+  }
+  function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  let globalPostObserver=null;
+  function userFeedCard(p){
+    const photos=userFeedPhotos(p);
+    const author=esc(p.authorName || p.authorRoll || p.userId || 'User');
+    const text=p.text?`<div class="user-post-body">${esc(p.text)}</div>`:'';
+    const seenCount=p.seenBy ? Object.keys(p.seenBy).filter(k=>p.seenBy[k]).length : 0;
+    const ownRoll=window.localUser ? String(window.localUser.rollNumber) : '';
+    const isOwn=ownRoll && String(p.authorRoll||p.userId||p.createdBy||'')===ownRoll;
+    let media='';
+    if(photos.length){
+      const pid=esc(p.id||('post_'+Date.now()));
+      media=`<div class="user-post-carousel" data-global-carousel="${pid}">
+        ${photos.map((src,i)=>`<img src="${esc(src)}" alt="Post photo ${i+1}" loading="lazy" data-userpost-img="${esc(src)}">`).join('')}
+        ${photos.length>1?`<div class="user-post-carousel-nav"><button type="button" aria-label="Previous photo" onclick="globalPostPrev(this)">&lt;</button><button type="button" aria-label="Next photo" onclick="globalPostNext(this)">&gt;</button></div>`:''}
+      </div>`;
+      if(photos.length>1) media+=`<div class="user-post-photo-dots">${photos.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('')}</div><div class="user-post-photo-count">📷 ${photos.length} photos • swipe left/right</div>`;
+    }
+    return `<article class="global-user-post user-post-card" data-user-post-id="${esc(p.id||'')}">
+      <div class="user-post-head">
+        <div><div class="user-post-author">${author}</div><div class="user-post-time">${typeof userPostTime==='function'?userPostTime(p.timestamp):''}</div></div>
+        ${isOwn?`<button class="user-post-delete" onclick="deleteOwnUserPost('${esc(p.id)}')">🗑️ Delete</button>`:''}
+      </div>
+      ${text}${media}
+      <div class="user-post-footer"><span class="user-post-seen">👁️ ${seenCount} seen</span></div>
+    </article>`;
+  }
+  window.userFeedCard=userFeedCard;
+  window.globalPostPrev=function(btn){
+    const c=btn.closest('.user-post-carousel'); if(!c) return;
+    c.scrollBy({left:-c.clientWidth,behavior:'smooth'}); setTimeout(()=>updateGlobalDots(c),260);
+  };
+  window.globalPostNext=function(btn){
+    const c=btn.closest('.user-post-carousel'); if(!c) return;
+    c.scrollBy({left:c.clientWidth,behavior:'smooth'}); setTimeout(()=>updateGlobalDots(c),260);
+  };
+  function updateGlobalDots(c){
+    const dots=c.parentElement.querySelector('.user-post-photo-dots'); if(!dots) return;
+    const idx=Math.round(c.scrollLeft/c.clientWidth);
+    dots.querySelectorAll('span').forEach((d,i)=>d.classList.toggle('active',i===idx));
+  }
+  window.renderGlobalFeed=function(){
+    const list=document.getElementById('globalFeedList'); if(!list) return;
+    const posts=(window.adminPostsData || window.onlineData?.posts || []).filter(p=>p && (p.timestamp || p.authorRoll || p.userId || p.createdBy));
+    posts.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    if(!posts.length){list.innerHTML='<div class="global-feed-empty">No posts available yet.</div>';return;}
+    list.innerHTML=posts.map(p=>{
+      const isUserPost=String(p.authorRoll||p.userId||p.createdBy||'')!=='';
+      return isUserPost ? userFeedCard(p) : (typeof generatePostHTML==='function'?generatePostHTML(p):'');
+    }).join('');
+    list.querySelectorAll('[data-userpost-img]').forEach(img=>{
+      if(typeof bindLongPress==='function') bindLongPress(img,img.getAttribute('data-userpost-img'));
+    });
+    list.querySelectorAll('.user-post-carousel').forEach(c=>c.addEventListener('scroll',()=>updateGlobalDots(c),{passive:true}));
+
+    if(globalPostObserver) globalPostObserver.disconnect();
+    globalPostObserver=new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting && entry.intersectionRatio>=0.55){
+          const id=entry.target.getAttribute('data-user-post-id');
+          if(id && typeof window.markUserPostSeen==='function') window.markUserPostSeen(id);
+        }
+      });
+    },{threshold:[0.55]});
+    list.querySelectorAll('.global-user-post[data-user-post-id]').forEach(el=>globalPostObserver.observe(el));
+  };
+  window.openGlobalFeed=function(){
+    requireLogin(function(){
+      closeAllSections();
+      document.getElementById('globalFeedPage').style.display='block';
+      updateNavState('navFeed');
+      renderGlobalFeed();
+      window.scrollTo(0,0);
+    });
+  };
+  const oldRefresh=window.refreshCurrentFeeds;
+  window.refreshCurrentFeeds=function(){
+    if(typeof oldRefresh==='function') oldRefresh();
+    if(document.getElementById('globalFeedPage')?.style.display==='block') renderGlobalFeed();
+  };
+})();
+
+
+/* ================= ADDITIVE: CUSTOM POST AUDIO FEATURE (Instagram-style) =================
+   Purely additive module. Nothing above this block is edited or removed.
+   - Composer: user apne phone se ek downloaded audio file choose karta hai,
+     phir trim-range slider se decide karta hai ki post par audio kitne se kitne
+     second tak chalega, "Confirm Audio" par done hone ke baad woh audio post ke
+     saath attach ho jaata hai.
+   - Feed/Profile: audio wale post ke footer me right side par ek 🎵 icon dikhta
+     hai. Tap karne par sirf uss post ka trimmed audio play hota hai, dobara tap
+     par band ho jaata hai. Ek time me sirf ek hi post ka audio bajta hai — jaise
+     hi doosre post ka audio play hota hai pehla apne aap ruk jaata hai. Jis post
+     par audio add nahi kiya gaya, uspar music icon bilkul nahi dikhta.
+================================================================================= */
+(function(){
+  const USER_POST_MAX_AUDIO_BYTES = 4*1024*1024; // ~4MB raw audio file safety cap
+
+  let pendingAudio = null; // {dataUrl, duration, start, end, name}
+  let selectedAudioFile = null;
+  let previewAudioEl = null;
+
+  function fmtSec(s){
+    s = Math.max(0, Math.round(s||0));
+    const m = Math.floor(s/60), r = s%60;
+    return m + ':' + String(r).padStart(2,'0');
+  }
+
+  function resetAudioComposerUI(){
+    pendingAudio = null;
+    selectedAudioFile = null;
+    if(previewAudioEl){ try{ previewAudioEl.pause(); }catch(e){} previewAudioEl=null; }
+    const fileInput = document.getElementById('userPostAudioFile');
+    if(fileInput) fileInput.value='';
+    const panel = document.getElementById('userPostAudioPanel');
+    if(panel) panel.classList.remove('active');
+    const chip = document.getElementById('userPostAudioChip');
+    if(chip) chip.classList.remove('active');
+  }
+
+  function openAudioPanelWithFile(file){
+    selectedAudioFile = file;
+    const panel = document.getElementById('userPostAudioPanel');
+    const nameEl = document.getElementById('userPostAudioFileName');
+    const startRange = document.getElementById('userPostAudioStart');
+    const endRange = document.getElementById('userPostAudioEnd');
+    const startLbl = document.getElementById('userPostAudioStartLabel');
+    const endLbl = document.getElementById('userPostAudioEndLabel');
+    if(!panel || !nameEl || !startRange || !endRange) return;
+
+    const objUrl = URL.createObjectURL(file);
+    const probe = new Audio();
+    probe.preload='metadata';
+    probe.src = objUrl;
+    probe.onloadedmetadata = function(){
+      const dur = isFinite(probe.duration) ? probe.duration : 0;
+      URL.revokeObjectURL(objUrl);
+      nameEl.textContent = '🎧 ' + file.name;
+      startRange.min = 0; startRange.max = Math.max(0, Math.floor(dur)); startRange.value = 0;
+      endRange.min = 0; endRange.max = Math.max(1, Math.floor(dur)); endRange.value = Math.max(1, Math.floor(dur));
+      startLbl.textContent = 'Start: ' + fmtSec(0);
+      endLbl.textContent = 'End: ' + fmtSec(dur);
+      panel.dataset.duration = String(dur);
+      panel.classList.add('active');
+      document.getElementById('userPostAudioChip')?.classList.remove('active');
+    };
+    probe.onerror = function(){
+      URL.revokeObjectURL(objUrl);
+      alert('Could not load the audio file, please try a different file.');
+    };
+  }
+
+  function currentTrimRange(){
+    const panel = document.getElementById('userPostAudioPanel');
+    const startRange = document.getElementById('userPostAudioStart');
+    const endRange = document.getElementById('userPostAudioEnd');
+    const dur = parseFloat(panel?.dataset.duration || '0');
+    let start = parseFloat(startRange?.value || '0');
+    let end = parseFloat(endRange?.value || String(dur));
+    if(end <= start) end = Math.min(dur, start+1);
+    return {start, end, duration:dur};
+  }
+
+  function previewTrimmedAudio(){
+    if(!selectedAudioFile) return;
+    const {start,end} = currentTrimRange();
+    if(previewAudioEl){ try{ previewAudioEl.pause(); }catch(e){} previewAudioEl=null; }
+    const url = URL.createObjectURL(selectedAudioFile);
+    const a = new Audio(url);
+    previewAudioEl = a;
+    a.currentTime = start;
+    a.play().catch(()=>{});
+    const stopAt = ()=>{
+      if(a.currentTime >= end){ a.pause(); a.removeEventListener('timeupdate', stopAt); URL.revokeObjectURL(url); }
+    };
+    a.addEventListener('timeupdate', stopAt);
+    a.addEventListener('ended', ()=>URL.revokeObjectURL(url));
+  }
+
+  async function audioFileToDataURL(file){
+    if(!file || !file.type.startsWith('audio/')) throw new Error('Please select an audio file only.');
+    if(file.size > USER_POST_MAX_AUDIO_BYTES) throw new Error('Audio file must be smaller than 4MB.');
+    return new Promise((resolve,reject)=>{
+      const reader = new FileReader();
+      reader.onerror = ()=>reject(new Error('Could not read the audio file.'));
+      reader.onload = ()=>resolve(reader.result);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function confirmAudioSelection(){
+    if(!selectedAudioFile) return;
+    const {start,end,duration} = currentTrimRange();
+    const btn = document.getElementById('userPostAudioConfirmBtn');
+    if(btn){ btn.disabled=true; btn.textContent='Adding…'; }
+    try{
+      const dataUrl = await audioFileToDataURL(selectedAudioFile);
+      pendingAudio = { dataUrl, duration, start, end, name: selectedAudioFile.name };
+      document.getElementById('userPostAudioPanel')?.classList.remove('active');
+      const chip = document.getElementById('userPostAudioChip');
+      const chipLabel = document.getElementById('userPostAudioChipLabel');
+      if(chipLabel) chipLabel.textContent = '🎵 ' + selectedAudioFile.name + ' (' + fmtSec(start) + '–' + fmtSec(end) + ')';
+      chip?.classList.add('active');
+      if(previewAudioEl){ try{ previewAudioEl.pause(); }catch(e){} previewAudioEl=null; }
+    }catch(e){
+      alert('Could not add audio: ' + e.message);
+    }finally{
+      if(btn){ btn.disabled=false; btn.textContent='✓ Done'; }
+    }
+  }
+
+  function cancelAudioSelection(){
+    if(previewAudioEl){ try{ previewAudioEl.pause(); }catch(e){} previewAudioEl=null; }
+    selectedAudioFile = null;
+    document.getElementById('userPostAudioPanel')?.classList.remove('active');
+    const fileInput = document.getElementById('userPostAudioFile');
+    if(fileInput) fileInput.value='';
+  }
+
+  function removeConfirmedAudio(){
+    pendingAudio = null;
+    document.getElementById('userPostAudioChip')?.classList.remove('active');
+    const fileInput = document.getElementById('userPostAudioFile');
+    if(fileInput) fileInput.value='';
+  }
+
+  window.userPostAudioPreview = previewTrimmedAudio;
+  window.userPostAudioConfirm = confirmAudioSelection;
+  window.userPostAudioCancel = cancelAudioSelection;
+  window.userPostAudioRemove = removeConfirmedAudio;
+
+  function ensureAudioComposerUI(){
+    const composer = document.getElementById('userPostComposer');
+    if(!composer || document.getElementById('userPostAudioRow')) return;
+
+    const photoRow = composer.querySelector('.user-post-photo-row');
+    const audioRow = document.createElement('div');
+    audioRow.className = 'user-post-audio-row';
+    audioRow.id = 'userPostAudioRow';
+    audioRow.innerHTML = `
+      <label class="user-post-audio-btn" for="userPostAudioFile">🎵 Add Audio</label>
+      <input id="userPostAudioFile" type="file" accept="audio/*" hidden>
+      <span class="user-post-audio-hint">from your downloaded audio</span>
+    `;
+
+    const chip = document.createElement('div');
+    chip.className = 'user-post-audio-chip';
+    chip.id = 'userPostAudioChip';
+    chip.innerHTML = `<span id="userPostAudioChipLabel"></span><span class="user-post-audio-remove" onclick="userPostAudioRemove()">✕</span>`;
+
+    const panel = document.createElement('div');
+    panel.className = 'user-post-audio-panel';
+    panel.id = 'userPostAudioPanel';
+    panel.innerHTML = `
+      <div class="user-post-audio-file-name" id="userPostAudioFileName"></div>
+      <div class="user-post-audio-trim-row">
+        <label><span id="userPostAudioStartLabel">Start: 0:00</span></label>
+        <input type="range" id="userPostAudioStart">
+      </div>
+      <div class="user-post-audio-trim-row">
+        <label><span id="userPostAudioEndLabel">End: 0:00</span></label>
+        <input type="range" id="userPostAudioEnd">
+      </div>
+      <div class="user-post-audio-actions">
+        <button type="button" class="user-post-audio-preview-btn" onclick="userPostAudioPreview()">▶️ Preview</button>
+        <button type="button" class="user-post-audio-confirm-btn" id="userPostAudioConfirmBtn" onclick="userPostAudioConfirm()">✓ Done</button>
+        <button type="button" class="user-post-audio-cancel-btn" onclick="userPostAudioCancel()">✕ Cancel</button>
+      </div>
+    `;
+
+    if(photoRow && photoRow.parentNode===composer){
+      photoRow.insertAdjacentElement('afterend', panel);
+      photoRow.insertAdjacentElement('afterend', chip);
+      photoRow.insertAdjacentElement('afterend', audioRow);
+    } else {
+      composer.appendChild(audioRow);
+      composer.appendChild(chip);
+      composer.appendChild(panel);
+    }
+
+    document.getElementById('userPostAudioFile').addEventListener('change', function(){
+      const file = this.files && this.files[0];
+      if(!file) return;
+      if(file.size > USER_POST_MAX_AUDIO_BYTES){
+        alert('Audio file must be smaller than 4MB.');
+        this.value='';
+        return;
+      }
+      openAudioPanelWithFile(file);
+    });
+
+    document.getElementById('userPostAudioStart').addEventListener('input', function(){
+      const dur = parseFloat(panel.dataset.duration||'0');
+      let v = parseFloat(this.value);
+      const endRange = document.getElementById('userPostAudioEnd');
+      if(v >= parseFloat(endRange.value)) { v = Math.max(0, parseFloat(endRange.value)-1); this.value=v; }
+      document.getElementById('userPostAudioStartLabel').textContent = 'Start: ' + fmtSec(v);
+    });
+    document.getElementById('userPostAudioEnd').addEventListener('input', function(){
+      let v = parseFloat(this.value);
+      const startRange = document.getElementById('userPostAudioStart');
+      if(v <= parseFloat(startRange.value)) { v = parseFloat(startRange.value)+1; this.value=v; }
+      document.getElementById('userPostAudioEndLabel').textContent = 'End: ' + fmtSec(v);
+    });
+
+    // Take over the Publish button's click so audio can be attached after the
+    // original publish flow finishes — publishUserProfilePost() itself is
+    // never modified.
+    const submitBtn = document.getElementById('userPostSubmit');
+    if(submitBtn){
+      submitBtn.onclick = function(e){
+        e.preventDefault();
+        publishUserProfilePostWithAudio();
+      };
+    }
+  }
+
+  const oldEnsureProfilePostUI = window.ensureProfilePostUI;
+  window.ensureProfilePostUI = function(){
+    if(typeof oldEnsureProfilePostUI==='function') oldEnsureProfilePostUI();
+    ensureAudioComposerUI();
+  };
+
+  async function publishUserProfilePostWithAudio(){
+    if(!pendingAudio){
+      return window.publishUserProfilePost();
+    }
+    if(!window.localUser) return requireLogin(publishUserProfilePostWithAudio);
+
+    const audioToAttach = pendingAudio;
+    const roll = String(window.localUser.rollNumber);
+    const startedAt = Date.now();
+
+    await window.publishUserProfilePost();
+
+    // Find the just-created post for this user and attach the confirmed
+    // audio to it, without touching how the post itself was created.
+    let attempts = 0;
+    const tryAttach = async ()=>{
+      attempts++;
+      const all = (window.adminPostsData || onlineData.posts || []);
+      const own = all.filter(p=>String(p.authorRoll||p.userId||p.createdBy||'')===roll && (p.timestamp||0)>=startedAt-1000 && !p.audioUrl);
+      own.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+      const target = own[0];
+      if(target && target.id){
+        try{
+          await update(ref(db,'portal/posts/'+target.id), {
+            audioUrl: audioToAttach.dataUrl,
+            audioStart: audioToAttach.start,
+            audioEnd: audioToAttach.end,
+            audioDuration: audioToAttach.duration,
+            audioName: audioToAttach.name
+          });
+        }catch(e){ console.warn('Post audio attach failed', e); }
+        resetAudioComposerUI();
+        if(typeof window.renderUserProfilePosts==='function') window.renderUserProfilePosts();
+        return;
+      }
+      if(attempts < 8){ setTimeout(tryAttach, 500); }
+      else { resetAudioComposerUI(); }
+    };
+    setTimeout(tryAttach, 400);
+  }
+  window.publishUserProfilePostWithAudio = publishUserProfilePostWithAudio;
+
+  // ---------- Playback: music icon on posts, one-at-a-time ----------
+  let activeAudioEl = null;
+  let activeAudioId = null;
+  let activeAudioBtn = null;
+
+  function stopActiveAudio(){
+    if(activeAudioEl){ try{ activeAudioEl.pause(); }catch(e){} }
+    if(activeAudioBtn) activeAudioBtn.classList.remove('playing');
+    activeAudioEl = null;
+    activeAudioId = null;
+    activeAudioBtn = null;
+  }
+
+  window.toggleUserPostAudioPlay = function(id, btn){
+    if(activeAudioId === id){
+      stopActiveAudio();
+      return;
+    }
+    stopActiveAudio();
+    const all = (window.adminPostsData || onlineData.posts || []);
+    const post = all.find(p=>String(p.id)===String(id));
+    if(!post || !post.audioUrl) return;
+    const a = new Audio(post.audioUrl);
+    const start = post.audioStart || 0;
+    const end = post.audioEnd || (post.audioDuration || 0) || start+1;
+    a.addEventListener('loadedmetadata', ()=>{ a.currentTime = start; });
+    a.addEventListener('timeupdate', ()=>{
+      if(a.currentTime >= end){ stopActiveAudio(); }
+    });
+    a.addEventListener('ended', ()=>{ stopActiveAudio(); });
+    a.play().then(()=>{
+      activeAudioEl = a;
+      activeAudioId = id;
+      activeAudioBtn = btn;
+      btn.classList.add('playing');
+    }).catch(()=>{});
+  };
+
+  function injectAudioIcons(containerId){
+    const container = document.getElementById(containerId);
+    if(!container) return;
+    const all = (window.adminPostsData || onlineData.posts || []);
+    container.querySelectorAll('[data-user-post-id]').forEach(card=>{
+      const id = card.getAttribute('data-user-post-id');
+      if(!id) return;
+      const footer = card.querySelector('.user-post-footer');
+      if(!footer) return;
+      const existing = footer.querySelector('.user-post-music-icon');
+      const post = all.find(p=>String(p.id)===String(id));
+      if(!post || !post.audioUrl){
+        if(existing) existing.remove();
+        return;
+      }
+      if(existing) return; // already has the icon
+      const icon = document.createElement('button');
+      icon.type = 'button';
+      icon.className = 'user-post-music-icon' + (activeAudioId===id ? ' playing' : '');
+      icon.textContent = '🎵';
+      icon.title = 'Play post audio';
+      icon.onclick = function(e){ e.stopPropagation(); window.toggleUserPostAudioPlay(id, icon); };
+      footer.insertBefore(icon, footer.firstChild);
+    });
+  }
+
+  const oldRenderUserProfilePosts = window.renderUserProfilePosts;
+  window.renderUserProfilePosts = function(){
+    if(typeof oldRenderUserProfilePosts==='function') oldRenderUserProfilePosts();
+    injectAudioIcons('userProfilePostsList');
+  };
+
+  const oldRenderGlobalFeed = window.renderGlobalFeed;
+  window.renderGlobalFeed = function(){
+    if(typeof oldRenderGlobalFeed==='function') oldRenderGlobalFeed();
+    injectAudioIcons('globalFeedList');
+  };
+
+  // If the create page is closed/left, stop any preview/composer audio state
+  // without touching the original close handler.
+  const oldCloseCreatePage = window.closeUserPostCreatePage;
+  window.closeUserPostCreatePage = function(){
+    if(previewAudioEl){ try{ previewAudioEl.pause(); }catch(e){} previewAudioEl=null; }
+    if(typeof oldCloseCreatePage==='function') oldCloseCreatePage();
+  };
+})();
+
+/* =====================================================================
+   ADDITIVE: FEED USER-SEARCH (by name / roll number)
+   Purely additive module. Nothing above this block is edited or removed.
+   - Search icon (top-right of "All Users Feed" page) opens a search bar.
+   - Typing filters registered users by name/roll number, live suggestions.
+   - Tapping a suggestion opens that user's post list, rendered with the
+     exact same card look as the normal feed.
+===================================================================== */
+(function(){
+  function srchEsc(v){ return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  function showOnly(idToShow){
+    ['feedSearchOverlay','feedUserPostsView','globalFeedList'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.style.display = (id===idToShow) ? 'block' : 'none';
+    });
+  }
+
+  window.openFeedSearch = function(){
+    const input = document.getElementById('feedSearchInput');
+    const box = document.getElementById('feedSearchSuggestions');
+    if(input) input.value='';
+    if(box) box.innerHTML='';
+    showOnly('feedSearchOverlay');
+    if(input) setTimeout(()=>input.focus(),50);
+  };
+
+  window.closeFeedSearch = function(){
+    showOnly('globalFeedList');
+  };
+
+  window.closeFeedUserPostsView = function(){
+    showOnly('globalFeedList');
+  };
+
+  function renderSuggestions(query){
+    const box = document.getElementById('feedSearchSuggestions');
+    if(!box) return;
+    const q = query.trim().toLowerCase();
+    if(!q){ box.innerHTML=''; return; }
+    const users = window.onlineUsersData || {};
+    const matches = Object.values(users).filter(u=>{
+      const name = String(u && u.name || '').toLowerCase();
+      const roll = String(u && u.rollNumber || '').toLowerCase();
+      return name.includes(q) || roll.includes(q);
+    }).slice(0,8);
+
+    if(!matches.length){
+      box.innerHTML = '<div class="feed-search-empty">No user found.</div>';
+      return;
+    }
+
+    box.innerHTML = matches.map(u=>{
+      const roll = String(u.rollNumber||'');
+      const initials = srchEsc(roll.slice(0,2).toUpperCase() || '?');
+      return `<div class="feed-search-suggestion-item" data-roll="${srchEsc(roll)}">
+        <div class="feed-search-suggestion-avatar">${initials}</div>
+        <div>
+          <div class="feed-search-suggestion-name">${srchEsc(u.name||roll)}</div>
+          <div class="feed-search-suggestion-roll">Roll No: ${srchEsc(roll)}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    box.querySelectorAll('.feed-search-suggestion-item').forEach(el=>{
+      el.addEventListener('click', ()=>openUserPostsFromSearch(el.getAttribute('data-roll')));
+    });
+  }
+
+  const searchInputEl = document.getElementById('feedSearchInput');
+  if(searchInputEl){
+    searchInputEl.addEventListener('input', function(){ renderSuggestions(this.value); });
+  }
+
+  function openUserPostsFromSearch(roll){
+    if(!roll) return;
+    const users = window.onlineUsersData || {};
+    const u = users[roll] || {rollNumber: roll};
+    const nameEl = document.getElementById('feedUserPostsName');
+    const rollEl = document.getElementById('feedUserPostsRoll');
+    const avEl = document.getElementById('feedUserPostsAvatar');
+    if(nameEl) nameEl.textContent = u.name || roll;
+    if(rollEl) rollEl.textContent = 'Roll No: ' + roll;
+    if(avEl) avEl.textContent = String(roll).slice(0,2).toUpperCase() || '?';
+    showOnly('feedUserPostsView');
+    renderFeedUserPosts(roll);
+  }
+  window.openUserPostsFromSearch = openUserPostsFromSearch;
+
+  function renderFeedUserPosts(roll){
+    const list = document.getElementById('feedUserPostsList');
+    if(!list) return;
+    const all = (window.adminPostsData || (typeof onlineData !== 'undefined' && onlineData.posts) || []);
+    const posts = all.filter(p=>p && String(p.authorRoll||p.userId||p.createdBy||'')===String(roll))
+                      .sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    if(!posts.length){
+      list.innerHTML = '<div class="global-feed-empty">This user has no posts yet.</div>';
+      return;
+    }
+    list.innerHTML = posts.map(p => (typeof window.userFeedCard==='function' ? window.userFeedCard(p) : '')).join('');
+
+    list.querySelectorAll('[data-userpost-img]').forEach(img=>{
+      if(typeof window.bindLongPress==='function') window.bindLongPress(img, img.getAttribute('data-userpost-img'));
+    });
+    list.querySelectorAll('.user-post-carousel').forEach(c=>{
+      c.addEventListener('scroll', ()=>{
+        const dots=c.parentElement.querySelector('.user-post-photo-dots');
+        if(!dots) return;
+        const idx=Math.round(c.scrollLeft/c.clientWidth);
+        dots.querySelectorAll('span').forEach((d,i)=>d.classList.toggle('active', i===idx));
+      }, {passive:true});
+    });
+    if(typeof window.injectPostReactions==='function') window.injectPostReactions('feedUserPostsList');
+  }
+  window.renderFeedUserPosts = renderFeedUserPosts;
+
+  // Reset back to the normal feed list whenever the feed page is freshly opened.
+  const oldOpenGlobalFeedForSearch = window.openGlobalFeed;
+  window.openGlobalFeed = function(){
+    if(typeof oldOpenGlobalFeedForSearch==='function') oldOpenGlobalFeedForSearch();
+    showOnly('globalFeedList');
+  };
+
+  // Keep the searched user's post list in sync with realtime data while it's open.
+  const oldRefreshForSearch = window.refreshCurrentFeeds;
+  window.refreshCurrentFeeds = function(){
+    if(typeof oldRefreshForSearch==='function') oldRefreshForSearch();
+    const view = document.getElementById('feedUserPostsView');
+    const rollEl = document.getElementById('feedUserPostsRoll');
+    if(view && view.style.display==='block' && rollEl){
+      const roll = rollEl.textContent.replace('Roll No: ','').trim();
+      if(roll) renderFeedUserPosts(roll);
+    }
+  };
+})();
+
+/* =====================================================================
+   ADDITIVE: POST EMOJI REACTIONS
+   Purely additive module. Nothing above this block is edited or removed.
+   - Fixed set of 5 emoji shown on every post (feed + profile + searched
+     user's posts). Reactions are stored centrally (per post id) in
+     Firebase so the same reaction/count shows everywhere that post
+     appears.
+   - One reaction per user per post. Tapping a different emoji switches
+     it. Long-pressing (1 sec) your own active emoji removes it. Only the
+     reacting user can remove their own reaction.
+===================================================================== */
+(function(){
+  const REACTION_EMOJIS = ['👍','❤️','😂','😮','😢'];
+  const LONG_PRESS_MS = 1000;
+
+  function rEsc(v){ return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  function getReactionsFor(postId){
+    const all = (typeof onlineData !== 'undefined' && onlineData.reactions) || {};
+    return all[postId] || {};
+  }
+
+  function buildReactionBar(postId){
+    const pid = String(postId||'');
+    if(!pid) return null;
+    const reactions = getReactionsFor(pid);
+    const roll = window.localUser ? String(window.localUser.rollNumber) : '';
+    const myReaction = roll ? reactions[roll] : '';
+    const counts = {};
+    Object.keys(reactions).forEach(r=>{
+      const emo = reactions[r];
+      if(emo) counts[emo] = (counts[emo]||0) + 1;
+    });
+
+    const bar = document.createElement('div');
+    bar.className = 'post-reaction-bar';
+    bar.setAttribute('data-reaction-bar', pid);
+
+    REACTION_EMOJIS.forEach(emo=>{
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      const count = counts[emo] || 0;
+      btn.className = 'post-reaction-btn' + (myReaction===emo ? ' active' : '');
+      btn.innerHTML = rEsc(emo) + (count>0 ? `<span class="post-reaction-count">${count}</span>` : '');
+      btn.title = 'React with ' + emo;
+
+      let pressTimer = null;
+      let longPressFired = false;
+      const clearPress = ()=>{ if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; } };
+
+      btn.addEventListener('pointerdown', ()=>{
+        longPressFired = false;
+        clearPress();
+        pressTimer = setTimeout(()=>{
+          longPressFired = true;
+          if(btn.classList.contains('active')){
+            requireLogin(()=>removeOwnPostReaction(pid));
+          }
+        }, LONG_PRESS_MS);
+      });
+      btn.addEventListener('pointerup', ()=>{
+        clearPress();
+        if(longPressFired) return;
+        requireLogin(()=>setOwnPostReaction(pid, emo));
+      });
+      btn.addEventListener('pointercancel', clearPress);
+      btn.addEventListener('pointerleave', clearPress);
+      btn.addEventListener('contextmenu', e=>e.preventDefault());
+
+      bar.appendChild(btn);
+    });
+
+    return bar;
+  }
+
+  function setOwnPostReaction(postId, emoji){
+    if(!window.localUser) return;
+    const roll = String(window.localUser.rollNumber);
+    set(ref(db, 'portal/reactions/' + postId + '/' + roll), emoji).catch(e=>console.warn('reaction set failed', e));
+  }
+
+  function removeOwnPostReaction(postId){
+    if(!window.localUser) return;
+    const roll = String(window.localUser.rollNumber);
+    remove(ref(db, 'portal/reactions/' + postId + '/' + roll)).catch(e=>console.warn('reaction remove failed', e));
+  }
+
+  function injectPostReactions(containerId){
+    const container = document.getElementById(containerId);
+    if(!container) return;
+
+    // user-style post cards (profile posts / global feed user posts / searched user posts)
+    container.querySelectorAll('.user-post-card[data-user-post-id]').forEach(card=>{
+      const id = card.getAttribute('data-user-post-id');
+      if(!id) return;
+      const existing = card.querySelector('.post-reaction-bar');
+      if(existing) existing.remove();
+      const footer = card.querySelector('.user-post-footer');
+      const bar = buildReactionBar(id);
+      if(!bar) return;
+      if(footer) footer.insertAdjacentElement('beforebegin', bar);
+      else card.appendChild(bar);
+    });
+
+    // admin post cards (subject feed / saved feed / global feed admin posts)
+    container.querySelectorAll('.post-card[id^="post-"]').forEach(card=>{
+      const id = card.id.replace(/^post-/, '');
+      if(!id) return;
+      const existing = card.querySelector('.post-reaction-bar');
+      if(existing) existing.remove();
+      const actions = card.querySelector('.post-actions');
+      const bar = buildReactionBar(id);
+      if(!bar) return;
+      if(actions) actions.insertAdjacentElement('afterend', bar);
+      else card.appendChild(bar);
+    });
+  }
+  window.injectPostReactions = injectPostReactions;
+
+  // Hook into every existing render path, purely additively, so reactions
+  // show on every post everywhere it's already being displayed.
+  const oldRenderUserProfilePostsR = window.renderUserProfilePosts;
+  window.renderUserProfilePosts = function(){
+    if(typeof oldRenderUserProfilePostsR==='function') oldRenderUserProfilePostsR();
+    injectPostReactions('userProfilePostsList');
+  };
+
+  const oldRenderGlobalFeedR = window.renderGlobalFeed;
+  window.renderGlobalFeed = function(){
+    if(typeof oldRenderGlobalFeedR==='function') oldRenderGlobalFeedR();
+    injectPostReactions('globalFeedList');
+  };
+
+  const oldRenderFeedR = window.renderFeed;
+  window.renderFeed = function(subjectId, containerId){
+    if(typeof oldRenderFeedR==='function') oldRenderFeedR(subjectId, containerId);
+    injectPostReactions(containerId);
+  };
+
+  const oldRenderSavedFeedR = window.renderSavedFeed;
+  window.renderSavedFeed = function(){
+    if(typeof oldRenderSavedFeedR==='function') oldRenderSavedFeedR();
+    injectPostReactions('savedFeedContainer');
+  };
+})();
+
+</script>
+</body>
+</html>
