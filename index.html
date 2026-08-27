@@ -1611,7 +1611,7 @@
             <h3 class="profile-name" id="profName">Student Name</h3>
             <p class="profile-role">Diploma in CSE (1st Sem)</p>
             <div class="profile-details">
-                <p><strong>Registration No:</strong> <span id="profRoll">Roll Number</span></p>
+                <p><strong>Roll No:</strong> <span id="profRoll">Roll Number</span></p>
                 <p><strong>Status:</strong> <span style="color: green; font-weight: bold;">Active</span></p>
             </div>
             <button class="logout-btn" onclick="userLogout()">Log Out</button>
@@ -1665,7 +1665,7 @@
         <div id="adminLoginView" class="admin-login">
           <div class="admin-status"><svg class="ui-icon"><use href="#icon-lock"></use></svg> Firebase Admin Login — text and photos sync online in real time via the Firebase Realtime Database.</div>
           <div class="admin-form">
-            <label>Admin Email</label><input id="adminEmail" type="email" placeholder="admin@mmitsce.com" autocomplete="username">
+            <label>Admin Email</label><input id="adminEmail" type="email" placeholder="..." autocomplete="username">
             <label>Password</label><input id="adminPassword" type="password" placeholder="Firebase Authentication password" autocomplete="current-password">
             <button class="admin-btn" onclick="firebaseAdminLogin()"><svg class="ui-icon"><use href="#icon-key"></use></svg> Login</button><button class="admin-btn orange" onclick="createFirebaseAdmin()"><svg class="ui-icon ui-icon--fill"><use href="#icon-star"></use></svg> Create Admin Account</button>
             <button class="admin-btn orange" onclick="closeAdminPanel()">Cancel</button>
@@ -2474,15 +2474,15 @@ const auth = getAuth(app);
 const ADMIN_EMAIL = "admin@mmitsce.com";
 
 const defaultSubjects = [
- {id:1,title:"Communication Skills - I",code:"SUB-101",image:"https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=600&q=80",desc:"Understanding the importance of effective communication in technical education. This subject focuses on grammar, reading, and writing skills."},
- {id:2,title:"Applied Mathematics - I",code:"SUB-102",image:"https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?auto=format&fit=crop&w=600&q=80",desc:"Mathematics for strengthening the basics of diploma engineering. It covers the fundamentals of Algebra, Trigonometry, and Differential Calculus."},
- {id:3,title:"Applied Physics - I",code:"SUB-103",image:"https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&w=600&q=80",desc:"Basic knowledge of Physics for engineering applications. Focuses on units, dimensions, mechanics, and properties of matter."},
- {id:4,title:"Applied Chemistry",code:"SUB-104",image:"https://images.unsplash.com/photo-1603126857599-f6e1570d8136?auto=format&fit=crop&w=600&q=80",desc:"Chemistry for understanding the properties of engineering materials. Water treatment, polymers, and electrochemistry are its main topics."},
- {id:5,title:"Fundamentals of Computer & IT (FCIT)",code:"SUB-105",image:"https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=600&q=80",desc:"A core foundational subject in Computer Science. It covers computer architecture, memory, software types, OS, and Internet basics."}
+ {id:1,title:"Communication Skills - I",code:"SUB-...",image:"",desc:"Understanding the importance of effective communication in technical education. This subject focuses on grammar, reading, and writing skills."},
+ {id:2,title:"Mathematics - I",code:"SUB-...",image:"https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?auto=format&fit=crop&w=600&q=80",desc:"Mathematics for strengthening the basics of diploma engineering. It covers the fundamentals of Algebra, Trigonometry, and Differential Calculus."},
+ {id:3,title:"Applied Physics - I",code:"SUB-...",image:"https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&w=600&q=80",desc:"Basic knowledge of Physics for engineering applications. Focuses on units, dimensions, mechanics, and properties of matter."},
+ {id:4,title:"Applied",code:"SUB-...",image:"https://images.unsplash.com/photo-1603126857599-f6e1570d8136?auto=format&fit=crop&w=600&q=80",desc:"Chemistry for understanding the properties of engineering materials. Water treatment, polymers, and electrochemistry are its main topics."},
+ {id:5,title:"Fundamentals of Computer & IT",code:"SUB-...",image:"https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=600&q=80",desc:"A core foundational subject in Computer Science. It covers computer architecture, memory, software types, OS, and Internet basics."}
 ];
 
-const defaultNotifs=[{id:"n1",text:"BTEUP Odd Semester Exam Scheme 2026-27 released.",time:"Just now",timestamp:Date.now()},{id:"n2",text:"CSE 1st Semester Syllabus officially updated.",time:"1 hour ago",timestamp:Date.now()-3600000},{id:"n3",text:"Practical Exam schedule announced for Diploma Students.",time:"Yesterday",timestamp:Date.now()-86400000}];
-const defaultNotices=[{id:"no1",title:"BTEUP Odd Semester Examination Form 2026 Direct Link",date:"20-Aug-2026",isNew:true},{id:"no2",title:"JEECUP Polytechnic Admission Counselling Schedule 2026",date:"18-Aug-2026",isNew:true},{id:"no3",title:"Download Official Diploma CSE 1st Sem Syllabus PDF",date:"15-Aug-2026",isNew:false},{id:"no4",title:"BTEUP Scrutiny & Revaluation Result Declared",date:"10-Aug-2026",isNew:false},{id:"no5",title:"UP Scholarship Online Form 2026-27 Apply Online",date:"05-Aug-2026",isNew:false}];
+const defaultNotifs=[{id:"n1",text:"",time:"",timestamp:Date.now()},{id:"n2",text:"",time:"",timestamp:Date.now()-3600000},{id:"n3",text:"",time:"",timestamp:Date.now()-86400000}];
+const defaultNotices=[{id:"no1",title:"",date:"",isNew:true},{id:"no2",title:"",date:"",isNew:true},{id:"no3",title:"",date:"",isNew:false},{id:"no4",title:"",date:"",isNew:false},{id:"no5",title:"",date:"",isNew:false}];
 
 let onlineData={
   branding:{
