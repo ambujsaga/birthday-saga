@@ -3,9 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/jpeg" href="logo.jpg?v=1.1">
-    <link rel="apple-touch-icon" sizes="192x192" href="logo.jpg?v=1.1">
-    <link rel="manifest" href="manifest.json">
     <title>BTEUP / JEECUP Portal - CSE 1st Sem</title>
     
     <style>
@@ -623,6 +620,24 @@
             display: none !important;
         }
 
+        /* Shared inline-icon style (replaces decorative emoji app-wide, except inside posts) */
+        .ui-icon {
+            width: 1em;
+            height: 1em;
+            display: inline-block;
+            vertical-align: -0.15em;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex: none;
+        }
+        .ui-icon--fill {
+            fill: currentColor;
+            stroke: none;
+        }
+
         .website-icon {
             font-size: 1.55rem;
             cursor: pointer;
@@ -1144,18 +1159,50 @@
 </head>
 <body>
 
+    <!-- Shared inline-SVG icon sprite. Used everywhere the app previously showed a
+         decorative emoji (nav, admin panel, notices, chat, etc). Emoji used *inside*
+         posts themselves (post actions, reactions, audio attachment) are left as-is. -->
+    <svg style="display:none" aria-hidden="true">
+      <defs>
+        <symbol id="icon-home" viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5"/><path d="M6 10v9h5v-5h2v5h5v-9"/></symbol>
+        <symbol id="icon-megaphone" viewBox="0 0 24 24"><path d="M3 10v4h3l5 4V6L6 10H3z"/><path d="M15 9a4 4 0 0 1 0 6"/><path d="M18 6a8 8 0 0 1 0 12"/></symbol>
+        <symbol id="icon-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21z"/><path d="M4 5.5v13"/></symbol>
+        <symbol id="icon-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+        <symbol id="icon-atom" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="9" ry="4"/><ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(120 12 12)"/></symbol>
+        <symbol id="icon-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></symbol>
+        <symbol id="icon-monitor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></symbol>
+        <symbol id="icon-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></symbol>
+        <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18"/></symbol>
+        <symbol id="icon-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></symbol>
+        <symbol id="icon-star" viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.6-5.2 4.6 1.6 6.8L12 16.9 5.8 20.3l1.6-6.8L2.2 8.9l6.9-.6z"/></symbol>
+        <symbol id="icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></symbol>
+        <symbol id="icon-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.5 3-5.5 6-5.5s6 2 6 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.2c2.4.3 4.5 2 4.5 5.8"/></symbol>
+        <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+        <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+        <symbol id="icon-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M10.5 12.5 20 3M17 6l2 2M14 9l2 2"/></symbol>
+        <symbol id="icon-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5.5-5.5L4 21"/></symbol>
+        <symbol id="icon-scroll" viewBox="0 0 24 24"><path d="M6 3h9l5 5v13H6z"/><path d="M15 3v5h5"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></symbol>
+        <symbol id="icon-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></symbol>
+        <symbol id="icon-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+        <symbol id="icon-live" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="9"/></symbol>
+        <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></symbol>
+        <symbol id="icon-chat" viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/></symbol>
+        <symbol id="icon-chevron-right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+      </defs>
+    </svg>
+
     <div id="sideMenu" class="side-menu">
         <span class="close-menu" onclick="toggleMenu()">&times;</span>
         <div class="menu-header">
             <h2>Course Modules</h2>
         </div>
-        <a href="#" onclick="openHomePage()">🏠 Dashboard (Home)</a>
-        <a href="#" onclick="openNoticePage()">📢 Notice Board (Sarkari)</a>
-        <a href="#" onclick="openSubjectPage(1)">📚 Communication Skills-I</a>
-        <a href="#" onclick="openSubjectPage(2)">📐 Applied Mathematics-I</a>
-        <a href="#" onclick="openSubjectPage(3)">🔬 Applied Physics-I</a>
-        <a href="#" onclick="openSubjectPage(4)">🧪 Applied Chemistry</a>
-        <a href="#" onclick="openSubjectPage(5)">💻 Fundamentals of IT (FCIT)</a>
+        <a href="#" onclick="openHomePage()"><svg class="ui-icon"><use href="#icon-home"></use></svg> Dashboard (Home)</a>
+        <a href="#" onclick="openNoticePage()"><svg class="ui-icon"><use href="#icon-megaphone"></use></svg> Notice Board (Official)</a>
+        <a href="#" onclick="openSubjectPage(1)"><svg class="ui-icon"><use href="#icon-book"></use></svg> Communication Skills-I</a>
+        <a href="#" onclick="openSubjectPage(2)"><svg class="ui-icon"><use href="#icon-plus"></use></svg> Applied Mathematics-I</a>
+        <a href="#" onclick="openSubjectPage(3)"><svg class="ui-icon"><use href="#icon-atom"></use></svg> Applied Physics-I</a>
+        <a href="#" onclick="openSubjectPage(4)"><svg class="ui-icon"><use href="#icon-flask"></use></svg> Applied Chemistry</a>
+        <a href="#" onclick="openSubjectPage(5)"><svg class="ui-icon"><use href="#icon-monitor"></use></svg> Fundamentals of IT (FCIT)</a>
     </div>
 
     <div id="homePage">
@@ -1171,19 +1218,19 @@
             
             <div class="nav-actions">
                 <div class="notif-bell-container" onclick="toggleNotifPanel()" title="Notifications">
-                    🔔
+                    <svg class="ui-icon"><use href="#icon-bell"></use></svg>
                     <span id="notifRedDot" class="red-dot"></span>
                 </div>
                 
-                <div class="website-icon" onclick="openMMITPage()" title="Open MMIT Website">🌐</div>
-                <div class="website-icon" onclick="openAdminLogin()" title="Admin Panel">⚙️</div>
+                <div class="website-icon" onclick="openMMITPage()" title="Open MMIT Website"><svg class="ui-icon"><use href="#icon-globe"></use></svg></div>
+                <div class="website-icon" onclick="openAdminLogin()" title="Admin Panel"><svg class="ui-icon"><use href="#icon-gear"></use></svg></div>
                 <div class="menu-icon" onclick="toggleMenu()">☰</div>
             </div>
         </header>
 
         <div id="notifPanel" class="notif-panel">
             <div class="notif-header">
-                <span>📢 Recent Notifications</span>
+                <span><svg class="ui-icon"><use href="#icon-megaphone"></use></svg> Recent Notifications</span>
                 <span style="cursor: pointer; font-size: 1.2rem;" onclick="toggleNotifPanel()">&times;</span>
             </div>
             <div class="notif-body" id="notifList">
@@ -1191,7 +1238,7 @@
         </div>
 
         <div class="notice-bar">
-            <span class="notice-btn" onclick="openNoticePage()">NEW NOTICE 🚀</span>
+            <span class="notice-btn" onclick="openNoticePage()">NEW NOTICE <svg class="ui-icon ui-icon--fill"><use href="#icon-star"></use></svg></span>
             <marquee behavior="scroll" direction="left">
                 Welcome to the official study material portal for Diploma in CSE 1st Semester. All subjects' syllabus and notes are updated as per the latest BTEUP curriculum.
             </marquee>
@@ -1292,7 +1339,7 @@
     <div id="profilePage" class="container full-screen-container" style="display: none;">
         <h2 class="section-title">Student Profile</h2>
         <div class="profile-card">
-            <div class="profile-avatar" id="profAvatar">👨‍💻</div>
+            <div class="profile-avatar" id="profAvatar"><svg class="ui-icon" style="width:1.5em;height:1.5em;"><use href="#icon-user"></use></svg></div>
             <h3 class="profile-name" id="profName">Student Name</h3>
             <p class="profile-role">Diploma in CSE (1st Sem)</p>
             <div class="profile-details">
@@ -1316,13 +1363,13 @@
     <div id="globalFeedPage" class="global-feed-page full-screen-container" style="display:none;">
         <div class="feed-page-header">
             <h2 class="section-title" style="margin-bottom:0;">All Users Feed</h2>
-            <button type="button" class="feed-search-trigger" id="feedSearchTrigger" title="Search users" onclick="openFeedSearch()">🔍</button>
+            <button type="button" class="feed-search-trigger" id="feedSearchTrigger" title="Search users" onclick="openFeedSearch()"><svg class="ui-icon"><use href="#icon-search"></use></svg></button>
         </div>
 
         <div id="feedSearchOverlay" class="feed-search-overlay" style="display:none;">
             <div class="feed-search-bar">
                 <button type="button" class="feed-search-back" onclick="closeFeedSearch()" title="Back">←</button>
-                <input type="text" id="feedSearchInput" class="feed-search-input" placeholder="Naam ya Roll Number search karein..." autocomplete="off">
+                <input type="text" id="feedSearchInput" class="feed-search-input" placeholder="Search by Name or Roll Number..." autocomplete="off">
             </div>
             <div id="feedSearchSuggestions" class="feed-search-suggestions"></div>
         </div>
@@ -1331,7 +1378,7 @@
             <div class="feed-user-posts-header">
                 <button type="button" class="feed-search-back" onclick="closeFeedUserPostsView()" title="Back">←</button>
                 <div class="feed-user-posts-info">
-                    <div class="feed-user-posts-avatar" id="feedUserPostsAvatar">👤</div>
+                    <div class="feed-user-posts-avatar" id="feedUserPostsAvatar"><svg class="ui-icon"><use href="#icon-user"></use></svg></div>
                     <div>
                         <div class="feed-user-posts-name" id="feedUserPostsName"></div>
                         <div class="feed-user-posts-roll" id="feedUserPostsRoll"></div>
@@ -1346,44 +1393,44 @@
 
     <div id="adminModal" class="admin-modal">
       <div class="admin-box">
-        <div class="admin-head"><h2>⚙️ Online Admin Control Panel</h2><span class="admin-close" onclick="closeAdminPanel()">&times;</span></div>
+        <div class="admin-head"><h2><svg class="ui-icon"><use href="#icon-gear"></use></svg> Online Admin Control Panel</h2><span class="admin-close" onclick="closeAdminPanel()">&times;</span></div>
         <div id="adminLoginView" class="admin-login">
-          <div class="admin-status">🔐 Firebase Admin Login — text aur photos Firebase Realtime Database me online sync honge.</div>
+          <div class="admin-status"><svg class="ui-icon"><use href="#icon-lock"></use></svg> Firebase Admin Login — text and photos sync online in real time via the Firebase Realtime Database.</div>
           <div class="admin-form">
             <label>Admin Email</label><input id="adminEmail" type="email" placeholder="admin@mmitsce.com" autocomplete="username">
             <label>Password</label><input id="adminPassword" type="password" placeholder="Firebase Authentication password" autocomplete="current-password">
-            <button class="admin-btn" onclick="firebaseAdminLogin()">🔑 Login</button><button class="admin-btn orange" onclick="createFirebaseAdmin()">🆕 Create Admin Account</button>
+            <button class="admin-btn" onclick="firebaseAdminLogin()"><svg class="ui-icon"><use href="#icon-key"></use></svg> Login</button><button class="admin-btn orange" onclick="createFirebaseAdmin()"><svg class="ui-icon ui-icon--fill"><use href="#icon-star"></use></svg> Create Admin Account</button>
             <button class="admin-btn orange" onclick="closeAdminPanel()">Cancel</button>
             <p id="adminLoginMsg" class="admin-small"></p>
           </div>
         </div>
         <div id="adminDashboardView" style="display:none">
           <div class="admin-tabs">
-            <button class="admin-tab active" data-tab="branding">🖼️ Photos</button>
-            <button class="admin-tab" data-tab="subjects">📚 Subjects</button>
-            <button class="admin-tab" data-tab="notifications">🔔 Notifications</button>
-            <button class="admin-tab" data-tab="notices">📢 Notices</button>
-            <button class="admin-tab" data-tab="posts">📰 Posts</button>
-            <button class="admin-tab" data-tab="users">👥 Users</button>
-            <button class="admin-tab" data-tab="chats">💬 Chats</button>
+            <button class="admin-tab active" data-tab="branding"><svg class="ui-icon"><use href="#icon-image"></use></svg> Photos</button>
+            <button class="admin-tab" data-tab="subjects"><svg class="ui-icon"><use href="#icon-book"></use></svg> Subjects</button>
+            <button class="admin-tab" data-tab="notifications"><svg class="ui-icon"><use href="#icon-bell"></use></svg> Notifications</button>
+            <button class="admin-tab" data-tab="notices"><svg class="ui-icon"><use href="#icon-megaphone"></use></svg> Notices</button>
+            <button class="admin-tab" data-tab="posts"><svg class="ui-icon"><use href="#icon-scroll"></use></svg> Posts</button>
+            <button class="admin-tab" data-tab="users"><svg class="ui-icon"><use href="#icon-users"></use></svg> Users</button>
+            <button class="admin-tab" data-tab="chats"><svg class="ui-icon"><use href="#icon-chat"></use></svg> Chats</button>
           </div>
           <div class="admin-content">
             <div id="adminStatus" class="admin-status">Connecting to Firebase…</div>
             <section id="tab-branding" class="admin-section active">
               <div class="admin-grid">
-                <div class="admin-card"><h3>Portal Logo</h3><img id="adminLogoPreview" class="admin-preview"><input id="adminLogoFile" type="file" accept="image/*"><button class="admin-btn" onclick="uploadBrandImage('logo')">🌐 Save Logo Online</button></div>
-                <div class="admin-card"><h3>Hero / Banner Photo</h3><img id="adminHeroPreview" class="admin-preview"><input id="adminHeroFile" type="file" accept="image/*"><button class="admin-btn" onclick="uploadBrandImage('hero')">🌐 Save Hero Online</button></div>
+                <div class="admin-card"><h3>Portal Logo</h3><img id="adminLogoPreview" class="admin-preview"><input id="adminLogoFile" type="file" accept="image/*"><button class="admin-btn" onclick="uploadBrandImage('logo')"><svg class="ui-icon"><use href="#icon-globe"></use></svg> Save Logo Online</button></div>
+                <div class="admin-card"><h3>Hero / Banner Photo</h3><img id="adminHeroPreview" class="admin-preview"><input id="adminHeroFile" type="file" accept="image/*"><button class="admin-btn" onclick="uploadBrandImage('hero')"><svg class="ui-icon"><use href="#icon-globe"></use></svg> Save Hero Online</button></div>
               </div>
             </section>
             <section id="tab-subjects" class="admin-section"><div id="adminSubjectsList"></div></section>
             
             <section id="tab-notifications" class="admin-section">
               <div class="admin-card">
-                <h3>➕ Add / Send Target Notification</h3>
+                <h3><svg class="ui-icon"><use href="#icon-plus"></use></svg> Add / Send Target Notification</h3>
                 <div class="admin-form">
                   <label>Select Recipient User (Target User Profile):</label>
                   <select id="newNotifTargetUser" style="margin-bottom:12px; padding:11px; width:100%; border-radius:7px; border:1px solid #ccc;">
-                    <option value="ALL">🌐 Send to All Users (Public Notification)</option>
+                    <option value="ALL">Send to All Users (Public Notification)</option>
                   </select>
                   <label>Notification Text:</label>
                   <input id="newNotifText" placeholder="Enter notification message here...">
@@ -1394,18 +1441,18 @@
             </section>
 
             <section id="tab-notices" class="admin-section">
-              <div class="admin-card"><h3>➕ Add Notice</h3><input id="newNoticeTitle" placeholder="Notice title"><input id="newNoticeLink" placeholder="Notice Link (URL) e.g. https://..."><label><input id="newNoticeNew" type="checkbox" checked> Mark as NEW</label><button class="admin-btn" onclick="addOnlineNotice()">Publish Notice</button></div>
-              <div class="admin-card"><h3>📜 Scrolling Notice Bar</h3><textarea id="scrollNoticeText" placeholder="Scrolling notice text"></textarea><button class="admin-btn" onclick="saveScrollNotice()">Save Notice Bar</button></div>
+              <div class="admin-card"><h3><svg class="ui-icon"><use href="#icon-plus"></use></svg> Add Notice</h3><input id="newNoticeTitle" placeholder="Notice title"><input id="newNoticeLink" placeholder="Notice Link (URL) e.g. https://..."><label><input id="newNoticeNew" type="checkbox" checked> Mark as NEW</label><button class="admin-btn" onclick="addOnlineNotice()">Publish Notice</button></div>
+              <div class="admin-card"><h3><svg class="ui-icon"><use href="#icon-scroll"></use></svg> Scrolling Notice Bar</h3><textarea id="scrollNoticeText" placeholder="Scrolling notice text"></textarea><button class="admin-btn" onclick="saveScrollNotice()">Save Notice Bar</button></div>
               <div id="adminNoticesList"></div>
             </section>
             <section id="tab-posts" class="admin-section">
-              <div class="admin-card"><h3>➕ Create Feed Post</h3><select id="newPostSubject"></select><textarea id="newPostText" placeholder="Post text"></textarea><input id="newPostFile" type="file" accept="image/*"><p class="admin-small">Photo compress hokar Firebase Realtime Database me save hogi.</p><button class="admin-btn" onclick="createOnlinePost()">Publish Post Online</button></div>
+              <div class="admin-card"><h3><svg class="ui-icon"><use href="#icon-plus"></use></svg> Create Feed Post</h3><select id="newPostSubject"></select><textarea id="newPostText" placeholder="Post text"></textarea><input id="newPostFile" type="file" accept="image/*"><p class="admin-small">The photo is compressed and saved to the Firebase Realtime Database.</p><button class="admin-btn" onclick="createOnlinePost()">Publish Post Online</button></div>
               <div id="adminPostsList"></div>
             </section>
             
             <section id="tab-users" class="admin-section">
               <div class="admin-card">
-                  <h3>➕ Add / Update User</h3>
+                  <h3><svg class="ui-icon"><use href="#icon-plus"></use></svg> Add / Update User</h3>
                   <div class="admin-form">
                       <input id="adminNewUserName" placeholder="Student Name (e.g. Ambuj Kumar)">
                       <input id="adminNewUserRoll" type="text" placeholder="Roll Number (Acts as Password for Login)">
@@ -1433,7 +1480,7 @@
     <div id="userLoginModal" class="user-login-modal">
         <div class="user-login-box">
             <h2>Portal Login</h2>
-            <p>Student profile access karne ke liye apna Roll Number darj karein.</p>
+            <p>Please enter your Roll Number to access your student profile.</p>
             <input type="password" id="userLoginPassword" placeholder="Enter Roll Number" onkeypress="if(event.key === 'Enter') processUserLogin()">
             <button onclick="processUserLogin()">Secure Login</button>
             <button class="cancel-btn" onclick="closeUserLogin()">Cancel</button>
@@ -1561,7 +1608,7 @@
         function processUserLogin() {
             const roll = document.getElementById('userLoginPassword').value.trim();
             const err = document.getElementById('userLoginError');
-            if(!roll) { err.innerText = "Roll number enter karein."; return; }
+            if(!roll) { err.innerText = "Please enter your Roll Number."; return; }
             
             const users = window.onlineUsersData || {};
             if(users[roll]) {
@@ -1579,7 +1626,7 @@
                     pendingAction = null;
                 }
             } else {
-                err.innerText = "Invalid Roll Number. Admin dwara user add nahi hai.";
+                err.innerText = "Invalid Roll Number. This user has not been added by the admin.";
             }
         }
 
@@ -1592,12 +1639,26 @@
             window.localUser = null;
             if(window.renderOnlineChats) window.renderOnlineChats();
             openHomePage();
-            alert("Aap successfully log out ho gaye hain.");
+            alert("You have been logged out successfully.");
         }
 
         window.addEventListener('beforeunload', () => {
              if(localUser && window.setUserActiveStatus) window.setUserActiveStatus(localUser.rollNumber, false);
         });
+
+        // Called automatically (realtime) when the admin deletes the currently
+        // logged-in user's profile, or changes their Roll Number (login key).
+        // Logs the user out of the app immediately, without the manual-logout alert.
+        function forceLogoutDeletedUser() {
+            localStorage.removeItem('portalUser');
+            localUser = null;
+            window.localUser = null;
+            closeAllSections();
+            openHomePage();
+            if(window.renderOnlineChats) window.renderOnlineChats();
+            alert("Your profile has been removed/updated by the admin. You have been logged out automatically. Please log in again.");
+        }
+        window.forceLogoutDeletedUser = forceLogoutDeletedUser;
 
         let notifications = [
             { id: 1, text: "BTEUP Odd Semester Exam Scheme 2026-27 released.", time: "Just now", timestamp: Date.now() },
@@ -1619,7 +1680,7 @@
                 title: "Communication Skills - I",
                 code: "SUB-101",
                 image: "https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=600&q=80",
-                desc: "Technical education mein effective communication ki zarurat ko samajhna. Is subject me grammar, reading, aur writing skills par focus kiya gaya hai jo aage job placement me kaam aayega.",
+                desc: "Understanding the importance of effective communication in technical education. This subject focuses on grammar, reading, and writing skills that will also help with job placement later on.",
                 modules: [
                     { unit: "Unit 1", detail: "Basics of Communication: Definition, Process, and Types (Verbal & Non-Verbal)" },
                     { unit: "Unit 2", detail: "Application of Grammar: Parts of Speech, Tenses, Active-Passive Voice" },
@@ -1632,7 +1693,7 @@
                 title: "Applied Mathematics - I",
                 code: "SUB-102",
                 image: "https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?auto=format&fit=crop&w=600&q=80",
-                desc: "Diploma engineering ke basics ko strong karne ke liye Mathematics. Isme Algebra, Trigonometry, aur Differential Calculus ke fundamentals cover hote hain.",
+                desc: "Mathematics for strengthening the basics of diploma engineering. It covers the fundamentals of Algebra, Trigonometry, and Differential Calculus.",
                 modules: [
                     { unit: "Unit 1", detail: "Algebra-I: Arithmetic Progression (A.P.), Geometric Progression (G.P.), Binomial Theorem" },
                     { unit: "Unit 2", detail: "Algebra-II: Determinants, Cramer's Rule" },
@@ -1645,7 +1706,7 @@
                 title: "Applied Physics - I",
                 code: "SUB-103",
                 image: "https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&w=600&q=80",
-                desc: "Engineering applications ke liye Physics ka basic knowledge. Units, dimensions, mechanics aur properties of matter par focus.",
+                desc: "Basic knowledge of Physics for engineering applications. Focuses on units, dimensions, mechanics, and properties of matter.",
                 modules: [
                     { unit: "Unit 1", detail: "Units and Dimensions: SI units, Dimensional formula and their applications" },
                     { unit: "Unit 2", detail: "Force and Motion: Scalar and Vector quantities, Circular motion, Newton's Laws" },
@@ -1658,7 +1719,7 @@
                 title: "Applied Chemistry",
                 code: "SUB-104",
                 image: "https://images.unsplash.com/photo-1603126857599-f6e1570d8136?auto=format&fit=crop&w=600&q=80",
-                desc: "Engineering materials ki properties samajhne ke liye Chemistry. Water treatment, polymers, aur electrochemistry iske main topics hain.",
+                desc: "Chemistry for understanding the properties of engineering materials. Water treatment, polymers, and electrochemistry are its main topics.",
                 modules: [
                     { unit: "Unit 1", detail: "Atomic Structure, Periodic Table and Chemical Bonding" },
                     { unit: "Unit 2", detail: "Fuels and Lubricants: Types of fuels, Properties of good lubricants" },
@@ -1671,7 +1732,7 @@
                 title: "Fundamentals of Computer & IT (FCIT)",
                 code: "SUB-105",
                 image: "https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=600&q=80",
-                desc: "Computer Science ka core foundational subject. Isme Computer architecture, memory, software types, OS, aur Internet basics cover kiye gaye hain.",
+                desc: "A core foundational subject in Computer Science. It covers computer architecture, memory, software types, OS, and Internet basics.",
                 modules: [
                     { unit: "Unit 1", detail: "Fundamentals of Computer: Block diagram of PC, Input/Output devices, CPU" },
                     { unit: "Unit 2", detail: "Data Representation: Binary, Octal, Hexadecimal number systems and logic gates" },
@@ -1692,7 +1753,7 @@
                     </div>
                     <div class="card-body">
                         <h3>${sub.title}</h3>
-                        <p>BTEUP prescribed syllabus aur study material ke liye click karein.</p>
+                        <p>Click for the BTEUP prescribed syllabus and study material.</p>
                     </div>
                 </div>
             `).join('');
@@ -1748,10 +1809,10 @@
             noticeList.innerHTML = officialNotices.map(notice => `
                 <li>
                     <a href="#" onclick="alert('Opening official notification PDF for: ${notice.title}')">
-                        👉 ${notice.title} 
+                        <svg class="ui-icon"><use href="#icon-chevron-right"></use></svg> ${notice.title} 
                         ${notice.isNew ? '<span class="badge-new">NEW</span>' : ''}
                     </a>
-                    <span class="notice-date">📅 ${notice.date}</span>
+                    <span class="notice-date"><svg class="ui-icon"><use href="#icon-calendar"></use></svg> ${notice.date}</span>
                 </li>
             `).join('');
         }
@@ -1915,10 +1976,10 @@
                 id: 'post_1',
                 subjectId: 1,
                 type: 'photo',
-                text: 'Important Notice: Communication process flow chart. Ise dhyan se padh lijiye exam ke liye jaruri hai.',
+                text: 'Important Notice: Communication process flow chart. Please read this carefully, it is important for the exam.',
                 imgUrl: 'https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=800',
                 comments: [
-                    { id: 'com_1', userId: 'Admin', userName: 'Admin', text: 'Sabhi students isko download kar lena.' }
+                    { id: 'com_1', userId: 'Admin', userName: 'Admin', text: 'All students should download this.' }
                 ]
             }
         ];
@@ -2129,11 +2190,11 @@ const auth = getAuth(app);
 const ADMIN_EMAIL = "admin@mmitsce.com";
 
 const defaultSubjects = [
- {id:1,title:"Communication Skills - I",code:"SUB-101",image:"https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=600&q=80",desc:"Technical education mein effective communication ki zarurat ko samajhna. Is subject me grammar, reading, aur writing skills par focus kiya gaya hai.",modules:[{unit:"Unit 1",detail:"Basics of Communication: Definition, Process, and Types (Verbal & Non-Verbal)"},{unit:"Unit 2",detail:"Application of Grammar: Parts of Speech, Tenses, Active-Passive Voice"},{unit:"Unit 3",detail:"Reading Skill: Unseen passage for comprehension"},{unit:"Unit 4",detail:"Writing Skill: Picture composition, Paragraph writing, Notice writing"}]},
- {id:2,title:"Applied Mathematics - I",code:"SUB-102",image:"https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?auto=format&fit=crop&w=600&q=80",desc:"Diploma engineering ke basics ko strong karne ke liye Mathematics. Isme Algebra, Trigonometry, aur Differential Calculus ke fundamentals cover hote hain.",modules:[{unit:"Unit 1",detail:"Algebra-I: Arithmetic Progression (A.P.), Geometric Progression (G.P.), Binomial Theorem"},{unit:"Unit 2",detail:"Algebra-II: Determinants, Cramer's Rule"},{unit:"Unit 3",detail:"Trigonometry: Inverse circular functions, Properties of Triangles"},{unit:"Unit 4",detail:"Differential Calculus-I: Functions, Limits, Continuity, Basics of Differentiation"}]},
- {id:3,title:"Applied Physics - I",code:"SUB-103",image:"https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&w=600&q=80",desc:"Engineering applications ke liye Physics ka basic knowledge. Units, dimensions, mechanics aur properties of matter par focus.",modules:[{unit:"Unit 1",detail:"Units and Dimensions: SI units, Dimensional formula and their applications"},{unit:"Unit 2",detail:"Force and Motion: Scalar and Vector quantities, Circular motion, Newton's Laws"},{unit:"Unit 3",detail:"Work, Power and Energy: Kinetic & Potential Energy, Conservation of energy"},{unit:"Unit 4",detail:"Rotational Motion & Properties of Matter: Moment of Inertia, Surface tension, Viscosity"}]},
- {id:4,title:"Applied Chemistry",code:"SUB-104",image:"https://images.unsplash.com/photo-1603126857599-f6e1570d8136?auto=format&fit=crop&w=600&q=80",desc:"Engineering materials ki properties samajhne ke liye Chemistry. Water treatment, polymers, aur electrochemistry iske main topics hain.",modules:[{unit:"Unit 1",detail:"Atomic Structure, Periodic Table and Chemical Bonding"},{unit:"Unit 2",detail:"Fuels and Lubricants: Types of fuels, Properties of good lubricants"},{unit:"Unit 3",detail:"Water: Hardness of water, Water treatment, Boiler feed water"},{unit:"Unit 4",detail:"Electrochemistry & Corrosion: Galvanic cell, Causes and prevention of corrosion"}]},
- {id:5,title:"Fundamentals of Computer & IT (FCIT)",code:"SUB-105",image:"https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=600&q=80",desc:"Computer Science ka core foundational subject. Isme Computer architecture, memory, software types, OS, aur Internet basics cover kiye gaye hain.",modules:[{unit:"Unit 1",detail:"Fundamentals of Computer: Block diagram of PC, Input/Output devices, CPU"},{unit:"Unit 2",detail:"Data Representation: Binary, Octal, Hexadecimal number systems and logic gates"},{unit:"Unit 3",detail:"Memory & Storage: Primary memory (RAM/ROM), Secondary storage devices"},{unit:"Unit 4",detail:"Basics of OS and Internet: MS Windows, Web browsers, E-mail, Search Engines"}]}
+ {id:1,title:"Communication Skills - I",code:"SUB-101",image:"https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=600&q=80",desc:"Understanding the importance of effective communication in technical education. This subject focuses on grammar, reading, and writing skills.",modules:[{unit:"Unit 1",detail:"Basics of Communication: Definition, Process, and Types (Verbal & Non-Verbal)"},{unit:"Unit 2",detail:"Application of Grammar: Parts of Speech, Tenses, Active-Passive Voice"},{unit:"Unit 3",detail:"Reading Skill: Unseen passage for comprehension"},{unit:"Unit 4",detail:"Writing Skill: Picture composition, Paragraph writing, Notice writing"}]},
+ {id:2,title:"Applied Mathematics - I",code:"SUB-102",image:"https://images.unsplash.com/photo-1632516643720-e7f0d7e6a739?auto=format&fit=crop&w=600&q=80",desc:"Mathematics for strengthening the basics of diploma engineering. It covers the fundamentals of Algebra, Trigonometry, and Differential Calculus.",modules:[{unit:"Unit 1",detail:"Algebra-I: Arithmetic Progression (A.P.), Geometric Progression (G.P.), Binomial Theorem"},{unit:"Unit 2",detail:"Algebra-II: Determinants, Cramer's Rule"},{unit:"Unit 3",detail:"Trigonometry: Inverse circular functions, Properties of Triangles"},{unit:"Unit 4",detail:"Differential Calculus-I: Functions, Limits, Continuity, Basics of Differentiation"}]},
+ {id:3,title:"Applied Physics - I",code:"SUB-103",image:"https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&w=600&q=80",desc:"Basic knowledge of Physics for engineering applications. Focuses on units, dimensions, mechanics, and properties of matter.",modules:[{unit:"Unit 1",detail:"Units and Dimensions: SI units, Dimensional formula and their applications"},{unit:"Unit 2",detail:"Force and Motion: Scalar and Vector quantities, Circular motion, Newton's Laws"},{unit:"Unit 3",detail:"Work, Power and Energy: Kinetic & Potential Energy, Conservation of energy"},{unit:"Unit 4",detail:"Rotational Motion & Properties of Matter: Moment of Inertia, Surface tension, Viscosity"}]},
+ {id:4,title:"Applied Chemistry",code:"SUB-104",image:"https://images.unsplash.com/photo-1603126857599-f6e1570d8136?auto=format&fit=crop&w=600&q=80",desc:"Chemistry for understanding the properties of engineering materials. Water treatment, polymers, and electrochemistry are its main topics.",modules:[{unit:"Unit 1",detail:"Atomic Structure, Periodic Table and Chemical Bonding"},{unit:"Unit 2",detail:"Fuels and Lubricants: Types of fuels, Properties of good lubricants"},{unit:"Unit 3",detail:"Water: Hardness of water, Water treatment, Boiler feed water"},{unit:"Unit 4",detail:"Electrochemistry & Corrosion: Galvanic cell, Causes and prevention of corrosion"}]},
+ {id:5,title:"Fundamentals of Computer & IT (FCIT)",code:"SUB-105",image:"https://images.unsplash.com/photo-1547394765-185e1e68f34e?auto=format&fit=crop&w=600&q=80",desc:"A core foundational subject in Computer Science. It covers computer architecture, memory, software types, OS, and Internet basics.",modules:[{unit:"Unit 1",detail:"Fundamentals of Computer: Block diagram of PC, Input/Output devices, CPU"},{unit:"Unit 2",detail:"Data Representation: Binary, Octal, Hexadecimal number systems and logic gates"},{unit:"Unit 3",detail:"Memory & Storage: Primary memory (RAM/ROM), Secondary storage devices"},{unit:"Unit 4",detail:"Basics of OS and Internet: MS Windows, Web browsers, E-mail, Search Engines"}]}
 ];
 
 const defaultNotifs=[{id:"n1",text:"BTEUP Odd Semester Exam Scheme 2026-27 released.",time:"Just now",timestamp:Date.now()},{id:"n2",text:"CSE 1st Semester Syllabus officially updated.",time:"1 hour ago",timestamp:Date.now()-3600000},{id:"n3",text:"Practical Exam schedule announced for Diploma Students.",time:"Yesterday",timestamp:Date.now()-86400000}];
@@ -2169,11 +2230,19 @@ function applyOnlineData(d){
 
   window.onlineUsersData = onlineData.users;
 
-  if(window.localUser && window.onlineUsersData[window.localUser.rollNumber]) {
-      window.localUser.name = window.onlineUsersData[window.localUser.rollNumber].name;
-      localStorage.setItem('portalUser', JSON.stringify(window.localUser));
-      const profN = document.getElementById('profName');
-      if(profN) profN.innerText = window.localUser.name;
+  if(window.localUser) {
+      const liveUser = window.onlineUsersData[window.localUser.rollNumber];
+      if(liveUser) {
+          // Realtime profile update: agar admin ne naam update kiya hai to turant reflect ho.
+          window.localUser.name = liveUser.name;
+          localStorage.setItem('portalUser', JSON.stringify(window.localUser));
+          const profN = document.getElementById('profName');
+          if(profN) profN.innerText = window.localUser.name;
+      } else if(typeof window.forceLogoutDeletedUser === 'function') {
+          // Realtime delete detection: admin ne is user ka profile delete kar diya
+          // (ya Roll Number change kar diya), isliye app se automatic logout kar do.
+          window.forceLogoutDeletedUser();
+      }
   }
 
   window.notifications = onlineData.notifications;
@@ -2272,7 +2341,7 @@ function renderOnlineChats() {
     const sortedChats = [...onlineData.chats].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
     if(sortedChats.length === 0) {
-        html = '<div class="chat-msg received"><strong>Admin:</strong> Welcome to the CSE 1st Sem discussion group! Padhai se related koi bhi doubt yahan puchein.</div>';
+        html = '<div class="chat-msg received"><strong>Admin:</strong> Welcome to the CSE 1st Sem discussion group! Ask any study-related doubts here.</div>';
     } else {
         sortedChats.forEach(chat => {
             const dateLabel = window.getChatDateLabel(chat.timestamp);
@@ -2305,7 +2374,7 @@ function renderOnlineChats() {
                         <div style="word-break: break-word;">${safeText}</div>
                         <div class="chat-msg-footer">
                             <span class="chat-time">${timeStr}</span>
-                            <span class="chat-seen-count" title="Seen by ${seenCount} people">👁️ ${seenCount}</span>
+                            <span class="chat-seen-count" title="Seen by ${seenCount} people"><svg class="ui-icon"><use href="#icon-user"></use></svg> ${seenCount}</span>
                             ${deleteHtml}
                         </div>
                      </div>`;
@@ -2345,11 +2414,11 @@ function renderOnlineSubjects(){
         if(latestPost.text) {
             snippetStr = latestPost.text.length > 40 ? latestPost.text.substring(0, 40) + '...' : latestPost.text;
         } else if(latestPost.type === 'photo' || latestPost.imgUrl) {
-            snippetStr = '📷 New Photo Uploaded';
+            snippetStr = 'New Photo Uploaded';
         }
         latestUpdateHTML = `
         <div style="margin-top:12px; font-size:0.85rem; padding:8px; background:#eef6ff; border-radius:4px; border-left:3px solid var(--accent-orange); color:var(--primary-blue);">
-            <strong style="color:var(--sarkari-red);">🔴 Live Update:</strong> ${esc(snippetStr)}
+            <strong style="color:var(--sarkari-red);"><svg class="ui-icon ui-icon--fill"><use href="#icon-live"></use></svg> Live Update:</strong> ${esc(snippetStr)}
         </div>`;
     }
 
@@ -2361,7 +2430,7 @@ function renderOnlineSubjects(){
       </div>
       <div class="card-body">
         <h3>${esc(s.title)}</h3>
-        <p>BTEUP prescribed syllabus aur study material ke liye click karein.</p>
+        <p>Click for the BTEUP prescribed syllabus and study material.</p>
         ${latestUpdateHTML}
       </div>
     </div>
@@ -2388,7 +2457,7 @@ function renderOnlineNotifications(){
          ontouchstart="startNotifPress('${n.id}')" ontouchend="endNotifPress()" ontouchcancel="endNotifPress()">
       <div>${esc(n.text)}</div>
       <div class="notif-time">${n.timestamp ? window.formatNotificationTime(n.timestamp) : esc(n.time||'')}</div>
-      <div class="delete-notif-btn" id="del-notif-${n.id}" onclick="deleteUserNotification('${n.id}')">🗑️ Delete</div>
+      <div class="delete-notif-btn" id="del-notif-${n.id}" onclick="deleteUserNotification('${n.id}')"><svg class="ui-icon"><use href="#icon-trash"></use></svg> Delete</div>
     </div>
   `).join('') : `<div class="notif-item">No notifications yet.</div>`;
 }
@@ -2402,9 +2471,9 @@ function renderOnlineNotices(){
   c.innerHTML = sortedNotices.map(n => `
     <li>
       <a href="${esc(n.link && n.link !== '#' ? n.link : '#')}" ${n.link && n.link !== '#' ? 'target="_blank"' : `onclick="event.preventDefault();alert('Opening official notification: ${esc(n.title)}')"`}>
-        👉 ${esc(n.title)} ${n.isNew ? '<span class="badge-new">NEW</span>' : ''}
+        <svg class="ui-icon"><use href="#icon-chevron-right"></use></svg> ${esc(n.title)} ${n.isNew ? '<span class="badge-new">NEW</span>' : ''}
       </a>
-      <span class="notice-date">📅 ${esc(n.date)}</span>
+      <span class="notice-date"><svg class="ui-icon"><use href="#icon-calendar"></use></svg> ${esc(n.date)}</span>
     </li>
   `).join('');
 }
@@ -2430,11 +2499,11 @@ async function seed(){
 }
 
 async function fileToDataURL(file, maxSize=1000, quality=0.68){
-  if(!file) throw new Error('Photo select karein.');
-  if(!file.type.startsWith('image/')) throw new Error('Sirf image file select karein.');
+  if(!file) throw new Error('Please select a photo.');
+  if(!file.type.startsWith('image/')) throw new Error('Please select an image file only.');
   return new Promise((resolve, reject) => {
     const r = new FileReader();
-    r.onerror = () => reject(new Error('Photo read nahi ho paayi.'));
+    r.onerror = () => reject(new Error('Could not read the photo.'));
     r.onload = () => {
       const img = new Image();
       img.onerror = () => reject(new Error('Invalid image.'));
@@ -2466,12 +2535,12 @@ window.closeAdminPanel = function(){
 
 function firebaseAuthError(e){
   const m = {
-    "auth/invalid-credential": "Email ya password galat hai.",
-    "auth/user-not-found": "Admin account nahi mila. Pehle Create Admin Account dabayein.",
-    "auth/wrong-password": "Password galat hai.",
-    "auth/invalid-email": "Email address sahi nahi hai.",
-    "auth/email-already-in-use": "Ye admin email pehle se registered hai. Login karein.",
-    "auth/weak-password": "Password kam se kam 6 characters ka rakhein."
+    "auth/invalid-credential": "Email or password is incorrect.",
+    "auth/user-not-found": "Admin account not found. Please tap Create Admin Account first.",
+    "auth/wrong-password": "Incorrect password.",
+    "auth/invalid-email": "Email address is not valid.",
+    "auth/email-already-in-use": "This admin email is already registered. Please log in.",
+    "auth/weak-password": "Password should be at least 6 characters long."
   };
   return m[e.code] || e.message || "Firebase Authentication error.";
 }
@@ -2480,8 +2549,8 @@ window.firebaseAdminLogin = async function(){
   const email = document.getElementById('adminEmail').value.trim();
   const pass = document.getElementById('adminPassword').value;
   const msg = document.getElementById('adminLoginMsg');
-  if(email !== ADMIN_EMAIL){ msg.textContent = 'Sirf configured admin email ' + ADMIN_EMAIL + ' se login allowed hai.'; return; }
-  if(!pass){ msg.textContent = 'Password enter karein.'; return; }
+  if(email !== ADMIN_EMAIL){ msg.textContent = 'Only the configured admin email ' + ADMIN_EMAIL + ' is allowed to log in.'; return; }
+  if(!pass){ msg.textContent = 'Please enter your password.'; return; }
   msg.textContent = 'Logging in…';
   try {
     await signInWithEmailAndPassword(auth, email, pass);
@@ -2495,14 +2564,14 @@ window.createFirebaseAdmin = async function(){
   const email = document.getElementById('adminEmail').value.trim();
   const pass = document.getElementById('adminPassword').value;
   const msg = document.getElementById('adminLoginMsg');
-  if(email !== ADMIN_EMAIL){ msg.textContent = 'Admin email exactly ' + ADMIN_EMAIL + ' hona chahiye.'; return; }
-  if(!pass || pass.length < 6){ msg.textContent = 'Password kam se kam 6 characters ka rakhein.'; return; }
-  msg.textContent = 'Admin account create ho raha hai…';
+  if(email !== ADMIN_EMAIL){ msg.textContent = 'Admin email must be exactly ' + ADMIN_EMAIL + '.'; return; }
+  if(!pass || pass.length < 6){ msg.textContent = 'Password should be at least 6 characters long.'; return; }
+  msg.textContent = 'Creating admin account…';
   try {
     await createUserWithEmailAndPassword(auth, email, pass);
-    msg.textContent = 'Admin account create ho gaya. Login active hai.';
+    msg.textContent = 'Admin account created. You are now logged in.';
   } catch(e) {
-    msg.textContent = 'Account create nahi hua: ' + firebaseAuthError(e);
+    msg.textContent = 'Account creation failed: ' + firebaseAuthError(e);
   }
 };
 
@@ -2512,10 +2581,10 @@ window.uploadBrandImage = async function(kind){
   if(!auth.currentUser) return alert('Admin login required.');
   const file = document.getElementById(kind === 'logo' ? 'adminLogoFile' : 'adminHeroFile').files[0];
   try {
-    setStatus('Photo compress karke Realtime Database me save ho rahi hai…');
+    setStatus('Compressing photo and saving to the Realtime Database…');
     const data = await fileToDataURL(file, kind === 'logo' ? 650 : 1050, 0.68);
     await update(ref(db, 'portal/branding'), { [kind]: data });
-    setStatus('Photo online update ho gayi. Firebase Storage required nahi hai.');
+    setStatus('Photo updated online. Firebase Storage is not required.');
   } catch(e) {
     setStatus('Photo save failed: ' + e.message);
   }
@@ -2528,11 +2597,11 @@ window.saveSubject = async function(id){
   const desc = document.getElementById('sd-' + id).value.trim();
   const file = document.getElementById('sf-' + id).files[0];
   try {
-    setStatus('Subject save ho raha hai…');
+    setStatus('Saving subject…');
     let image = s.image;
     if(file) image = await fileToDataURL(file, 900, 0.65);
     await update(ref(db, 'portal/subjects/' + id), { title, desc, image });
-    setStatus('Subject + photo online update ho gaye.');
+    setStatus('Subject and photo updated online.');
   } catch(e) {
     setStatus('Save failed: ' + e.message);
   }
@@ -2540,7 +2609,7 @@ window.saveSubject = async function(id){
 
 window.addMentionNotification = async function(targetRoll, senderRoll) {
     const id = 'notif_' + Date.now() + Math.random().toString(36).substr(2, 5);
-    const text = `💬 ${senderRoll} mentioned you in the class discussion.`;
+    const text = `${senderRoll} mentioned you in the class discussion.`;
     await set(ref(db, 'portal/notifications/' + id), { 
         id: id,
         text: text, 
@@ -2553,7 +2622,7 @@ window.addMentionNotification = async function(targetRoll, senderRoll) {
 window.addOnlineNotification = async function(){
   const text = document.getElementById('newNotifText').value.trim();
   const targetUserSelect = document.getElementById('newNotifTargetUser').value;
-  if(!text) return alert('Notification text likhein.');
+  if(!text) return alert('Please write the notification text.');
   const id = 'n_' + Date.now();
   
   const payload = {
@@ -2575,7 +2644,7 @@ window.deleteOnlineNotification = async id => remove(ref(db, 'portal/notificatio
 window.addOnlineNotice = async function(){
   const title = document.getElementById('newNoticeTitle').value.trim();
   const link = document.getElementById('newNoticeLink').value.trim();
-  if(!title) return alert('Notice title likhein.');
+  if(!title) return alert('Please write the notice title.');
   const id = 'no_' + Date.now();
   
   const now = new Date();
@@ -2601,16 +2670,16 @@ window.createOnlinePost = async function(){
   const subjectId = Number(document.getElementById('newPostSubject').value);
   const text = document.getElementById('newPostText').value.trim();
   const file = document.getElementById('newPostFile').files[0];
-  if(!text) return alert('Post text likhein.');
+  if(!text) return alert('Please write the post text.');
   try {
-    setStatus('Post save ho raha hai…');
+    setStatus('Saving post…');
     let imgUrl = '';
     if(file) imgUrl = await fileToDataURL(file, 950, 0.64);
     const id = 'post_' + Date.now();
     await set(ref(db, 'portal/posts/' + id), { subjectId, text, type: imgUrl ? 'photo' : 'text', imgUrl, comments: [], timestamp: Date.now() });
     document.getElementById('newPostText').value = '';
     document.getElementById('newPostFile').value = '';
-    setStatus('Post online publish ho gaya.');
+    setStatus('Post published online.');
   } catch(e) {
     setStatus('Post failed: ' + e.message);
   }
@@ -2624,12 +2693,12 @@ window.updateOnlinePostText = async function(id){
 
 window.replaceOnlinePostImage = async function(id){
   const f = document.getElementById('pf-' + id).files[0];
-  if(!f) return alert('New photo select karein.');
+  if(!f) return alert('Please select a new photo.');
   try {
-    setStatus('Photo compress karke database me save ho rahi hai…');
+    setStatus('Compressing photo and saving to the database…');
     const url = await fileToDataURL(f, 950, 0.64);
     await update(ref(db, 'portal/posts/' + id), { imgUrl: url, type: 'photo' });
-    setStatus('Post photo online update ho gayi.');
+    setStatus('Post photo updated online.');
   } catch(e) {
     setStatus('Photo update failed: ' + e.message);
   }
@@ -2671,11 +2740,41 @@ window.deleteOnlineChat = async function(chatId) {
 window.saveOnlineUser = async function(){
     const name = document.getElementById('adminNewUserName').value.trim();
     const roll = document.getElementById('adminNewUserRoll').value.trim();
-    if(!name || !roll) return alert('Name aur Roll Number dono fill karein.');
+    if(!name || !roll) return alert('Please fill in both Name and Roll Number.');
     await update(ref(db, 'portal/users/' + roll), { name, rollNumber: roll });
     document.getElementById('adminNewUserName').value = '';
     document.getElementById('adminNewUserRoll').value = '';
-    setStatus('User save ho gaya.');
+    setStatus('User saved successfully.');
+};
+
+// Edit an existing user's name and/or roll number. Roll number is the user's
+// login key, so if it changes we move the record to the new key (this also
+// means any device currently logged in with the old roll number will be
+// logged out automatically, same as a deleted account - see applyOnlineData).
+window.updateOnlineUser = async function(oldRoll){
+    const nameInput = document.getElementById('un-' + oldRoll);
+    const rollInput = document.getElementById('ur-' + oldRoll);
+    if(!nameInput || !rollInput) return;
+    const name = nameInput.value.trim();
+    const newRoll = rollInput.value.trim();
+    if(!name || !newRoll) return alert('Please fill in both Name and Roll Number.');
+
+    if(newRoll === oldRoll){
+        await update(ref(db, 'portal/users/' + oldRoll), { name, rollNumber: newRoll });
+    } else {
+        if(onlineData.users && onlineData.users[newRoll]){
+            return alert('This Roll Number is already used by another user.');
+        }
+        await set(ref(db, 'portal/users/' + newRoll), { name, rollNumber: newRoll });
+        await remove(ref(db, 'portal/users/' + oldRoll));
+    }
+    setStatus('User updated successfully.');
+};
+
+window.deleteOnlineUser = async function(roll){
+    if(!confirm('Are you sure you want to delete this user?')) return;
+    await remove(ref(db, 'portal/users/' + roll));
+    setStatus('User deleted successfully.');
 };
 
 window.renderAdminAll = function() {
@@ -2706,9 +2805,9 @@ window.renderAdminAll = function() {
     // Target Notification User Select Population
     const notifUserSelect = document.getElementById('newNotifTargetUser');
     if(notifUserSelect) {
-        let options = '<option value="ALL">🌐 Send to All Users (Public Notification)</option>';
+        let options = '<option value="ALL">Send to All Users (Public Notification)</option>';
         Object.values(onlineData.users || {}).forEach(u => {
-            options += `<option value="${esc(u.rollNumber)}">👤 ${esc(u.name)} (${esc(u.rollNumber)})</option>`;
+            options += `<option value="${esc(u.rollNumber)}">${esc(u.name)} (${esc(u.rollNumber)})</option>`;
         });
         notifUserSelect.innerHTML = options;
     }
@@ -2763,7 +2862,14 @@ window.renderAdminAll = function() {
     if(usersContainer) {
         usersContainer.innerHTML = Object.values(onlineData.users || {}).map(u => `
             <div class="admin-card">
-                <p><strong>Name:</strong> ${esc(u.name)} | <strong>Roll No:</strong> ${esc(u.rollNumber)}</p>
+                <div class="admin-form">
+                    <label>Name</label><input id="un-${esc(u.rollNumber)}" value="${esc(u.name)}">
+                    <label>Roll Number</label><input id="ur-${esc(u.rollNumber)}" value="${esc(u.rollNumber)}">
+                    <div class="admin-row">
+                        <button class="admin-btn" onclick="updateOnlineUser('${esc(u.rollNumber)}')">Update User</button>
+                        <button class="admin-btn red" onclick="deleteOnlineUser('${esc(u.rollNumber)}')">Delete User</button>
+                    </div>
+                </div>
             </div>
         `).join('');
     }
@@ -2887,7 +2993,7 @@ onAuthStateChanged(auth, user => {
     text.addEventListener('input', function(){
       if(this.value.length > USER_POST_MAX_TEXT) {
         this.value = this.value.slice(0, USER_POST_MAX_TEXT);
-        alert('Post text maximum 90 characters ka hi ho sakta hai.');
+        alert('Post text can be a maximum of 90 characters.');
       }
       counter.textContent = this.value.length + '/90';
       counter.classList.toggle('limit', this.value.length >= USER_POST_MAX_TEXT);
@@ -2898,7 +3004,7 @@ onAuthStateChanged(auth, user => {
           this.value=this.value.slice(0,USER_POST_MAX_TEXT);
           counter.textContent=this.value.length+'/90';
           counter.classList.add('limit');
-          alert('Post text maximum 90 characters ka hi ho sakta hai.');
+          alert('Post text can be a maximum of 90 characters.');
         }
       },0);
     });
@@ -2906,7 +3012,7 @@ onAuthStateChanged(auth, user => {
     document.getElementById('userPostPhotos').addEventListener('change', function(){
       const files = Array.from(this.files || []);
       if(files.length > USER_POST_MAX_PHOTOS){
-        alert('Ek post me maximum 5 photos hi upload kar sakte hain.');
+        alert('You can upload a maximum of 5 photos per post.');
         this.value='';
         renderUserPhotoPreview([]);
         return;
@@ -2932,10 +3038,10 @@ onAuthStateChanged(auth, user => {
   }
 
   async function userPostFileToDataURL(file){
-    if(!file || !file.type.startsWith('image/')) throw new Error('Sirf image file select karein.');
+    if(!file || !file.type.startsWith('image/')) throw new Error('Please select an image file only.');
     return new Promise((resolve,reject)=>{
       const reader=new FileReader();
-      reader.onerror=()=>reject(new Error('Photo read nahi ho paayi.'));
+      reader.onerror=()=>reject(new Error('Could not read the photo.'));
       reader.onload=()=>{
         const img=new Image();
         img.onerror=()=>reject(new Error('Invalid image.'));
@@ -2967,11 +3073,11 @@ onAuthStateChanged(auth, user => {
     if(text.length>USER_POST_MAX_TEXT){
       textEl.value=text.slice(0,USER_POST_MAX_TEXT);
       document.getElementById('userPostCounter').textContent=USER_POST_MAX_TEXT+'/90';
-      alert('Post text maximum 90 characters ka hi ho sakta hai.');
+      alert('Post text can be a maximum of 90 characters.');
       return;
     }
-    if(!text && files.length===0) return alert('Post me text ya kam se kam 1 photo add karein.');
-    if(files.length>USER_POST_MAX_PHOTOS) return alert('Ek post me maximum 5 photos hi upload kar sakte hain.');
+    if(!text && files.length===0) return alert('Please add text or at least 1 photo to the post.');
+    if(files.length>USER_POST_MAX_PHOTOS) return alert('You can upload a maximum of 5 photos per post.');
 
     const btn=document.getElementById('userPostSubmit');
     btn.disabled=true;
@@ -3016,9 +3122,9 @@ onAuthStateChanged(auth, user => {
     const post=posts.find(p=>String(p.id)===String(id));
     if(!post) return;
     if(String(getUserPostAuthor(post))!==String(window.localUser.rollNumber)){
-      return alert('Aap sirf apna post delete kar sakte hain.');
+      return alert('You can only delete your own posts.');
     }
-    if(!confirm('Apna post delete karna hai?')) return;
+    if(!confirm('Delete your post?')) return;
     try{
       await remove(ref(db,'portal/posts/'+id));
     }catch(e){ alert('Post delete failed: '+e.message); }
@@ -3074,7 +3180,7 @@ onAuthStateChanged(auth, user => {
     const posts=all.filter(p=>String(getUserPostAuthor(p))===roll && (p.timestamp || p.imgUrls || p.authorRoll))
                     .sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
     if(!posts.length){
-      list.innerHTML='<div class="user-post-empty">Aapne abhi koi post publish nahi kiya hai.</div>';
+      list.innerHTML='<div class="user-post-empty">You haven\'t published any posts yet.</div>';
       return;
     }
     list.innerHTML=posts.map(p=>{
@@ -3274,7 +3380,7 @@ onAuthStateChanged(auth, user => {
     const list=document.getElementById('globalFeedList'); if(!list) return;
     const posts=(window.adminPostsData || window.onlineData?.posts || []).filter(p=>p && (p.timestamp || p.authorRoll || p.userId || p.createdBy));
     posts.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
-    if(!posts.length){list.innerHTML='<div class="global-feed-empty">Abhi koi post available nahi hai.</div>';return;}
+    if(!posts.length){list.innerHTML='<div class="global-feed-empty">No posts available yet.</div>';return;}
     list.innerHTML=posts.map(p=>{
       const isUserPost=String(p.authorRoll||p.userId||p.createdBy||'')!=='';
       return isUserPost ? userFeedCard(p) : (typeof generatePostHTML==='function'?generatePostHTML(p):'');
@@ -3296,11 +3402,13 @@ onAuthStateChanged(auth, user => {
     list.querySelectorAll('.global-user-post[data-user-post-id]').forEach(el=>globalPostObserver.observe(el));
   };
   window.openGlobalFeed=function(){
-    closeAllSections();
-    document.getElementById('globalFeedPage').style.display='block';
-    updateNavState('navFeed');
-    renderGlobalFeed();
-    window.scrollTo(0,0);
+    requireLogin(function(){
+      closeAllSections();
+      document.getElementById('globalFeedPage').style.display='block';
+      updateNavState('navFeed');
+      renderGlobalFeed();
+      window.scrollTo(0,0);
+    });
   };
   const oldRefresh=window.refreshCurrentFeeds;
   window.refreshCurrentFeeds=function(){
@@ -3375,7 +3483,7 @@ onAuthStateChanged(auth, user => {
     };
     probe.onerror = function(){
       URL.revokeObjectURL(objUrl);
-      alert('Audio file load nahi ho payi, dusri file try karein.');
+      alert('Could not load the audio file, please try a different file.');
     };
   }
 
@@ -3407,11 +3515,11 @@ onAuthStateChanged(auth, user => {
   }
 
   async function audioFileToDataURL(file){
-    if(!file || !file.type.startsWith('audio/')) throw new Error('Sirf audio file select karein.');
-    if(file.size > USER_POST_MAX_AUDIO_BYTES) throw new Error('Audio file 4MB se choti honi chahiye.');
+    if(!file || !file.type.startsWith('audio/')) throw new Error('Please select an audio file only.');
+    if(file.size > USER_POST_MAX_AUDIO_BYTES) throw new Error('Audio file must be smaller than 4MB.');
     return new Promise((resolve,reject)=>{
       const reader = new FileReader();
-      reader.onerror = ()=>reject(new Error('Audio read nahi ho payi.'));
+      reader.onerror = ()=>reject(new Error('Could not read the audio file.'));
       reader.onload = ()=>resolve(reader.result);
       reader.readAsDataURL(file);
     });
@@ -3432,7 +3540,7 @@ onAuthStateChanged(auth, user => {
       chip?.classList.add('active');
       if(previewAudioEl){ try{ previewAudioEl.pause(); }catch(e){} previewAudioEl=null; }
     }catch(e){
-      alert('Audio add nahi ho paya: ' + e.message);
+      alert('Could not add audio: ' + e.message);
     }finally{
       if(btn){ btn.disabled=false; btn.textContent='✓ Done'; }
     }
@@ -3469,7 +3577,7 @@ onAuthStateChanged(auth, user => {
     audioRow.innerHTML = `
       <label class="user-post-audio-btn" for="userPostAudioFile">🎵 Add Audio</label>
       <input id="userPostAudioFile" type="file" accept="audio/*" hidden>
-      <span class="user-post-audio-hint">apne download audio se</span>
+      <span class="user-post-audio-hint">from your downloaded audio</span>
     `;
 
     const chip = document.createElement('div');
@@ -3511,7 +3619,7 @@ onAuthStateChanged(auth, user => {
       const file = this.files && this.files[0];
       if(!file) return;
       if(file.size > USER_POST_MAX_AUDIO_BYTES){
-        alert('Audio file 4MB se choti honi chahiye.');
+        alert('Audio file must be smaller than 4MB.');
         this.value='';
         return;
       }
@@ -3725,7 +3833,7 @@ onAuthStateChanged(auth, user => {
     }).slice(0,8);
 
     if(!matches.length){
-      box.innerHTML = '<div class="feed-search-empty">Koi user nahi mila.</div>';
+      box.innerHTML = '<div class="feed-search-empty">No user found.</div>';
       return;
     }
 
@@ -3773,7 +3881,7 @@ onAuthStateChanged(auth, user => {
     const posts = all.filter(p=>p && String(p.authorRoll||p.userId||p.createdBy||'')===String(roll))
                       .sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
     if(!posts.length){
-      list.innerHTML = '<div class="global-feed-empty">Is user ka koi post abhi tak nahi hai.</div>';
+      list.innerHTML = '<div class="global-feed-empty">This user has no posts yet.</div>';
       return;
     }
     list.innerHTML = posts.map(p => (typeof window.userFeedCard==='function' ? window.userFeedCard(p) : '')).join('');
