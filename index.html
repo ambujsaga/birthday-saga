@@ -3884,6 +3884,7 @@ onAuthStateChanged(auth, user => {
   // ---- ADDITIVE: state for the "search online audio" mode ----
   let onlinePreviewEl = null;
   let onlinePreviewBtn = null;
+  let onlineTrimTrack = null; // track currently being trimmed before confirm
 
   function fmtSec(s){
     s = Math.max(0, Math.round(s||0));
@@ -3911,6 +3912,9 @@ onAuthStateChanged(auth, user => {
     if(onlineQuery) onlineQuery.value = '';
     const onlineStatus = document.getElementById('userPostOnlineAudioStatus');
     if(onlineStatus) onlineStatus.textContent = '';
+    onlineTrimTrack = null;
+    const onlineTrimPanel = document.getElementById('userPostOnlineAudioTrimPanel');
+    if(onlineTrimPanel) onlineTrimPanel.classList.remove('active');
   }
 
   function openAudioPanelWithFile(file){
@@ -4036,21 +4040,105 @@ onAuthStateChanged(auth, user => {
     onlinePreviewBtn = null;
   }
 
-  function selectOnlineTrack(track, durSec){
+  function selectOnlineTrack(track, durSec, start, end){
     stopOnlinePreview();
+    const s = (typeof start === 'number') ? start : 0;
+    const e = (typeof end === 'number') ? end : durSec;
     pendingAudio = {
       dataUrl: track.previewUrl,
       duration: durSec,
-      start: 0,
-      end: durSec,
+      start: s,
+      end: e,
       name: (track.trackName || 'Online Audio') + (track.artistName ? (' - ' + track.artistName) : '')
     };
     const chip = document.getElementById('userPostAudioChip');
     const chipLabel = document.getElementById('userPostAudioChipLabel');
-    if(chipLabel) chipLabel.textContent = '🎵 ' + pendingAudio.name + ' (' + fmtSec(0) + '–' + fmtSec(durSec) + ')';
+    if(chipLabel) chipLabel.textContent = '🎵 ' + pendingAudio.name + ' (' + fmtSec(s) + '–' + fmtSec(e) + ')';
     chip?.classList.add('active');
     document.getElementById('userPostOnlineAudioPanel')?.classList.remove('active');
   }
+
+  // ---- ADDITIVE: trim step for online audio — same "adjust start/end" idea
+  // as the downloaded-audio flow, so users can pick their favourite line
+  // out of an online song too, before it's attached to the post. ----
+  function toggleOnlineSearchViewParts(showResults){
+    const resultsWrap = document.getElementById('userPostOnlineAudioResults');
+    const searchRow = document.querySelector('#userPostOnlineAudioPanel .user-post-online-audio-search-row');
+    const status = document.getElementById('userPostOnlineAudioStatus');
+    const display = showResults ? '' : 'none';
+    if(resultsWrap) resultsWrap.style.display = display;
+    if(searchRow) searchRow.style.display = display;
+    if(status) status.style.display = display;
+  }
+
+  function openOnlineTrimPanel(track, durSec){
+    stopOnlinePreview();
+    onlineTrimTrack = track;
+    const trimPanel = document.getElementById('userPostOnlineAudioTrimPanel');
+    const nameEl = document.getElementById('userPostOnlineAudioTrimName');
+    const startRange = document.getElementById('userPostOnlineAudioTrimStart');
+    const endRange = document.getElementById('userPostOnlineAudioTrimEnd');
+    const startLbl = document.getElementById('userPostOnlineAudioTrimStartLabel');
+    const endLbl = document.getElementById('userPostOnlineAudioTrimEndLabel');
+    if(!trimPanel || !startRange || !endRange) return;
+    nameEl.textContent = '🎧 ' + (track.trackName || 'Untitled') + (track.artistName ? (' - ' + track.artistName) : '');
+    startRange.min = 0; startRange.max = Math.max(0, Math.floor(durSec)); startRange.value = 0;
+    endRange.min = 0; endRange.max = Math.max(1, Math.floor(durSec)); endRange.value = Math.max(1, Math.floor(durSec));
+    startLbl.textContent = 'Start: ' + fmtSec(0);
+    endLbl.textContent = 'End: ' + fmtSec(durSec);
+    trimPanel.dataset.duration = String(durSec);
+    toggleOnlineSearchViewParts(false);
+    trimPanel.classList.add('active');
+  }
+
+  function closeOnlineTrimPanel(){
+    stopOnlinePreview();
+    onlineTrimTrack = null;
+    const trimPanel = document.getElementById('userPostOnlineAudioTrimPanel');
+    if(trimPanel) trimPanel.classList.remove('active');
+    toggleOnlineSearchViewParts(true);
+  }
+
+  function currentOnlineTrimRange(){
+    const trimPanel = document.getElementById('userPostOnlineAudioTrimPanel');
+    const startRange = document.getElementById('userPostOnlineAudioTrimStart');
+    const endRange = document.getElementById('userPostOnlineAudioTrimEnd');
+    const dur = parseFloat(trimPanel?.dataset.duration || '0');
+    let start = parseFloat(startRange?.value || '0');
+    let end = parseFloat(endRange?.value || String(dur));
+    if(end <= start) end = Math.min(dur, start+1);
+    return {start, end, duration: dur};
+  }
+
+  function previewOnlineTrim(){
+    if(!onlineTrimTrack) return;
+    const {start, end} = currentOnlineTrimRange();
+    stopOnlinePreview();
+    const a = new Audio(onlineTrimTrack.previewUrl);
+    onlinePreviewEl = a;
+    a.currentTime = start;
+    a.play().catch(()=>{});
+    const stopAt = ()=>{
+      if(a.currentTime >= end){ a.pause(); a.removeEventListener('timeupdate', stopAt); }
+    };
+    a.addEventListener('timeupdate', stopAt);
+    a.addEventListener('ended', ()=>{ onlinePreviewEl = null; });
+  }
+
+  function confirmOnlineTrim(){
+    if(!onlineTrimTrack) return;
+    const {start, end, duration} = currentOnlineTrimRange();
+    const track = onlineTrimTrack;
+    selectOnlineTrack(track, duration, start, end);
+    onlineTrimTrack = null;
+    const trimPanel = document.getElementById('userPostOnlineAudioTrimPanel');
+    if(trimPanel) trimPanel.classList.remove('active');
+    toggleOnlineSearchViewParts(true);
+  }
+
+  window.userPostOnlineAudioTrimPreview = previewOnlineTrim;
+  window.userPostOnlineAudioTrimConfirm = confirmOnlineTrim;
+  window.userPostOnlineAudioTrimCancel = closeOnlineTrimPanel;
 
   function renderOnlineAudioResults(list){
     const wrap = document.getElementById('userPostOnlineAudioResults');
@@ -4092,7 +4180,7 @@ onAuthStateChanged(auth, user => {
           playBtn.classList.add('playing');
         }).catch(function(){ stopOnlinePreview(); });
       });
-      useBtn.addEventListener('click', function(){ selectOnlineTrack(track, durSec); });
+      useBtn.addEventListener('click', function(){ openOnlineTrimPanel(track, durSec); });
       wrap.appendChild(item);
     });
   }
@@ -4166,6 +4254,24 @@ onAuthStateChanged(auth, user => {
       <div class="user-post-online-audio-status" id="userPostOnlineAudioStatus"></div>
       <div class="user-post-online-audio-results" id="userPostOnlineAudioResults"></div>
     `;
+    onlinePanel.insertAdjacentHTML('beforeend', `
+      <div class="user-post-audio-panel" id="userPostOnlineAudioTrimPanel">
+        <div class="user-post-audio-file-name" id="userPostOnlineAudioTrimName"></div>
+        <div class="user-post-audio-trim-row">
+          <label><span id="userPostOnlineAudioTrimStartLabel">Start: 0:00</span></label>
+          <input type="range" id="userPostOnlineAudioTrimStart">
+        </div>
+        <div class="user-post-audio-trim-row">
+          <label><span id="userPostOnlineAudioTrimEndLabel">End: 0:00</span></label>
+          <input type="range" id="userPostOnlineAudioTrimEnd">
+        </div>
+        <div class="user-post-audio-actions">
+          <button type="button" class="user-post-audio-preview-btn" onclick="userPostOnlineAudioTrimPreview()">▶️ Preview</button>
+          <button type="button" class="user-post-audio-confirm-btn" onclick="userPostOnlineAudioTrimConfirm()">✓ Done</button>
+          <button type="button" class="user-post-audio-cancel-btn" onclick="userPostOnlineAudioTrimCancel()">← Back</button>
+        </div>
+      </div>
+    `);
 
     if(photoRow && photoRow.parentNode===composer){
       photoRow.insertAdjacentElement('afterend', panel);
@@ -4187,6 +4293,19 @@ onAuthStateChanged(auth, user => {
     document.getElementById('userPostOnlineAudioSearchBtn').addEventListener('click', searchOnlineAudio);
     document.getElementById('userPostOnlineAudioQuery').addEventListener('keydown', function(e){
       if(e.key === 'Enter'){ e.preventDefault(); searchOnlineAudio(); }
+    });
+    document.getElementById('userPostOnlineAudioTrimStart').addEventListener('input', function(){
+      const trimPanel = document.getElementById('userPostOnlineAudioTrimPanel');
+      let v = parseFloat(this.value);
+      const endRange = document.getElementById('userPostOnlineAudioTrimEnd');
+      if(v >= parseFloat(endRange.value)) { v = Math.max(0, parseFloat(endRange.value)-1); this.value=v; }
+      document.getElementById('userPostOnlineAudioTrimStartLabel').textContent = 'Start: ' + fmtSec(v);
+    });
+    document.getElementById('userPostOnlineAudioTrimEnd').addEventListener('input', function(){
+      let v = parseFloat(this.value);
+      const startRange = document.getElementById('userPostOnlineAudioTrimStart');
+      if(v <= parseFloat(startRange.value)) { v = parseFloat(startRange.value)+1; this.value=v; }
+      document.getElementById('userPostOnlineAudioTrimEndLabel').textContent = 'End: ' + fmtSec(v);
     });
 
     document.getElementById('userPostAudioFile').addEventListener('click', function(){
