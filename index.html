@@ -1152,6 +1152,27 @@
 .user-post-audio-chip{display:none;align-items:center;gap:8px;background:#eef2ff;border:1px solid #c7d2fe;color:#1e3a8a;padding:7px 10px;border-radius:8px;font-size:.82rem;font-weight:700;margin:0 0 12px}
 .user-post-audio-chip.active{display:inline-flex}
 .user-post-audio-chip .user-post-audio-remove{cursor:pointer;color:#b91c1c;font-weight:900;margin-left:4px}
+
+/* ================= ADDITIVE: POST AUDIO SOURCE — ONLINE SEARCH (new CSS only, old CSS untouched) ================= */
+.user-post-audio-mode-btn{display:inline-flex;align-items:center;gap:6px;background:#eef2ff;border:1px solid #c7d2fe;color:#1e3a8a;padding:9px 12px;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem}
+.user-post-online-audio-panel{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;margin:0 0 12px;display:none}
+.user-post-online-audio-panel.active{display:block}
+.user-post-online-audio-search-row{display:flex;gap:8px;margin-bottom:10px}
+.user-post-online-audio-search-row input{flex:1;padding:9px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:.9rem;min-width:0}
+.user-post-online-audio-search-row button{border:0;background:var(--primary-blue);color:#fff;padding:9px 14px;border-radius:8px;font-weight:700;cursor:pointer;flex-shrink:0}
+.user-post-online-audio-status{font-size:.8rem;color:#64748b;margin-bottom:8px}
+.user-post-online-audio-results{max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.user-post-online-audio-item{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px}
+.user-post-online-audio-item img{width:44px;height:44px;border-radius:6px;object-fit:cover;flex-shrink:0;background:#e2e8f0}
+.user-post-online-audio-info{flex:1;min-width:0}
+.user-post-online-audio-info .oa-title{font-size:.85rem;font-weight:700;color:#003366;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-post-online-audio-info .oa-artist{font-size:.75rem;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-post-online-audio-item-actions{display:flex;gap:6px;flex-shrink:0}
+.user-post-online-audio-item-actions button{border:0;border-radius:6px;padding:7px 9px;font-weight:700;cursor:pointer;font-size:.78rem;white-space:nowrap}
+.user-post-online-audio-play-btn{background:#e0e7ff;color:#1e3a8a}
+.user-post-online-audio-play-btn.playing{background:var(--accent-orange);color:#fff}
+.user-post-online-audio-use-btn{background:var(--primary-blue);color:#fff}
+
 .user-post-music-icon{border:0;background:rgba(0,51,102,0.08);color:var(--primary-blue);width:26px;height:26px;border-radius:50%;font-size:.85rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin-right:8px;flex:0 0 auto;transition:background .2s,transform .2s}
 .user-post-music-icon.playing{background:var(--accent-orange);color:#fff;animation:userPostMusicPulse 1s infinite}
 @keyframes userPostMusicPulse{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
@@ -3860,6 +3881,10 @@ onAuthStateChanged(auth, user => {
   let selectedAudioFile = null;
   let previewAudioEl = null;
 
+  // ---- ADDITIVE: state for the "search online audio" mode ----
+  let onlinePreviewEl = null;
+  let onlinePreviewBtn = null;
+
   function fmtSec(s){
     s = Math.max(0, Math.round(s||0));
     const m = Math.floor(s/60), r = s%60;
@@ -3876,6 +3901,16 @@ onAuthStateChanged(auth, user => {
     if(panel) panel.classList.remove('active');
     const chip = document.getElementById('userPostAudioChip');
     if(chip) chip.classList.remove('active');
+    // ---- ADDITIVE: also reset the "Search Online Audio" panel ----
+    stopOnlinePreview();
+    const onlinePanel = document.getElementById('userPostOnlineAudioPanel');
+    if(onlinePanel) onlinePanel.classList.remove('active');
+    const onlineResults = document.getElementById('userPostOnlineAudioResults');
+    if(onlineResults) onlineResults.innerHTML = '';
+    const onlineQuery = document.getElementById('userPostOnlineAudioQuery');
+    if(onlineQuery) onlineQuery.value = '';
+    const onlineStatus = document.getElementById('userPostOnlineAudioStatus');
+    if(onlineStatus) onlineStatus.textContent = '';
   }
 
   function openAudioPanelWithFile(file){
@@ -3989,6 +4024,97 @@ onAuthStateChanged(auth, user => {
   window.userPostAudioCancel = cancelAudioSelection;
   window.userPostAudioRemove = removeConfirmedAudio;
 
+  // ================= ADDITIVE: "Search Online Audio" mode =================
+  // User ya to phone se downloaded audio choose kar sakta hai (upar wala
+  // purana flow, bilkul waisa hi jaisa tha) YA phir yahan se online gaana/
+  // audio search kar ke seedha post me use kar sakta hai. Dono options
+  // saath-saath rehte hain, sirf ek pendingAudio hi post ke saath jaata hai.
+  function stopOnlinePreview(){
+    if(onlinePreviewEl){ try{ onlinePreviewEl.pause(); }catch(e){} }
+    if(onlinePreviewBtn) onlinePreviewBtn.classList.remove('playing');
+    onlinePreviewEl = null;
+    onlinePreviewBtn = null;
+  }
+
+  function selectOnlineTrack(track, durSec){
+    stopOnlinePreview();
+    pendingAudio = {
+      dataUrl: track.previewUrl,
+      duration: durSec,
+      start: 0,
+      end: durSec,
+      name: (track.trackName || 'Online Audio') + (track.artistName ? (' - ' + track.artistName) : '')
+    };
+    const chip = document.getElementById('userPostAudioChip');
+    const chipLabel = document.getElementById('userPostAudioChipLabel');
+    if(chipLabel) chipLabel.textContent = '🎵 ' + pendingAudio.name + ' (' + fmtSec(0) + '–' + fmtSec(durSec) + ')';
+    chip?.classList.add('active');
+    document.getElementById('userPostOnlineAudioPanel')?.classList.remove('active');
+  }
+
+  function renderOnlineAudioResults(list){
+    const wrap = document.getElementById('userPostOnlineAudioResults');
+    const status = document.getElementById('userPostOnlineAudioStatus');
+    if(!wrap) return;
+    wrap.innerHTML = '';
+    stopOnlinePreview();
+    const usable = (list || []).filter(t => t && t.previewUrl);
+    if(!usable.length){
+      if(status) status.textContent = 'No results found. Try a different search.';
+      return;
+    }
+    if(status) status.textContent = '';
+    const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    usable.forEach(function(track){
+      const durSec = Math.round((track.trackTimeMillis || 30000) / 1000);
+      const item = document.createElement('div');
+      item.className = 'user-post-online-audio-item';
+      item.innerHTML =
+        '<img src="' + esc(track.artworkUrl60 || track.artworkUrl100 || '') + '" alt="">' +
+        '<div class="user-post-online-audio-info">' +
+          '<div class="oa-title">' + esc(track.trackName || 'Untitled') + '</div>' +
+          '<div class="oa-artist">' + esc(track.artistName || '') + '</div>' +
+        '</div>' +
+        '<div class="user-post-online-audio-item-actions">' +
+          '<button type="button" class="user-post-online-audio-play-btn">▶️</button>' +
+          '<button type="button" class="user-post-online-audio-use-btn">Use</button>' +
+        '</div>';
+      const playBtn = item.querySelector('.user-post-online-audio-play-btn');
+      const useBtn = item.querySelector('.user-post-online-audio-use-btn');
+      playBtn.addEventListener('click', function(){
+        if(onlinePreviewBtn === playBtn){ stopOnlinePreview(); return; }
+        stopOnlinePreview();
+        const a = new Audio(track.previewUrl);
+        a.addEventListener('ended', stopOnlinePreview);
+        a.play().then(function(){
+          onlinePreviewEl = a;
+          onlinePreviewBtn = playBtn;
+          playBtn.classList.add('playing');
+        }).catch(function(){ stopOnlinePreview(); });
+      });
+      useBtn.addEventListener('click', function(){ selectOnlineTrack(track, durSec); });
+      wrap.appendChild(item);
+    });
+  }
+
+  async function searchOnlineAudio(){
+    const qEl = document.getElementById('userPostOnlineAudioQuery');
+    const status = document.getElementById('userPostOnlineAudioStatus');
+    const wrap = document.getElementById('userPostOnlineAudioResults');
+    const q = (qEl && qEl.value || '').trim();
+    if(!q){ if(status) status.textContent = 'Please type a song / audio name to search.'; return; }
+    if(wrap) wrap.innerHTML = '';
+    if(status) status.textContent = 'Searching…';
+    try{
+      const res = await fetch('https://itunes.apple.com/search?media=music&limit=15&term=' + encodeURIComponent(q));
+      const data = await res.json();
+      renderOnlineAudioResults((data && data.results) || []);
+    }catch(e){
+      if(status) status.textContent = 'Search failed, please check your internet and try again.';
+    }
+  }
+  window.userPostOnlineAudioSearch = searchOnlineAudio;
+
   function ensureAudioComposerUI(){
     const composer = document.getElementById('userPostComposer');
     if(!composer || document.getElementById('userPostAudioRow')) return;
@@ -4002,6 +4128,7 @@ onAuthStateChanged(auth, user => {
       <input id="userPostAudioFile" type="file" accept="audio/*" hidden>
       <span class="user-post-audio-hint">from your downloaded audio</span>
     `;
+    audioRow.insertAdjacentHTML('beforeend', '<button type="button" class="user-post-audio-mode-btn" id="userPostOnlineAudioToggle">🌐 Search Online Audio</button>');
 
     const chip = document.createElement('div');
     chip.className = 'user-post-audio-chip';
@@ -4028,6 +4155,18 @@ onAuthStateChanged(auth, user => {
       </div>
     `;
 
+    const onlinePanel = document.createElement('div');
+    onlinePanel.className = 'user-post-online-audio-panel';
+    onlinePanel.id = 'userPostOnlineAudioPanel';
+    onlinePanel.innerHTML = `
+      <div class="user-post-online-audio-search-row">
+        <input type="text" id="userPostOnlineAudioQuery" placeholder="Search a song / audio name...">
+        <button type="button" id="userPostOnlineAudioSearchBtn">🔍 Search</button>
+      </div>
+      <div class="user-post-online-audio-status" id="userPostOnlineAudioStatus"></div>
+      <div class="user-post-online-audio-results" id="userPostOnlineAudioResults"></div>
+    `;
+
     if(photoRow && photoRow.parentNode===composer){
       photoRow.insertAdjacentElement('afterend', panel);
       photoRow.insertAdjacentElement('afterend', chip);
@@ -4037,7 +4176,22 @@ onAuthStateChanged(auth, user => {
       composer.appendChild(chip);
       composer.appendChild(panel);
     }
+    composer.appendChild(onlinePanel);
 
+    // ---- ADDITIVE: wire up the "Search Online Audio" mode toggle + search box ----
+    document.getElementById('userPostOnlineAudioToggle').addEventListener('click', function(){
+      const trimPanel = document.getElementById('userPostAudioPanel');
+      if(trimPanel) trimPanel.classList.remove('active');
+      onlinePanel.classList.toggle('active');
+    });
+    document.getElementById('userPostOnlineAudioSearchBtn').addEventListener('click', searchOnlineAudio);
+    document.getElementById('userPostOnlineAudioQuery').addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){ e.preventDefault(); searchOnlineAudio(); }
+    });
+
+    document.getElementById('userPostAudioFile').addEventListener('click', function(){
+      onlinePanel.classList.remove('active');
+    });
     document.getElementById('userPostAudioFile').addEventListener('change', function(){
       const file = this.files && this.files[0];
       if(!file) return;
@@ -4204,6 +4358,7 @@ onAuthStateChanged(auth, user => {
   const oldCloseCreatePage = window.closeUserPostCreatePage;
   window.closeUserPostCreatePage = function(){
     if(previewAudioEl){ try{ previewAudioEl.pause(); }catch(e){} previewAudioEl=null; }
+    stopOnlinePreview();
     if(typeof oldCloseCreatePage==='function') oldCloseCreatePage();
   };
 })();
