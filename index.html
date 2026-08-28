@@ -3752,8 +3752,19 @@ onAuthStateChanged(auth, user => {
     const list=document.getElementById('globalFeedList'); if(!list) return;
     const posts=(window.adminPostsData || window.onlineData?.posts || []).filter(p=>p && (p.timestamp || p.authorRoll || p.userId || p.createdBy));
     posts.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
-    if(!posts.length){list.innerHTML='<div class="global-feed-empty">No posts available yet.</div>';return;}
-    list.innerHTML=posts.map(p=>{
+    // NEW: On the "All Users Feed" page only, an Admin Update post stays visible for just
+    // 1 hour after it is posted, then it is hidden from this feed (post data itself is not
+    // touched/deleted — it still shows normally on its own subject page as before).
+    // Normal user posts (authorRoll/userId/createdBy present) are completely unaffected.
+    const ONE_HOUR_MS = 60 * 60 * 1000;
+    const now = Date.now();
+    const visiblePosts = posts.filter(p=>{
+      const isUserPost=String(p.authorRoll||p.userId||p.createdBy||'')!=='';
+      if(isUserPost) return true;
+      return !!(p.timestamp && (now - p.timestamp) < ONE_HOUR_MS);
+    });
+    if(!visiblePosts.length){list.innerHTML='<div class="global-feed-empty">No posts available yet.</div>';return;}
+    list.innerHTML=visiblePosts.map(p=>{
       const isUserPost=String(p.authorRoll||p.userId||p.createdBy||'')!=='';
       return isUserPost ? userFeedCard(p) : (typeof generatePostHTML==='function'?generatePostHTML(p):'');
     }).join('');
@@ -3773,6 +3784,14 @@ onAuthStateChanged(auth, user => {
     },{threshold:[0.55]});
     list.querySelectorAll('.global-user-post[data-user-post-id]').forEach(el=>globalPostObserver.observe(el));
   };
+  // NEW: while the "All Users Feed" page is open, re-render it every minute purely so an
+  // Admin Update post disappears right at the 1-hour mark even if nothing else changes.
+  // This mirrors the existing home-page "Live Update" timer and does not touch post data.
+  if(!window.__globalFeedHourTimer){
+    window.__globalFeedHourTimer = setInterval(function(){
+      if(document.getElementById('globalFeedPage')?.style.display==='block' && typeof window.renderGlobalFeed==='function') window.renderGlobalFeed();
+    }, 60000);
+  }
   window.openGlobalFeed=function(){
     requireLogin(function(){
       closeAllSections();
