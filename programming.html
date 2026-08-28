@@ -652,63 +652,60 @@
     }
   }
 
-  /* ---------------- Run (own page per language) ---------------- */
-  byId("runBackBtn").addEventListener("click", () => {
-    showView("editor");
-  });
+  /* ---------------- Universal Run Engine ----------------
+     Browser-native execution is kept for Web/JavaScript/Python/C/C++.
+     Java, C#, PHP, Kotlin and Go are routed through an optional sandbox
+     compiler endpoint. Configure it with window.MMITCS_EXECUTOR_URL or
+     localStorage key mmitcs_executor_url.
+  ---------------------------------------------------------- */
 
-  byId("runBtn").addEventListener("click", () => {
-    const lang = langById(state.currentLang);
-    const panel = byId("runPanel");
-    const body = byId("runPanelBody");
-    const label = byId("runPanelLabel");
+  const EXECUTOR_URL = window.MMITCS_EXECUTOR_URL || localStorage.getItem("mmitcs_executor_url") || "";
+  const REMOTE_LANG = {java:"java",csharp:"csharp",php:"php",kotlin:"kotlin",go:"go"};
 
-    byId("runIcon").style.background = lang.color;
-    byId("runIcon").innerHTML = lang.icon;
-    byId("runTitle").textContent = lang.name + " — Run";
+  function showConsoleResult(body,result){
+    const out=document.createElement("div"); out.className="console-out";
+    const run=result&&result.run?result.run:{};
+    const stdout=run.stdout||"", stderr=run.stderr||"", code=run.code;
+    let html=escapeHtml(stdout);
+    if(stderr) html+=(html?"\n":"")+'<span class="err">'+escapeHtml(stderr)+"</span>";
+    if(code!==null&&code!==undefined&&code!==0&&!stderr) html+=(html?"\n":"")+'<span class="err">Process exited with code '+escapeHtml(String(code))+"</span>";
+    out.innerHTML=html||"(no output)"; body.innerHTML=""; body.appendChild(out);
+  }
 
-    panel.style.display = "block";
-    body.innerHTML = "";
-    showView("run");
-
-    if (lang.kind === "web"){
-      label.textContent = "Live Preview";
-      const iframe = document.createElement("iframe");
-      iframe.className = "preview";
-      body.appendChild(iframe);
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
-      doc.open();
-      doc.write(`<!DOCTYPE html><html><head><style>${state.data.css}</style></head><body>${state.data.html}<script>${state.data.js}<\/script></body></html>`);
-      doc.close();
-    } else if (lang.kind === "js"){
-      label.textContent = "Console Output";
-      const out = document.createElement("div");
-      out.className = "console-out";
-      const logs = [];
-      const fakeConsole = {
-        log: (...a) => logs.push(a.map(String).join(" ")),
-        error: (...a) => logs.push('<span class="err">' + a.map(String).join(" ") + '</span>'),
-        warn: (...a) => logs.push(a.map(String).join(" "))
-      };
-      try {
-        const fn = new Function("console", state.data.code);
-        fn(fakeConsole);
-        out.innerHTML = logs.length ? logs.join("\n") : "(no output. use console.log())";
-      } catch(err){
-        out.innerHTML = '<span class="err">Error: ' + escapeHtml(err.message) + '</span>';
-      }
-      body.appendChild(out);
-    } else if (lang.kind === "python"){
-      runPython(state.data.code, body, label);
-    } else if (lang.kind === "c" || lang.kind === "cpp"){
-      runCLike(state.data.code, body, label);
-    } else {
-      label.textContent = lang.name + " — Run not available in-browser";
-      const note = document.createElement("div");
-      note.className = "note-box";
-      note.textContent = `${lang.name} is a compiled/interpreted language that can't run directly in the browser (it needs a ${lang.name} compiler/runtime to execute). You can write, save and download your code here — then run it in any ${lang.name} compiler/IDE.`;
-      body.appendChild(note);
+  async function runRemote(lang,code,body,label){
+    label.textContent="Compiler Output";
+    if(!EXECUTOR_URL){
+      body.innerHTML=""; const note=document.createElement("div"); note.className="note-box";
+      note.innerHTML="<b>"+escapeHtml(lang.name)+" needs its real compiler/runtime.</b><br>A normal HTML page cannot safely compile every native language. Connect a sandbox executor with <code>window.MMITCS_EXECUTOR_URL</code> or localStorage key <code>mmitcs_executor_url</code>. Editor, save, projects and download remain unchanged.";
+      body.appendChild(note); return;
     }
+    body.innerHTML='<div class="console-out">Starting '+escapeHtml(lang.name)+' compiler…</div>';
+    try{
+      const res=await fetch(EXECUTOR_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({language:REMOTE_LANG[lang.id]||lang.id,version:"*",files:[{name:"Main."+lang.ext,content:code}],stdin:""})});
+      if(!res.ok) throw new Error("Compiler service returned HTTP "+res.status);
+      showConsoleResult(body,await res.json());
+    }catch(err){
+      body.innerHTML=""; const note=document.createElement("div"); note.className="note-box";
+      note.innerHTML='<span class="err">Compiler connection failed:</span> '+escapeHtml(err.message||String(err))+"<br>Check the executor URL/server. Your code is still saved locally."; body.appendChild(note);
+    }
+  }
+
+  byId("runBackBtn").addEventListener("click",()=>showView("editor"));
+  byId("runBtn").addEventListener("click",()=>{
+    const lang=langById(state.currentLang), panel=byId("runPanel"), body=byId("runPanelBody"), label=byId("runPanelLabel");
+    byId("runIcon").style.background=lang.color; byId("runIcon").innerHTML=lang.icon; byId("runTitle").textContent=lang.name+" — Run";
+    panel.style.display="block"; body.innerHTML=""; showView("run");
+    if(lang.kind==="web"){
+      label.textContent="Live Preview"; const iframe=document.createElement("iframe"); iframe.className="preview"; iframe.setAttribute("sandbox","allow-scripts"); body.appendChild(iframe);
+      const doc=iframe.contentDocument||iframe.contentWindow.document; doc.open();
+      doc.write(`<!DOCTYPE html><html><head><style>${state.data.css}</style></head><body>${state.data.html}<script>${state.data.js}\<\/script></body></html>`); doc.close();
+    }else if(lang.kind==="js"){
+      label.textContent="Console Output"; const out=document.createElement("div"); out.className="console-out"; const logs=[];
+      const fakeConsole={log:(...a)=>logs.push(a.map(String).join(" ")),error:(...a)=>logs.push('<span class="err">'+a.map(String).join(" ")+"</span>"),warn:(...a)=>logs.push(a.map(String).join(" "))};
+      try{const fn=new Function("console",state.data.code); fn(fakeConsole); out.innerHTML=logs.length?logs.join("\n"):"(no output. use console.log())";}catch(err){out.innerHTML='<span class="err">Error: '+escapeHtml(err.message)+"</span>";} body.appendChild(out);
+    }else if(lang.kind==="python") runPython(state.data.code,body,label);
+    else if(lang.kind==="c"||lang.kind==="cpp") runCLike(state.data.code,body,label);
+    else runRemote(lang,state.data.code,body,label);
   });
 
   /* ---------------- Download ---------------- */
