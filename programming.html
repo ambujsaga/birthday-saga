@@ -589,7 +589,7 @@
     if (jscppPromise) return jscppPromise;
     jscppPromise = new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      script.src = "https://cdn.jsdelivr.net/npm/jscpp@2.0.9/dist/JSCPP.es5.min.js";
+      script.src = "https://cdn.jsdelivr.net/npm/JSCPP@2.0.9/dist/JSCPP.es5.min.js";
       script.onload = () => {
         if (window.JSCPP){ jscppLib = window.JSCPP; resolve(jscppLib); }
         else reject(new Error("C/C++ interpreter failed to initialize."));
@@ -696,9 +696,9 @@
     byId("runIcon").style.background=lang.color; byId("runIcon").innerHTML=lang.icon; byId("runTitle").textContent=lang.name+" — Run";
     panel.style.display="block"; body.innerHTML=""; showView("run");
     if(lang.kind==="web"){
-      label.textContent="Live Preview"; const iframe=document.createElement("iframe"); iframe.className="preview"; iframe.setAttribute("sandbox","allow-scripts"); body.appendChild(iframe);
-      const doc=iframe.contentDocument||iframe.contentWindow.document; doc.open();
-      doc.write(`<!DOCTYPE html><html><head><style>${state.data.css}</style></head><body>${state.data.html}<script>${state.data.js}\<\/script></body></html>`); doc.close();
+      label.textContent="Live Preview"; const iframe=document.createElement("iframe"); iframe.className="preview"; iframe.setAttribute("sandbox","allow-scripts");
+      iframe.srcdoc = `<!DOCTYPE html><html><head><style>${state.data.css}</style></head><body>${state.data.html}<script>${state.data.js}\<\/script></body></html>`;
+      body.appendChild(iframe);
     }else if(lang.kind==="js"){
       label.textContent="Console Output"; const out=document.createElement("div"); out.className="console-out"; const logs=[];
       const fakeConsole={log:(...a)=>logs.push(a.map(String).join(" ")),error:(...a)=>logs.push('<span class="err">'+a.map(String).join(" ")+"</span>"),warn:(...a)=>logs.push(a.map(String).join(" "))};
