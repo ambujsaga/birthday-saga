@@ -352,6 +352,35 @@
             transform: translateX(-50%);
         }
 
+        /* Programming quick-link button - shown just above Academic Subjects title, right side */
+        .section-top-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 6px;
+            margin-top: -22px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .programming-nav-btn {
+            display: inline-block;
+            background: #fff;
+            color: var(--sarkari-red);
+            border: 2px solid var(--sarkari-red);
+            padding: 3px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .programming-nav-btn:hover {
+            background: var(--sarkari-red);
+            color: #fff;
+        }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -1534,6 +1563,9 @@
         </section>
 
         <section class="container">
+            <div class="section-top-actions">
+                <a href="programming.html" class="programming-nav-btn">Programming</a>
+            </div>
             <h2 class="section-title">Academic Subjects (Semester-I)</h2>
             <div class="grid" id="subjectsGrid">
             </div>
