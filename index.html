@@ -3876,6 +3876,10 @@ onAuthStateChanged(auth, user => {
 ================================================================================= */
 (function(){
   const USER_POST_MAX_AUDIO_BYTES = 4*1024*1024; // ~4MB raw audio file safety cap
+  // ---- ADDITIVE: Instagram/WhatsApp-style cap — chahe downloaded audio ho ya
+  // online audio, dono me adjust/trim window zyada se zyada 30 second ka hi
+  // ho sakta hai. Neeche sirf isi audio module ke andar use hota hai. ----
+  const USER_POST_MAX_TRIM_SECONDS = 30;
 
   let pendingAudio = null; // {dataUrl, duration, start, end, name}
   let selectedAudioFile = null;
@@ -3936,9 +3940,12 @@ onAuthStateChanged(auth, user => {
       URL.revokeObjectURL(objUrl);
       nameEl.textContent = '🎧 ' + file.name;
       startRange.min = 0; startRange.max = Math.max(0, Math.floor(dur)); startRange.value = 0;
-      endRange.min = 0; endRange.max = Math.max(1, Math.floor(dur)); endRange.value = Math.max(1, Math.floor(dur));
+      endRange.min = 0; endRange.max = Math.max(1, Math.floor(dur));
+      // ---- ADDITIVE: default selection capped at 30 sec, same as Instagram/WhatsApp ----
+      const defaultEnd = Math.max(1, Math.min(Math.floor(dur), USER_POST_MAX_TRIM_SECONDS));
+      endRange.value = defaultEnd;
       startLbl.textContent = 'Start: ' + fmtSec(0);
-      endLbl.textContent = 'End: ' + fmtSec(dur);
+      endLbl.textContent = 'End: ' + fmtSec(defaultEnd);
       panel.dataset.duration = String(dur);
       panel.classList.add('active');
       document.getElementById('userPostAudioChip')?.classList.remove('active');
@@ -3957,6 +3964,8 @@ onAuthStateChanged(auth, user => {
     let start = parseFloat(startRange?.value || '0');
     let end = parseFloat(endRange?.value || String(dur));
     if(end <= start) end = Math.min(dur, start+1);
+    // ---- ADDITIVE: hard safety cap — window kabhi bhi 30 sec se zyada na ho ----
+    if(end - start > USER_POST_MAX_TRIM_SECONDS) end = Math.min(dur, start + USER_POST_MAX_TRIM_SECONDS);
     return {start, end, duration:dur};
   }
 
@@ -4083,9 +4092,12 @@ onAuthStateChanged(auth, user => {
     if(!trimPanel || !startRange || !endRange) return;
     nameEl.textContent = '🎧 ' + (track.trackName || 'Untitled') + (track.artistName ? (' - ' + track.artistName) : '');
     startRange.min = 0; startRange.max = Math.max(0, Math.floor(durSec)); startRange.value = 0;
-    endRange.min = 0; endRange.max = Math.max(1, Math.floor(durSec)); endRange.value = Math.max(1, Math.floor(durSec));
+    endRange.min = 0; endRange.max = Math.max(1, Math.floor(durSec));
+    // ---- ADDITIVE: default selection capped at 30 sec, same as Instagram/WhatsApp ----
+    const onlineDefaultEnd = Math.max(1, Math.min(Math.floor(durSec), USER_POST_MAX_TRIM_SECONDS));
+    endRange.value = onlineDefaultEnd;
     startLbl.textContent = 'Start: ' + fmtSec(0);
-    endLbl.textContent = 'End: ' + fmtSec(durSec);
+    endLbl.textContent = 'End: ' + fmtSec(onlineDefaultEnd);
     trimPanel.dataset.duration = String(durSec);
     toggleOnlineSearchViewParts(false);
     trimPanel.classList.add('active');
@@ -4107,6 +4119,8 @@ onAuthStateChanged(auth, user => {
     let start = parseFloat(startRange?.value || '0');
     let end = parseFloat(endRange?.value || String(dur));
     if(end <= start) end = Math.min(dur, start+1);
+    // ---- ADDITIVE: hard safety cap — window kabhi bhi 30 sec se zyada na ho ----
+    if(end - start > USER_POST_MAX_TRIM_SECONDS) end = Math.min(dur, start + USER_POST_MAX_TRIM_SECONDS);
     return {start, end, duration: dur};
   }
 
@@ -4214,7 +4228,7 @@ onAuthStateChanged(auth, user => {
     audioRow.innerHTML = `
       <label class="user-post-audio-btn" for="userPostAudioFile">🎵 Add Audio</label>
       <input id="userPostAudioFile" type="file" accept="audio/*" hidden>
-      <span class="user-post-audio-hint">from your downloaded audio</span>
+      <span class="user-post-audio-hint">from your downloaded audio (max 30 sec)</span>
     `;
     audioRow.insertAdjacentHTML('beforeend', '<button type="button" class="user-post-audio-mode-btn" id="userPostOnlineAudioToggle">🌐 Search Online Audio</button>');
 
@@ -4296,15 +4310,30 @@ onAuthStateChanged(auth, user => {
     });
     document.getElementById('userPostOnlineAudioTrimStart').addEventListener('input', function(){
       const trimPanel = document.getElementById('userPostOnlineAudioTrimPanel');
+      const dur = parseFloat(trimPanel?.dataset.duration||'0');
       let v = parseFloat(this.value);
       const endRange = document.getElementById('userPostOnlineAudioTrimEnd');
       if(v >= parseFloat(endRange.value)) { v = Math.max(0, parseFloat(endRange.value)-1); this.value=v; }
+      // ---- ADDITIVE: keep the selectable window capped at 30 sec (Instagram/WhatsApp style) ----
+      let endV = parseFloat(endRange.value);
+      if(endV - v > USER_POST_MAX_TRIM_SECONDS){
+        endV = Math.min(dur, v + USER_POST_MAX_TRIM_SECONDS);
+        endRange.value = endV;
+        document.getElementById('userPostOnlineAudioTrimEndLabel').textContent = 'End: ' + fmtSec(endV);
+      }
       document.getElementById('userPostOnlineAudioTrimStartLabel').textContent = 'Start: ' + fmtSec(v);
     });
     document.getElementById('userPostOnlineAudioTrimEnd').addEventListener('input', function(){
       let v = parseFloat(this.value);
       const startRange = document.getElementById('userPostOnlineAudioTrimStart');
       if(v <= parseFloat(startRange.value)) { v = parseFloat(startRange.value)+1; this.value=v; }
+      // ---- ADDITIVE: keep the selectable window capped at 30 sec (Instagram/WhatsApp style) ----
+      let startV = parseFloat(startRange.value);
+      if(v - startV > USER_POST_MAX_TRIM_SECONDS){
+        startV = Math.max(0, v - USER_POST_MAX_TRIM_SECONDS);
+        startRange.value = startV;
+        document.getElementById('userPostOnlineAudioTrimStartLabel').textContent = 'Start: ' + fmtSec(startV);
+      }
       document.getElementById('userPostOnlineAudioTrimEndLabel').textContent = 'End: ' + fmtSec(v);
     });
 
@@ -4327,12 +4356,26 @@ onAuthStateChanged(auth, user => {
       let v = parseFloat(this.value);
       const endRange = document.getElementById('userPostAudioEnd');
       if(v >= parseFloat(endRange.value)) { v = Math.max(0, parseFloat(endRange.value)-1); this.value=v; }
+      // ---- ADDITIVE: keep the selectable window capped at 30 sec (Instagram/WhatsApp style) ----
+      let endV = parseFloat(endRange.value);
+      if(endV - v > USER_POST_MAX_TRIM_SECONDS){
+        endV = Math.min(dur, v + USER_POST_MAX_TRIM_SECONDS);
+        endRange.value = endV;
+        document.getElementById('userPostAudioEndLabel').textContent = 'End: ' + fmtSec(endV);
+      }
       document.getElementById('userPostAudioStartLabel').textContent = 'Start: ' + fmtSec(v);
     });
     document.getElementById('userPostAudioEnd').addEventListener('input', function(){
       let v = parseFloat(this.value);
       const startRange = document.getElementById('userPostAudioStart');
       if(v <= parseFloat(startRange.value)) { v = parseFloat(startRange.value)+1; this.value=v; }
+      // ---- ADDITIVE: keep the selectable window capped at 30 sec (Instagram/WhatsApp style) ----
+      let startV = parseFloat(startRange.value);
+      if(v - startV > USER_POST_MAX_TRIM_SECONDS){
+        startV = Math.max(0, v - USER_POST_MAX_TRIM_SECONDS);
+        startRange.value = startV;
+        document.getElementById('userPostAudioStartLabel').textContent = 'Start: ' + fmtSec(startV);
+      }
       document.getElementById('userPostAudioEndLabel').textContent = 'End: ' + fmtSec(v);
     });
 
