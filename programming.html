@@ -217,7 +217,7 @@
     <section id="view-home" class="view active">
       <div class="hero">
         <p class="eyebrow">// pick a language and start coding</p>
-        <h1>10 languages, one workspace, no internet needed — everything saved on this device.</h1>
+        
       </div>
       <div class="lang-grid" id="langGrid"></div>
     </section>
@@ -629,28 +629,112 @@
     }
   }
 
+  /*
+   * C / C++ execution engine
+   * ------------------------------------------------------------
+   * Keep the existing editor, storage, projects, download and
+   * navigation code untouched.  Only the C/C++ execution layer
+   * is upgraded.
+   *
+   * JSCPP is used in-browser.  stdin is passed to JSCPP so common
+   * programs using scanf/cin/getchar can actually receive input.
+   */
   async function runCLike(code, body, label){
     label.textContent = "Console Output";
-    body.innerHTML = '<div class="console-out">Loading C/C++ interpreter… (first run only, needs internet)</div>';
+    body.innerHTML = '<div class="console-out">Loading C/C++ runtime… (first run only)</div>';
+
     try {
       const JSCPPlib = await ensureJSCPP();
-      let out = "";
-      const config = { stdio: { write: s => { out += s; } } };
-      try { JSCPPlib.run(code, "", config); }
-      catch(err){ out += (out ? "\n" : "") + "Error: " + (err && err.message ? err.message : String(err)); }
-      const div = document.createElement("div");
-      div.className = "console-out";
-      div.textContent = out.trim() ? out : "(no output)";
-      body.innerHTML = "";
-      body.appendChild(div);
-    } catch(loadErr){
+
+      let stdout = "";
+      let stderr = "";
+      let exitCode = 0;
+
+      /*
+       * Ask for stdin only when the source appears to read input.
+       * This keeps simple Hello World programs one-click.
+       */
+      const needsInput =
+        /\b(scanf|fscanf|sscanf|getchar|getc|fgetc|gets|cin|getline|std::cin|std::getline)\b/.test(code);
+
+      let stdin = "";
+      if (needsInput) {
+        const supplied = window.prompt(
+          "C/C++ Standard Input (optional)\n" +
+          "Enter input values exactly as your program expects.\n" +
+          "Example: 10 20",
+          ""
+        );
+        if (supplied === null) {
+          body.innerHTML = "";
+          const cancelled = document.createElement("div");
+          cancelled.className = "console-out";
+          cancelled.textContent = "Run cancelled.";
+          body.appendChild(cancelled);
+          return;
+        }
+        stdin = supplied;
+      }
+
+      const config = {
+        stdio: {
+          write: function(chunk) {
+            stdout += String(chunk);
+          }
+        }
+      };
+
+      try {
+        /*
+         * JSCPP's browser API accepts:
+         * run(sourceCode, stdin, config)
+         */
+        const result = JSCPPlib.run(code, stdin, config);
+        if (typeof result === "number") exitCode = result;
+      } catch (err) {
+        exitCode = 1;
+        stderr = err && err.message ? err.message : String(err);
+      }
+
+      const out = document.createElement("div");
+      out.className = "console-out";
+
+      let text = stdout;
+      if (stderr) {
+        text += (text ? "\n" : "") + "Error: " + stderr;
+      }
+      if (!text.trim()) {
+        text = "(no output)";
+      }
+
+      out.textContent = text;
+
+      if (exitCode !== 0) {
+        const status = document.createElement("div");
+        status.className = "note-box";
+        status.textContent = "Process exited with code " + exitCode;
+        body.innerHTML = "";
+        body.appendChild(out);
+        body.appendChild(status);
+      } else {
+        body.innerHTML = "";
+        body.appendChild(out);
+      }
+
+    } catch(loadErr) {
       const note = document.createElement("div");
       note.className = "note-box";
-      note.textContent = "Could not start the C/C++ interpreter (needs an internet connection the first time you run it, and supports a common subset of C/C++, not every library). " + (loadErr.message || String(loadErr)) + " You can still write, save and download your code here, then run it in any C/C++ compiler.";
+      note.innerHTML =
+        "<b>C/C++ runtime could not start.</b><br>" +
+        "The browser C/C++ runtime is loaded when Run is pressed. " +
+        "An internet connection is required the first time because " +
+        "the JSCPP runtime is loaded from the configured CDN.<br><br>" +
+        escapeHtml(loadErr.message || String(loadErr));
       body.innerHTML = "";
       body.appendChild(note);
     }
   }
+
 
   /* ---------------- Universal Run Engine ----------------
      Browser-native execution is kept for Web/JavaScript/Python/C/C++.
