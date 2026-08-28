@@ -2323,7 +2323,13 @@
         function renderFeed(subjectId, containerId) {
             const container = document.getElementById(containerId);
             if(!container) return;
-            const posts = (window.adminPostsData || adminPostsData).filter(p => String(p.subjectId) === String(subjectId));
+            // NEW: sort by timestamp (newest first) so posts always show time to time in correct
+            // order — the current/latest post first, and any post that comes after the current one
+            // shows after it. Applies to every subject since subjectId is passed in dynamically.
+            const posts = (window.adminPostsData || adminPostsData)
+                .filter(p => String(p.subjectId) === String(subjectId))
+                .slice()
+                .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
             
             if(posts.length === 0) {
                 container.innerHTML = `<p style="text-align:center; color:#777;">No updates in this feed yet.</p>`;
@@ -2694,10 +2700,17 @@ function renderOnlineSubjects(){
   
   grid.innerHTML = onlineData.subjects.map(s => {
     const subjectPosts = (onlineData.posts || []).filter(p => String(p.subjectId) === String(s.id));
-    const latestPost = subjectPosts[subjectPosts.length - 1]; 
+    // NEW: sort by timestamp so we reliably pick the true latest post (used for 1-hour visibility check below)
+    const sortedSubjectPostsForCard = subjectPosts.slice().sort((a,b) => (a.timestamp||0) - (b.timestamp||0));
+    const latestPost = sortedSubjectPostsForCard[sortedSubjectPostsForCard.length - 1]; 
     
+    // NEW: "Live Update" snippet on the home card only stays visible for 1 hour after posting.
+    // The post itself is NOT deleted/touched — it remains fully visible inside its own subject page forever.
+    const ONE_HOUR_MS = 60 * 60 * 1000;
+    const latestPostWithinHour = !!(latestPost && latestPost.timestamp && (Date.now() - latestPost.timestamp) < ONE_HOUR_MS);
+
     let latestUpdateHTML = '';
-    if(latestPost) {
+    if(latestPost && latestPostWithinHour) {
         let snippetStr = '';
         if(latestPost.text) {
             snippetStr = latestPost.text.length > 40 ? latestPost.text.substring(0, 40) + '...' : latestPost.text;
@@ -2723,6 +2736,15 @@ function renderOnlineSubjects(){
     </div>
     `;
   }).join('');
+}
+
+// NEW: re-render home subject cards every minute purely so that a "Live Update"
+// snippet auto-disappears once it crosses the 1-hour mark, even if no new post
+// arrives in the meantime. This does not touch/delete any post data.
+if(!window.__subjectCardHourTimer){
+  window.__subjectCardHourTimer = setInterval(function(){
+    if(typeof renderOnlineSubjects === 'function') renderOnlineSubjects();
+  }, 60000);
 }
 
 function renderOnlineNotifications(){
