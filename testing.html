@@ -648,10 +648,6 @@
             min-width: 190px;
         }
 
-        .menu-icon {
-            display: none !important;
-        }
-
         /* Shared inline-icon style (replaces decorative emoji app-wide, except inside posts) */
         .ui-icon {
             width: 1em;
@@ -1194,6 +1190,16 @@
 .feed-search-suggestion-name{font-weight:700;color:#1e293b;font-size:.92rem}
 .feed-search-suggestion-roll{font-size:.78rem;color:#64748b;margin-top:2px}
 .feed-search-empty{padding:16px;text-align:center;color:#777;font-size:.88rem}
+/* ---- ADDITIVE: Instagram-style recent search history (nothing above touched) ---- */
+.feed-search-history-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #f1f5f9}
+.feed-search-history-title{font-weight:700;color:#1e293b;font-size:.85rem}
+.feed-search-clear-all{border:0;background:none;color:var(--primary-blue);font-weight:700;font-size:.8rem;cursor:pointer;padding:2px 4px}
+.feed-search-suggestion-item{position:relative}
+.feed-search-suggestion-remove{margin-left:auto;flex:0 0 auto;width:26px;height:26px;border:0;border-radius:50%;background:#f1f5f9;color:#64748b;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.feed-search-suggestion-remove:hover{background:#e2e8f0;color:#c0392b}
+.feed-search-suggestion-item .feed-search-suggestion-name,
+.feed-search-suggestion-item .feed-search-suggestion-roll{max-width:100%}
+.feed-search-suggestion-info{flex:1;min-width:0}
 .feed-user-posts-header{display:flex;align-items:center;gap:12px;margin-bottom:1rem}
 .feed-user-posts-info{display:flex;align-items:center;gap:12px}
 .feed-user-posts-avatar{width:46px;height:46px;border-radius:50%;background:var(--primary-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex:0 0 auto}
@@ -1398,14 +1404,14 @@
   cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.25);
 }
 .profile-avatar-ring{padding:3px;border-radius:50%;display:inline-block;transition:.2s;}
-.profile-avatar-ring.has-story{background:#ffd400;cursor:pointer;}
+.profile-avatar-ring.has-story{background:var(--accent-orange);cursor:pointer;}
 .profile-avatar-ring.has-story.seen{background:#c7cdd6;}
 
 .story-tray{display:flex;gap:12px;overflow-x:auto;padding:10px 4px 16px;margin:-6px 0 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .story-tray::-webkit-scrollbar{display:none;}
 .story-tray-item{flex:0 0 auto;width:88px;text-align:center;cursor:pointer;}
 .story-frame{width:84px;height:118px;border-radius:14px;padding:3px;display:flex;align-items:flex-start;justify-content:center;position:relative;background:#ccd3db;}
-.story-frame.unseen{background:#ffd400;}
+.story-frame.unseen{background:var(--accent-orange);}
 .story-frame.seen{background:#ccd3db;}
 .story-frame-inner{width:100%;height:100%;border-radius:11px;background:#e9edf2;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
 .story-frame-thumb{width:100%;height:100%;object-fit:cover;}
@@ -1598,6 +1604,19 @@
         <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></symbol>
         <symbol id="icon-chat" viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/></symbol>
         <symbol id="icon-chevron-right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+        <symbol id="icon-menu" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></symbol>
+        <symbol id="icon-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+        <symbol id="icon-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+        <symbol id="icon-check" viewBox="0 0 24 24"><path d="M4 12l6 6 10-12"/></symbol>
+        <symbol id="icon-x" viewBox="0 0 24 24"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></symbol>
+        <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></symbol>
+        <symbol id="icon-comment" viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="11" x2="14" y2="11"/></symbol>
+        <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></symbol>
+        <symbol id="icon-bookmark" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></symbol>
+        <symbol id="icon-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></symbol>
+        <symbol id="icon-edit" viewBox="0 0 24 24"><path d="M4 20h4l11-11-4-4L4 16z"/><path d="M14 5l4 4"/></symbol>
+        <symbol id="icon-pin" viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5c0 4-5 11-5 11S7 11 7 7a5 5 0 0 1 5-5z"/><circle cx="12" cy="7" r="2"/></symbol>
+        <symbol id="icon-play" viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></symbol>
       </defs>
     </svg>
 
@@ -1633,7 +1652,7 @@
                 </div>
                 
                 <div class="website-icon" onclick="openMMITPage()" title="Open MMIT Website"><svg class="ui-icon"><use href="#icon-globe"></use></svg></div>
-                <div class="menu-icon" onclick="toggleMenu()">☰</div>
+                <div class="menu-icon" onclick="toggleMenu()"><svg class="ui-icon"><use href="#icon-menu"></use></svg></div>
             </div>
         </header>
 
@@ -1673,7 +1692,7 @@
 
     <div id="noticePage" class="container full-screen-container" style="display: none;">
         <div class="action-bar">
-            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard">←</button>
+            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
         </div>
 
         <div class="sarkari-card">
@@ -1688,7 +1707,7 @@
 
     <div id="mmitPage" class="mmit-page full-screen-container" style="display: none;">
         <div class="mmit-action-bar">
-            <button class="mmit-back-btn" onclick="openHomePage()" title="Back to Home">←</button>
+            <button class="mmit-back-btn" onclick="openHomePage()" title="Back to Home"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
         </div>
         <iframe
             class="mmit-frame"
@@ -1701,7 +1720,7 @@
 
     <div id="subjectPage" class="container full-screen-container" style="display: none;">
         <div class="action-bar">
-            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard">←</button>
+            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
         </div>
         
         <div class="subject-header">
@@ -1753,7 +1772,7 @@
 
     <div id="userPostCreatePage" class="user-post-create-page full-screen-container" style="display:none;">
         <div class="user-post-create-header">
-            <button class="user-post-create-back" onclick="closeUserPostCreatePage()" title="Back to Profile">←</button>
+            <button class="user-post-create-back" onclick="closeUserPostCreatePage()" title="Back to Profile"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
             <h2>Create Post</h2>
         </div>
         <div id="userPostCreateHolder" class="user-post-create-holder"></div>
@@ -1769,7 +1788,7 @@
 
         <div id="feedSearchOverlay" class="feed-search-overlay" style="display:none;">
             <div class="feed-search-bar">
-                <button type="button" class="feed-search-back" onclick="closeFeedSearch()" title="Back">←</button>
+                <button type="button" class="feed-search-back" onclick="closeFeedSearch()" title="Back"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
                 <input type="text" id="feedSearchInput" class="feed-search-input" placeholder="Search by Name or Roll Number..." autocomplete="off">
             </div>
             <div id="feedSearchSuggestions" class="feed-search-suggestions"></div>
@@ -1777,7 +1796,7 @@
 
         <div id="feedUserPostsView" class="feed-user-posts-view" style="display:none;">
             <div class="feed-user-posts-header">
-                <button type="button" class="feed-search-back" onclick="closeFeedUserPostsView()" title="Back">←</button>
+                <button type="button" class="feed-search-back" onclick="closeFeedUserPostsView()" title="Back"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
                 <div class="feed-user-posts-info">
                     <div class="feed-user-posts-avatar" id="feedUserPostsAvatar"><svg class="ui-icon"><use href="#icon-user"></use></svg></div>
                     <div>
@@ -1795,35 +1814,35 @@
     <!-- ================= ADDITIVE: STORY FEATURE (create page + viewer) ================= -->
     <div id="storyCreatePage" class="user-post-create-page full-screen-container" style="display:none;">
       <div class="user-post-create-header">
-        <button class="user-post-create-back" type="button" onclick="closeStoryCreatePage()" title="Back to Profile">←</button>
+        <button class="user-post-create-back" type="button" onclick="closeStoryCreatePage()" title="Back to Profile"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
         <h2>Add to Your Story</h2>
       </div>
       <div class="story-create-body user-post-composer">
-        <h3>📝 Create Your Story</h3>
+        <h3><svg class="ui-icon"><use href="#icon-edit"></use></svg> Create Your Story</h3>
         <div class="user-post-text-wrap">
-          <textarea id="storyTextInput" class="user-post-text" maxlength="90" placeholder="Apna text likhiye (photo ke upar dikhega, maximum 90 characters)..."></textarea>
+          <textarea id="storyTextInput" class="user-post-text" maxlength="90" placeholder="Write your text (will show over the photo, maximum 90 characters)..."></textarea>
           <span id="storyTextCounter" class="user-post-counter">0/90</span>
         </div>
         <div class="user-post-photo-row">
-          <label class="user-post-photo-btn" for="storyPhotoInput">📷 Add Photo</label>
+          <label class="user-post-photo-btn" for="storyPhotoInput"><svg class="ui-icon"><use href="#icon-camera"></use></svg> Add Photo</label>
           <span id="storyPhotoSelected" class="user-post-selected">0/1 photo</span>
         </div>
         <div class="story-photo-wrap">
           <label class="story-photo-drop" id="storyPhotoDrop" for="storyPhotoInput">
-            <span id="storyPhotoHint">📷 Tap to choose a photo for your story</span>
+            <span id="storyPhotoHint"><svg class="ui-icon"><use href="#icon-camera"></use></svg> Tap to choose a photo for your story</span>
           </label>
           <div class="story-text-overlay-preview" id="storyTextOverlayPreview"></div>
         </div>
         <input type="file" id="storyPhotoInput" accept="image/*" hidden>
 
         <div class="story-audio-row">
-          <label for="storyAudioFile">🎵 Add Audio from device</label>
+          <label for="storyAudioFile"><svg class="ui-icon"><use href="#icon-music"></use></svg> Add Audio from device</label>
           <input type="file" id="storyAudioFile" accept="audio/*" hidden>
-          <button type="button" id="storyOnlineAudioToggle">🌐 Search Online Song</button>
+          <button type="button" id="storyOnlineAudioToggle"><svg class="ui-icon"><use href="#icon-globe"></use></svg> Search Online Song</button>
         </div>
 
         <div class="story-audio-chip" id="storyAudioChip">
-          <span id="storyAudioChipLabel"></span><span class="remove" onclick="storyAudioRemove()">✕</span>
+          <span id="storyAudioChipLabel"></span><span class="remove" onclick="storyAudioRemove()"><svg class="ui-icon"><use href="#icon-x"></use></svg></span>
         </div>
 
         <div class="story-audio-panel" id="storyAudioTrimPanel">
@@ -1833,16 +1852,16 @@
           <label style="font-size:.75rem;display:block;margin-top:6px;"><span id="storyAudioTrimEndLabel">End: 0:00</span></label>
           <input type="range" id="storyAudioTrimEnd">
           <div class="story-audio-row" style="margin-top:8px;">
-            <button type="button" onclick="storyAudioPreview()">▶️ Preview</button>
-            <button type="button" onclick="storyAudioConfirm()">✓ Use this audio</button>
-            <button type="button" onclick="storyAudioCancel()">✕ Cancel</button>
+            <button type="button" onclick="storyAudioPreview()"><svg class="ui-icon"><use href="#icon-play"></use></svg> Preview</button>
+            <button type="button" onclick="storyAudioConfirm()"><svg class="ui-icon"><use href="#icon-check"></use></svg> Use this audio</button>
+            <button type="button" onclick="storyAudioCancel()"><svg class="ui-icon"><use href="#icon-x"></use></svg> Cancel</button>
           </div>
         </div>
 
         <div class="story-audio-panel" id="storyOnlineAudioPanel">
           <div class="story-audio-row">
             <input type="text" id="storyOnlineAudioQuery" placeholder="Search a song / audio name..." style="flex:1;min-width:150px;background:#f1f5f9;color:#003366;border:1px solid #cbd5e1;border-radius:20px;padding:8px 12px;">
-            <button type="button" id="storyOnlineAudioSearchBtn">🔍 Search</button>
+            <button type="button" id="storyOnlineAudioSearchBtn"><svg class="ui-icon"><use href="#icon-search"></use></svg> Search</button>
           </div>
           <div id="storyOnlineAudioStatus" style="font-size:.75rem;margin-top:6px;"></div>
           <div class="story-online-audio-results" id="storyOnlineAudioResults"></div>
@@ -1855,13 +1874,13 @@
           <label style="font-size:.75rem;display:block;margin-top:6px;"><span id="storyOnlineAudioTrimEndLabel">End: 0:00</span></label>
           <input type="range" id="storyOnlineAudioTrimEnd">
           <div class="story-audio-row" style="margin-top:8px;">
-            <button type="button" onclick="storyOnlineAudioPreview()">▶️ Preview</button>
-            <button type="button" onclick="storyOnlineAudioConfirm()">✓ Use this audio</button>
-            <button type="button" onclick="storyOnlineAudioCancel()">← Back</button>
+            <button type="button" onclick="storyOnlineAudioPreview()"><svg class="ui-icon"><use href="#icon-play"></use></svg> Preview</button>
+            <button type="button" onclick="storyOnlineAudioConfirm()"><svg class="ui-icon"><use href="#icon-check"></use></svg> Use this audio</button>
+            <button type="button" onclick="storyOnlineAudioCancel()"><svg class="ui-icon"><use href="#icon-back"></use></svg> Back</button>
           </div>
         </div>
 
-        <p class="admin-small" style="color:#64748b;margin-top:10px;">Audio wale story 15 sec ke, bina audio wale 8 sec ke chalte hain. Aap gaane ka jo hissa (start-end) chahein wahi laga sakte hain.</p>
+        <p class="admin-small" style="color:#64748b;margin-top:10px;">Stories with audio play for 15 sec, without audio for 8 sec. You can choose any part (start-end) of the song you like.</p>
         <button class="user-post-submit story-publish-btn" id="storyPublishBtn" onclick="publishStory()" disabled>Publish Story</button>
       </div>
     </div>
@@ -1874,8 +1893,8 @@
           <div class="story-viewer-roll" id="storyViewerRoll"></div>
           <div class="story-viewer-time" id="storyViewerTime"></div>
         </div>
-        <button type="button" class="story-viewer-delete" id="storyViewerDeleteBtn" onclick="deleteCurrentStory()" title="Delete story" style="display:none;">🗑️</button>
-        <button type="button" class="story-viewer-close" onclick="closeStoryViewer()" title="Close">✕</button>
+        <button type="button" class="story-viewer-delete" id="storyViewerDeleteBtn" onclick="deleteCurrentStory()" title="Delete story" style="display:none;"><svg class="ui-icon"><use href="#icon-trash"></use></svg></button>
+        <button type="button" class="story-viewer-close" onclick="closeStoryViewer()" title="Close"><svg class="ui-icon"><use href="#icon-x"></use></svg></button>
       </div>
       <div class="story-media-wrap" id="storyMediaWrap">
         <img id="storyMediaImg" src="" alt="Story">
@@ -2501,20 +2520,20 @@
 
         function generatePostHTML(post) {
             let isSaved = savedPostIds.includes(post.id);
-            let saveText = isSaved ? '💾 Saved' : '🔖 Save';
+            let saveText = isSaved ? '<svg class="ui-icon"><use href="#icon-bookmark"></use></svg> Saved' : '<svg class="ui-icon"><use href="#icon-bookmark"></use></svg> Save';
             
             let mediaHTML = '';
             let viewBtnHTML = '';
             
             if((post.type === 'photo' || post.imgUrl) && post.imgUrl) {
                 mediaHTML = `<img src="${post.imgUrl}" class="post-img" alt="Post Image" data-userpost-img="${post.imgUrl}">`;
-                viewBtnHTML = `<button class="post-action-btn" onclick="openImageViewer('${post.imgUrl}')">👁️ View</button>`;
+                viewBtnHTML = `<button class="post-action-btn" onclick="openImageViewer('${post.imgUrl}')"><svg class="ui-icon"><use href="#icon-eye"></use></svg> View</button>`;
             }
 
             let commentsHTML = (post.comments || []).map(c => {
                 let deleteHTML = '';
                 if(localUser && c.userId === localUser.rollNumber) {
-                    deleteHTML = `<span class="delete-comment-btn" onclick="deleteComment('${post.id}', '${c.id}')" title="Delete Comment">✖</span>`;
+                    deleteHTML = `<span class="delete-comment-btn" onclick="deleteComment('${post.id}', '${c.id}')" title="Delete Comment"><svg class="ui-icon"><use href="#icon-x"></use></svg></span>`;
                 }
                 const userRoll = c.userId || c.userName;
                 const rollColor = getColorForRoll(userRoll);
@@ -2530,10 +2549,10 @@
                 <div class="post-text">${post.text}</div>
                 ${mediaHTML}
                 <div class="post-actions">
-                    <button class="post-action-btn" onclick="toggleCommentSection('${post.id}')">💬 Comment</button>
+                    <button class="post-action-btn" onclick="toggleCommentSection('${post.id}')"><svg class="ui-icon"><use href="#icon-comment"></use></svg> Comment</button>
                     <button class="post-action-btn" onclick="toggleSavePost('${post.id}')">${saveText}</button>
                     ${viewBtnHTML}
-                    <button class="post-action-btn" onclick="downloadPostMedia('${post.type}', '${post.imgUrl}')">⬇️ Download</button>
+                    <button class="post-action-btn" onclick="downloadPostMedia('${post.type}', '${post.imgUrl}')"><svg class="ui-icon"><use href="#icon-download"></use></svg> Download</button>
                 </div>
                 
                 <div class="comments-section" id="comments-sec-${post.id}" style="display: none;">
@@ -2873,7 +2892,7 @@ function renderOnlineChats() {
 
             let isSent = window.localUser && window.localUser.rollNumber === chat.userId;
             let cssClass = isSent ? 'sent' : 'received';
-            let deleteHtml = isSent ? `<span class="delete-chat-btn" onclick="deleteUserChat('${chat.id}')" title="Delete Chat">✖</span>` : '';
+            let deleteHtml = isSent ? `<span class="delete-chat-btn" onclick="deleteUserChat('${chat.id}')" title="Delete Chat"><svg class="ui-icon"><use href="#icon-x"></use></svg></span>` : '';
 
             let seenObj = chat.seenBy || {};
             let seenCount = Object.keys(seenObj).length;
@@ -3428,7 +3447,7 @@ window.renderAdminAll = function() {
     if(noticeContainer) {
         noticeContainer.innerHTML = onlineData.notices.map(n => `
             <div class="admin-card">
-                <p><strong>${esc(n.title)}</strong> ${n.isNew ? '🆕' : ''}</p>
+                <p><strong>${esc(n.title)}</strong> ${n.isNew ? '<svg class="ui-icon"><use href="#icon-sparkle"></use></svg>' : ''}</p>
                 <p class="admin-small">Link: ${esc(n.link)} | Date: ${esc(n.date)}</p>
                 <button class="admin-btn red" onclick="deleteOnlineNotice('${n.id}')">Delete</button>
             </div>
@@ -3560,13 +3579,13 @@ onAuthStateChanged(auth, user => {
     composer.className = 'user-post-composer';
     composer.id = 'userPostComposer';
     composer.innerHTML = `
-      <h3>📝 Create Your Post</h3>
+      <h3><svg class="ui-icon"><use href="#icon-edit"></use></svg> Create Your Post</h3>
       <div class="user-post-text-wrap">
-        <textarea id="userPostText" class="user-post-text" maxlength="90" placeholder="Apna text likhiye (maximum 90 characters)..."></textarea>
+        <textarea id="userPostText" class="user-post-text" maxlength="90" placeholder="Write your text (maximum 90 characters)..."></textarea>
         <span id="userPostCounter" class="user-post-counter">0/90</span>
       </div>
       <div class="user-post-photo-row">
-        <label class="user-post-photo-btn" for="userPostPhotos">📷 Add Photos</label>
+        <label class="user-post-photo-btn" for="userPostPhotos"><svg class="ui-icon"><use href="#icon-camera"></use></svg> Add Photos</label>
         <input id="userPostPhotos" type="file" accept="image/*" multiple hidden>
         <span id="userPostSelected" class="user-post-selected">0/5 photos</span>
       </div>
@@ -3577,7 +3596,7 @@ onAuthStateChanged(auth, user => {
     const postsBox = document.createElement('div');
     postsBox.className = 'user-profile-posts';
     postsBox.id = 'userProfilePosts';
-    postsBox.innerHTML = '<h3 class="user-profile-posts-title">📌 My Posts</h3><div id="userProfilePostsList"></div>';
+    postsBox.innerHTML = '<h3 class="user-profile-posts-title"><svg class="ui-icon"><use href="#icon-pin"></use></svg> My Posts</h3><div id="userProfilePostsList"></div>';
 
     // The composer is intentionally placed inside the (hidden) post-create page holder,
     // not the profile card, so it only becomes visible when the user taps the "+" icon
@@ -3790,7 +3809,7 @@ onAuthStateChanged(auth, user => {
           ${photos.map((src,i)=>`<img data-userpost-img="${userPostEsc(src)}" src="${userPostEsc(src)}" alt="Post photo ${i+1}" loading="lazy">`).join('')}
           ${photos.length>1 ? `<div class="user-post-carousel-nav"><button type="button" aria-label="Previous photo" onclick="userProfilePostPrev(this)">&lt;</button><button type="button" aria-label="Next photo" onclick="userProfilePostNext(this)">&gt;</button></div>` : ''}
         </div>
-        ${photos.length>1 ? `<div class="user-post-photo-dots">${photos.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('')}</div><div class="user-post-photo-count">📷 ${photos.length} photos • swipe left/right</div>` : ''}
+        ${photos.length>1 ? `<div class="user-post-photo-dots">${photos.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('')}</div><div class="user-post-photo-count"><svg class="ui-icon"><use href="#icon-camera"></use></svg> ${photos.length} photos • swipe left/right</div>` : ''}
       ` : '';
       return `
         <article class="user-post-card" data-user-post-id="${userPostEsc(p.id)}">
@@ -3799,11 +3818,11 @@ onAuthStateChanged(auth, user => {
               <div class="user-post-author">${userPostEsc(p.authorName || roll)}</div>
               <div class="user-post-time">${userPostTime(p.timestamp)}</div>
             </div>
-            <button class="user-post-delete" onclick="deleteOwnUserPost('${userPostEsc(p.id)}')">🗑️ Delete</button>
+            <button class="user-post-delete" onclick="deleteOwnUserPost('${userPostEsc(p.id)}')"><svg class="ui-icon"><use href="#icon-trash"></use></svg> Delete</button>
           </div>
           ${p.text ? `<div class="user-post-body">${userPostEsc(p.text)}</div>` : ''}
           ${photoHTML}
-          <div class="user-post-footer"><span class="user-post-seen">👁️ ${seenCount} seen</span></div>
+          <div class="user-post-footer"><span class="user-post-seen"><svg class="ui-icon"><use href="#icon-eye"></use></svg> ${seenCount} seen</span></div>
         </article>`;
     }).join('');
 
@@ -3950,15 +3969,15 @@ onAuthStateChanged(auth, user => {
         ${photos.map((src,i)=>`<img src="${esc(src)}" alt="Post photo ${i+1}" loading="lazy" data-userpost-img="${esc(src)}">`).join('')}
         ${photos.length>1?`<div class="user-post-carousel-nav"><button type="button" aria-label="Previous photo" onclick="globalPostPrev(this)">&lt;</button><button type="button" aria-label="Next photo" onclick="globalPostNext(this)">&gt;</button></div>`:''}
       </div>`;
-      if(photos.length>1) media+=`<div class="user-post-photo-dots">${photos.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('')}</div><div class="user-post-photo-count">📷 ${photos.length} photos • swipe left/right</div>`;
+      if(photos.length>1) media+=`<div class="user-post-photo-dots">${photos.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('')}</div><div class="user-post-photo-count"><svg class="ui-icon"><use href="#icon-camera"></use></svg> ${photos.length} photos • swipe left/right</div>`;
     }
     return `<article class="global-user-post user-post-card" data-user-post-id="${esc(p.id||'')}">
       <div class="user-post-head">
         <div><div class="user-post-author">${author}</div><div class="user-post-time">${typeof userPostTime==='function'?userPostTime(p.timestamp):''}</div></div>
-        ${isOwn?`<button class="user-post-delete" onclick="deleteOwnUserPost('${esc(p.id)}')">🗑️ Delete</button>`:''}
+        ${isOwn?`<button class="user-post-delete" onclick="deleteOwnUserPost('${esc(p.id)}')"><svg class="ui-icon"><use href="#icon-trash"></use></svg> Delete</button>`:''}
       </div>
       ${text}${media}
-      <div class="user-post-footer"><span class="user-post-seen">👁️ ${seenCount} seen</span></div>
+      <div class="user-post-footer"><span class="user-post-seen"><svg class="ui-icon"><use href="#icon-eye"></use></svg> ${seenCount} seen</span></div>
     </article>`;
   }
   window.userFeedCard=userFeedCard;
@@ -4042,7 +4061,7 @@ onAuthStateChanged(auth, user => {
      phir trim-range slider se decide karta hai ki post par audio kitne se kitne
      second tak chalega, "Confirm Audio" par done hone ke baad woh audio post ke
      saath attach ho jaata hai.
-   - Feed/Profile: audio wale post ke footer me right side par ek 🎵 icon dikhta
+   - Feed/Profile: audio wale post ke footer me right side par ek <svg class="ui-icon"><use href="#icon-music"></use></svg> icon dikhta
      hai. Tap karne par sirf uss post ka trimmed audio play hota hai, dobara tap
      par band ho jaata hai. Ek time me sirf ek hi post ka audio bajta hai — jaise
      hi doosre post ka audio play hota hai pehla apne aap ruk jaata hai. Jis post
@@ -4112,7 +4131,7 @@ onAuthStateChanged(auth, user => {
     probe.onloadedmetadata = function(){
       const dur = isFinite(probe.duration) ? probe.duration : 0;
       URL.revokeObjectURL(objUrl);
-      nameEl.textContent = '🎧 ' + file.name;
+      nameEl.textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + file.name;
       startRange.min = 0; startRange.max = Math.max(0, Math.floor(dur)); startRange.value = 0;
       endRange.min = 0; endRange.max = Math.max(1, Math.floor(dur));
       // ---- ADDITIVE: default selection capped at 30 sec, same as Instagram/WhatsApp ----
@@ -4181,13 +4200,13 @@ onAuthStateChanged(auth, user => {
       document.getElementById('userPostAudioPanel')?.classList.remove('active');
       const chip = document.getElementById('userPostAudioChip');
       const chipLabel = document.getElementById('userPostAudioChipLabel');
-      if(chipLabel) chipLabel.textContent = '🎵 ' + selectedAudioFile.name + ' (' + fmtSec(start) + '–' + fmtSec(end) + ')';
+      if(chipLabel) chipLabel.textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + selectedAudioFile.name + ' (' + fmtSec(start) + '–' + fmtSec(end) + ')';
       chip?.classList.add('active');
       if(previewAudioEl){ try{ previewAudioEl.pause(); }catch(e){} previewAudioEl=null; }
     }catch(e){
       alert('Could not add audio: ' + e.message);
     }finally{
-      if(btn){ btn.disabled=false; btn.textContent='✓ Done'; }
+      if(btn){ btn.disabled=false; btn.textContent='<svg class="ui-icon"><use href="#icon-check"></use></svg> Done'; }
     }
   }
 
@@ -4236,7 +4255,7 @@ onAuthStateChanged(auth, user => {
     };
     const chip = document.getElementById('userPostAudioChip');
     const chipLabel = document.getElementById('userPostAudioChipLabel');
-    if(chipLabel) chipLabel.textContent = '🎵 ' + pendingAudio.name + ' (' + fmtSec(s) + '–' + fmtSec(e) + ')';
+    if(chipLabel) chipLabel.textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + pendingAudio.name + ' (' + fmtSec(s) + '–' + fmtSec(e) + ')';
     chip?.classList.add('active');
     document.getElementById('userPostOnlineAudioPanel')?.classList.remove('active');
   }
@@ -4264,7 +4283,7 @@ onAuthStateChanged(auth, user => {
     const startLbl = document.getElementById('userPostOnlineAudioTrimStartLabel');
     const endLbl = document.getElementById('userPostOnlineAudioTrimEndLabel');
     if(!trimPanel || !startRange || !endRange) return;
-    nameEl.textContent = '🎧 ' + (track.trackName || 'Untitled') + (track.artistName ? (' - ' + track.artistName) : '');
+    nameEl.textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + (track.trackName || 'Untitled') + (track.artistName ? (' - ' + track.artistName) : '');
     startRange.min = 0; startRange.max = Math.max(0, Math.floor(durSec)); startRange.value = 0;
     endRange.min = 0; endRange.max = Math.max(1, Math.floor(durSec));
     // ---- ADDITIVE: default selection capped at 30 sec, same as Instagram/WhatsApp ----
@@ -4352,7 +4371,7 @@ onAuthStateChanged(auth, user => {
           '<div class="oa-artist">' + esc(track.artistName || '') + '</div>' +
         '</div>' +
         '<div class="user-post-online-audio-item-actions">' +
-          '<button type="button" class="user-post-online-audio-play-btn">▶️</button>' +
+          '<button type="button" class="user-post-online-audio-play-btn"><svg class="ui-icon"><use href="#icon-play"></use></svg></button>' +
           '<button type="button" class="user-post-online-audio-use-btn">Use</button>' +
         '</div>';
       const playBtn = item.querySelector('.user-post-online-audio-play-btn');
@@ -4400,16 +4419,16 @@ onAuthStateChanged(auth, user => {
     audioRow.className = 'user-post-audio-row';
     audioRow.id = 'userPostAudioRow';
     audioRow.innerHTML = `
-      <label class="user-post-audio-btn" for="userPostAudioFile">🎵 Add Audio</label>
+      <label class="user-post-audio-btn" for="userPostAudioFile"><svg class="ui-icon"><use href="#icon-music"></use></svg> Add Audio</label>
       <input id="userPostAudioFile" type="file" accept="audio/*" hidden>
       <span class="user-post-audio-hint">from your downloaded audio (max 30 sec)</span>
     `;
-    audioRow.insertAdjacentHTML('beforeend', '<button type="button" class="user-post-audio-mode-btn" id="userPostOnlineAudioToggle">🌐 Search Online Audio</button>');
+    audioRow.insertAdjacentHTML('beforeend', '<button type="button" class="user-post-audio-mode-btn" id="userPostOnlineAudioToggle"><svg class="ui-icon"><use href="#icon-globe"></use></svg> Search Online Audio</button>');
 
     const chip = document.createElement('div');
     chip.className = 'user-post-audio-chip';
     chip.id = 'userPostAudioChip';
-    chip.innerHTML = `<span id="userPostAudioChipLabel"></span><span class="user-post-audio-remove" onclick="userPostAudioRemove()">✕</span>`;
+    chip.innerHTML = `<span id="userPostAudioChipLabel"></span><span class="user-post-audio-remove" onclick="userPostAudioRemove()"><svg class="ui-icon"><use href="#icon-x"></use></svg></span>`;
 
     const panel = document.createElement('div');
     panel.className = 'user-post-audio-panel';
@@ -4425,9 +4444,9 @@ onAuthStateChanged(auth, user => {
         <input type="range" id="userPostAudioEnd">
       </div>
       <div class="user-post-audio-actions">
-        <button type="button" class="user-post-audio-preview-btn" onclick="userPostAudioPreview()">▶️ Preview</button>
-        <button type="button" class="user-post-audio-confirm-btn" id="userPostAudioConfirmBtn" onclick="userPostAudioConfirm()">✓ Done</button>
-        <button type="button" class="user-post-audio-cancel-btn" onclick="userPostAudioCancel()">✕ Cancel</button>
+        <button type="button" class="user-post-audio-preview-btn" onclick="userPostAudioPreview()"><svg class="ui-icon"><use href="#icon-play"></use></svg> Preview</button>
+        <button type="button" class="user-post-audio-confirm-btn" id="userPostAudioConfirmBtn" onclick="userPostAudioConfirm()"><svg class="ui-icon"><use href="#icon-check"></use></svg> Done</button>
+        <button type="button" class="user-post-audio-cancel-btn" onclick="userPostAudioCancel()"><svg class="ui-icon"><use href="#icon-x"></use></svg> Cancel</button>
       </div>
     `;
 
@@ -4437,7 +4456,7 @@ onAuthStateChanged(auth, user => {
     onlinePanel.innerHTML = `
       <div class="user-post-online-audio-search-row">
         <input type="text" id="userPostOnlineAudioQuery" placeholder="Search a song / audio name...">
-        <button type="button" id="userPostOnlineAudioSearchBtn">🔍 Search</button>
+        <button type="button" id="userPostOnlineAudioSearchBtn"><svg class="ui-icon"><use href="#icon-search"></use></svg> Search</button>
       </div>
       <div class="user-post-online-audio-status" id="userPostOnlineAudioStatus"></div>
       <div class="user-post-online-audio-results" id="userPostOnlineAudioResults"></div>
@@ -4454,9 +4473,9 @@ onAuthStateChanged(auth, user => {
           <input type="range" id="userPostOnlineAudioTrimEnd">
         </div>
         <div class="user-post-audio-actions">
-          <button type="button" class="user-post-audio-preview-btn" onclick="userPostOnlineAudioTrimPreview()">▶️ Preview</button>
-          <button type="button" class="user-post-audio-confirm-btn" onclick="userPostOnlineAudioTrimConfirm()">✓ Done</button>
-          <button type="button" class="user-post-audio-cancel-btn" onclick="userPostOnlineAudioTrimCancel()">← Back</button>
+          <button type="button" class="user-post-audio-preview-btn" onclick="userPostOnlineAudioTrimPreview()"><svg class="ui-icon"><use href="#icon-play"></use></svg> Preview</button>
+          <button type="button" class="user-post-audio-confirm-btn" onclick="userPostOnlineAudioTrimConfirm()"><svg class="ui-icon"><use href="#icon-check"></use></svg> Done</button>
+          <button type="button" class="user-post-audio-cancel-btn" onclick="userPostOnlineAudioTrimCancel()"><svg class="ui-icon"><use href="#icon-back"></use></svg> Back</button>
         </div>
       </div>
     `);
@@ -4670,7 +4689,7 @@ onAuthStateChanged(auth, user => {
       const icon = document.createElement('button');
       icon.type = 'button';
       icon.className = 'user-post-music-icon' + (activeAudioId===id ? ' playing' : '');
-      icon.textContent = '🎵';
+      icon.innerHTML = '<svg class="ui-icon"><use href="#icon-music"></use></svg>';
       icon.title = 'Play post audio';
       icon.onclick = function(e){ e.stopPropagation(); window.toggleUserPostAudioPlay(id, icon); };
       footer.insertBefore(icon, footer.firstChild);
@@ -4710,6 +4729,81 @@ onAuthStateChanged(auth, user => {
 (function(){
   function srchEsc(v){ return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
+  // ---- ADDITIVE: recent search history (Instagram-style), stored locally
+  // per device. Purely additive — does not change how live search matching
+  // or opening a user's posts already works. ----
+  const FEED_SEARCH_HISTORY_KEY = 'feedSearchHistory';
+  const FEED_SEARCH_HISTORY_MAX = 10;
+
+  function getSearchHistory(){
+    try{
+      const raw = localStorage.getItem(FEED_SEARCH_HISTORY_KEY);
+      const list = raw ? JSON.parse(raw) : [];
+      return Array.isArray(list) ? list : [];
+    }catch(e){ return []; }
+  }
+
+  function saveSearchHistory(list){
+    try{ localStorage.setItem(FEED_SEARCH_HISTORY_KEY, JSON.stringify(list)); }catch(e){}
+  }
+
+  function addToSearchHistory(u){
+    if(!u || !u.roll) return;
+    let list = getSearchHistory().filter(item => item && item.roll !== u.roll);
+    list.unshift({ roll: u.roll, name: u.name || u.roll });
+    if(list.length > FEED_SEARCH_HISTORY_MAX) list = list.slice(0, FEED_SEARCH_HISTORY_MAX);
+    saveSearchHistory(list);
+  }
+
+  function removeFromSearchHistory(roll){
+    const list = getSearchHistory().filter(item => item && item.roll !== roll);
+    saveSearchHistory(list);
+  }
+
+  function clearSearchHistory(){
+    saveSearchHistory([]);
+  }
+
+  function renderSearchHistory(){
+    const box = document.getElementById('feedSearchSuggestions');
+    if(!box) return;
+    const list = getSearchHistory();
+    if(!list.length){ box.innerHTML=''; return; }
+    const items = list.map(u=>{
+      const roll = String(u.roll||'');
+      const initials = srchEsc(roll.slice(0,2).toUpperCase() || '?');
+      return `<div class="feed-search-suggestion-item" data-roll="${srchEsc(roll)}">
+        <div class="feed-search-suggestion-avatar">${initials}</div>
+        <div class="feed-search-suggestion-info">
+          <div class="feed-search-suggestion-name">${srchEsc(u.name||roll)}</div>
+          <div class="feed-search-suggestion-roll">Roll No: ${srchEsc(roll)}</div>
+        </div>
+        <button type="button" class="feed-search-suggestion-remove" data-remove-roll="${srchEsc(roll)}" title="Remove"><svg class="ui-icon"><use href="#icon-x"></use></svg></button>
+      </div>`;
+    }).join('');
+    box.innerHTML = `<div class="feed-search-history-header"><span class="feed-search-history-title">Recent</span><button type="button" class="feed-search-clear-all" id="feedSearchClearAll">Clear all</button></div>${items}`;
+
+    box.querySelectorAll('.feed-search-suggestion-item').forEach(el=>{
+      el.addEventListener('click', function(e){
+        if(e.target.closest('.feed-search-suggestion-remove')) return;
+        openUserPostsFromSearch(el.getAttribute('data-roll'));
+      });
+    });
+    box.querySelectorAll('.feed-search-suggestion-remove').forEach(btn=>{
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        removeFromSearchHistory(btn.getAttribute('data-remove-roll'));
+        renderSearchHistory();
+      });
+    });
+    const clearBtn = document.getElementById('feedSearchClearAll');
+    if(clearBtn) clearBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      clearSearchHistory();
+      renderSearchHistory();
+    });
+  }
+
   function showOnly(idToShow){
     ['feedSearchOverlay','feedUserPostsView','globalFeedList'].forEach(id=>{
       const el=document.getElementById(id);
@@ -4719,9 +4813,8 @@ onAuthStateChanged(auth, user => {
 
   window.openFeedSearch = function(){
     const input = document.getElementById('feedSearchInput');
-    const box = document.getElementById('feedSearchSuggestions');
     if(input) input.value='';
-    if(box) box.innerHTML='';
+    renderSearchHistory();
     showOnly('feedSearchOverlay');
     if(input) setTimeout(()=>input.focus(),50);
   };
@@ -4738,7 +4831,7 @@ onAuthStateChanged(auth, user => {
     const box = document.getElementById('feedSearchSuggestions');
     if(!box) return;
     const q = query.trim().toLowerCase();
-    if(!q){ box.innerHTML=''; return; }
+    if(!q){ renderSearchHistory(); return; }
     const users = window.onlineUsersData || {};
     const matches = Object.values(users).filter(u=>{
       const name = String(u && u.name || '').toLowerCase();
@@ -4777,6 +4870,7 @@ onAuthStateChanged(auth, user => {
     if(!roll) return;
     const users = window.onlineUsersData || {};
     const u = users[roll] || {rollNumber: roll};
+    addToSearchHistory({ roll: String(roll), name: u.name || roll });
     const nameEl = document.getElementById('feedUserPostsName');
     const rollEl = document.getElementById('feedUserPostsRoll');
     const avEl = document.getElementById('feedUserPostsAvatar');
@@ -5479,7 +5573,7 @@ onAuthStateChanged(auth, user => {
       // re-read the freshest copy from onlineStoriesData for a live count
       const fresh = (window.onlineStoriesData||[]).find(s=>s.id===story.id) || story;
       const count = fresh.viewers ? Object.keys(fresh.viewers).length : 0;
-      footer.innerHTML = `<span class="story-view-icon">👁️</span><span>${count} view${count===1?'':'s'}</span>`;
+      footer.innerHTML = `<span class="story-view-icon"><svg class="ui-icon"><use href="#icon-eye"></use></svg></span><span>${count} view${count===1?'':'s'}</span>`;
     } else {
       footer.innerHTML = '';
     }
@@ -5591,9 +5685,10 @@ onAuthStateChanged(auth, user => {
   const STORY_MAX_TRIM = 15;       // 15 sec cap on the chosen audio window
 
   function resetStoryCreateForm(){
+    stopScOnlineListPreview();
     scPhoto = null; scAudio = null; scOnlineTrack = null; scDeviceAudioMeta = null;
     document.getElementById('storyPhotoInput').value = '';
-    document.getElementById('storyPhotoDrop').innerHTML = '<span id="storyPhotoHint">📷 Tap to choose a photo for your story</span>';
+    document.getElementById('storyPhotoDrop').innerHTML = '<span id="storyPhotoHint"><svg class="ui-icon"><use href="#icon-camera"></use></svg> Tap to choose a photo for your story</span>';
     document.getElementById('storyAudioFile').value = '';
     document.getElementById('storyAudioChip').classList.remove('active');
     document.getElementById('storyAudioTrimPanel').classList.remove('active');
@@ -5731,6 +5826,11 @@ onAuthStateChanged(auth, user => {
     document.getElementById('storyAudioTrimEndLabel').textContent = 'End: '+fmtSec(e);
   });
   let scPreviewAudioEl = null;
+  let scOnlinePreviewBtn = null;   // currently-playing "preview" button in the online-song results list
+  function stopScOnlineListPreview(){
+    if(scPreviewAudioEl){ try{ scPreviewAudioEl.pause(); }catch(e){} scPreviewAudioEl = null; }
+    if(scOnlinePreviewBtn){ scOnlinePreviewBtn.classList.remove('playing'); scOnlinePreviewBtn = null; }
+  }
   window.storyAudioPreview = function(){
     if(!scDeviceAudioMeta) return;
     if(scPreviewAudioEl){ try{ scPreviewAudioEl.pause(); }catch(e){} }
@@ -5748,7 +5848,7 @@ onAuthStateChanged(auth, user => {
     scAudio = { url: scDeviceAudioMeta.url, start: s, end: e, duration: scDeviceAudioMeta.duration, name: scDeviceAudioMeta.name };
     document.getElementById('storyAudioTrimPanel').classList.remove('active');
     document.getElementById('storyAudioChip').classList.add('active');
-    document.getElementById('storyAudioChipLabel').textContent = '🎵 '+scDeviceAudioMeta.name+' ('+fmtSec(s)+'-'+fmtSec(e)+')';
+    document.getElementById('storyAudioChipLabel').textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> '+scDeviceAudioMeta.name+' ('+fmtSec(s)+'-'+fmtSec(e)+')';
     updatePublishState();
   };
   window.storyAudioCancel = function(){
@@ -5775,39 +5875,71 @@ onAuthStateChanged(auth, user => {
     const wrap = document.getElementById('storyOnlineAudioResults');
     if(!q){ status.textContent = 'Please type a song / audio name to search.'; return; }
     wrap.innerHTML=''; status.textContent = 'Searching…';
+    stopScOnlineListPreview();
     try{
       const res = await fetch('https://itunes.apple.com/search?media=music&limit=15&term='+encodeURIComponent(q));
       const data = await res.json();
+      // ---- Same as post's song search: use the track's real (full-song) duration
+      // (trackTimeMillis) so the trim range covers the whole song, not just the
+      // ~30 sec preview clip length. ----
       const list = ((data && data.results)||[]).filter(t=>t && t.previewUrl);
       if(!list.length){ status.textContent = 'No results found.'; return; }
       status.textContent = '';
-      wrap.innerHTML = list.map((t,i)=>`<div class="story-online-audio-item">
-        <span>${sEsc(t.trackName||'Track')} — ${sEsc(t.artistName||'')}</span>
-        <button type="button" data-idx="${i}">Use</button>
-      </div>`).join('');
-      wrap.querySelectorAll('button[data-idx]').forEach(btn=>{
-        btn.addEventListener('click', ()=> openOnlineTrimPanel(list[parseInt(btn.dataset.idx,10)]));
+      wrap.innerHTML = list.map((t,i)=>{
+        const durSec = Math.round((t.trackTimeMillis || 30000) / 1000);
+        return `<div class="user-post-online-audio-item" data-idx="${i}" data-dur="${durSec}">
+          <img src="${sEsc(t.artworkUrl60||t.artworkUrl100||'')}" alt="">
+          <div class="user-post-online-audio-info">
+            <div class="oa-title">${sEsc(t.trackName||'Track')}</div>
+            <div class="oa-artist">${sEsc(t.artistName||'')}</div>
+          </div>
+          <div class="user-post-online-audio-item-actions">
+            <button type="button" class="user-post-online-audio-play-btn" data-play-idx="${i}"><svg class="ui-icon"><use href="#icon-play"></use></svg></button>
+            <button type="button" data-use-idx="${i}">Use</button>
+          </div>
+        </div>`;
+      }).join('');
+      wrap.querySelectorAll('button[data-play-idx]').forEach(btn=>{
+        btn.addEventListener('click', function(){
+          const track = list[parseInt(btn.dataset.playIdx,10)];
+          if(scOnlinePreviewBtn === btn){ stopScOnlineListPreview(); return; }
+          stopScOnlineListPreview();
+          const a = new Audio(track.previewUrl);
+          a.addEventListener('ended', stopScOnlineListPreview);
+          a.play().then(()=>{
+            scPreviewAudioEl = a;
+            scOnlinePreviewBtn = btn;
+            btn.classList.add('playing');
+          }).catch(()=> stopScOnlineListPreview());
+        });
+      });
+      wrap.querySelectorAll('button[data-use-idx]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const item = btn.closest('.user-post-online-audio-item');
+          const durSec = parseFloat(item.dataset.dur) || 30;
+          openOnlineTrimPanel(list[parseInt(btn.dataset.useIdx,10)], durSec);
+        });
       });
     }catch(e){ status.textContent = 'Search failed, please check your internet and try again.'; }
   }
   document.getElementById('storyOnlineAudioSearchBtn').addEventListener('click', storySearchOnlineAudio);
   document.getElementById('storyOnlineAudioQuery').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); storySearchOnlineAudio(); } });
 
-  function openOnlineTrimPanel(track){
+  function openOnlineTrimPanel(track, durSec){
+    stopScOnlineListPreview();
     scOnlineTrack = track;
-    const probe = new Audio(track.previewUrl);
     document.getElementById('storyOnlineAudioTrimPanel').classList.add('active');
     document.getElementById('storyOnlineAudioTrimName').textContent = (track.trackName||'Track')+' — '+(track.artistName||'');
     const startR = document.getElementById('storyOnlineAudioTrimStart');
     const endR = document.getElementById('storyOnlineAudioTrimEnd');
-    const setup = (dur)=>{
-      startR.min=0; startR.max=dur; startR.step=0.5; startR.value=0;
-      endR.min=0; endR.max=dur; endR.step=0.5; endR.value=Math.min(dur, STORY_MAX_TRIM);
-      document.getElementById('storyOnlineAudioTrimStartLabel').textContent = 'Start: '+fmtSec(0);
-      document.getElementById('storyOnlineAudioTrimEndLabel').textContent = 'End: '+fmtSec(endR.value);
-    };
-    if(probe.duration && !isNaN(probe.duration)) setup(probe.duration);
-    else probe.addEventListener('loadedmetadata', ()=> setup(probe.duration||30));
+    // ---- Full song duration (from iTunes metadata) drives the slider range, so
+    // the user can pick any start-end window across the whole song — exactly like
+    // the post-create song picker. ----
+    const dur = Math.max(1, Math.floor(durSec || 30));
+    startR.min=0; startR.max=dur; startR.step=0.5; startR.value=0;
+    endR.min=0; endR.max=dur; endR.step=0.5; endR.value=Math.min(dur, STORY_MAX_TRIM);
+    document.getElementById('storyOnlineAudioTrimStartLabel').textContent = 'Start: '+fmtSec(0);
+    document.getElementById('storyOnlineAudioTrimEndLabel').textContent = 'End: '+fmtSec(endR.value);
   }
   document.getElementById('storyOnlineAudioTrimStart').addEventListener('input', function(){
     clampTrimPair(this, document.getElementById('storyOnlineAudioTrimEnd'), 'storyOnlineAudioTrimStartLabel', 'storyOnlineAudioTrimEndLabel', parseFloat(this.max)||30);
@@ -5822,7 +5954,7 @@ onAuthStateChanged(auth, user => {
   });
   window.storyOnlineAudioPreview = function(){
     if(!scOnlineTrack) return;
-    if(scPreviewAudioEl){ try{ scPreviewAudioEl.pause(); }catch(e){} }
+    stopScOnlineListPreview();
     const s = parseFloat(document.getElementById('storyOnlineAudioTrimStart').value);
     const e = parseFloat(document.getElementById('storyOnlineAudioTrimEnd').value);
     scPreviewAudioEl = new Audio(scOnlineTrack.previewUrl);
@@ -5839,10 +5971,11 @@ onAuthStateChanged(auth, user => {
     document.getElementById('storyOnlineAudioTrimPanel').classList.remove('active');
     document.getElementById('storyOnlineAudioPanel').classList.remove('active');
     document.getElementById('storyAudioChip').classList.add('active');
-    document.getElementById('storyAudioChipLabel').textContent = '🎵 '+name+' ('+fmtSec(s)+'-'+fmtSec(e)+')';
+    document.getElementById('storyAudioChipLabel').textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> '+name+' ('+fmtSec(s)+'-'+fmtSec(e)+')';
     updatePublishState();
   };
   window.storyOnlineAudioCancel = function(){
+    stopScOnlineListPreview();
     document.getElementById('storyOnlineAudioTrimPanel').classList.remove('active');
     scOnlineTrack = null;
   };
