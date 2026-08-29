@@ -1178,6 +1178,38 @@
 @keyframes userPostMusicPulse{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
 </style>
 <style>
+/* ================= ADDITIVE: INSTAGRAM-STYLE 24-HOUR STORY FEATURE (new CSS only, old CSS untouched) ================= */
+.profile-story-plus{right:82px;background:linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7);font-size:1.35rem}
+@media(max-width:480px){.profile-story-plus{right:74px}}
+
+.profile-avatar.has-active-story,.feed-user-posts-avatar.has-active-story{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--story-ring-color,#ee2a7b);cursor:pointer}
+.profile-avatar.has-active-story.story-seen,.feed-user-posts-avatar.has-active-story.story-seen{box-shadow:0 0 0 3px #fff,0 0 0 6px #c7ccd4}
+
+.story-photo-drop{display:flex;align-items:center;justify-content:center;min-height:220px;border:2px dashed #cbd5e1;border-radius:12px;background:#f8fafc;cursor:pointer;margin-bottom:14px;overflow:hidden;text-align:center;padding:10px}
+.story-photo-drop span{color:#64748b;font-weight:600;font-size:.92rem}
+.story-photo-drop img{width:100%;max-height:420px;object-fit:contain;border-radius:10px}
+.story-duration-hint{font-size:.8rem;color:#64748b;font-weight:700;margin:2px 0 12px;text-align:center}
+
+.story-viewer-overlay{position:fixed;inset:0;background:#000;z-index:16000;display:none;flex-direction:column}
+.story-viewer-progress{display:flex;gap:4px;padding:8px 8px 0}
+.story-viewer-progress .seg{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.35);overflow:hidden}
+.story-viewer-progress .seg i{display:block;height:100%;width:0%;background:#fff}
+.story-viewer-progress .seg.done i{width:100%!important}
+.story-viewer-header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px}
+.story-viewer-user{display:flex;align-items:center;gap:10px}
+.story-viewer-avatar{width:36px;height:36px;border-radius:50%;background:#333;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex:0 0 auto}
+.story-viewer-name{color:#fff;font-weight:700;font-size:.92rem}
+.story-viewer-time{color:#cbd5e1;font-size:.72rem}
+.story-viewer-actions{display:flex;gap:14px}
+.story-viewer-icon-btn{background:transparent;border:0;color:#fff;font-size:1.2rem;cursor:pointer;padding:4px}
+.story-viewer-media{flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.story-viewer-media img{max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none}
+.story-viewer-zone{position:absolute;top:60px;bottom:60px;width:35%;z-index:2;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+.story-viewer-zone.left{left:0}
+.story-viewer-zone.right{right:0}
+.story-viewer-viewcount{position:absolute;left:14px;bottom:16px;color:#fff;font-size:.85rem;font-weight:700;background:rgba(0,0,0,.4);padding:6px 12px;border-radius:20px;display:flex;align-items:center;gap:6px;z-index:3}
+</style>
+<style>
 /* ================= ADDITIVE: FEED SEARCH (users by name/roll) ================= */
 .feed-page-header{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .feed-search-trigger{width:40px;height:40px;flex:0 0 auto;border:0;border-radius:50%;background:#f1f5f9;border:1px solid #cbd5e1;color:var(--primary-blue);font-size:1.15rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
@@ -1669,6 +1701,7 @@
             </div>
             <button class="logout-btn" onclick="userLogout()">Log Out</button>
             <button class="profile-post-plus" onclick="openUserPostCreatePage()" title="Create Post">+</button>
+            <button class="profile-post-plus profile-story-plus" onclick="openStoryCreatePage()" title="Add Story"><svg class="ui-icon" style="width:1.2em;height:1.2em;"><use href="#icon-camera"></use></svg></button>
         </div>
     </div>
 
@@ -1679,6 +1712,62 @@
             <h2>Create Post</h2>
         </div>
         <div id="userPostCreateHolder" class="user-post-create-holder"></div>
+    </div>
+
+    <div id="storyCreatePage" class="user-post-create-page full-screen-container" style="display:none;">
+        <div class="user-post-create-header">
+            <button class="user-post-create-back" onclick="closeStoryCreatePage()" title="Back to Profile">←</button>
+            <h2>Add Story</h2>
+        </div>
+        <div class="story-composer" id="storyComposer">
+            <label for="storyPhotoInput" class="story-photo-drop" id="storyPhotoDrop">
+                <span id="storyPhotoPlaceholder">📷 Tap to choose a photo for your story</span>
+                <img id="storyPhotoPreview" style="display:none;">
+            </label>
+            <input type="file" id="storyPhotoInput" accept="image/*" hidden>
+
+            <div class="user-post-audio-row">
+                <label class="user-post-audio-btn" for="storyAudioFile">🎵 Add Song</label>
+                <input id="storyAudioFile" type="file" accept="audio/*" hidden>
+                <button type="button" class="user-post-audio-mode-btn" id="storyOnlineAudioToggle">🌐 Search Online Audio</button>
+            </div>
+            <div class="user-post-audio-chip" id="storyAudioChip"><span id="storyAudioChipLabel"></span><span class="user-post-audio-remove" onclick="storyAudioRemove()">✕</span></div>
+
+            <div class="user-post-online-audio-panel" id="storyOnlineAudioPanel">
+                <div class="user-post-online-audio-search-row">
+                    <input type="text" id="storyOnlineAudioQuery" placeholder="Search a song / audio name...">
+                    <button type="button" id="storyOnlineAudioSearchBtn">🔍 Search</button>
+                </div>
+                <div class="user-post-online-audio-status" id="storyOnlineAudioStatus"></div>
+                <div class="user-post-online-audio-results" id="storyOnlineAudioResults"></div>
+            </div>
+
+            <div class="story-duration-hint" id="storyDurationHint">Duration: 8 seconds (no song added)</div>
+            <button class="user-post-submit" id="storySubmitBtn" onclick="publishStory()">Share Story</button>
+        </div>
+    </div>
+
+    <div id="storyViewerOverlay" class="story-viewer-overlay" style="display:none;">
+        <div class="story-viewer-progress" id="storyViewerProgress"></div>
+        <div class="story-viewer-header">
+            <div class="story-viewer-user">
+                <span class="story-viewer-avatar" id="storyViewerAvatar"></span>
+                <div>
+                    <div class="story-viewer-name" id="storyViewerName"></div>
+                    <div class="story-viewer-time" id="storyViewerTime"></div>
+                </div>
+            </div>
+            <div class="story-viewer-actions">
+                <button id="storyViewerDeleteBtn" class="story-viewer-icon-btn" onclick="deleteCurrentStory()" title="Delete Story" style="display:none;">🗑️</button>
+                <button class="story-viewer-icon-btn" onclick="closeStoryViewer()" title="Close">✕</button>
+            </div>
+        </div>
+        <div class="story-viewer-media">
+            <img id="storyViewerImg" alt="">
+        </div>
+        <div class="story-viewer-zone left" id="storyZoneLeft"></div>
+        <div class="story-viewer-zone right" id="storyZoneRight"></div>
+        <div class="story-viewer-viewcount" id="storyViewerViewCount" style="display:none;">👁️ <span id="storyViewCountNum">0</span></div>
     </div>
 
     <div id="globalFeedPage" class="global-feed-page full-screen-container" style="display:none;">
@@ -3876,6 +3965,10 @@ onAuthStateChanged(auth, user => {
 ================================================================================= */
 (function(){
   const USER_POST_MAX_AUDIO_BYTES = 4*1024*1024; // ~4MB raw audio file safety cap
+  // ---- ADDITIVE: Instagram/WhatsApp-style cap — chahe downloaded audio ho ya
+  // online audio, dono me adjust/trim window zyada se zyada 30 second ka hi
+  // ho sakta hai. Neeche sirf isi audio module ke andar use hota hai. ----
+  const USER_POST_MAX_TRIM_SECONDS = 30;
 
   let pendingAudio = null; // {dataUrl, duration, start, end, name}
   let selectedAudioFile = null;
@@ -3884,6 +3977,7 @@ onAuthStateChanged(auth, user => {
   // ---- ADDITIVE: state for the "search online audio" mode ----
   let onlinePreviewEl = null;
   let onlinePreviewBtn = null;
+  let onlineTrimTrack = null; // track currently being trimmed before confirm
 
   function fmtSec(s){
     s = Math.max(0, Math.round(s||0));
@@ -3911,6 +4005,9 @@ onAuthStateChanged(auth, user => {
     if(onlineQuery) onlineQuery.value = '';
     const onlineStatus = document.getElementById('userPostOnlineAudioStatus');
     if(onlineStatus) onlineStatus.textContent = '';
+    onlineTrimTrack = null;
+    const onlineTrimPanel = document.getElementById('userPostOnlineAudioTrimPanel');
+    if(onlineTrimPanel) onlineTrimPanel.classList.remove('active');
   }
 
   function openAudioPanelWithFile(file){
@@ -3932,9 +4029,12 @@ onAuthStateChanged(auth, user => {
       URL.revokeObjectURL(objUrl);
       nameEl.textContent = '🎧 ' + file.name;
       startRange.min = 0; startRange.max = Math.max(0, Math.floor(dur)); startRange.value = 0;
-      endRange.min = 0; endRange.max = Math.max(1, Math.floor(dur)); endRange.value = Math.max(1, Math.floor(dur));
+      endRange.min = 0; endRange.max = Math.max(1, Math.floor(dur));
+      // ---- ADDITIVE: default selection capped at 30 sec, same as Instagram/WhatsApp ----
+      const defaultEnd = Math.max(1, Math.min(Math.floor(dur), USER_POST_MAX_TRIM_SECONDS));
+      endRange.value = defaultEnd;
       startLbl.textContent = 'Start: ' + fmtSec(0);
-      endLbl.textContent = 'End: ' + fmtSec(dur);
+      endLbl.textContent = 'End: ' + fmtSec(defaultEnd);
       panel.dataset.duration = String(dur);
       panel.classList.add('active');
       document.getElementById('userPostAudioChip')?.classList.remove('active');
@@ -3953,6 +4053,8 @@ onAuthStateChanged(auth, user => {
     let start = parseFloat(startRange?.value || '0');
     let end = parseFloat(endRange?.value || String(dur));
     if(end <= start) end = Math.min(dur, start+1);
+    // ---- ADDITIVE: hard safety cap — window kabhi bhi 30 sec se zyada na ho ----
+    if(end - start > USER_POST_MAX_TRIM_SECONDS) end = Math.min(dur, start + USER_POST_MAX_TRIM_SECONDS);
     return {start, end, duration:dur};
   }
 
@@ -4036,21 +4138,110 @@ onAuthStateChanged(auth, user => {
     onlinePreviewBtn = null;
   }
 
-  function selectOnlineTrack(track, durSec){
+  function selectOnlineTrack(track, durSec, start, end){
     stopOnlinePreview();
+    const s = (typeof start === 'number') ? start : 0;
+    const e = (typeof end === 'number') ? end : durSec;
     pendingAudio = {
       dataUrl: track.previewUrl,
       duration: durSec,
-      start: 0,
-      end: durSec,
+      start: s,
+      end: e,
       name: (track.trackName || 'Online Audio') + (track.artistName ? (' - ' + track.artistName) : '')
     };
     const chip = document.getElementById('userPostAudioChip');
     const chipLabel = document.getElementById('userPostAudioChipLabel');
-    if(chipLabel) chipLabel.textContent = '🎵 ' + pendingAudio.name + ' (' + fmtSec(0) + '–' + fmtSec(durSec) + ')';
+    if(chipLabel) chipLabel.textContent = '🎵 ' + pendingAudio.name + ' (' + fmtSec(s) + '–' + fmtSec(e) + ')';
     chip?.classList.add('active');
     document.getElementById('userPostOnlineAudioPanel')?.classList.remove('active');
   }
+
+  // ---- ADDITIVE: trim step for online audio — same "adjust start/end" idea
+  // as the downloaded-audio flow, so users can pick their favourite line
+  // out of an online song too, before it's attached to the post. ----
+  function toggleOnlineSearchViewParts(showResults){
+    const resultsWrap = document.getElementById('userPostOnlineAudioResults');
+    const searchRow = document.querySelector('#userPostOnlineAudioPanel .user-post-online-audio-search-row');
+    const status = document.getElementById('userPostOnlineAudioStatus');
+    const display = showResults ? '' : 'none';
+    if(resultsWrap) resultsWrap.style.display = display;
+    if(searchRow) searchRow.style.display = display;
+    if(status) status.style.display = display;
+  }
+
+  function openOnlineTrimPanel(track, durSec){
+    stopOnlinePreview();
+    onlineTrimTrack = track;
+    const trimPanel = document.getElementById('userPostOnlineAudioTrimPanel');
+    const nameEl = document.getElementById('userPostOnlineAudioTrimName');
+    const startRange = document.getElementById('userPostOnlineAudioTrimStart');
+    const endRange = document.getElementById('userPostOnlineAudioTrimEnd');
+    const startLbl = document.getElementById('userPostOnlineAudioTrimStartLabel');
+    const endLbl = document.getElementById('userPostOnlineAudioTrimEndLabel');
+    if(!trimPanel || !startRange || !endRange) return;
+    nameEl.textContent = '🎧 ' + (track.trackName || 'Untitled') + (track.artistName ? (' - ' + track.artistName) : '');
+    startRange.min = 0; startRange.max = Math.max(0, Math.floor(durSec)); startRange.value = 0;
+    endRange.min = 0; endRange.max = Math.max(1, Math.floor(durSec));
+    // ---- ADDITIVE: default selection capped at 30 sec, same as Instagram/WhatsApp ----
+    const onlineDefaultEnd = Math.max(1, Math.min(Math.floor(durSec), USER_POST_MAX_TRIM_SECONDS));
+    endRange.value = onlineDefaultEnd;
+    startLbl.textContent = 'Start: ' + fmtSec(0);
+    endLbl.textContent = 'End: ' + fmtSec(onlineDefaultEnd);
+    trimPanel.dataset.duration = String(durSec);
+    toggleOnlineSearchViewParts(false);
+    trimPanel.classList.add('active');
+  }
+
+  function closeOnlineTrimPanel(){
+    stopOnlinePreview();
+    onlineTrimTrack = null;
+    const trimPanel = document.getElementById('userPostOnlineAudioTrimPanel');
+    if(trimPanel) trimPanel.classList.remove('active');
+    toggleOnlineSearchViewParts(true);
+  }
+
+  function currentOnlineTrimRange(){
+    const trimPanel = document.getElementById('userPostOnlineAudioTrimPanel');
+    const startRange = document.getElementById('userPostOnlineAudioTrimStart');
+    const endRange = document.getElementById('userPostOnlineAudioTrimEnd');
+    const dur = parseFloat(trimPanel?.dataset.duration || '0');
+    let start = parseFloat(startRange?.value || '0');
+    let end = parseFloat(endRange?.value || String(dur));
+    if(end <= start) end = Math.min(dur, start+1);
+    // ---- ADDITIVE: hard safety cap — window kabhi bhi 30 sec se zyada na ho ----
+    if(end - start > USER_POST_MAX_TRIM_SECONDS) end = Math.min(dur, start + USER_POST_MAX_TRIM_SECONDS);
+    return {start, end, duration: dur};
+  }
+
+  function previewOnlineTrim(){
+    if(!onlineTrimTrack) return;
+    const {start, end} = currentOnlineTrimRange();
+    stopOnlinePreview();
+    const a = new Audio(onlineTrimTrack.previewUrl);
+    onlinePreviewEl = a;
+    a.currentTime = start;
+    a.play().catch(()=>{});
+    const stopAt = ()=>{
+      if(a.currentTime >= end){ a.pause(); a.removeEventListener('timeupdate', stopAt); }
+    };
+    a.addEventListener('timeupdate', stopAt);
+    a.addEventListener('ended', ()=>{ onlinePreviewEl = null; });
+  }
+
+  function confirmOnlineTrim(){
+    if(!onlineTrimTrack) return;
+    const {start, end, duration} = currentOnlineTrimRange();
+    const track = onlineTrimTrack;
+    selectOnlineTrack(track, duration, start, end);
+    onlineTrimTrack = null;
+    const trimPanel = document.getElementById('userPostOnlineAudioTrimPanel');
+    if(trimPanel) trimPanel.classList.remove('active');
+    toggleOnlineSearchViewParts(true);
+  }
+
+  window.userPostOnlineAudioTrimPreview = previewOnlineTrim;
+  window.userPostOnlineAudioTrimConfirm = confirmOnlineTrim;
+  window.userPostOnlineAudioTrimCancel = closeOnlineTrimPanel;
 
   function renderOnlineAudioResults(list){
     const wrap = document.getElementById('userPostOnlineAudioResults');
@@ -4092,7 +4283,7 @@ onAuthStateChanged(auth, user => {
           playBtn.classList.add('playing');
         }).catch(function(){ stopOnlinePreview(); });
       });
-      useBtn.addEventListener('click', function(){ selectOnlineTrack(track, durSec); });
+      useBtn.addEventListener('click', function(){ openOnlineTrimPanel(track, durSec); });
       wrap.appendChild(item);
     });
   }
@@ -4126,7 +4317,7 @@ onAuthStateChanged(auth, user => {
     audioRow.innerHTML = `
       <label class="user-post-audio-btn" for="userPostAudioFile">🎵 Add Audio</label>
       <input id="userPostAudioFile" type="file" accept="audio/*" hidden>
-      <span class="user-post-audio-hint">from your downloaded audio</span>
+      <span class="user-post-audio-hint">from your downloaded audio (max 30 sec)</span>
     `;
     audioRow.insertAdjacentHTML('beforeend', '<button type="button" class="user-post-audio-mode-btn" id="userPostOnlineAudioToggle">🌐 Search Online Audio</button>');
 
@@ -4166,6 +4357,24 @@ onAuthStateChanged(auth, user => {
       <div class="user-post-online-audio-status" id="userPostOnlineAudioStatus"></div>
       <div class="user-post-online-audio-results" id="userPostOnlineAudioResults"></div>
     `;
+    onlinePanel.insertAdjacentHTML('beforeend', `
+      <div class="user-post-audio-panel" id="userPostOnlineAudioTrimPanel">
+        <div class="user-post-audio-file-name" id="userPostOnlineAudioTrimName"></div>
+        <div class="user-post-audio-trim-row">
+          <label><span id="userPostOnlineAudioTrimStartLabel">Start: 0:00</span></label>
+          <input type="range" id="userPostOnlineAudioTrimStart">
+        </div>
+        <div class="user-post-audio-trim-row">
+          <label><span id="userPostOnlineAudioTrimEndLabel">End: 0:00</span></label>
+          <input type="range" id="userPostOnlineAudioTrimEnd">
+        </div>
+        <div class="user-post-audio-actions">
+          <button type="button" class="user-post-audio-preview-btn" onclick="userPostOnlineAudioTrimPreview()">▶️ Preview</button>
+          <button type="button" class="user-post-audio-confirm-btn" onclick="userPostOnlineAudioTrimConfirm()">✓ Done</button>
+          <button type="button" class="user-post-audio-cancel-btn" onclick="userPostOnlineAudioTrimCancel()">← Back</button>
+        </div>
+      </div>
+    `);
 
     if(photoRow && photoRow.parentNode===composer){
       photoRow.insertAdjacentElement('afterend', panel);
@@ -4188,6 +4397,34 @@ onAuthStateChanged(auth, user => {
     document.getElementById('userPostOnlineAudioQuery').addEventListener('keydown', function(e){
       if(e.key === 'Enter'){ e.preventDefault(); searchOnlineAudio(); }
     });
+    document.getElementById('userPostOnlineAudioTrimStart').addEventListener('input', function(){
+      const trimPanel = document.getElementById('userPostOnlineAudioTrimPanel');
+      const dur = parseFloat(trimPanel?.dataset.duration||'0');
+      let v = parseFloat(this.value);
+      const endRange = document.getElementById('userPostOnlineAudioTrimEnd');
+      if(v >= parseFloat(endRange.value)) { v = Math.max(0, parseFloat(endRange.value)-1); this.value=v; }
+      // ---- ADDITIVE: keep the selectable window capped at 30 sec (Instagram/WhatsApp style) ----
+      let endV = parseFloat(endRange.value);
+      if(endV - v > USER_POST_MAX_TRIM_SECONDS){
+        endV = Math.min(dur, v + USER_POST_MAX_TRIM_SECONDS);
+        endRange.value = endV;
+        document.getElementById('userPostOnlineAudioTrimEndLabel').textContent = 'End: ' + fmtSec(endV);
+      }
+      document.getElementById('userPostOnlineAudioTrimStartLabel').textContent = 'Start: ' + fmtSec(v);
+    });
+    document.getElementById('userPostOnlineAudioTrimEnd').addEventListener('input', function(){
+      let v = parseFloat(this.value);
+      const startRange = document.getElementById('userPostOnlineAudioTrimStart');
+      if(v <= parseFloat(startRange.value)) { v = parseFloat(startRange.value)+1; this.value=v; }
+      // ---- ADDITIVE: keep the selectable window capped at 30 sec (Instagram/WhatsApp style) ----
+      let startV = parseFloat(startRange.value);
+      if(v - startV > USER_POST_MAX_TRIM_SECONDS){
+        startV = Math.max(0, v - USER_POST_MAX_TRIM_SECONDS);
+        startRange.value = startV;
+        document.getElementById('userPostOnlineAudioTrimStartLabel').textContent = 'Start: ' + fmtSec(startV);
+      }
+      document.getElementById('userPostOnlineAudioTrimEndLabel').textContent = 'End: ' + fmtSec(v);
+    });
 
     document.getElementById('userPostAudioFile').addEventListener('click', function(){
       onlinePanel.classList.remove('active');
@@ -4208,12 +4445,26 @@ onAuthStateChanged(auth, user => {
       let v = parseFloat(this.value);
       const endRange = document.getElementById('userPostAudioEnd');
       if(v >= parseFloat(endRange.value)) { v = Math.max(0, parseFloat(endRange.value)-1); this.value=v; }
+      // ---- ADDITIVE: keep the selectable window capped at 30 sec (Instagram/WhatsApp style) ----
+      let endV = parseFloat(endRange.value);
+      if(endV - v > USER_POST_MAX_TRIM_SECONDS){
+        endV = Math.min(dur, v + USER_POST_MAX_TRIM_SECONDS);
+        endRange.value = endV;
+        document.getElementById('userPostAudioEndLabel').textContent = 'End: ' + fmtSec(endV);
+      }
       document.getElementById('userPostAudioStartLabel').textContent = 'Start: ' + fmtSec(v);
     });
     document.getElementById('userPostAudioEnd').addEventListener('input', function(){
       let v = parseFloat(this.value);
       const startRange = document.getElementById('userPostAudioStart');
       if(v <= parseFloat(startRange.value)) { v = parseFloat(startRange.value)+1; this.value=v; }
+      // ---- ADDITIVE: keep the selectable window capped at 30 sec (Instagram/WhatsApp style) ----
+      let startV = parseFloat(startRange.value);
+      if(v - startV > USER_POST_MAX_TRIM_SECONDS){
+        startV = Math.max(0, v - USER_POST_MAX_TRIM_SECONDS);
+        startRange.value = startV;
+        document.getElementById('userPostAudioStartLabel').textContent = 'Start: ' + fmtSec(startV);
+      }
       document.getElementById('userPostAudioEndLabel').textContent = 'End: ' + fmtSec(v);
     });
 
@@ -4890,6 +5141,595 @@ onAuthStateChanged(auth, user => {
   applyOnlineData = function(d){
     originalApplyOnlineDataForPush(d);
     try{ runPushNotifyDiff(); }catch(e){ console.warn('push notify diff failed', e); }
+  };
+})();
+
+/* =====================================================================
+   ADDITIVE: INSTAGRAM-STYLE 24-HOUR STORY FEATURE
+   Purely additive module. Nothing above this block is edited or removed.
+
+   - Profile ke andar "Create Post" (+) button ke bagal me ek naya
+     "Add Story" button hai. Usse user apni profile-photo jaisi ek
+     photo (chahe to ek gaane/song ke saath) story ke roop me daal
+     sakta hai — Instagram jaisa.
+   - Jis roll-number wale user ki story active hai uske avatar (khud
+     ki Profile page me, ya "All Users Feed" ke search se khula hua
+     "roll number wala profile") par ek rangeen ring dikhti hai.
+     Ring par tap karne se story fullscreen me khulti hai.
+   - Audio wali story 15 second ki hoti hai, bina audio wali 8 second
+     ki. Ek user ek se zyada stories add kar sakta hai — sab ek ke
+     baad ek (Instagram jaisa) chalti hain.
+   - Story banane wala use apni khud ki story 24 ghante ke andar
+     manually delete kar sakta hai; agar delete nahi kiya to 24 ghante
+     baad wo automatically hat jaati hai.
+   - Story viewer ke andar (sirf story ke owner ko) ek 👁️ view-icon
+     ke bagal me realtime view count dikhta hai, jo jitne users story
+     dekhte hain utna turant (Firebase realtime ke through) badhta hai.
+===================================================================== */
+(function(){
+  const STORY_NO_AUDIO_SEC = 8;
+  const STORY_AUDIO_SEC = 15;
+  const STORY_MAX_AUDIO_BYTES = 4*1024*1024; // ~4MB raw audio file safety cap
+  const STORY_TICK_MS = 60;
+
+  let pendingStoryPhoto = null;   // compressed data URL of chosen photo
+  let pendingStoryAudio = null;   // {source,dataUrl,previewUrl,name,artist}
+  let storyOnlinePreviewEl = null, storyOnlinePreviewBtn = null;
+
+  /* ---------- which stories belong to a roll number, still active (not expired) ---------- */
+  function activeStoriesForRoll(roll){
+    const now = Date.now();
+    return (onlineData.stories||[])
+      .filter(s=>s && String(s.authorRoll)===String(roll) && (s.expiresAt||0)>now)
+      .sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+  }
+  window.activeStoriesForRoll = activeStoriesForRoll;
+
+  function hasUnseenStories(stories){
+    const roll = window.localUser && String(window.localUser.rollNumber);
+    if(!roll) return stories.length>0;
+    return stories.some(s=> !(s.viewedBy && s.viewedBy[roll]));
+  }
+
+  function applyRingToAvatar(el, roll){
+    if(!el) return;
+    const stories = activeStoriesForRoll(roll);
+    el.classList.remove('has-active-story','story-seen');
+    if(stories.length){
+      el.classList.add('has-active-story');
+      if(!hasUnseenStories(stories)) el.classList.add('story-seen');
+      el.style.setProperty('--story-ring-color', (window.getColorForRoll && window.getColorForRoll(roll)) || '#ee2a7b');
+      el.onclick = function(){ openStoryViewer(roll); };
+    } else {
+      el.style.removeProperty('--story-ring-color');
+      el.onclick = null;
+    }
+  }
+
+  function refreshStoryRings(){
+    if(window.localUser) applyRingToAvatar(document.getElementById('profAvatar'), window.localUser.rollNumber);
+    const feedAv = document.getElementById('feedUserPostsAvatar');
+    const rollEl = document.getElementById('feedUserPostsRoll');
+    if(feedAv && rollEl && rollEl.textContent){
+      const roll = rollEl.textContent.replace('Roll No: ','').trim();
+      if(roll) applyRingToAvatar(feedAv, roll);
+    }
+  }
+  window.refreshStoryRings = refreshStoryRings;
+
+  // Quietly remove only MY OWN expired stories from Firebase once their
+  // 24-hour window is over. Old feature/data is never touched.
+  function pruneExpiredOwnStories(){
+    if(!window.localUser) return;
+    const now = Date.now();
+    const roll = String(window.localUser.rollNumber);
+    (onlineData.stories||[]).forEach(s=>{
+      if(s && s.id && String(s.authorRoll)===roll && (s.expiresAt||0)<=now){
+        remove(ref(db,'portal/stories/'+s.id)).catch(()=>{});
+      }
+    });
+  }
+
+  /* ================= STORY CREATE PAGE ================= */
+  function resetStoryComposer(){
+    pendingStoryPhoto = null;
+    pendingStoryAudio = null;
+    const photoInput = document.getElementById('storyPhotoInput'); if(photoInput) photoInput.value='';
+    const preview = document.getElementById('storyPhotoPreview'); if(preview){ preview.style.display='none'; preview.src=''; }
+    const placeholder = document.getElementById('storyPhotoPlaceholder'); if(placeholder) placeholder.style.display='block';
+    const audioInput = document.getElementById('storyAudioFile'); if(audioInput) audioInput.value='';
+    document.getElementById('storyAudioChip')?.classList.remove('active');
+    document.getElementById('storyOnlineAudioPanel')?.classList.remove('active');
+    const results = document.getElementById('storyOnlineAudioResults'); if(results) results.innerHTML='';
+    const query = document.getElementById('storyOnlineAudioQuery'); if(query) query.value='';
+    const status = document.getElementById('storyOnlineAudioStatus'); if(status) status.textContent='';
+    stopStoryOnlinePreview();
+    updateStoryDurationHint();
+    const btn = document.getElementById('storySubmitBtn'); if(btn){ btn.disabled=false; btn.textContent='Share Story'; }
+  }
+
+  function updateStoryDurationHint(){
+    const hint = document.getElementById('storyDurationHint');
+    if(!hint) return;
+    hint.textContent = pendingStoryAudio
+      ? ('Duration: ' + STORY_AUDIO_SEC + ' seconds (with song)')
+      : ('Duration: ' + STORY_NO_AUDIO_SEC + ' seconds (no song added)');
+  }
+
+  window.openStoryCreatePage = function(){
+    requireLogin(function(){
+      resetStoryComposer();
+      closeAllSections();
+      document.getElementById('storyCreatePage').style.display='block';
+      updateNavState('navProfile');
+      window.scrollTo(0,0);
+    });
+  };
+
+  window.closeStoryCreatePage = function(){
+    closeAllSections();
+    document.getElementById('profilePage').style.display='block';
+    updateNavState('navProfile');
+    window.scrollTo(0,0);
+  };
+
+  async function storyPhotoFileToDataURL(file){
+    if(!file || !file.type.startsWith('image/')) throw new Error('Please select an image file only.');
+    return new Promise((resolve,reject)=>{
+      const reader = new FileReader();
+      reader.onerror = ()=>reject(new Error('Could not read the photo.'));
+      reader.onload = ()=>{
+        const img = new Image();
+        img.onerror = ()=>reject(new Error('Invalid image.'));
+        img.onload = ()=>{
+          const maxSize=900;
+          const scale=Math.min(1,maxSize/Math.max(img.width,img.height));
+          const w=Math.max(1,Math.round(img.width*scale));
+          const h=Math.max(1,Math.round(img.height*scale));
+          const c=document.createElement('canvas'); c.width=w; c.height=h;
+          c.getContext('2d').drawImage(img,0,0,w,h);
+          let data=c.toDataURL('image/jpeg',0.62);
+          if(data.length>900000) data=c.toDataURL('image/jpeg',0.45);
+          resolve(data);
+        };
+        img.src=reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  document.addEventListener('change', function(e){
+    if(e.target && e.target.id==='storyPhotoInput'){
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+      storyPhotoFileToDataURL(file).then(function(dataUrl){
+        pendingStoryPhoto = dataUrl;
+        const preview = document.getElementById('storyPhotoPreview');
+        const placeholder = document.getElementById('storyPhotoPlaceholder');
+        if(preview){ preview.src=dataUrl; preview.style.display='block'; }
+        if(placeholder) placeholder.style.display='none';
+      }).catch(function(err){ alert(err.message); e.target.value=''; });
+    }
+    if(e.target && e.target.id==='storyAudioFile'){
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+      if(!file.type.startsWith('audio/')){ alert('Please select an audio file only.'); e.target.value=''; return; }
+      if(file.size > STORY_MAX_AUDIO_BYTES){ alert('Audio file must be smaller than 4MB.'); e.target.value=''; return; }
+      const reader = new FileReader();
+      reader.onload = function(){
+        pendingStoryAudio = { source:'upload', dataUrl: reader.result, name:file.name, artist:'' };
+        setStoryAudioChip('🎵 ' + file.name);
+        updateStoryDurationHint();
+      };
+      reader.onerror = function(){ alert('Could not read the audio file.'); };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  function setStoryAudioChip(label){
+    const chip = document.getElementById('storyAudioChip');
+    const lbl = document.getElementById('storyAudioChipLabel');
+    if(lbl) lbl.textContent = label;
+    if(chip) chip.classList.add('active');
+    document.getElementById('storyOnlineAudioPanel')?.classList.remove('active');
+  }
+
+  window.storyAudioRemove = function(){
+    pendingStoryAudio = null;
+    document.getElementById('storyAudioChip')?.classList.remove('active');
+    const audioInput = document.getElementById('storyAudioFile'); if(audioInput) audioInput.value='';
+    updateStoryDurationHint();
+  };
+
+  function stopStoryOnlinePreview(){
+    if(storyOnlinePreviewEl){ try{ storyOnlinePreviewEl.pause(); }catch(e){} storyOnlinePreviewEl=null; }
+    if(storyOnlinePreviewBtn){ storyOnlinePreviewBtn.classList.remove('playing'); storyOnlinePreviewBtn=null; }
+  }
+
+  async function storySearchOnlineAudio(){
+    const qEl = document.getElementById('storyOnlineAudioQuery');
+    const status = document.getElementById('storyOnlineAudioStatus');
+    const wrap = document.getElementById('storyOnlineAudioResults');
+    const q = (qEl && qEl.value || '').trim();
+    if(!q){ if(status) status.textContent='Please type a song / audio name to search.'; return; }
+    if(wrap) wrap.innerHTML='';
+    if(status) status.textContent='Searching…';
+    try{
+      const res = await fetch('https://itunes.apple.com/search?media=music&limit=15&term='+encodeURIComponent(q));
+      const data = await res.json();
+      renderStoryOnlineAudioResults((data && data.results) || []);
+      if(status) status.textContent='';
+    }catch(e){
+      if(status) status.textContent='Search failed, please check your internet and try again.';
+    }
+  }
+
+  function renderStoryOnlineAudioResults(tracks){
+    const wrap = document.getElementById('storyOnlineAudioResults');
+    if(!wrap) return;
+    wrap.innerHTML='';
+    if(!tracks.length){ wrap.innerHTML='<div class="global-feed-empty">No results found.</div>'; return; }
+    tracks.forEach(function(track){
+      if(!track.previewUrl) return;
+      const item = document.createElement('div');
+      item.className='user-post-online-audio-item';
+      item.innerHTML =
+        (track.artworkUrl60 ? ('<img src="'+esc(track.artworkUrl60)+'">') : '') +
+        '<div class="user-post-online-audio-info">'+
+          '<div class="oa-title">'+esc(track.trackName||'')+'</div>'+
+          '<div class="oa-artist">'+esc(track.artistName||'')+'</div>'+
+        '</div>'+
+        '<div class="user-post-online-audio-item-actions">'+
+          '<button type="button" class="user-post-online-audio-play-btn">▶️</button>'+
+          '<button type="button" class="user-post-online-audio-use-btn">Use</button>'+
+        '</div>';
+      const playBtn = item.querySelector('.user-post-online-audio-play-btn');
+      const useBtn = item.querySelector('.user-post-online-audio-use-btn');
+      playBtn.addEventListener('click', function(){
+        if(storyOnlinePreviewBtn===playBtn){ stopStoryOnlinePreview(); return; }
+        stopStoryOnlinePreview();
+        const a = new Audio(track.previewUrl);
+        a.addEventListener('ended', stopStoryOnlinePreview);
+        a.play().then(function(){ storyOnlinePreviewEl=a; storyOnlinePreviewBtn=playBtn; playBtn.classList.add('playing'); }).catch(function(){ stopStoryOnlinePreview(); });
+      });
+      useBtn.addEventListener('click', function(){
+        stopStoryOnlinePreview();
+        pendingStoryAudio = { source:'online', previewUrl: track.previewUrl, name: track.trackName||'', artist: track.artistName||'' };
+        setStoryAudioChip('🎵 ' + (track.trackName||'Song') + ' — ' + (track.artistName||''));
+        document.getElementById('storyOnlineAudioPanel')?.classList.remove('active');
+        updateStoryDurationHint();
+      });
+      wrap.appendChild(item);
+    });
+  }
+
+  document.addEventListener('click', function(e){
+    if(e.target && e.target.id==='storyOnlineAudioToggle'){
+      document.getElementById('storyOnlineAudioPanel')?.classList.toggle('active');
+    }
+    if(e.target && e.target.id==='storyOnlineAudioSearchBtn'){
+      storySearchOnlineAudio();
+    }
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.target && e.target.id==='storyOnlineAudioQuery' && e.key==='Enter'){
+      e.preventDefault(); storySearchOnlineAudio();
+    }
+  });
+
+  window.publishStory = async function(){
+    if(!window.localUser) return requireLogin(window.publishStory);
+    if(!pendingStoryPhoto) return alert('Please choose a photo for your story.');
+    const btn = document.getElementById('storySubmitBtn');
+    if(btn){ btn.disabled=true; btn.textContent='Sharing…'; }
+    try{
+      const id = 'story_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+      const authorRoll = String(window.localUser.rollNumber);
+      const durationSec = pendingStoryAudio ? STORY_AUDIO_SEC : STORY_NO_AUDIO_SEC;
+      const payload = {
+        id,
+        authorRoll,
+        authorName: window.localUser.name || authorRoll,
+        imgUrl: pendingStoryPhoto,
+        audio: pendingStoryAudio ? {
+          source: pendingStoryAudio.source,
+          dataUrl: pendingStoryAudio.dataUrl || null,
+          previewUrl: pendingStoryAudio.previewUrl || null,
+          name: pendingStoryAudio.name || '',
+          artist: pendingStoryAudio.artist || ''
+        } : null,
+        durationSec,
+        timestamp: Date.now(),
+        expiresAt: Date.now() + 24*60*60*1000,
+        viewedBy: {}
+      };
+      await set(ref(db,'portal/stories/'+id), payload);
+      resetStoryComposer();
+      alert('Your story has been shared!');
+      window.closeStoryCreatePage();
+    }catch(e){
+      alert('Story upload failed: '+e.message);
+    }finally{
+      if(btn){ btn.disabled=false; btn.textContent='Share Story'; }
+    }
+  };
+
+  /* ================= STORY VIEWER ================= */
+  let viewerStories = [];
+  let viewerIndex = 0;
+  let viewerRoll = null;
+  let viewerTimer = null;
+  let viewerAudioEl = null;
+  let viewerElapsed = 0;
+  let viewerLastTick = 0;
+  let viewerPaused = false;
+
+  function buildProgressBars(){
+    const box = document.getElementById('storyViewerProgress');
+    if(!box) return;
+    box.innerHTML = viewerStories.map(()=>'<div class="seg"><i></i></div>').join('');
+  }
+
+  function setProgress(idx, pct){
+    const segs = document.querySelectorAll('#storyViewerProgress .seg');
+    const seg = segs[idx];
+    if(!seg) return;
+    const bar = seg.querySelector('i');
+    if(bar) bar.style.width = Math.max(0,Math.min(100,pct))+'%';
+  }
+
+  function markSegDone(idx){
+    const segs = document.querySelectorAll('#storyViewerProgress .seg');
+    const seg = segs[idx];
+    if(seg) seg.classList.add('done');
+  }
+
+  function currentStory(){ return viewerStories[viewerIndex]; }
+
+  window.openStoryViewer = function(roll){
+    const stories = activeStoriesForRoll(roll);
+    if(!stories.length) return;
+    viewerStories = stories;
+    viewerRoll = String(roll);
+    viewerIndex = 0;
+    buildProgressBars();
+    document.getElementById('storyViewerOverlay').style.display='flex';
+    const isOwn = window.localUser && String(window.localUser.rollNumber)===viewerRoll;
+    document.getElementById('storyViewerDeleteBtn').style.display = isOwn ? 'inline-flex' : 'none';
+    document.getElementById('storyViewerAvatar').textContent = String(roll).slice(0,2).toUpperCase();
+    playStoryAt(0);
+  };
+
+  function playStoryAt(idx){
+    if(idx<0 || idx>=viewerStories.length){ return closeStoryViewer(); }
+    clearStoryTimer();
+    viewerIndex = idx;
+    const story = viewerStories[idx];
+    document.getElementById('storyViewerName').textContent = story.authorName || viewerRoll;
+    document.getElementById('storyViewerTime').textContent = timeAgoStory(story.timestamp);
+    const img = document.getElementById('storyViewerImg');
+    if(img) img.src = story.imgUrl || '';
+
+    if(viewerAudioEl){ try{ viewerAudioEl.pause(); }catch(e){} viewerAudioEl=null; }
+    if(story.audio){
+      const src = story.audio.dataUrl || story.audio.previewUrl;
+      if(src){
+        viewerAudioEl = new Audio(src);
+        viewerAudioEl.play().catch(()=>{});
+      }
+    }
+
+    updateViewCountUI(story);
+    markSeen(story);
+
+    viewerElapsed = 0;
+    viewerLastTick = Date.now();
+    viewerPaused = false;
+    const durationMs = (story.durationSec || STORY_NO_AUDIO_SEC) * 1000;
+    viewerTimer = setInterval(function(){
+      if(viewerPaused) { viewerLastTick = Date.now(); return; }
+      const now = Date.now();
+      viewerElapsed += (now - viewerLastTick);
+      viewerLastTick = now;
+      const pct = (viewerElapsed/durationMs)*100;
+      setProgress(idx, pct);
+      if(viewerElapsed >= durationMs){
+        markSegDone(idx);
+        storyNext();
+      }
+    }, STORY_TICK_MS);
+  }
+
+  function clearStoryTimer(){
+    if(viewerTimer){ clearInterval(viewerTimer); viewerTimer=null; }
+  }
+
+  function timeAgoStory(ts){
+    if(!ts) return '';
+    const mins = Math.max(0, Math.round((Date.now()-ts)/60000));
+    if(mins<1) return 'Just now';
+    if(mins<60) return mins+'m';
+    return Math.round(mins/60)+'h';
+  }
+
+  function updateViewCountUI(story){
+    const wrap = document.getElementById('storyViewerViewCount');
+    const num = document.getElementById('storyViewCountNum');
+    if(!wrap || !num) return;
+    const isOwn = window.localUser && String(window.localUser.rollNumber)===String(story.authorRoll);
+    if(isOwn){
+      wrap.style.display='flex';
+      num.textContent = story.viewedBy ? Object.keys(story.viewedBy).length : 0;
+    } else {
+      wrap.style.display='none';
+    }
+  }
+
+  function markSeen(story){
+    if(!window.localUser) return;
+    const roll = String(window.localUser.rollNumber);
+    if(String(story.authorRoll)===roll) return; // apni khud ki story ka view count nahi badhta
+    if(story.viewedBy && story.viewedBy[roll]) return;
+    update(ref(db,'portal/stories/'+story.id+'/viewedBy'), { [roll]: true }).catch(()=>{});
+  }
+
+  window.storyNext = function(){ playStoryAt(viewerIndex+1); };
+  window.storyPrev = function(){ playStoryAt(viewerIndex-1); };
+
+  // ---- List of roll numbers that currently have at least 1 active story,
+  // most-recently-posted first. Used for double-tap "jump to another user". ----
+  function activeStoryUserList(){
+    const latest = {};
+    (onlineData.stories||[]).forEach(function(s){
+      if(!s || (s.expiresAt||0) <= Date.now()) return;
+      const roll = String(s.authorRoll);
+      if(!latest[roll] || (s.timestamp||0) > latest[roll]) latest[roll] = s.timestamp||0;
+    });
+    return Object.keys(latest).sort(function(a,b){ return latest[b]-latest[a]; });
+  }
+
+  function jumpToNextUserStory(){
+    const list = activeStoryUserList();
+    const idx = list.indexOf(viewerRoll);
+    if(idx===-1 || idx===list.length-1){ closeStoryViewer(); return; }
+    openStoryViewer(list[idx+1]);
+  }
+
+  function jumpToPrevUserStory(){
+    const list = activeStoryUserList();
+    const idx = list.indexOf(viewerRoll);
+    if(idx<=0){
+      if(viewerStories.length) playStoryAt(0); // koi previous user nahi -> isi user ki pehli story se dubara
+      return;
+    }
+    openStoryViewer(list[idx-1]);
+  }
+
+  function pauseStoryPlayback(){
+    viewerPaused = true;
+    if(viewerAudioEl){ try{ viewerAudioEl.pause(); }catch(e){} }
+  }
+  function resumeStoryPlayback(){
+    viewerPaused = false;
+    viewerLastTick = Date.now();
+    if(viewerAudioEl){ try{ viewerAudioEl.play().catch(()=>{}); }catch(e){} }
+  }
+
+  // ---- Tap / double-tap / 1.3s-long-press gestures on the left & right
+  // zones (Instagram-style): single tap = prev/next story of the same
+  // user, double tap = jump to another user's story, long-press (1.3s)
+  // = pause, release = resume. ----
+  const LONG_PRESS_MS = 1300;
+  const DOUBLE_TAP_MS = 300;
+  const zoneGestureState = { left:{}, right:{} };
+
+  function setupStoryZoneGestures(){
+    ['left','right'].forEach(function(side){
+      const el = document.getElementById(side==='left' ? 'storyZoneLeft' : 'storyZoneRight');
+      if(!el || el.dataset.storyGestureBound) return;
+      el.dataset.storyGestureBound = '1';
+      const st = zoneGestureState[side];
+      st.longPressTimer = null;
+      st.longPressFired = false;
+      st.lastTapTime = 0;
+      st.singleTapTimer = null;
+
+      el.addEventListener('pointerdown', function(){
+        st.longPressFired = false;
+        st.longPressTimer = setTimeout(function(){
+          st.longPressFired = true;
+          pauseStoryPlayback();
+        }, LONG_PRESS_MS);
+      });
+
+      function onRelease(){
+        if(st.longPressTimer){ clearTimeout(st.longPressTimer); st.longPressTimer=null; }
+        if(st.longPressFired){
+          st.longPressFired = false;
+          resumeStoryPlayback();
+          return; // long-press release is not a tap
+        }
+        const now = Date.now();
+        if(now - st.lastTapTime < DOUBLE_TAP_MS){
+          st.lastTapTime = 0;
+          if(st.singleTapTimer){ clearTimeout(st.singleTapTimer); st.singleTapTimer=null; }
+          if(side==='right') jumpToNextUserStory(); else jumpToPrevUserStory();
+        } else {
+          st.lastTapTime = now;
+          st.singleTapTimer = setTimeout(function(){
+            st.singleTapTimer = null;
+            if(side==='right') window.storyNext(); else window.storyPrev();
+          }, DOUBLE_TAP_MS);
+        }
+      }
+      el.addEventListener('pointerup', onRelease);
+      el.addEventListener('pointercancel', function(){
+        if(st.longPressTimer){ clearTimeout(st.longPressTimer); st.longPressTimer=null; }
+        if(st.longPressFired){ st.longPressFired=false; resumeStoryPlayback(); }
+      });
+      el.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+    });
+  }
+  setupStoryZoneGestures();
+
+  window.closeStoryViewer = function(){
+    clearStoryTimer();
+    if(viewerAudioEl){ try{ viewerAudioEl.pause(); }catch(e){} viewerAudioEl=null; }
+    const overlay = document.getElementById('storyViewerOverlay');
+    if(overlay) overlay.style.display='none';
+    viewerStories = [];
+    viewerRoll = null;
+  };
+
+  window.deleteCurrentStory = async function(){
+    const story = currentStory();
+    if(!story) return;
+    if(!window.localUser || String(story.authorRoll)!==String(window.localUser.rollNumber)) return alert('You can only delete your own story.');
+    if(!confirm('Delete this story?')) return;
+    try{
+      await remove(ref(db,'portal/stories/'+story.id));
+      viewerStories.splice(viewerIndex,1);
+      if(!viewerStories.length){ closeStoryViewer(); return; }
+      buildProgressBars();
+      playStoryAt(Math.min(viewerIndex, viewerStories.length-1));
+    }catch(e){ alert('Story delete failed: '+e.message); }
+  };
+
+  /* ================= HOOK INTO EXISTING REALTIME + NAVIGATION FLOW (additive wraps only) ================= */
+  const baseApplyOnlineDataForStories = applyOnlineData;
+  applyOnlineData = function(d){
+    baseApplyOnlineDataForStories(d);
+    try{
+      onlineData.stories = arr(d && d.stories);
+      pruneExpiredOwnStories();
+      refreshStoryRings();
+      const overlay = document.getElementById('storyViewerOverlay');
+      if(overlay && overlay.style.display==='flex'){
+        const live = currentStory();
+        if(live){
+          const updated = onlineData.stories.find(s=>s && String(s.id)===String(live.id));
+          if(updated){ viewerStories[viewerIndex]=updated; updateViewCountUI(updated); }
+        }
+      }
+    }catch(e){ console.warn('story realtime sync failed', e); }
+  };
+
+  const baseOpenProfileForStories = window.openProfile;
+  window.openProfile = function(){
+    if(typeof baseOpenProfileForStories==='function') baseOpenProfileForStories();
+    refreshStoryRings();
+  };
+
+  const baseOpenUserPostsFromSearchForStories = window.openUserPostsFromSearch;
+  window.openUserPostsFromSearch = function(roll){
+    if(typeof baseOpenUserPostsFromSearchForStories==='function') baseOpenUserPostsFromSearchForStories(roll);
+    refreshStoryRings();
+  };
+
+  const baseCloseAllSectionsForStories = window.closeAllSections;
+  window.closeAllSections = function(){
+    if(typeof baseCloseAllSectionsForStories==='function') baseCloseAllSectionsForStories();
+    const sc = document.getElementById('storyCreatePage'); if(sc) sc.style.display='none';
   };
 })();
 
