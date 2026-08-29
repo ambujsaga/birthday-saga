@@ -914,66 +914,6 @@
         }
         .chat-input-area button:hover { background: #e68a00; }
 
-        /* Chat AI (Duck.ai) button + popup */
-        .chat-ai-btn {
-            background: var(--accent-orange);
-            color: #000;
-            border: none;
-            padding: 0 16px;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .chat-ai-btn:hover { background: #e68a00; }
-        .chat-ai-btn .ui-icon { width: 20px; height: 20px; }
-
-        .chat-ai-popup-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.55);
-            z-index: 300;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .chat-ai-popup-box {
-            width: 100%;
-            max-width: 480px;
-            height: 85vh;
-            max-height: 720px;
-            background: #fff;
-            border-radius: 12px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.35);
-        }
-        .chat-ai-popup-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--primary-blue);
-            color: #fff;
-            padding: 10px 15px;
-            font-weight: bold;
-            font-size: 0.95rem;
-        }
-        .chat-ai-popup-close {
-            cursor: pointer;
-            font-size: 1.5rem;
-            line-height: 1;
-        }
-        .chat-ai-popup-frame {
-            flex: 1;
-            width: 100%;
-            border: none;
-        }
-
         /* CHAT ENHANCEMENTS */
         .chat-date-divider {
             text-align: center;
@@ -1732,19 +1672,8 @@
                 </div>
             <div class="chat-input-area">
                 <input type="text" id="chatInput" placeholder="Type your message here..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
-                <button type="button" class="chat-ai-btn" id="chatAiBtn" onclick="openChatAiPopup()" title="Ask AI (Duck.ai)"><svg class="ui-icon"><use href="#icon-sparkle"></use></svg></button>
                 <button onclick="sendChatMessage()">Send</button>
             </div>
-        </div>
-    </div>
-
-    <div id="chatAiPopupOverlay" class="chat-ai-popup-overlay" style="display:none;" onclick="if(event.target===this) closeChatAiPopup()">
-        <div class="chat-ai-popup-box">
-            <div class="chat-ai-popup-header">
-                <span>Ask AI</span>
-                <span class="chat-ai-popup-close" onclick="closeChatAiPopup()" title="Close">&times;</span>
-            </div>
-            <iframe id="chatAiIframe" class="chat-ai-popup-frame" src="" title="Duck.ai" loading="lazy"></iframe>
         </div>
     </div>
 
@@ -2445,23 +2374,6 @@
                 document.getElementById('profilePage').style.display = 'block';
                 window.scrollTo(0, 0);
             });
-        }
-
-        // ---- Chat AI (Duck.ai) popup — opens duck.ai inside a popup iframe.
-        // Iframe src set only on open (and cleared on close) so duck.ai isn't
-        // loaded in the background until the user actually taps the AI icon.
-        function openChatAiPopup() {
-            const overlay = document.getElementById('chatAiPopupOverlay');
-            const frame = document.getElementById('chatAiIframe');
-            if (frame && !frame.src) frame.src = 'https://duck.ai';
-            if (overlay) overlay.style.display = 'flex';
-        }
-
-        function closeChatAiPopup() {
-            const overlay = document.getElementById('chatAiPopupOverlay');
-            const frame = document.getElementById('chatAiIframe');
-            if (overlay) overlay.style.display = 'none';
-            if (frame) frame.src = '';
         }
 
         function sendChatMessage() {
