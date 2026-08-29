@@ -1398,14 +1398,14 @@
   cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.25);
 }
 .profile-avatar-ring{padding:3px;border-radius:50%;display:inline-block;transition:.2s;}
-.profile-avatar-ring.has-story{background:linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5);cursor:pointer;}
+.profile-avatar-ring.has-story{background:#ffd400;cursor:pointer;}
 .profile-avatar-ring.has-story.seen{background:#c7cdd6;}
 
 .story-tray{display:flex;gap:12px;overflow-x:auto;padding:10px 4px 16px;margin:-6px 0 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .story-tray::-webkit-scrollbar{display:none;}
 .story-tray-item{flex:0 0 auto;width:88px;text-align:center;cursor:pointer;}
 .story-frame{width:84px;height:118px;border-radius:14px;padding:3px;display:flex;align-items:flex-start;justify-content:center;position:relative;background:#ccd3db;}
-.story-frame.unseen{background:linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5);}
+.story-frame.unseen{background:#ffd400;}
 .story-frame.seen{background:#ccd3db;}
 .story-frame-inner{width:100%;height:100%;border-radius:11px;background:#e9edf2;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
 .story-frame-thumb{width:100%;height:100%;object-fit:cover;}
@@ -1429,31 +1429,37 @@
 .story-viewer-delete{background:none;border:none;color:#fff;font-size:1.15rem;cursor:pointer;padding:4px 8px;}
 .story-media-wrap{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
 .story-media-wrap img{max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;}
+.story-text-overlay{position:absolute;left:0;right:0;bottom:12%;padding:0 24px;text-align:center;color:#fff;font-weight:700;font-size:1.05rem;line-height:1.4;text-shadow:0 2px 6px rgba(0,0,0,.65);word-wrap:break-word;pointer-events:none;display:none;}
+.story-text-overlay.active{display:block;}
 .story-tap-zone{position:absolute;top:0;bottom:0;z-index:5;touch-action:manipulation;}
 .story-tap-zone.left{left:0;width:35%;}
 .story-tap-zone.right{right:0;width:65%;}
 .story-viewer-footer{padding:8px 14px 18px;color:#fff;display:flex;align-items:center;gap:6px;font-size:.85rem;min-height:16px;}
 
-#storyCreatePage{padding:0!important;background:#000;}
-.story-create-header{display:flex;align-items:center;gap:10px;padding:12px;color:#fff;background:var(--primary-blue);}
-.story-create-header button{background:none;border:none;color:#fff;font-size:1.3rem;cursor:pointer;}
-.story-create-header h2{font-size:1.05rem;}
-.story-create-body{padding:14px;color:#fff;}
-.story-photo-drop{border:2px dashed #666;border-radius:12px;min-height:260px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;cursor:pointer;overflow:hidden;position:relative;background:#111;text-align:center;font-size:.85rem;padding:10px;}
+/* Story-create page now reuses the exact same page-frame + composer-card
+   classes as the post-create page (user-post-create-page / user-post-create-header /
+   user-post-composer), so no page-frame or card rules are needed here anymore.
+   Only the story-specific pieces (photo box, text-overlay preview, audio rows/panels,
+   publish button) are themed below to match that same light look. */
+.story-create-body{text-align:left;}
+.story-photo-wrap{position:relative;}
+.story-photo-drop{border:2px dashed #cbd5e1;border-radius:12px;min-height:260px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;cursor:pointer;overflow:hidden;position:relative;background:#f8fafc;text-align:center;font-size:.85rem;padding:10px;color:#64748b;}
 .story-photo-drop img{width:100%;height:100%;object-fit:contain;position:absolute;inset:0;background:#000;}
+.story-text-overlay-preview{position:absolute;left:12px;right:12px;bottom:14px;text-align:center;color:#fff;font-weight:700;font-size:1rem;text-shadow:0 2px 6px rgba(0,0,0,.65);word-wrap:break-word;pointer-events:none;display:none;}
+.story-text-overlay-preview.active{display:block;}
 .story-audio-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center;}
-.story-audio-row label,.story-audio-row button{background:#222;color:#fff;border:1px solid #444;padding:8px 12px;border-radius:20px;font-size:.78rem;cursor:pointer;}
-.story-audio-panel{margin-top:10px;background:#111;border-radius:10px;padding:10px;display:none;}
+.story-audio-row label,.story-audio-row button{background:#f1f5f9;color:#003366;border:1px solid #cbd5e1;padding:8px 12px;border-radius:20px;font-size:.78rem;cursor:pointer;font-weight:700;}
+.story-audio-panel{margin-top:10px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:10px;display:none;}
 .story-audio-panel.active{display:block;}
 .story-audio-panel input[type=range]{width:100%;}
 .story-online-audio-results{max-height:220px;overflow-y:auto;margin-top:8px;}
-.story-online-audio-item{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#1c1c1c;padding:8px;border-radius:8px;margin-bottom:6px;font-size:.76rem;}
-.story-online-audio-item button{background:var(--accent-orange);border:none;color:#fff;padding:5px 10px;border-radius:14px;font-size:.72rem;cursor:pointer;flex:0 0 auto;}
-.story-audio-chip{display:none;align-items:center;gap:8px;background:#222;color:#fff;padding:6px 10px;border-radius:20px;margin-top:10px;font-size:.78rem;width:fit-content;}
+.story-online-audio-item{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid #e5e7eb;padding:8px;border-radius:8px;margin-bottom:6px;font-size:.76rem;color:#333;}
+.story-online-audio-item button{background:var(--primary-blue);border:none;color:#fff;padding:5px 10px;border-radius:14px;font-size:.72rem;cursor:pointer;flex:0 0 auto;}
+.story-audio-chip{display:none;align-items:center;gap:8px;background:#f1f5f9;color:#003366;border:1px solid #cbd5e1;padding:6px 10px;border-radius:20px;margin-top:10px;font-size:.78rem;width:fit-content;}
 .story-audio-chip.active{display:flex;}
 .story-audio-chip span.remove{cursor:pointer;font-weight:700;}
-.story-publish-btn{margin-top:18px;width:100%;padding:12px;border:none;border-radius:10px;background:var(--accent-orange);color:#fff;font-weight:700;font-size:1rem;cursor:pointer;}
-.story-publish-btn:disabled{opacity:.5;cursor:not-allowed;}
+.story-publish-btn{margin-top:18px;}
+.story-publish-btn:disabled{opacity:.55;cursor:not-allowed;}
 @media (max-width:480px){
   .story-frame{width:76px;height:106px;}
   .story-tray-item{width:80px;}
@@ -1741,7 +1747,6 @@
             </div>
             <button class="logout-btn" onclick="userLogout()">Log Out</button>
             <button class="profile-post-plus" onclick="openUserPostCreatePage()" title="Create Post">+</button>
-            <button class="profile-story-plus" onclick="openStoryCreatePage()" title="Add Story">📸+</button>
         </div>
     </div>
 
@@ -1788,15 +1793,27 @@
     </div>
 
     <!-- ================= ADDITIVE: STORY FEATURE (create page + viewer) ================= -->
-    <div id="storyCreatePage" class="full-screen-container" style="display:none;">
-      <div class="story-create-header">
-        <button type="button" onclick="closeStoryCreatePage()" title="Back to Profile">←</button>
+    <div id="storyCreatePage" class="user-post-create-page full-screen-container" style="display:none;">
+      <div class="user-post-create-header">
+        <button class="user-post-create-back" type="button" onclick="closeStoryCreatePage()" title="Back to Profile">←</button>
         <h2>Add to Your Story</h2>
       </div>
-      <div class="story-create-body">
-        <label class="story-photo-drop" id="storyPhotoDrop" for="storyPhotoInput">
-          <span id="storyPhotoHint">📷 Tap to choose a photo for your story</span>
-        </label>
+      <div class="story-create-body user-post-composer">
+        <h3>📝 Create Your Story</h3>
+        <div class="user-post-text-wrap">
+          <textarea id="storyTextInput" class="user-post-text" maxlength="90" placeholder="Apna text likhiye (photo ke upar dikhega, maximum 90 characters)..."></textarea>
+          <span id="storyTextCounter" class="user-post-counter">0/90</span>
+        </div>
+        <div class="user-post-photo-row">
+          <label class="user-post-photo-btn" for="storyPhotoInput">📷 Add Photo</label>
+          <span id="storyPhotoSelected" class="user-post-selected">0/1 photo</span>
+        </div>
+        <div class="story-photo-wrap">
+          <label class="story-photo-drop" id="storyPhotoDrop" for="storyPhotoInput">
+            <span id="storyPhotoHint">📷 Tap to choose a photo for your story</span>
+          </label>
+          <div class="story-text-overlay-preview" id="storyTextOverlayPreview"></div>
+        </div>
         <input type="file" id="storyPhotoInput" accept="image/*" hidden>
 
         <div class="story-audio-row">
@@ -1824,7 +1841,7 @@
 
         <div class="story-audio-panel" id="storyOnlineAudioPanel">
           <div class="story-audio-row">
-            <input type="text" id="storyOnlineAudioQuery" placeholder="Search a song / audio name..." style="flex:1;min-width:150px;background:#1a1a1a;color:#fff;border:1px solid #444;border-radius:20px;padding:8px 12px;">
+            <input type="text" id="storyOnlineAudioQuery" placeholder="Search a song / audio name..." style="flex:1;min-width:150px;background:#f1f5f9;color:#003366;border:1px solid #cbd5e1;border-radius:20px;padding:8px 12px;">
             <button type="button" id="storyOnlineAudioSearchBtn">🔍 Search</button>
           </div>
           <div id="storyOnlineAudioStatus" style="font-size:.75rem;margin-top:6px;"></div>
@@ -1844,8 +1861,8 @@
           </div>
         </div>
 
-        <p class="admin-small" style="color:#aaa;">Audio wale story 15 sec ke, bina audio wale 8 sec ke chalte hain. Aap gaane ka jo hissa (start-end) chahein wahi laga sakte hain.</p>
-        <button class="story-publish-btn" id="storyPublishBtn" onclick="publishStory()" disabled>Publish Story</button>
+        <p class="admin-small" style="color:#64748b;margin-top:10px;">Audio wale story 15 sec ke, bina audio wale 8 sec ke chalte hain. Aap gaane ka jo hissa (start-end) chahein wahi laga sakte hain.</p>
+        <button class="user-post-submit story-publish-btn" id="storyPublishBtn" onclick="publishStory()" disabled>Publish Story</button>
       </div>
     </div>
 
@@ -1862,6 +1879,7 @@
       </div>
       <div class="story-media-wrap" id="storyMediaWrap">
         <img id="storyMediaImg" src="" alt="Story">
+        <div class="story-text-overlay" id="storyViewerTextOverlay"></div>
         <div class="story-tap-zone left" id="storyTapLeft"></div>
         <div class="story-tap-zone right" id="storyTapRight"></div>
       </div>
@@ -5420,6 +5438,11 @@ onAuthStateChanged(auth, user => {
     document.getElementById('storyViewerRoll').textContent = g.name + ' (' + g.roll + ')';
     document.getElementById('storyViewerTime').textContent = storyTimeAgo(story.timestamp);
     document.getElementById('storyMediaImg').src = story.media || '';
+    const storyViewerOverlayEl = document.getElementById('storyViewerTextOverlay');
+    if(storyViewerOverlayEl){
+      if(story.text){ storyViewerOverlayEl.textContent = story.text; storyViewerOverlayEl.classList.add('active'); }
+      else { storyViewerOverlayEl.textContent = ''; storyViewerOverlayEl.classList.remove('active'); }
+    }
 
     const me = myRoll();
     const isOwn = String(story.authorRoll) === me;
@@ -5579,12 +5602,48 @@ onAuthStateChanged(auth, user => {
     document.getElementById('storyOnlineAudioResults').innerHTML='';
     document.getElementById('storyOnlineAudioQuery').value='';
     document.getElementById('storyOnlineAudioStatus').textContent='';
+    // ADDITIVE: reset the new "text on photo" field + its live preview + photo counter label
+    const storyTextEl = document.getElementById('storyTextInput');
+    if(storyTextEl) storyTextEl.value = '';
+    const storyTextCounterEl = document.getElementById('storyTextCounter');
+    if(storyTextCounterEl){ storyTextCounterEl.textContent = '0/90'; storyTextCounterEl.classList.remove('limit'); }
+    const storyPhotoSelectedEl = document.getElementById('storyPhotoSelected');
+    if(storyPhotoSelectedEl) storyPhotoSelectedEl.textContent = '0/1 photo';
+    if(typeof updateStoryTextOverlay === 'function') updateStoryTextOverlay();
     updatePublishState();
   }
   function updatePublishState(){
     const btn = document.getElementById('storyPublishBtn');
     if(btn) btn.disabled = !scPhoto;
   }
+
+  // ADDITIVE: "text on photo" feature for stories — mirrors the post-create page's
+  // text input, but the text also shows live on top of the chosen story photo.
+  const STORY_TEXT_MAX = 90;
+  function updateStoryTextOverlay(){
+    const storyTextEl = document.getElementById('storyTextInput');
+    const overlayEl = document.getElementById('storyTextOverlayPreview');
+    if(!storyTextEl || !overlayEl) return;
+    const val = storyTextEl.value || '';
+    overlayEl.textContent = val;
+    overlayEl.classList.toggle('active', val.trim().length > 0);
+  }
+  (function bindStoryTextInput(){
+    const storyTextEl = document.getElementById('storyTextInput');
+    const storyTextCounterEl = document.getElementById('storyTextCounter');
+    if(!storyTextEl) return;
+    storyTextEl.addEventListener('input', function(){
+      if(this.value.length > STORY_TEXT_MAX){
+        this.value = this.value.slice(0, STORY_TEXT_MAX);
+        alert('Story text can be a maximum of 90 characters.');
+      }
+      if(storyTextCounterEl){
+        storyTextCounterEl.textContent = this.value.length + '/90';
+        storyTextCounterEl.classList.toggle('limit', this.value.length >= STORY_TEXT_MAX);
+      }
+      updateStoryTextOverlay();
+    });
+  })();
 
   window.openStoryCreatePage = function(){
     requireLogin(()=>{
@@ -5604,6 +5663,10 @@ onAuthStateChanged(auth, user => {
     window.scrollTo(0,0);
   };
 
+  document.getElementById('storyPhotoInput').addEventListener('change', function(){
+    const storyPhotoSelectedEl = document.getElementById('storyPhotoSelected');
+    if(storyPhotoSelectedEl) storyPhotoSelectedEl.textContent = (this.files && this.files[0]) ? '1/1 photo' : '0/1 photo';
+  });
   document.getElementById('storyPhotoInput').addEventListener('change', async function(){
     const file = this.files && this.files[0];
     if(!file) return;
@@ -5793,6 +5856,9 @@ onAuthStateChanged(auth, user => {
     const id = 'story_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
 
     const payload = { id, authorRoll: roll, authorName: name, media: scPhoto, timestamp: Date.now() };
+    const storyTextEl = document.getElementById('storyTextInput');
+    const storyTextVal = storyTextEl ? storyTextEl.value.trim() : '';
+    if(storyTextVal) payload.text = storyTextVal;
     if(scAudio){
       const clipLen = Math.min(STORY_MAX_TRIM, Math.max(1, scAudio.end - scAudio.start));
       payload.audioUrl = scAudio.url;
