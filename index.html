@@ -130,12 +130,6 @@
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 82, 82, 0); }
         }
 
-        .menu-icon {
-            font-size: 1.8rem;
-            cursor: pointer;
-            user-select: none;
-        }
-
         /* Notification Panel Dropdown */
         .notif-panel {
             display: none;
@@ -240,62 +234,6 @@
         .notice-bar .notice-btn:hover {
             background: #a93226;
             transform: scale(1.03);
-        }
-
-        /* Side Menu */
-        .side-menu {
-            position: fixed;
-            top: 0;
-            right: -300px;
-            width: 280px;
-            height: 100vh;
-            background-color: #f8f9fa;
-            border-left: 3px solid var(--primary-blue);
-            padding-top: 60px;
-            transition: 0.3s ease-in-out;
-            z-index: 101;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.2);
-        }
-
-        .side-menu.active {
-            right: 0;
-        }
-
-        .menu-header {
-            padding: 0 20px 20px 20px;
-            border-bottom: 2px solid #ddd;
-            margin-bottom: 10px;
-        }
-
-        .menu-header h2 {
-            color: var(--primary-blue);
-            font-size: 1.2rem;
-        }
-
-        .side-menu a {
-            padding: 12px 25px;
-            text-decoration: none;
-            font-size: 1rem;
-            color: var(--text-dark);
-            display: block;
-            transition: 0.2s;
-            border-bottom: 1px solid #eee;
-            font-weight: 500;
-        }
-
-        .side-menu a:hover {
-            color: var(--primary-blue);
-            background-color: #e2e8f0;
-            padding-left: 30px;
-        }
-
-        .close-menu {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 2rem;
-            color: var(--primary-blue);
-            cursor: pointer;
         }
 
         /* Hero Section */
@@ -648,10 +586,6 @@
             min-width: 190px;
         }
 
-        .menu-icon {
-            display: none !important;
-        }
-
         /* Shared inline-icon style (replaces decorative emoji app-wide, except inside posts) */
         .ui-icon {
             width: 1em;
@@ -979,7 +913,67 @@
             background: var(--accent-orange); color: #000; border: none; padding: 0 20px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s;
         }
         .chat-input-area button:hover { background: #e68a00; }
-        
+
+        /* Chat AI (Duck.ai) button + popup */
+        .chat-ai-btn {
+            background: #f1f5f9;
+            color: var(--primary-blue);
+            border: 1px solid #cbd5e1;
+            padding: 0 14px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chat-ai-btn:hover { background: #e2e8f0; }
+        .chat-ai-btn .ui-icon { width: 20px; height: 20px; }
+
+        .chat-ai-popup-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .chat-ai-popup-box {
+            width: 100%;
+            max-width: 480px;
+            height: 85vh;
+            max-height: 720px;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+        }
+        .chat-ai-popup-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--primary-blue);
+            color: #fff;
+            padding: 10px 15px;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+        .chat-ai-popup-close {
+            cursor: pointer;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+        .chat-ai-popup-frame {
+            flex: 1;
+            width: 100%;
+            border: none;
+        }
+
         /* CHAT ENHANCEMENTS */
         .chat-date-divider {
             text-align: center;
@@ -1194,6 +1188,16 @@
 .feed-search-suggestion-name{font-weight:700;color:#1e293b;font-size:.92rem}
 .feed-search-suggestion-roll{font-size:.78rem;color:#64748b;margin-top:2px}
 .feed-search-empty{padding:16px;text-align:center;color:#777;font-size:.88rem}
+/* ---- ADDITIVE: Instagram-style recent search history (nothing above touched) ---- */
+.feed-search-history-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #f1f5f9}
+.feed-search-history-title{font-weight:700;color:#1e293b;font-size:.85rem}
+.feed-search-clear-all{border:0;background:none;color:var(--primary-blue);font-weight:700;font-size:.8rem;cursor:pointer;padding:2px 4px}
+.feed-search-suggestion-item{position:relative}
+.feed-search-suggestion-remove{margin-left:auto;flex:0 0 auto;width:26px;height:26px;border:0;border-radius:50%;background:#f1f5f9;color:#64748b;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.feed-search-suggestion-remove:hover{background:#e2e8f0;color:#c0392b}
+.feed-search-suggestion-item .feed-search-suggestion-name,
+.feed-search-suggestion-item .feed-search-suggestion-roll{max-width:100%}
+.feed-search-suggestion-info{flex:1;min-width:0}
 .feed-user-posts-header{display:flex;align-items:center;gap:12px;margin-bottom:1rem}
 .feed-user-posts-info{display:flex;align-items:center;gap:12px}
 .feed-user-posts-avatar{width:46px;height:46px;border-radius:50%;background:var(--primary-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex:0 0 auto}
@@ -1387,6 +1391,84 @@
 
 #blBootLoader .bl-from-brand a:hover { text-decoration: underline; }
 </style>
+<style>
+/* ================= ADDITIVE: STORY FEATURE CSS (nothing above this is touched) ================= */
+.profile-story-plus{
+  position:absolute; bottom:14px; right:64px;
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5);
+  color:#fff;border:none;font-size:1rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.25);
+}
+.profile-avatar-ring{padding:3px;border-radius:50%;display:inline-block;transition:.2s;}
+.profile-avatar-ring.has-story{background:var(--accent-orange);cursor:pointer;}
+.profile-avatar-ring.has-story.seen{background:#c7cdd6;}
+
+.story-tray{display:flex;gap:12px;overflow-x:auto;padding:10px 4px 16px;margin:-6px 0 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.story-tray::-webkit-scrollbar{display:none;}
+.story-tray-item{flex:0 0 auto;width:88px;text-align:center;cursor:pointer;}
+.story-frame{width:84px;height:118px;border-radius:14px;padding:3px;display:flex;align-items:flex-start;justify-content:center;position:relative;background:#ccd3db;}
+.story-frame.unseen{background:var(--accent-orange);}
+.story-frame.seen{background:#ccd3db;}
+.story-frame-inner{width:100%;height:100%;border-radius:11px;background:#e9edf2;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
+.story-frame-thumb{width:100%;height:100%;object-fit:cover;}
+.story-frame-avatar{width:34px;height:34px;border-radius:50%;background:var(--primary-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;position:absolute;top:6px;left:6px;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.3);}
+.story-frame-plus{position:absolute;bottom:6px;right:6px;width:22px;height:22px;border-radius:50%;background:var(--accent-orange);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.9rem;border:2px solid #fff;line-height:1;}
+.story-tray-name{font-size:.66rem;margin-top:4px;color:var(--text-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.story-tray-empty{font-size:.75rem;color:#888;padding:6px 4px;}
+
+#storyViewerOverlay{position:fixed;inset:0;background:#000;z-index:3000;display:none;flex-direction:column;}
+#storyViewerOverlay.active{display:flex;}
+.story-progress-row{display:flex;gap:4px;padding:8px 8px 0;}
+.story-progress-bar{flex:1;height:3px;background:rgba(255,255,255,.35);border-radius:3px;overflow:hidden;}
+.story-progress-fill{height:100%;width:0%;background:#fff;border-radius:3px;}
+.story-progress-bar.done .story-progress-fill{width:100%;}
+.story-viewer-header{display:flex;align-items:center;gap:10px;padding:10px 12px;color:#fff;}
+.story-viewer-avatar{width:34px;height:34px;border-radius:50%;background:var(--primary-blue);display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;border:2px solid #fff;flex:0 0 auto;}
+.story-viewer-meta{flex:1;min-width:0;}
+.story-viewer-roll{font-weight:700;font-size:.9rem;}
+.story-viewer-time{font-size:.7rem;opacity:.8;}
+.story-viewer-close{background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer;line-height:1;padding:4px 8px;}
+.story-viewer-delete{background:none;border:none;color:#fff;font-size:1.15rem;cursor:pointer;padding:4px 8px;}
+.story-media-wrap{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.story-media-wrap img{max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;}
+.story-text-overlay{position:absolute;left:0;right:0;bottom:12%;padding:0 24px;text-align:center;color:#fff;font-weight:700;font-size:1.05rem;line-height:1.4;text-shadow:0 2px 6px rgba(0,0,0,.65);word-wrap:break-word;pointer-events:none;display:none;}
+.story-text-overlay.active{display:block;}
+.story-tap-zone{position:absolute;top:0;bottom:0;z-index:5;touch-action:manipulation;}
+.story-tap-zone.left{left:0;width:35%;}
+.story-tap-zone.right{right:0;width:65%;}
+.story-viewer-footer{padding:8px 14px 18px;color:#fff;display:flex;align-items:center;gap:6px;font-size:.85rem;min-height:16px;}
+
+/* Story-create page now reuses the exact same page-frame + composer-card
+   classes as the post-create page (user-post-create-page / user-post-create-header /
+   user-post-composer), so no page-frame or card rules are needed here anymore.
+   Only the story-specific pieces (photo box, text-overlay preview, audio rows/panels,
+   publish button) are themed below to match that same light look. */
+.story-create-body{text-align:left;}
+.story-photo-wrap{position:relative;}
+.story-photo-drop{border:2px dashed #cbd5e1;border-radius:12px;min-height:260px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;cursor:pointer;overflow:hidden;position:relative;background:#f8fafc;text-align:center;font-size:.85rem;padding:10px;color:#64748b;}
+.story-photo-drop img{width:100%;height:100%;object-fit:contain;position:absolute;inset:0;background:#000;}
+.story-text-overlay-preview{position:absolute;left:12px;right:12px;bottom:14px;text-align:center;color:#fff;font-weight:700;font-size:1rem;text-shadow:0 2px 6px rgba(0,0,0,.65);word-wrap:break-word;pointer-events:none;display:none;}
+.story-text-overlay-preview.active{display:block;}
+.story-audio-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center;}
+.story-audio-row label,.story-audio-row button{background:#f1f5f9;color:#003366;border:1px solid #cbd5e1;padding:8px 12px;border-radius:20px;font-size:.78rem;cursor:pointer;font-weight:700;}
+.story-audio-panel{margin-top:10px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:10px;display:none;}
+.story-audio-panel.active{display:block;}
+.story-audio-panel input[type=range]{width:100%;}
+.story-online-audio-results{max-height:220px;overflow-y:auto;margin-top:8px;}
+.story-online-audio-item{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid #e5e7eb;padding:8px;border-radius:8px;margin-bottom:6px;font-size:.76rem;color:#333;}
+.story-online-audio-item button{background:var(--primary-blue);border:none;color:#fff;padding:5px 10px;border-radius:14px;font-size:.72rem;cursor:pointer;flex:0 0 auto;}
+.story-audio-chip{display:none;align-items:center;gap:8px;background:#f1f5f9;color:#003366;border:1px solid #cbd5e1;padding:6px 10px;border-radius:20px;margin-top:10px;font-size:.78rem;width:fit-content;}
+.story-audio-chip.active{display:flex;}
+.story-audio-chip span.remove{cursor:pointer;font-weight:700;}
+.story-publish-btn{margin-top:18px;}
+.story-publish-btn:disabled{opacity:.55;cursor:not-allowed;}
+@media (max-width:480px){
+  .story-frame{width:76px;height:106px;}
+  .story-tray-item{width:80px;}
+}
+</style>
 </head>
 <body>
 
@@ -1520,22 +1602,21 @@
         <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></symbol>
         <symbol id="icon-chat" viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/></symbol>
         <symbol id="icon-chevron-right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+        <symbol id="icon-menu" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></symbol>
+        <symbol id="icon-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+        <symbol id="icon-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+        <symbol id="icon-check" viewBox="0 0 24 24"><path d="M4 12l6 6 10-12"/></symbol>
+        <symbol id="icon-x" viewBox="0 0 24 24"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></symbol>
+        <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></symbol>
+        <symbol id="icon-comment" viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="11" x2="14" y2="11"/></symbol>
+        <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></symbol>
+        <symbol id="icon-bookmark" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></symbol>
+        <symbol id="icon-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></symbol>
+        <symbol id="icon-edit" viewBox="0 0 24 24"><path d="M4 20h4l11-11-4-4L4 16z"/><path d="M14 5l4 4"/></symbol>
+        <symbol id="icon-pin" viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5c0 4-5 11-5 11S7 11 7 7a5 5 0 0 1 5-5z"/><circle cx="12" cy="7" r="2"/></symbol>
+        <symbol id="icon-play" viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></symbol>
       </defs>
     </svg>
-
-    <div id="sideMenu" class="side-menu">
-        <span class="close-menu" onclick="toggleMenu()">&times;</span>
-        <div class="menu-header">
-            <h2>Course Modules</h2>
-        </div>
-        <a href="#" onclick="openHomePage()"><svg class="ui-icon"><use href="#icon-home"></use></svg> Dashboard (Home)</a>
-        <a href="#" onclick="openNoticePage()"><svg class="ui-icon"><use href="#icon-megaphone"></use></svg> Notice Board (Official)</a>
-        <a href="#" onclick="openSubjectPage(1)"><svg class="ui-icon"><use href="#icon-book"></use></svg> Communication Skills-I</a>
-        <a href="#" onclick="openSubjectPage(2)"><svg class="ui-icon"><use href="#icon-plus"></use></svg> Applied Mathematics-I</a>
-        <a href="#" onclick="openSubjectPage(3)"><svg class="ui-icon"><use href="#icon-atom"></use></svg> Applied Physics-I</a>
-        <a href="#" onclick="openSubjectPage(4)"><svg class="ui-icon"><use href="#icon-flask"></use></svg> Applied Chemistry</a>
-        <a href="#" onclick="openSubjectPage(5)"><svg class="ui-icon"><use href="#icon-monitor"></use></svg> Fundamentals of IT (FCIT)</a>
-    </div>
 
     <div id="homePage">
         
@@ -1555,7 +1636,6 @@
                 </div>
                 
                 <div class="website-icon" onclick="openMMITPage()" title="Open MMIT Website"><svg class="ui-icon"><use href="#icon-globe"></use></svg></div>
-                <div class="menu-icon" onclick="toggleMenu()">☰</div>
             </div>
         </header>
 
@@ -1595,7 +1675,7 @@
 
     <div id="noticePage" class="container full-screen-container" style="display: none;">
         <div class="action-bar">
-            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard">←</button>
+            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
         </div>
 
         <div class="sarkari-card">
@@ -1610,7 +1690,7 @@
 
     <div id="mmitPage" class="mmit-page full-screen-container" style="display: none;">
         <div class="mmit-action-bar">
-            <button class="mmit-back-btn" onclick="openHomePage()" title="Back to Home">←</button>
+            <button class="mmit-back-btn" onclick="openHomePage()" title="Back to Home"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
         </div>
         <iframe
             class="mmit-frame"
@@ -1623,7 +1703,7 @@
 
     <div id="subjectPage" class="container full-screen-container" style="display: none;">
         <div class="action-bar">
-            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard">←</button>
+            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
         </div>
         
         <div class="subject-header">
@@ -1652,15 +1732,26 @@
                 </div>
             <div class="chat-input-area">
                 <input type="text" id="chatInput" placeholder="Type your message here..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                <button type="button" class="chat-ai-btn" id="chatAiBtn" onclick="openChatAiPopup()" title="Ask AI (Duck.ai)"><svg class="ui-icon"><use href="#icon-sparkle"></use></svg></button>
                 <button onclick="sendChatMessage()">Send</button>
             </div>
+        </div>
+    </div>
+
+    <div id="chatAiPopupOverlay" class="chat-ai-popup-overlay" style="display:none;" onclick="if(event.target===this) closeChatAiPopup()">
+        <div class="chat-ai-popup-box">
+            <div class="chat-ai-popup-header">
+                <span>Ask AI</span>
+                <span class="chat-ai-popup-close" onclick="closeChatAiPopup()" title="Close">&times;</span>
+            </div>
+            <iframe id="chatAiIframe" class="chat-ai-popup-frame" src="" title="Duck.ai" loading="lazy"></iframe>
         </div>
     </div>
 
     <div id="profilePage" class="container full-screen-container" style="display: none;">
         <h2 class="section-title">Student Profile</h2>
         <div class="profile-card">
-            <div class="profile-avatar" id="profAvatar"><svg class="ui-icon" style="width:1.5em;height:1.5em;"><use href="#icon-user"></use></svg></div>
+            <div class="profile-avatar-ring" id="profAvatarRing"><div class="profile-avatar" id="profAvatar"><svg class="ui-icon" style="width:1.5em;height:1.5em;"><use href="#icon-user"></use></svg></div></div>
             <h3 class="profile-name" id="profName">Student Name</h3>
             <p class="profile-role">Diploma in CSE (1st Sem)</p>
             <div class="profile-details">
@@ -1675,7 +1766,7 @@
 
     <div id="userPostCreatePage" class="user-post-create-page full-screen-container" style="display:none;">
         <div class="user-post-create-header">
-            <button class="user-post-create-back" onclick="closeUserPostCreatePage()" title="Back to Profile">←</button>
+            <button class="user-post-create-back" onclick="closeUserPostCreatePage()" title="Back to Profile"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
             <h2>Create Post</h2>
         </div>
         <div id="userPostCreateHolder" class="user-post-create-holder"></div>
@@ -1687,9 +1778,11 @@
             <button type="button" class="feed-search-trigger" id="feedSearchTrigger" title="Search users" onclick="openFeedSearch()"><svg class="ui-icon"><use href="#icon-search"></use></svg></button>
         </div>
 
+        <div id="storyTray" class="story-tray"></div>
+
         <div id="feedSearchOverlay" class="feed-search-overlay" style="display:none;">
             <div class="feed-search-bar">
-                <button type="button" class="feed-search-back" onclick="closeFeedSearch()" title="Back">←</button>
+                <button type="button" class="feed-search-back" onclick="closeFeedSearch()" title="Back"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
                 <input type="text" id="feedSearchInput" class="feed-search-input" placeholder="Search by Name or Roll Number..." autocomplete="off">
             </div>
             <div id="feedSearchSuggestions" class="feed-search-suggestions"></div>
@@ -1697,7 +1790,7 @@
 
         <div id="feedUserPostsView" class="feed-user-posts-view" style="display:none;">
             <div class="feed-user-posts-header">
-                <button type="button" class="feed-search-back" onclick="closeFeedUserPostsView()" title="Back">←</button>
+                <button type="button" class="feed-search-back" onclick="closeFeedUserPostsView()" title="Back"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
                 <div class="feed-user-posts-info">
                     <div class="feed-user-posts-avatar" id="feedUserPostsAvatar"><svg class="ui-icon"><use href="#icon-user"></use></svg></div>
                     <div>
@@ -1710,6 +1803,100 @@
         </div>
 
         <div id="globalFeedList" class="global-feed-list"></div>
+    </div>
+
+    <!-- ================= ADDITIVE: STORY FEATURE (create page + viewer) ================= -->
+    <div id="storyCreatePage" class="user-post-create-page full-screen-container" style="display:none;">
+      <div class="user-post-create-header">
+        <button class="user-post-create-back" type="button" onclick="closeStoryCreatePage()" title="Back to Profile"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
+        <h2>Add to Your Story</h2>
+      </div>
+      <div class="story-create-body user-post-composer">
+        <h3><svg class="ui-icon"><use href="#icon-edit"></use></svg> Create Your Story</h3>
+        <div class="user-post-text-wrap">
+          <textarea id="storyTextInput" class="user-post-text" maxlength="90" placeholder="Write your text (will show over the photo, maximum 90 characters)..."></textarea>
+          <span id="storyTextCounter" class="user-post-counter">0/90</span>
+        </div>
+        <div class="user-post-photo-row">
+          <label class="user-post-photo-btn" for="storyPhotoInput"><svg class="ui-icon"><use href="#icon-camera"></use></svg> Add Photo</label>
+          <span id="storyPhotoSelected" class="user-post-selected">0/1 photo</span>
+        </div>
+        <div class="story-photo-wrap">
+          <label class="story-photo-drop" id="storyPhotoDrop" for="storyPhotoInput">
+            <span id="storyPhotoHint"><svg class="ui-icon"><use href="#icon-camera"></use></svg> Tap to choose a photo for your story</span>
+          </label>
+          <div class="story-text-overlay-preview" id="storyTextOverlayPreview"></div>
+        </div>
+        <input type="file" id="storyPhotoInput" accept="image/*" hidden>
+
+        <div class="story-audio-row">
+          <label for="storyAudioFile"><svg class="ui-icon"><use href="#icon-music"></use></svg> Add Audio from device</label>
+          <input type="file" id="storyAudioFile" accept="audio/*" hidden>
+          <button type="button" id="storyOnlineAudioToggle"><svg class="ui-icon"><use href="#icon-globe"></use></svg> Search Online Song</button>
+        </div>
+
+        <div class="story-audio-chip" id="storyAudioChip">
+          <span id="storyAudioChipLabel"></span><span class="remove" onclick="storyAudioRemove()"><svg class="ui-icon"><use href="#icon-x"></use></svg></span>
+        </div>
+
+        <div class="story-audio-panel" id="storyAudioTrimPanel">
+          <div id="storyAudioTrimName" style="font-size:.78rem;margin-bottom:6px;"></div>
+          <label style="font-size:.75rem;display:block;"><span id="storyAudioTrimStartLabel">Start: 0:00</span></label>
+          <input type="range" id="storyAudioTrimStart">
+          <label style="font-size:.75rem;display:block;margin-top:6px;"><span id="storyAudioTrimEndLabel">End: 0:00</span></label>
+          <input type="range" id="storyAudioTrimEnd">
+          <div class="story-audio-row" style="margin-top:8px;">
+            <button type="button" onclick="storyAudioPreview()"><svg class="ui-icon"><use href="#icon-play"></use></svg> Preview</button>
+            <button type="button" onclick="storyAudioConfirm()"><svg class="ui-icon"><use href="#icon-check"></use></svg> Use this audio</button>
+            <button type="button" onclick="storyAudioCancel()"><svg class="ui-icon"><use href="#icon-x"></use></svg> Cancel</button>
+          </div>
+        </div>
+
+        <div class="story-audio-panel" id="storyOnlineAudioPanel">
+          <div class="story-audio-row">
+            <input type="text" id="storyOnlineAudioQuery" placeholder="Search a song / audio name..." style="flex:1;min-width:150px;background:#f1f5f9;color:#003366;border:1px solid #cbd5e1;border-radius:20px;padding:8px 12px;">
+            <button type="button" id="storyOnlineAudioSearchBtn"><svg class="ui-icon"><use href="#icon-search"></use></svg> Search</button>
+          </div>
+          <div id="storyOnlineAudioStatus" style="font-size:.75rem;margin-top:6px;"></div>
+          <div class="story-online-audio-results" id="storyOnlineAudioResults"></div>
+        </div>
+
+        <div class="story-audio-panel" id="storyOnlineAudioTrimPanel">
+          <div id="storyOnlineAudioTrimName" style="font-size:.78rem;margin-bottom:6px;"></div>
+          <label style="font-size:.75rem;display:block;"><span id="storyOnlineAudioTrimStartLabel">Start: 0:00</span></label>
+          <input type="range" id="storyOnlineAudioTrimStart">
+          <label style="font-size:.75rem;display:block;margin-top:6px;"><span id="storyOnlineAudioTrimEndLabel">End: 0:00</span></label>
+          <input type="range" id="storyOnlineAudioTrimEnd">
+          <div class="story-audio-row" style="margin-top:8px;">
+            <button type="button" onclick="storyOnlineAudioPreview()"><svg class="ui-icon"><use href="#icon-play"></use></svg> Preview</button>
+            <button type="button" onclick="storyOnlineAudioConfirm()"><svg class="ui-icon"><use href="#icon-check"></use></svg> Use this audio</button>
+            <button type="button" onclick="storyOnlineAudioCancel()"><svg class="ui-icon"><use href="#icon-back"></use></svg> Back</button>
+          </div>
+        </div>
+
+        <p class="admin-small" style="color:#64748b;margin-top:10px;">Stories with audio play for 15 sec, without audio for 8 sec. You can choose any part (start-end) of the song you like.</p>
+        <button class="user-post-submit story-publish-btn" id="storyPublishBtn" onclick="publishStory()" disabled>Publish Story</button>
+      </div>
+    </div>
+
+    <div id="storyViewerOverlay">
+      <div class="story-progress-row" id="storyProgressRow"></div>
+      <div class="story-viewer-header">
+        <div class="story-viewer-avatar" id="storyViewerAvatar"></div>
+        <div class="story-viewer-meta">
+          <div class="story-viewer-roll" id="storyViewerRoll"></div>
+          <div class="story-viewer-time" id="storyViewerTime"></div>
+        </div>
+        <button type="button" class="story-viewer-delete" id="storyViewerDeleteBtn" onclick="deleteCurrentStory()" title="Delete story" style="display:none;"><svg class="ui-icon"><use href="#icon-trash"></use></svg></button>
+        <button type="button" class="story-viewer-close" onclick="closeStoryViewer()" title="Close"><svg class="ui-icon"><use href="#icon-x"></use></svg></button>
+      </div>
+      <div class="story-media-wrap" id="storyMediaWrap">
+        <img id="storyMediaImg" src="" alt="Story">
+        <div class="story-text-overlay" id="storyViewerTextOverlay"></div>
+        <div class="story-tap-zone left" id="storyTapLeft"></div>
+        <div class="story-tap-zone right" id="storyTapRight"></div>
+      </div>
+      <div class="story-viewer-footer" id="storyViewerFooter"></div>
     </div>
 
     <div id="adminModal" class="admin-modal">
@@ -2163,11 +2350,6 @@
             updateNavState('navHome'); 
         }
 
-        function toggleMenu() {
-            const menu = document.getElementById('sideMenu');
-            menu.classList.toggle('active');
-        }
-
         function openMMITPage() {
             closeAllSections();
             document.getElementById('mmitPage').style.display = 'block';
@@ -2201,7 +2383,6 @@
         }
 
         function closeAllSections() {
-            document.getElementById('sideMenu').classList.remove('active');
             document.getElementById('notifPanel').style.display = 'none';
             document.getElementById('homePage').style.display = 'none';
             document.getElementById('subjectPage').style.display = 'none';
@@ -2266,6 +2447,23 @@
             });
         }
 
+        // ---- Chat AI (Duck.ai) popup — opens duck.ai inside a popup iframe.
+        // Iframe src set only on open (and cleared on close) so duck.ai isn't
+        // loaded in the background until the user actually taps the AI icon.
+        function openChatAiPopup() {
+            const overlay = document.getElementById('chatAiPopupOverlay');
+            const frame = document.getElementById('chatAiIframe');
+            if (frame && !frame.src) frame.src = 'https://duck.ai';
+            if (overlay) overlay.style.display = 'flex';
+        }
+
+        function closeChatAiPopup() {
+            const overlay = document.getElementById('chatAiPopupOverlay');
+            const frame = document.getElementById('chatAiIframe');
+            if (overlay) overlay.style.display = 'none';
+            if (frame) frame.src = '';
+        }
+
         function sendChatMessage() {
             requireLogin(() => {
                 const input = document.getElementById('chatInput');
@@ -2327,20 +2525,20 @@
 
         function generatePostHTML(post) {
             let isSaved = savedPostIds.includes(post.id);
-            let saveText = isSaved ? '💾 Saved' : '🔖 Save';
+            let saveText = isSaved ? '<svg class="ui-icon"><use href="#icon-bookmark"></use></svg> Saved' : '<svg class="ui-icon"><use href="#icon-bookmark"></use></svg> Save';
             
             let mediaHTML = '';
             let viewBtnHTML = '';
             
             if((post.type === 'photo' || post.imgUrl) && post.imgUrl) {
                 mediaHTML = `<img src="${post.imgUrl}" class="post-img" alt="Post Image" data-userpost-img="${post.imgUrl}">`;
-                viewBtnHTML = `<button class="post-action-btn" onclick="openImageViewer('${post.imgUrl}')">👁️ View</button>`;
+                viewBtnHTML = `<button class="post-action-btn" onclick="openImageViewer('${post.imgUrl}')"><svg class="ui-icon"><use href="#icon-eye"></use></svg> View</button>`;
             }
 
             let commentsHTML = (post.comments || []).map(c => {
                 let deleteHTML = '';
                 if(localUser && c.userId === localUser.rollNumber) {
-                    deleteHTML = `<span class="delete-comment-btn" onclick="deleteComment('${post.id}', '${c.id}')" title="Delete Comment">✖</span>`;
+                    deleteHTML = `<span class="delete-comment-btn" onclick="deleteComment('${post.id}', '${c.id}')" title="Delete Comment"><svg class="ui-icon"><use href="#icon-x"></use></svg></span>`;
                 }
                 const userRoll = c.userId || c.userName;
                 const rollColor = getColorForRoll(userRoll);
@@ -2356,10 +2554,10 @@
                 <div class="post-text">${post.text}</div>
                 ${mediaHTML}
                 <div class="post-actions">
-                    <button class="post-action-btn" onclick="toggleCommentSection('${post.id}')">💬 Comment</button>
+                    <button class="post-action-btn" onclick="toggleCommentSection('${post.id}')"><svg class="ui-icon"><use href="#icon-comment"></use></svg> Comment</button>
                     <button class="post-action-btn" onclick="toggleSavePost('${post.id}')">${saveText}</button>
                     ${viewBtnHTML}
-                    <button class="post-action-btn" onclick="downloadPostMedia('${post.type}', '${post.imgUrl}')">⬇️ Download</button>
+                    <button class="post-action-btn" onclick="downloadPostMedia('${post.type}', '${post.imgUrl}')"><svg class="ui-icon"><use href="#icon-download"></use></svg> Download</button>
                 </div>
                 
                 <div class="comments-section" id="comments-sec-${post.id}" style="display: none;">
@@ -2699,7 +2897,7 @@ function renderOnlineChats() {
 
             let isSent = window.localUser && window.localUser.rollNumber === chat.userId;
             let cssClass = isSent ? 'sent' : 'received';
-            let deleteHtml = isSent ? `<span class="delete-chat-btn" onclick="deleteUserChat('${chat.id}')" title="Delete Chat">✖</span>` : '';
+            let deleteHtml = isSent ? `<span class="delete-chat-btn" onclick="deleteUserChat('${chat.id}')" title="Delete Chat"><svg class="ui-icon"><use href="#icon-x"></use></svg></span>` : '';
 
             let seenObj = chat.seenBy || {};
             let seenCount = Object.keys(seenObj).length;
@@ -3254,7 +3452,7 @@ window.renderAdminAll = function() {
     if(noticeContainer) {
         noticeContainer.innerHTML = onlineData.notices.map(n => `
             <div class="admin-card">
-                <p><strong>${esc(n.title)}</strong> ${n.isNew ? '🆕' : ''}</p>
+                <p><strong>${esc(n.title)}</strong> ${n.isNew ? '<svg class="ui-icon"><use href="#icon-sparkle"></use></svg>' : ''}</p>
                 <p class="admin-small">Link: ${esc(n.link)} | Date: ${esc(n.date)}</p>
                 <button class="admin-btn red" onclick="deleteOnlineNotice('${n.id}')">Delete</button>
             </div>
@@ -3386,13 +3584,13 @@ onAuthStateChanged(auth, user => {
     composer.className = 'user-post-composer';
     composer.id = 'userPostComposer';
     composer.innerHTML = `
-      <h3>📝 Create Your Post</h3>
+      <h3><svg class="ui-icon"><use href="#icon-edit"></use></svg> Create Your Post</h3>
       <div class="user-post-text-wrap">
-        <textarea id="userPostText" class="user-post-text" maxlength="90" placeholder="Apna text likhiye (maximum 90 characters)..."></textarea>
+        <textarea id="userPostText" class="user-post-text" maxlength="90" placeholder="Write your text (maximum 90 characters)..."></textarea>
         <span id="userPostCounter" class="user-post-counter">0/90</span>
       </div>
       <div class="user-post-photo-row">
-        <label class="user-post-photo-btn" for="userPostPhotos">📷 Add Photos</label>
+        <label class="user-post-photo-btn" for="userPostPhotos"><svg class="ui-icon"><use href="#icon-camera"></use></svg> Add Photos</label>
         <input id="userPostPhotos" type="file" accept="image/*" multiple hidden>
         <span id="userPostSelected" class="user-post-selected">0/5 photos</span>
       </div>
@@ -3403,7 +3601,7 @@ onAuthStateChanged(auth, user => {
     const postsBox = document.createElement('div');
     postsBox.className = 'user-profile-posts';
     postsBox.id = 'userProfilePosts';
-    postsBox.innerHTML = '<h3 class="user-profile-posts-title">📌 My Posts</h3><div id="userProfilePostsList"></div>';
+    postsBox.innerHTML = '<h3 class="user-profile-posts-title"><svg class="ui-icon"><use href="#icon-pin"></use></svg> My Posts</h3><div id="userProfilePostsList"></div>';
 
     // The composer is intentionally placed inside the (hidden) post-create page holder,
     // not the profile card, so it only becomes visible when the user taps the "+" icon
@@ -3616,7 +3814,7 @@ onAuthStateChanged(auth, user => {
           ${photos.map((src,i)=>`<img data-userpost-img="${userPostEsc(src)}" src="${userPostEsc(src)}" alt="Post photo ${i+1}" loading="lazy">`).join('')}
           ${photos.length>1 ? `<div class="user-post-carousel-nav"><button type="button" aria-label="Previous photo" onclick="userProfilePostPrev(this)">&lt;</button><button type="button" aria-label="Next photo" onclick="userProfilePostNext(this)">&gt;</button></div>` : ''}
         </div>
-        ${photos.length>1 ? `<div class="user-post-photo-dots">${photos.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('')}</div><div class="user-post-photo-count">📷 ${photos.length} photos • swipe left/right</div>` : ''}
+        ${photos.length>1 ? `<div class="user-post-photo-dots">${photos.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('')}</div><div class="user-post-photo-count"><svg class="ui-icon"><use href="#icon-camera"></use></svg> ${photos.length} photos • swipe left/right</div>` : ''}
       ` : '';
       return `
         <article class="user-post-card" data-user-post-id="${userPostEsc(p.id)}">
@@ -3625,11 +3823,11 @@ onAuthStateChanged(auth, user => {
               <div class="user-post-author">${userPostEsc(p.authorName || roll)}</div>
               <div class="user-post-time">${userPostTime(p.timestamp)}</div>
             </div>
-            <button class="user-post-delete" onclick="deleteOwnUserPost('${userPostEsc(p.id)}')">🗑️ Delete</button>
+            <button class="user-post-delete" onclick="deleteOwnUserPost('${userPostEsc(p.id)}')"><svg class="ui-icon"><use href="#icon-trash"></use></svg> Delete</button>
           </div>
           ${p.text ? `<div class="user-post-body">${userPostEsc(p.text)}</div>` : ''}
           ${photoHTML}
-          <div class="user-post-footer"><span class="user-post-seen">👁️ ${seenCount} seen</span></div>
+          <div class="user-post-footer"><span class="user-post-seen"><svg class="ui-icon"><use href="#icon-eye"></use></svg> ${seenCount} seen</span></div>
         </article>`;
     }).join('');
 
@@ -3776,15 +3974,15 @@ onAuthStateChanged(auth, user => {
         ${photos.map((src,i)=>`<img src="${esc(src)}" alt="Post photo ${i+1}" loading="lazy" data-userpost-img="${esc(src)}">`).join('')}
         ${photos.length>1?`<div class="user-post-carousel-nav"><button type="button" aria-label="Previous photo" onclick="globalPostPrev(this)">&lt;</button><button type="button" aria-label="Next photo" onclick="globalPostNext(this)">&gt;</button></div>`:''}
       </div>`;
-      if(photos.length>1) media+=`<div class="user-post-photo-dots">${photos.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('')}</div><div class="user-post-photo-count">📷 ${photos.length} photos • swipe left/right</div>`;
+      if(photos.length>1) media+=`<div class="user-post-photo-dots">${photos.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('')}</div><div class="user-post-photo-count"><svg class="ui-icon"><use href="#icon-camera"></use></svg> ${photos.length} photos • swipe left/right</div>`;
     }
     return `<article class="global-user-post user-post-card" data-user-post-id="${esc(p.id||'')}">
       <div class="user-post-head">
         <div><div class="user-post-author">${author}</div><div class="user-post-time">${typeof userPostTime==='function'?userPostTime(p.timestamp):''}</div></div>
-        ${isOwn?`<button class="user-post-delete" onclick="deleteOwnUserPost('${esc(p.id)}')">🗑️ Delete</button>`:''}
+        ${isOwn?`<button class="user-post-delete" onclick="deleteOwnUserPost('${esc(p.id)}')"><svg class="ui-icon"><use href="#icon-trash"></use></svg> Delete</button>`:''}
       </div>
       ${text}${media}
-      <div class="user-post-footer"><span class="user-post-seen">👁️ ${seenCount} seen</span></div>
+      <div class="user-post-footer"><span class="user-post-seen"><svg class="ui-icon"><use href="#icon-eye"></use></svg> ${seenCount} seen</span></div>
     </article>`;
   }
   window.userFeedCard=userFeedCard;
@@ -3868,7 +4066,7 @@ onAuthStateChanged(auth, user => {
      phir trim-range slider se decide karta hai ki post par audio kitne se kitne
      second tak chalega, "Confirm Audio" par done hone ke baad woh audio post ke
      saath attach ho jaata hai.
-   - Feed/Profile: audio wale post ke footer me right side par ek 🎵 icon dikhta
+   - Feed/Profile: audio wale post ke footer me right side par ek <svg class="ui-icon"><use href="#icon-music"></use></svg> icon dikhta
      hai. Tap karne par sirf uss post ka trimmed audio play hota hai, dobara tap
      par band ho jaata hai. Ek time me sirf ek hi post ka audio bajta hai — jaise
      hi doosre post ka audio play hota hai pehla apne aap ruk jaata hai. Jis post
@@ -3938,7 +4136,7 @@ onAuthStateChanged(auth, user => {
     probe.onloadedmetadata = function(){
       const dur = isFinite(probe.duration) ? probe.duration : 0;
       URL.revokeObjectURL(objUrl);
-      nameEl.textContent = '🎧 ' + file.name;
+      nameEl.textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + file.name;
       startRange.min = 0; startRange.max = Math.max(0, Math.floor(dur)); startRange.value = 0;
       endRange.min = 0; endRange.max = Math.max(1, Math.floor(dur));
       // ---- ADDITIVE: default selection capped at 30 sec, same as Instagram/WhatsApp ----
@@ -4007,13 +4205,13 @@ onAuthStateChanged(auth, user => {
       document.getElementById('userPostAudioPanel')?.classList.remove('active');
       const chip = document.getElementById('userPostAudioChip');
       const chipLabel = document.getElementById('userPostAudioChipLabel');
-      if(chipLabel) chipLabel.textContent = '🎵 ' + selectedAudioFile.name + ' (' + fmtSec(start) + '–' + fmtSec(end) + ')';
+      if(chipLabel) chipLabel.textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + selectedAudioFile.name + ' (' + fmtSec(start) + '–' + fmtSec(end) + ')';
       chip?.classList.add('active');
       if(previewAudioEl){ try{ previewAudioEl.pause(); }catch(e){} previewAudioEl=null; }
     }catch(e){
       alert('Could not add audio: ' + e.message);
     }finally{
-      if(btn){ btn.disabled=false; btn.textContent='✓ Done'; }
+      if(btn){ btn.disabled=false; btn.textContent='<svg class="ui-icon"><use href="#icon-check"></use></svg> Done'; }
     }
   }
 
@@ -4062,7 +4260,7 @@ onAuthStateChanged(auth, user => {
     };
     const chip = document.getElementById('userPostAudioChip');
     const chipLabel = document.getElementById('userPostAudioChipLabel');
-    if(chipLabel) chipLabel.textContent = '🎵 ' + pendingAudio.name + ' (' + fmtSec(s) + '–' + fmtSec(e) + ')';
+    if(chipLabel) chipLabel.textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + pendingAudio.name + ' (' + fmtSec(s) + '–' + fmtSec(e) + ')';
     chip?.classList.add('active');
     document.getElementById('userPostOnlineAudioPanel')?.classList.remove('active');
   }
@@ -4090,7 +4288,7 @@ onAuthStateChanged(auth, user => {
     const startLbl = document.getElementById('userPostOnlineAudioTrimStartLabel');
     const endLbl = document.getElementById('userPostOnlineAudioTrimEndLabel');
     if(!trimPanel || !startRange || !endRange) return;
-    nameEl.textContent = '🎧 ' + (track.trackName || 'Untitled') + (track.artistName ? (' - ' + track.artistName) : '');
+    nameEl.textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + (track.trackName || 'Untitled') + (track.artistName ? (' - ' + track.artistName) : '');
     startRange.min = 0; startRange.max = Math.max(0, Math.floor(durSec)); startRange.value = 0;
     endRange.min = 0; endRange.max = Math.max(1, Math.floor(durSec));
     // ---- ADDITIVE: default selection capped at 30 sec, same as Instagram/WhatsApp ----
@@ -4111,7 +4309,7 @@ onAuthStateChanged(auth, user => {
     toggleOnlineSearchViewParts(true);
   }
 
-  function currentOnlineTrimRange(){
+  function currentOnlineTrimRange(applyCap){
     const trimPanel = document.getElementById('userPostOnlineAudioTrimPanel');
     const startRange = document.getElementById('userPostOnlineAudioTrimStart');
     const endRange = document.getElementById('userPostOnlineAudioTrimEnd');
@@ -4119,14 +4317,16 @@ onAuthStateChanged(auth, user => {
     let start = parseFloat(startRange?.value || '0');
     let end = parseFloat(endRange?.value || String(dur));
     if(end <= start) end = Math.min(dur, start+1);
-    // ---- ADDITIVE: hard safety cap — window kabhi bhi 30 sec se zyada na ho ----
-    if(end - start > USER_POST_MAX_TRIM_SECONDS) end = Math.min(dur, start + USER_POST_MAX_TRIM_SECONDS);
+    // UPDATED: 30-sec cap ab sirf tab lagta hai jab applyCap=true ho (yani post par
+    // FINAL attach karte waqt) — review/preview ke dauran poora gaana available
+    // rehta hai taaki user apni pasand ki line chun sake.
+    if(applyCap && (end - start > USER_POST_MAX_TRIM_SECONDS)) end = Math.min(dur, start + USER_POST_MAX_TRIM_SECONDS);
     return {start, end, duration: dur};
   }
 
   function previewOnlineTrim(){
     if(!onlineTrimTrack) return;
-    const {start, end} = currentOnlineTrimRange();
+    const {start, end} = currentOnlineTrimRange(false);
     stopOnlinePreview();
     const a = new Audio(onlineTrimTrack.previewUrl);
     onlinePreviewEl = a;
@@ -4141,7 +4341,7 @@ onAuthStateChanged(auth, user => {
 
   function confirmOnlineTrim(){
     if(!onlineTrimTrack) return;
-    const {start, end, duration} = currentOnlineTrimRange();
+    const {start, end, duration} = currentOnlineTrimRange(true);
     const track = onlineTrimTrack;
     selectOnlineTrack(track, duration, start, end);
     onlineTrimTrack = null;
@@ -4178,7 +4378,7 @@ onAuthStateChanged(auth, user => {
           '<div class="oa-artist">' + esc(track.artistName || '') + '</div>' +
         '</div>' +
         '<div class="user-post-online-audio-item-actions">' +
-          '<button type="button" class="user-post-online-audio-play-btn">▶️</button>' +
+          '<button type="button" class="user-post-online-audio-play-btn"><svg class="ui-icon"><use href="#icon-play"></use></svg></button>' +
           '<button type="button" class="user-post-online-audio-use-btn">Use</button>' +
         '</div>';
       const playBtn = item.querySelector('.user-post-online-audio-play-btn');
@@ -4226,16 +4426,16 @@ onAuthStateChanged(auth, user => {
     audioRow.className = 'user-post-audio-row';
     audioRow.id = 'userPostAudioRow';
     audioRow.innerHTML = `
-      <label class="user-post-audio-btn" for="userPostAudioFile">🎵 Add Audio</label>
+      <label class="user-post-audio-btn" for="userPostAudioFile"><svg class="ui-icon"><use href="#icon-music"></use></svg> Add Audio</label>
       <input id="userPostAudioFile" type="file" accept="audio/*" hidden>
       <span class="user-post-audio-hint">from your downloaded audio (max 30 sec)</span>
     `;
-    audioRow.insertAdjacentHTML('beforeend', '<button type="button" class="user-post-audio-mode-btn" id="userPostOnlineAudioToggle">🌐 Search Online Audio</button>');
+    audioRow.insertAdjacentHTML('beforeend', '<button type="button" class="user-post-audio-mode-btn" id="userPostOnlineAudioToggle"><svg class="ui-icon"><use href="#icon-globe"></use></svg> Search Online Audio</button>');
 
     const chip = document.createElement('div');
     chip.className = 'user-post-audio-chip';
     chip.id = 'userPostAudioChip';
-    chip.innerHTML = `<span id="userPostAudioChipLabel"></span><span class="user-post-audio-remove" onclick="userPostAudioRemove()">✕</span>`;
+    chip.innerHTML = `<span id="userPostAudioChipLabel"></span><span class="user-post-audio-remove" onclick="userPostAudioRemove()"><svg class="ui-icon"><use href="#icon-x"></use></svg></span>`;
 
     const panel = document.createElement('div');
     panel.className = 'user-post-audio-panel';
@@ -4251,9 +4451,9 @@ onAuthStateChanged(auth, user => {
         <input type="range" id="userPostAudioEnd">
       </div>
       <div class="user-post-audio-actions">
-        <button type="button" class="user-post-audio-preview-btn" onclick="userPostAudioPreview()">▶️ Preview</button>
-        <button type="button" class="user-post-audio-confirm-btn" id="userPostAudioConfirmBtn" onclick="userPostAudioConfirm()">✓ Done</button>
-        <button type="button" class="user-post-audio-cancel-btn" onclick="userPostAudioCancel()">✕ Cancel</button>
+        <button type="button" class="user-post-audio-preview-btn" onclick="userPostAudioPreview()"><svg class="ui-icon"><use href="#icon-play"></use></svg> Preview</button>
+        <button type="button" class="user-post-audio-confirm-btn" id="userPostAudioConfirmBtn" onclick="userPostAudioConfirm()"><svg class="ui-icon"><use href="#icon-check"></use></svg> Done</button>
+        <button type="button" class="user-post-audio-cancel-btn" onclick="userPostAudioCancel()"><svg class="ui-icon"><use href="#icon-x"></use></svg> Cancel</button>
       </div>
     `;
 
@@ -4263,7 +4463,7 @@ onAuthStateChanged(auth, user => {
     onlinePanel.innerHTML = `
       <div class="user-post-online-audio-search-row">
         <input type="text" id="userPostOnlineAudioQuery" placeholder="Search a song / audio name...">
-        <button type="button" id="userPostOnlineAudioSearchBtn">🔍 Search</button>
+        <button type="button" id="userPostOnlineAudioSearchBtn"><svg class="ui-icon"><use href="#icon-search"></use></svg> Search</button>
       </div>
       <div class="user-post-online-audio-status" id="userPostOnlineAudioStatus"></div>
       <div class="user-post-online-audio-results" id="userPostOnlineAudioResults"></div>
@@ -4280,9 +4480,9 @@ onAuthStateChanged(auth, user => {
           <input type="range" id="userPostOnlineAudioTrimEnd">
         </div>
         <div class="user-post-audio-actions">
-          <button type="button" class="user-post-audio-preview-btn" onclick="userPostOnlineAudioTrimPreview()">▶️ Preview</button>
-          <button type="button" class="user-post-audio-confirm-btn" onclick="userPostOnlineAudioTrimConfirm()">✓ Done</button>
-          <button type="button" class="user-post-audio-cancel-btn" onclick="userPostOnlineAudioTrimCancel()">← Back</button>
+          <button type="button" class="user-post-audio-preview-btn" onclick="userPostOnlineAudioTrimPreview()"><svg class="ui-icon"><use href="#icon-play"></use></svg> Preview</button>
+          <button type="button" class="user-post-audio-confirm-btn" onclick="userPostOnlineAudioTrimConfirm()"><svg class="ui-icon"><use href="#icon-check"></use></svg> Done</button>
+          <button type="button" class="user-post-audio-cancel-btn" onclick="userPostOnlineAudioTrimCancel()"><svg class="ui-icon"><use href="#icon-back"></use></svg> Back</button>
         </div>
       </div>
     `);
@@ -4309,31 +4509,19 @@ onAuthStateChanged(auth, user => {
       if(e.key === 'Enter'){ e.preventDefault(); searchOnlineAudio(); }
     });
     document.getElementById('userPostOnlineAudioTrimStart').addEventListener('input', function(){
-      const trimPanel = document.getElementById('userPostOnlineAudioTrimPanel');
-      const dur = parseFloat(trimPanel?.dataset.duration||'0');
       let v = parseFloat(this.value);
       const endRange = document.getElementById('userPostOnlineAudioTrimEnd');
       if(v >= parseFloat(endRange.value)) { v = Math.max(0, parseFloat(endRange.value)-1); this.value=v; }
-      // ---- ADDITIVE: keep the selectable window capped at 30 sec (Instagram/WhatsApp style) ----
-      let endV = parseFloat(endRange.value);
-      if(endV - v > USER_POST_MAX_TRIM_SECONDS){
-        endV = Math.min(dur, v + USER_POST_MAX_TRIM_SECONDS);
-        endRange.value = endV;
-        document.getElementById('userPostOnlineAudioTrimEndLabel').textContent = 'End: ' + fmtSec(endV);
-      }
+      // UPDATED: review/preview ke dauran ab 30-sec ka cap nahi lagta — poora
+      // available gaana sunke user apni pasand ki line chun sakta hai. 30 sec
+      // ka cap ab sirf FINAL post par attach hote waqt lagta hai (confirmOnlineTrim/
+      // currentOnlineTrimRange me).
       document.getElementById('userPostOnlineAudioTrimStartLabel').textContent = 'Start: ' + fmtSec(v);
     });
     document.getElementById('userPostOnlineAudioTrimEnd').addEventListener('input', function(){
       let v = parseFloat(this.value);
       const startRange = document.getElementById('userPostOnlineAudioTrimStart');
       if(v <= parseFloat(startRange.value)) { v = parseFloat(startRange.value)+1; this.value=v; }
-      // ---- ADDITIVE: keep the selectable window capped at 30 sec (Instagram/WhatsApp style) ----
-      let startV = parseFloat(startRange.value);
-      if(v - startV > USER_POST_MAX_TRIM_SECONDS){
-        startV = Math.max(0, v - USER_POST_MAX_TRIM_SECONDS);
-        startRange.value = startV;
-        document.getElementById('userPostOnlineAudioTrimStartLabel').textContent = 'Start: ' + fmtSec(startV);
-      }
       document.getElementById('userPostOnlineAudioTrimEndLabel').textContent = 'End: ' + fmtSec(v);
     });
 
@@ -4496,7 +4684,7 @@ onAuthStateChanged(auth, user => {
       const icon = document.createElement('button');
       icon.type = 'button';
       icon.className = 'user-post-music-icon' + (activeAudioId===id ? ' playing' : '');
-      icon.textContent = '🎵';
+      icon.innerHTML = '<svg class="ui-icon"><use href="#icon-music"></use></svg>';
       icon.title = 'Play post audio';
       icon.onclick = function(e){ e.stopPropagation(); window.toggleUserPostAudioPlay(id, icon); };
       footer.insertBefore(icon, footer.firstChild);
@@ -4536,18 +4724,96 @@ onAuthStateChanged(auth, user => {
 (function(){
   function srchEsc(v){ return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
+  // ---- ADDITIVE: recent search history (Instagram-style), stored locally
+  // per device. Purely additive — does not change how live search matching
+  // or opening a user's posts already works. ----
+  const FEED_SEARCH_HISTORY_KEY = 'feedSearchHistory';
+  const FEED_SEARCH_HISTORY_MAX = 10;
+
+  function getSearchHistory(){
+    try{
+      const raw = localStorage.getItem(FEED_SEARCH_HISTORY_KEY);
+      const list = raw ? JSON.parse(raw) : [];
+      return Array.isArray(list) ? list : [];
+    }catch(e){ return []; }
+  }
+
+  function saveSearchHistory(list){
+    try{ localStorage.setItem(FEED_SEARCH_HISTORY_KEY, JSON.stringify(list)); }catch(e){}
+  }
+
+  function addToSearchHistory(u){
+    if(!u || !u.roll) return;
+    let list = getSearchHistory().filter(item => item && item.roll !== u.roll);
+    list.unshift({ roll: u.roll, name: u.name || u.roll });
+    if(list.length > FEED_SEARCH_HISTORY_MAX) list = list.slice(0, FEED_SEARCH_HISTORY_MAX);
+    saveSearchHistory(list);
+  }
+
+  function removeFromSearchHistory(roll){
+    const list = getSearchHistory().filter(item => item && item.roll !== roll);
+    saveSearchHistory(list);
+  }
+
+  function clearSearchHistory(){
+    saveSearchHistory([]);
+  }
+
+  function renderSearchHistory(){
+    const box = document.getElementById('feedSearchSuggestions');
+    if(!box) return;
+    const list = getSearchHistory();
+    if(!list.length){ box.innerHTML=''; return; }
+    const items = list.map(u=>{
+      const roll = String(u.roll||'');
+      const initials = srchEsc(roll.slice(0,2).toUpperCase() || '?');
+      return `<div class="feed-search-suggestion-item" data-roll="${srchEsc(roll)}">
+        <div class="feed-search-suggestion-avatar">${initials}</div>
+        <div class="feed-search-suggestion-info">
+          <div class="feed-search-suggestion-name">${srchEsc(u.name||roll)}</div>
+          <div class="feed-search-suggestion-roll">Roll No: ${srchEsc(roll)}</div>
+        </div>
+        <button type="button" class="feed-search-suggestion-remove" data-remove-roll="${srchEsc(roll)}" title="Remove"><svg class="ui-icon"><use href="#icon-x"></use></svg></button>
+      </div>`;
+    }).join('');
+    box.innerHTML = `<div class="feed-search-history-header"><span class="feed-search-history-title">Recent</span><button type="button" class="feed-search-clear-all" id="feedSearchClearAll">Clear all</button></div>${items}`;
+
+    box.querySelectorAll('.feed-search-suggestion-item').forEach(el=>{
+      el.addEventListener('click', function(e){
+        if(e.target.closest('.feed-search-suggestion-remove')) return;
+        openUserPostsFromSearch(el.getAttribute('data-roll'));
+      });
+    });
+    box.querySelectorAll('.feed-search-suggestion-remove').forEach(btn=>{
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        removeFromSearchHistory(btn.getAttribute('data-remove-roll'));
+        renderSearchHistory();
+      });
+    });
+    const clearBtn = document.getElementById('feedSearchClearAll');
+    if(clearBtn) clearBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      clearSearchHistory();
+      renderSearchHistory();
+    });
+  }
+
   function showOnly(idToShow){
     ['feedSearchOverlay','feedUserPostsView','globalFeedList'].forEach(id=>{
       const el=document.getElementById(id);
       if(el) el.style.display = (id===idToShow) ? 'block' : 'none';
     });
+    // UPDATED: story tray sirf feed list wale view me dikhega — search bar page
+    // (feedSearchOverlay) ya kisi user ke posts wale view me story tray hide rahega.
+    const storyTrayEl = document.getElementById('storyTray');
+    if(storyTrayEl) storyTrayEl.style.display = (idToShow==='globalFeedList') ? '' : 'none';
   }
 
   window.openFeedSearch = function(){
     const input = document.getElementById('feedSearchInput');
-    const box = document.getElementById('feedSearchSuggestions');
     if(input) input.value='';
-    if(box) box.innerHTML='';
+    renderSearchHistory();
     showOnly('feedSearchOverlay');
     if(input) setTimeout(()=>input.focus(),50);
   };
@@ -4564,7 +4830,7 @@ onAuthStateChanged(auth, user => {
     const box = document.getElementById('feedSearchSuggestions');
     if(!box) return;
     const q = query.trim().toLowerCase();
-    if(!q){ box.innerHTML=''; return; }
+    if(!q){ renderSearchHistory(); return; }
     const users = window.onlineUsersData || {};
     const matches = Object.values(users).filter(u=>{
       const name = String(u && u.name || '').toLowerCase();
@@ -4603,6 +4869,7 @@ onAuthStateChanged(auth, user => {
     if(!roll) return;
     const users = window.onlineUsersData || {};
     const u = users[roll] || {rollNumber: roll};
+    addToSearchHistory({ roll: String(roll), name: u.name || roll });
     const nameEl = document.getElementById('feedUserPostsName');
     const rollEl = document.getElementById('feedUserPostsRoll');
     const avEl = document.getElementById('feedUserPostsAvatar');
@@ -5052,6 +5319,707 @@ onAuthStateChanged(auth, user => {
   applyOnlineData = function(d){
     originalApplyOnlineDataForPush(d);
     try{ runPushNotifyDiff(); }catch(e){ console.warn('push notify diff failed', e); }
+  };
+})();
+
+/* =====================================================================
+   ADDITIVE: INSTAGRAM-STYLE STORY FEATURE
+   Purely additive module — nothing above this block is edited, removed,
+   or relied upon in a way that changes old behaviour. Uses its own
+   Firebase path ('portal/stories') and its own onValue listener, so the
+   existing applyOnlineData()/renderGlobalFeed()/profile code paths are
+   never modified.
+===================================================================== */
+(function(){
+  const STORY_EXPIRE_MS      = 24 * 60 * 60 * 1000; // 24 hours auto-delete
+  const STORY_DUR_NO_AUDIO   = 8000;                // 8 sec (no audio)
+  const STORY_DUR_MAX_AUDIO  = 15000;               // 15 sec max (with audio)
+  const LONG_PRESS_MS        = 1300;                // 1.3 sec long-press pause
+  const DOUBLE_TAP_MS        = 280;
+  const SEEN_KEY             = 'portalSeenStories';
+
+  function sEsc(v){ return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function myRoll(){ return window.localUser ? String(window.localUser.rollNumber) : ''; }
+  function fmtSec(s){ s=Math.max(0,Math.round(s||0)); const m=Math.floor(s/60), r=s%60; return m+':'+String(r).padStart(2,'0'); }
+  function storyTimeAgo(ts){
+    if(!ts) return '';
+    const diff = Math.max(0, Date.now()-ts);
+    const mins = Math.floor(diff/60000);
+    if(mins < 1) return 'Just now';
+    if(mins < 60) return mins+'m';
+    const hrs = Math.floor(mins/60);
+    if(hrs < 24) return hrs+'h';
+    return Math.floor(hrs/24)+'d';
+  }
+
+  // ---- Local (per-device) "seen" tracking ----
+  function getSeenSet(){
+    try{ return new Set(JSON.parse(localStorage.getItem(SEEN_KEY)) || []); }catch(e){ return new Set(); }
+  }
+  function saveSeenSet(set){
+    try{ localStorage.setItem(SEEN_KEY, JSON.stringify(Array.from(set))); }catch(e){}
+  }
+  function markSeen(storyId){
+    const set = getSeenSet();
+    if(!set.has(storyId)){ set.add(storyId); saveSeenSet(set); }
+  }
+  function isSeen(storyId){ return getSeenSet().has(storyId); }
+
+  // ---- Data helpers ----
+  function isExpired(s){ return !s || !s.timestamp || (Date.now() - s.timestamp) > STORY_EXPIRE_MS; }
+  function activeStories(){
+    return (window.onlineStoriesData || []).filter(s => s && s.id && s.authorRoll && !isExpired(s));
+  }
+  function groupStories(){
+    const all = activeStories();
+    const byRoll = {};
+    all.forEach(s=>{
+      const r = String(s.authorRoll);
+      if(!byRoll[r]) byRoll[r] = { roll:r, name:s.authorName||r, items:[] };
+      byRoll[r].items.push(s);
+    });
+    Object.values(byRoll).forEach(g=> g.items.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0)));
+    let groups = Object.values(byRoll);
+    const me = myRoll();
+    groups.forEach(g=>{ g.hasUnseen = g.items.some(s=>!isSeen(s.id)); g.latest = g.items[g.items.length-1]?.timestamp||0; });
+    // own story (if any) first, then unseen-first, then by most recent
+    groups.sort((a,b)=>{
+      if(me){ if(a.roll===me) return -1; if(b.roll===me) return 1; }
+      if(a.hasUnseen !== b.hasUnseen) return a.hasUnseen ? -1 : 1;
+      return b.latest - a.latest;
+    });
+    return groups;
+  }
+
+  // ---- Cleanup: purge my own expired stories from Firebase (best-effort,
+  // only runs on the author's own device — display filtering above already
+  // hides expired stories for everyone regardless of this). ----
+  let purgeRunning = false;
+  async function purgeExpiredOwnStories(){
+    if(purgeRunning) return; purgeRunning = true;
+    try{
+      const me = myRoll();
+      if(me){
+        const mine = (window.onlineStoriesData || []).filter(s=>s && s.id && String(s.authorRoll)===me && isExpired(s));
+        for(const s of mine){
+          try{ await remove(ref(db, 'portal/stories/'+s.id)); }catch(e){}
+        }
+      }
+    } finally { purgeRunning = false; }
+  }
+
+  // ---- Render: story tray on the Feed page ----
+  window.renderStoryTray = function(){
+    const box = document.getElementById('storyTray');
+    if(!box) return;
+    const groups = groupStories();
+    const me = myRoll();
+    let html = '';
+    if(me){
+      const mine = groups.find(g=>g.roll===me);
+      if(mine){
+        const cover = mine.items[mine.items.length-1];
+        html += `<div class="story-tray-item" onclick="openStoryViewer('${sEsc(me)}')">
+          <div class="story-frame ${mine.hasUnseen?'unseen':'seen'}"><div class="story-frame-inner">
+            ${cover && cover.media ? `<img class="story-frame-thumb" src="${sEsc(cover.media)}">`:''}
+            <div class="story-frame-avatar">${sEsc(me)}</div>
+          </div><div class="story-frame-plus" onclick="event.stopPropagation();openStoryCreatePage()">+</div></div>
+          <div class="story-tray-name">Your Story</div>
+        </div>`;
+      } else {
+        html += `<div class="story-tray-item" onclick="openStoryCreatePage()">
+          <div class="story-frame add-new"><div class="story-frame-inner">
+            <div class="story-frame-avatar">${sEsc(me)}</div>
+          </div><div class="story-frame-plus">+</div></div>
+          <div class="story-tray-name">Add Story</div>
+        </div>`;
+      }
+    }
+    groups.filter(g=>g.roll!==me).forEach(g=>{
+      const cover = g.items[g.items.length-1];
+      html += `<div class="story-tray-item" onclick="openStoryViewer('${sEsc(g.roll)}')">
+        <div class="story-frame ${g.hasUnseen?'unseen':'seen'}"><div class="story-frame-inner">
+          ${cover && cover.media ? `<img class="story-frame-thumb" src="${sEsc(cover.media)}">`:''}
+          <div class="story-frame-avatar">${sEsc(g.roll)}</div>
+        </div></div>
+        <div class="story-tray-name">${sEsc(g.name)}</div>
+      </div>`;
+    });
+    box.innerHTML = html || '<div class="story-tray-empty">No stories yet.</div>';
+  };
+
+  // ---- Render: story ring around the profile avatar ----
+  window.renderProfileStoryRing = function(){
+    const ring = document.getElementById('profAvatarRing');
+    if(!ring) return;
+    const me = myRoll();
+    const g = me ? groupStories().find(x=>x.roll===me) : null;
+    ring.classList.toggle('has-story', !!g);
+    ring.classList.toggle('seen', !!(g && !g.hasUnseen));
+    ring.onclick = g ? function(){ openStoryViewer(me); } : null;
+  };
+
+  function onStoriesUpdated(){
+    purgeExpiredOwnStories();
+    if(document.getElementById('globalFeedPage') && document.getElementById('globalFeedPage').style.display==='block') window.renderStoryTray();
+    if(document.getElementById('profilePage') && document.getElementById('profilePage').style.display==='block') window.renderProfileStoryRing();
+    // Keep an open viewer's live view-count in sync in real time.
+    if(sv.active) refreshFooterViewCount();
+  }
+
+  onValue(ref(db, 'portal/stories'), snap => {
+    window.onlineStoriesData = arr(snap.val() || {});
+    onStoriesUpdated();
+  }, err => console.warn('Story listener error', err));
+
+  // Re-render the tray/ring whenever the feed or profile page is opened.
+  const baseOpenGlobalFeed = window.openGlobalFeed;
+  window.openGlobalFeed = function(){
+    if(typeof baseOpenGlobalFeed==='function') baseOpenGlobalFeed();
+    window.renderStoryTray();
+  };
+  const baseOpenProfileForStory = window.openProfile;
+  window.openProfile = function(){
+    if(typeof baseOpenProfileForStory==='function') baseOpenProfileForStory();
+    window.renderProfileStoryRing();
+  };
+
+  /* ================= STORY VIEWER ================= */
+  const sv = {
+    groups: [], userIdx: -1, storyIdx: 0, active:false,
+    raf: null, segStart: 0, segElapsedAtPause: 0, segDuration: 0, paused: false,
+    audioEl: null
+  };
+
+  window.openStoryViewer = function(roll){
+    requireLogin(()=>{
+      sv.groups = groupStories();
+      sv.userIdx = sv.groups.findIndex(g=>g.roll===String(roll));
+      if(sv.userIdx < 0) return;
+      sv.storyIdx = 0;
+      sv.active = true;
+      document.getElementById('storyViewerOverlay').classList.add('active');
+      loadStory();
+    });
+  };
+
+  window.closeStoryViewer = function(){
+    sv.active = false;
+    cancelAnimationFrame(sv.raf);
+    if(sv.audioEl){ try{ sv.audioEl.pause(); }catch(e){} sv.audioEl=null; }
+    document.getElementById('storyViewerOverlay').classList.remove('active');
+    window.renderStoryTray();
+    window.renderProfileStoryRing();
+  };
+
+  function currentStory(){
+    const g = sv.groups[sv.userIdx];
+    return g ? g.items[sv.storyIdx] : null;
+  }
+
+  function loadStory(){
+    const g = sv.groups[sv.userIdx];
+    if(!g){ window.closeStoryViewer(); return; }
+    const story = g.items[sv.storyIdx];
+    if(!story){ window.closeStoryViewer(); return; }
+
+    // progress bars
+    const row = document.getElementById('storyProgressRow');
+    row.innerHTML = g.items.map((_,i)=>`<div class="story-progress-bar ${i<sv.storyIdx?'done':''}" data-idx="${i}"><div class="story-progress-fill"></div></div>`).join('');
+
+    document.getElementById('storyViewerAvatar').textContent = g.roll;
+    document.getElementById('storyViewerRoll').textContent = g.name + ' (' + g.roll + ')';
+    document.getElementById('storyViewerTime').textContent = storyTimeAgo(story.timestamp);
+    document.getElementById('storyMediaImg').src = story.media || '';
+    const storyViewerOverlayEl = document.getElementById('storyViewerTextOverlay');
+    if(storyViewerOverlayEl){
+      if(story.text){ storyViewerOverlayEl.textContent = story.text; storyViewerOverlayEl.classList.add('active'); }
+      else { storyViewerOverlayEl.textContent = ''; storyViewerOverlayEl.classList.remove('active'); }
+    }
+
+    const me = myRoll();
+    const isOwn = String(story.authorRoll) === me;
+    document.getElementById('storyViewerDeleteBtn').style.display = isOwn ? 'inline-block' : 'none';
+
+    // mark seen locally + record view on Firebase (skip counting the author's own view)
+    markSeen(story.id);
+    if(!isOwn && me){
+      update(ref(db, 'portal/stories/'+story.id+'/viewers'), { [me]: Date.now() }).catch(()=>{});
+    }
+    refreshFooterViewCount();
+
+    // audio
+    if(sv.audioEl){ try{ sv.audioEl.pause(); }catch(e){} sv.audioEl=null; }
+    let durationMs = STORY_DUR_NO_AUDIO;
+    if(story.audioUrl){
+      durationMs = story.durationMs || STORY_DUR_MAX_AUDIO;
+      try{
+        sv.audioEl = new Audio(story.audioUrl);
+        sv.audioEl.currentTime = story.audioStart || 0;
+        sv.audioEl.play().catch(()=>{});
+      }catch(e){}
+    }
+    startSeg(durationMs);
+  }
+
+  function refreshFooterViewCount(){
+    const footer = document.getElementById('storyViewerFooter');
+    if(!footer) return;
+    const story = currentStory();
+    if(!story){ footer.innerHTML=''; return; }
+    const me = myRoll();
+    if(String(story.authorRoll)===me){
+      // re-read the freshest copy from onlineStoriesData for a live count
+      const fresh = (window.onlineStoriesData||[]).find(s=>s.id===story.id) || story;
+      const count = fresh.viewers ? Object.keys(fresh.viewers).length : 0;
+      footer.innerHTML = `<span class="story-view-icon"><svg class="ui-icon"><use href="#icon-eye"></use></svg></span><span>${count} view${count===1?'':'s'}</span>`;
+    } else {
+      footer.innerHTML = '';
+    }
+  }
+
+  window.deleteCurrentStory = async function(){
+    const story = currentStory();
+    if(!story) return;
+    if(String(story.authorRoll)!==myRoll()) return;
+    if(!confirm('Delete this story?')) return;
+    try{ await remove(ref(db, 'portal/stories/'+story.id)); }catch(e){}
+    advanceStory('next');
+  };
+
+  // ---- progress / timing engine (pause-aware) ----
+  function fillEl(idx){
+    const row = document.getElementById('storyProgressRow');
+    const bar = row && row.querySelector(`.story-progress-bar[data-idx="${idx}"] .story-progress-fill`);
+    return bar;
+  }
+  function updateFill(pct){
+    const el = fillEl(sv.storyIdx);
+    if(el) el.style.width = Math.min(100,pct)+'%';
+  }
+  function startSeg(durationMs){
+    cancelAnimationFrame(sv.raf);
+    sv.segDuration = Math.max(500, durationMs);
+    sv.segElapsedAtPause = 0;
+    sv.paused = false;
+    sv.segStart = performance.now();
+    updateFill(0);
+    sv.raf = requestAnimationFrame(step);
+  }
+  function step(now){
+    if(!sv.active) return;
+    if(sv.paused){ sv.raf = requestAnimationFrame(step); return; }
+    const elapsed = sv.segElapsedAtPause + (now - sv.segStart);
+    const pct = Math.min(100, (elapsed/sv.segDuration)*100);
+    updateFill(pct);
+    if(pct >= 100){ advanceStory('next'); return; }
+    sv.raf = requestAnimationFrame(step);
+  }
+  function pauseSeg(){
+    if(sv.paused) return;
+    sv.paused = true;
+    sv.segElapsedAtPause += performance.now() - sv.segStart;
+    if(sv.audioEl){ try{ sv.audioEl.pause(); }catch(e){} }
+  }
+  function resumeSeg(){
+    if(!sv.paused) return;
+    sv.paused = false;
+    sv.segStart = performance.now();
+    if(sv.audioEl){ try{ sv.audioEl.play().catch(()=>{}); }catch(e){} }
+  }
+
+  function advanceStory(dir){
+    const g = sv.groups[sv.userIdx];
+    if(!g){ window.closeStoryViewer(); return; }
+    if(dir==='next'){
+      if(sv.storyIdx+1 < g.items.length){ sv.storyIdx++; loadStory(); return; }
+      if(sv.userIdx+1 < sv.groups.length){ sv.userIdx++; sv.storyIdx=0; loadStory(); return; }
+      window.closeStoryViewer();
+    } else {
+      if(sv.storyIdx-1 >= 0){ sv.storyIdx--; loadStory(); return; }
+      if(sv.userIdx-1 >= 0){ sv.userIdx--; sv.storyIdx = Math.max(0, sv.groups[sv.userIdx].items.length-1); loadStory(); return; }
+      loadStory(); // no previous user: restart current story
+    }
+  }
+  function jumpNextUser(){
+    if(sv.userIdx+1 < sv.groups.length){ sv.userIdx++; sv.storyIdx=0; loadStory(); }
+    else window.closeStoryViewer();
+  }
+  function restartUser(){ sv.storyIdx = 0; loadStory(); }
+
+  // ---- gesture handling: tap = prev/next story, double-tap = prev/next
+  // user, long-press (1.3s) = pause, release = resume ----
+  function bindZone(el, side){
+    let downAt=0, longTimer=null, longPressed=false, tapCount=0, tapTimer=null;
+    el.addEventListener('pointerdown', ()=>{
+      downAt = Date.now(); longPressed = false;
+      longTimer = setTimeout(()=>{ longPressed = true; pauseSeg(); }, LONG_PRESS_MS);
+    });
+    function release(){
+      clearTimeout(longTimer);
+      if(longPressed){ resumeSeg(); longPressed=false; return; }
+      tapCount++;
+      if(tapCount===1){
+        tapTimer = setTimeout(()=>{
+          if(tapCount===1){ side==='right' ? advanceStory('next') : advanceStory('prev'); }
+          tapCount=0;
+        }, DOUBLE_TAP_MS);
+      } else {
+        clearTimeout(tapTimer); tapCount=0;
+        side==='right' ? jumpNextUser() : restartUser();
+      }
+    }
+    el.addEventListener('pointerup', release);
+    el.addEventListener('pointercancel', ()=>{ clearTimeout(longTimer); if(longPressed){ resumeSeg(); longPressed=false; } });
+    el.addEventListener('pointerleave', ()=>{ if(longPressed){ clearTimeout(longTimer); resumeSeg(); longPressed=false; } });
+  }
+  bindZone(document.getElementById('storyTapLeft'), 'left');
+  bindZone(document.getElementById('storyTapRight'), 'right');
+
+  /* ================= STORY CREATE PAGE ================= */
+  let scPhoto = null;              // compressed dataURL of chosen photo
+  let scAudio = null;              // {url, start, end, duration, name}
+  let scOnlineTrack = null;        // currently-selected online track (before confirm)
+  let scDeviceAudioMeta = null;    // {url, duration, name} for device file before confirm
+  const STORY_MAX_TRIM = 15;       // 15 sec cap on the chosen audio window
+
+  function resetStoryCreateForm(){
+    stopScOnlineListPreview();
+    scPhoto = null; scAudio = null; scOnlineTrack = null; scDeviceAudioMeta = null;
+    document.getElementById('storyPhotoInput').value = '';
+    document.getElementById('storyPhotoDrop').innerHTML = '<span id="storyPhotoHint"><svg class="ui-icon"><use href="#icon-camera"></use></svg> Tap to choose a photo for your story</span>';
+    document.getElementById('storyAudioFile').value = '';
+    document.getElementById('storyAudioChip').classList.remove('active');
+    document.getElementById('storyAudioTrimPanel').classList.remove('active');
+    document.getElementById('storyOnlineAudioPanel').classList.remove('active');
+    document.getElementById('storyOnlineAudioTrimPanel').classList.remove('active');
+    document.getElementById('storyOnlineAudioResults').innerHTML='';
+    document.getElementById('storyOnlineAudioQuery').value='';
+    document.getElementById('storyOnlineAudioStatus').textContent='';
+    // ADDITIVE: reset the new "text on photo" field + its live preview + photo counter label
+    const storyTextEl = document.getElementById('storyTextInput');
+    if(storyTextEl) storyTextEl.value = '';
+    const storyTextCounterEl = document.getElementById('storyTextCounter');
+    if(storyTextCounterEl){ storyTextCounterEl.textContent = '0/90'; storyTextCounterEl.classList.remove('limit'); }
+    const storyPhotoSelectedEl = document.getElementById('storyPhotoSelected');
+    if(storyPhotoSelectedEl) storyPhotoSelectedEl.textContent = '0/1 photo';
+    if(typeof updateStoryTextOverlay === 'function') updateStoryTextOverlay();
+    updatePublishState();
+  }
+  function updatePublishState(){
+    const btn = document.getElementById('storyPublishBtn');
+    if(btn) btn.disabled = !scPhoto;
+  }
+
+  // ADDITIVE: "text on photo" feature for stories — mirrors the post-create page's
+  // text input, but the text also shows live on top of the chosen story photo.
+  const STORY_TEXT_MAX = 90;
+  function updateStoryTextOverlay(){
+    const storyTextEl = document.getElementById('storyTextInput');
+    const overlayEl = document.getElementById('storyTextOverlayPreview');
+    if(!storyTextEl || !overlayEl) return;
+    const val = storyTextEl.value || '';
+    overlayEl.textContent = val;
+    overlayEl.classList.toggle('active', val.trim().length > 0);
+  }
+  (function bindStoryTextInput(){
+    const storyTextEl = document.getElementById('storyTextInput');
+    const storyTextCounterEl = document.getElementById('storyTextCounter');
+    if(!storyTextEl) return;
+    storyTextEl.addEventListener('input', function(){
+      if(this.value.length > STORY_TEXT_MAX){
+        this.value = this.value.slice(0, STORY_TEXT_MAX);
+        alert('Story text can be a maximum of 90 characters.');
+      }
+      if(storyTextCounterEl){
+        storyTextCounterEl.textContent = this.value.length + '/90';
+        storyTextCounterEl.classList.toggle('limit', this.value.length >= STORY_TEXT_MAX);
+      }
+      updateStoryTextOverlay();
+    });
+  })();
+
+  window.openStoryCreatePage = function(){
+    requireLogin(()=>{
+      resetStoryCreateForm();
+      closeAllSections();
+      if(document.getElementById('storyViewerOverlay')) document.getElementById('storyViewerOverlay').classList.remove('active');
+      document.getElementById('storyCreatePage').style.display = 'block';
+      updateNavState('navProfile');
+      window.scrollTo(0,0);
+    });
+  };
+  window.closeStoryCreatePage = function(){
+    resetStoryCreateForm();
+    document.getElementById('storyCreatePage').style.display = 'none';
+    document.getElementById('profilePage').style.display = 'block';
+    updateNavState('navProfile');
+    window.scrollTo(0,0);
+  };
+
+  document.getElementById('storyPhotoInput').addEventListener('change', function(){
+    const storyPhotoSelectedEl = document.getElementById('storyPhotoSelected');
+    if(storyPhotoSelectedEl) storyPhotoSelectedEl.textContent = (this.files && this.files[0]) ? '1/1 photo' : '0/1 photo';
+  });
+  document.getElementById('storyPhotoInput').addEventListener('change', async function(){
+    const file = this.files && this.files[0];
+    if(!file) return;
+    try{
+      scPhoto = await fileToDataURL(file, 1080, 0.72);
+      document.getElementById('storyPhotoDrop').innerHTML = `<img src="${scPhoto}">`;
+    }catch(e){ alert(e.message || 'Could not read photo.'); }
+    updatePublishState();
+  });
+
+  // ---- Device audio ----
+  document.getElementById('storyAudioFile').addEventListener('click', function(){
+    document.getElementById('storyOnlineAudioPanel').classList.remove('active');
+    document.getElementById('storyOnlineAudioTrimPanel').classList.remove('active');
+  });
+  document.getElementById('storyAudioFile').addEventListener('change', function(){
+    const file = this.files && this.files[0];
+    if(!file) return;
+    if(file.size > 4*1024*1024){ alert('Audio file must be smaller than 4MB.'); this.value=''; return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const url = reader.result;
+      const probe = new Audio(url);
+      probe.addEventListener('loadedmetadata', ()=>{
+        scDeviceAudioMeta = { url, duration: probe.duration || STORY_MAX_TRIM, name: file.name };
+        openDeviceTrimPanel();
+      });
+      probe.addEventListener('error', ()=>{ alert('Could not read this audio file.'); });
+    };
+    reader.readAsDataURL(file);
+  });
+  function openDeviceTrimPanel(){
+    const dur = scDeviceAudioMeta.duration;
+    document.getElementById('storyAudioTrimPanel').classList.add('active');
+    document.getElementById('storyAudioTrimName').textContent = scDeviceAudioMeta.name;
+    const startR = document.getElementById('storyAudioTrimStart');
+    const endR = document.getElementById('storyAudioTrimEnd');
+    startR.min = 0; startR.max = dur; startR.step = 0.5; startR.value = 0;
+    endR.min = 0; endR.max = dur; endR.step = 0.5; endR.value = Math.min(dur, STORY_MAX_TRIM);
+    document.getElementById('storyAudioTrimStartLabel').textContent = 'Start: '+fmtSec(0);
+    document.getElementById('storyAudioTrimEndLabel').textContent = 'End: '+fmtSec(endR.value);
+  }
+  function clampTrimPair(startR, endR, startLabel, endLabel, maxDur){
+    let s = parseFloat(startR.value), e = parseFloat(endR.value);
+    if(e <= s) e = Math.min(maxDur, s+1);
+    if(e - s > STORY_MAX_TRIM) e = Math.min(maxDur, s + STORY_MAX_TRIM);
+    endR.value = e;
+    document.getElementById(startLabel).textContent = 'Start: '+fmtSec(s);
+    document.getElementById(endLabel).textContent = 'End: '+fmtSec(e);
+  }
+  document.getElementById('storyAudioTrimStart').addEventListener('input', function(){
+    const dur = scDeviceAudioMeta ? scDeviceAudioMeta.duration : STORY_MAX_TRIM;
+    clampTrimPair(this, document.getElementById('storyAudioTrimEnd'), 'storyAudioTrimStartLabel', 'storyAudioTrimEndLabel', dur);
+  });
+  document.getElementById('storyAudioTrimEnd').addEventListener('input', function(){
+    const dur = scDeviceAudioMeta ? scDeviceAudioMeta.duration : STORY_MAX_TRIM;
+    const startR = document.getElementById('storyAudioTrimStart');
+    let s = parseFloat(startR.value), e = parseFloat(this.value);
+    if(e - s > STORY_MAX_TRIM) s = Math.max(0, e - STORY_MAX_TRIM);
+    startR.value = s;
+    document.getElementById('storyAudioTrimStartLabel').textContent = 'Start: '+fmtSec(s);
+    document.getElementById('storyAudioTrimEndLabel').textContent = 'End: '+fmtSec(e);
+  });
+  let scPreviewAudioEl = null;
+  let scOnlinePreviewBtn = null;   // currently-playing "preview" button in the online-song results list
+  function stopScOnlineListPreview(){
+    if(scPreviewAudioEl){ try{ scPreviewAudioEl.pause(); }catch(e){} scPreviewAudioEl = null; }
+    if(scOnlinePreviewBtn){ scOnlinePreviewBtn.classList.remove('playing'); scOnlinePreviewBtn = null; }
+  }
+  window.storyAudioPreview = function(){
+    if(!scDeviceAudioMeta) return;
+    if(scPreviewAudioEl){ try{ scPreviewAudioEl.pause(); }catch(e){} }
+    const s = parseFloat(document.getElementById('storyAudioTrimStart').value);
+    const e = parseFloat(document.getElementById('storyAudioTrimEnd').value);
+    scPreviewAudioEl = new Audio(scDeviceAudioMeta.url);
+    scPreviewAudioEl.currentTime = s;
+    scPreviewAudioEl.play().catch(()=>{});
+    setTimeout(()=>{ if(scPreviewAudioEl){ try{ scPreviewAudioEl.pause(); }catch(err){} } }, Math.max(300,(e-s)*1000));
+  };
+  window.storyAudioConfirm = function(){
+    if(!scDeviceAudioMeta) return;
+    const s = parseFloat(document.getElementById('storyAudioTrimStart').value);
+    const e = parseFloat(document.getElementById('storyAudioTrimEnd').value);
+    scAudio = { url: scDeviceAudioMeta.url, start: s, end: e, duration: scDeviceAudioMeta.duration, name: scDeviceAudioMeta.name };
+    document.getElementById('storyAudioTrimPanel').classList.remove('active');
+    document.getElementById('storyAudioChip').classList.add('active');
+    document.getElementById('storyAudioChipLabel').textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> '+scDeviceAudioMeta.name+' ('+fmtSec(s)+'-'+fmtSec(e)+')';
+    updatePublishState();
+  };
+  window.storyAudioCancel = function(){
+    document.getElementById('storyAudioTrimPanel').classList.remove('active');
+    document.getElementById('storyAudioFile').value='';
+    scDeviceAudioMeta = null;
+  };
+  window.storyAudioRemove = function(){
+    scAudio = null; scDeviceAudioMeta = null; scOnlineTrack = null;
+    document.getElementById('storyAudioChip').classList.remove('active');
+    document.getElementById('storyAudioFile').value='';
+    updatePublishState();
+  };
+
+  // ---- Online audio search (same iTunes preview approach used by the
+  // existing post-audio feature, kept fully independent here) ----
+  document.getElementById('storyOnlineAudioToggle').addEventListener('click', function(){
+    document.getElementById('storyAudioTrimPanel').classList.remove('active');
+    document.getElementById('storyOnlineAudioPanel').classList.toggle('active');
+  });
+  async function storySearchOnlineAudio(){
+    const q = (document.getElementById('storyOnlineAudioQuery').value||'').trim();
+    const status = document.getElementById('storyOnlineAudioStatus');
+    const wrap = document.getElementById('storyOnlineAudioResults');
+    if(!q){ status.textContent = 'Please type a song / audio name to search.'; return; }
+    wrap.innerHTML=''; status.textContent = 'Searching…';
+    stopScOnlineListPreview();
+    try{
+      const res = await fetch('https://itunes.apple.com/search?media=music&limit=15&term='+encodeURIComponent(q));
+      const data = await res.json();
+      // ---- Same as post's song search: use the track's real (full-song) duration
+      // (trackTimeMillis) so the trim range covers the whole song, not just the
+      // ~30 sec preview clip length. ----
+      const list = ((data && data.results)||[]).filter(t=>t && t.previewUrl);
+      if(!list.length){ status.textContent = 'No results found.'; return; }
+      status.textContent = '';
+      wrap.innerHTML = list.map((t,i)=>{
+        const durSec = Math.round((t.trackTimeMillis || 30000) / 1000);
+        return `<div class="user-post-online-audio-item" data-idx="${i}" data-dur="${durSec}">
+          <img src="${sEsc(t.artworkUrl60||t.artworkUrl100||'')}" alt="">
+          <div class="user-post-online-audio-info">
+            <div class="oa-title">${sEsc(t.trackName||'Track')}</div>
+            <div class="oa-artist">${sEsc(t.artistName||'')}</div>
+          </div>
+          <div class="user-post-online-audio-item-actions">
+            <button type="button" class="user-post-online-audio-play-btn" data-play-idx="${i}"><svg class="ui-icon"><use href="#icon-play"></use></svg></button>
+            <button type="button" data-use-idx="${i}">Use</button>
+          </div>
+        </div>`;
+      }).join('');
+      wrap.querySelectorAll('button[data-play-idx]').forEach(btn=>{
+        btn.addEventListener('click', function(){
+          const track = list[parseInt(btn.dataset.playIdx,10)];
+          if(scOnlinePreviewBtn === btn){ stopScOnlineListPreview(); return; }
+          stopScOnlineListPreview();
+          const a = new Audio(track.previewUrl);
+          a.addEventListener('ended', stopScOnlineListPreview);
+          a.play().then(()=>{
+            scPreviewAudioEl = a;
+            scOnlinePreviewBtn = btn;
+            btn.classList.add('playing');
+          }).catch(()=> stopScOnlineListPreview());
+        });
+      });
+      wrap.querySelectorAll('button[data-use-idx]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const item = btn.closest('.user-post-online-audio-item');
+          const durSec = parseFloat(item.dataset.dur) || 30;
+          openOnlineTrimPanel(list[parseInt(btn.dataset.useIdx,10)], durSec);
+        });
+      });
+    }catch(e){ status.textContent = 'Search failed, please check your internet and try again.'; }
+  }
+  document.getElementById('storyOnlineAudioSearchBtn').addEventListener('click', storySearchOnlineAudio);
+  document.getElementById('storyOnlineAudioQuery').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); storySearchOnlineAudio(); } });
+
+  function openOnlineTrimPanel(track, durSec){
+    stopScOnlineListPreview();
+    scOnlineTrack = track;
+    document.getElementById('storyOnlineAudioTrimPanel').classList.add('active');
+    document.getElementById('storyOnlineAudioTrimName').textContent = (track.trackName||'Track')+' — '+(track.artistName||'');
+    const startR = document.getElementById('storyOnlineAudioTrimStart');
+    const endR = document.getElementById('storyOnlineAudioTrimEnd');
+    // ---- Full song duration (from iTunes metadata) drives the slider range, so
+    // the user can pick any start-end window across the whole song — exactly like
+    // the post-create song picker. ----
+    const dur = Math.max(1, Math.floor(durSec || 30));
+    startR.min=0; startR.max=dur; startR.step=0.5; startR.value=0;
+    endR.min=0; endR.max=dur; endR.step=0.5; endR.value=Math.min(dur, STORY_MAX_TRIM);
+    document.getElementById('storyOnlineAudioTrimStartLabel').textContent = 'Start: '+fmtSec(0);
+    document.getElementById('storyOnlineAudioTrimEndLabel').textContent = 'End: '+fmtSec(endR.value);
+  }
+  // UPDATED: review/preview ke dauran ab 15-sec ka cap nahi lagta — poora available
+  // gaana sunke user apni pasand ki line chun sakta hai. 15 sec ka cap ab sirf
+  // story par FINAL use hote waqt lagta hai (storyOnlineAudioConfirm me).
+  document.getElementById('storyOnlineAudioTrimStart').addEventListener('input', function(){
+    const endR = document.getElementById('storyOnlineAudioTrimEnd');
+    let s = parseFloat(this.value), e = parseFloat(endR.value);
+    if(e <= s){ e = Math.min(parseFloat(endR.max)||s+1, s+1); endR.value = e; }
+    document.getElementById('storyOnlineAudioTrimStartLabel').textContent = 'Start: '+fmtSec(s);
+    document.getElementById('storyOnlineAudioTrimEndLabel').textContent = 'End: '+fmtSec(e);
+  });
+  document.getElementById('storyOnlineAudioTrimEnd').addEventListener('input', function(){
+    const startR = document.getElementById('storyOnlineAudioTrimStart');
+    let s = parseFloat(startR.value), e = parseFloat(this.value);
+    if(e <= s){ e = s+1; this.value = e; }
+    document.getElementById('storyOnlineAudioTrimStartLabel').textContent = 'Start: '+fmtSec(s);
+    document.getElementById('storyOnlineAudioTrimEndLabel').textContent = 'End: '+fmtSec(e);
+  });
+  window.storyOnlineAudioPreview = function(){
+    if(!scOnlineTrack) return;
+    stopScOnlineListPreview();
+    const s = parseFloat(document.getElementById('storyOnlineAudioTrimStart').value);
+    const e = parseFloat(document.getElementById('storyOnlineAudioTrimEnd').value);
+    scPreviewAudioEl = new Audio(scOnlineTrack.previewUrl);
+    scPreviewAudioEl.currentTime = s;
+    scPreviewAudioEl.play().catch(()=>{});
+    setTimeout(()=>{ if(scPreviewAudioEl){ try{ scPreviewAudioEl.pause(); }catch(err){} } }, Math.max(300,(e-s)*1000));
+  };
+  window.storyOnlineAudioConfirm = function(){
+    if(!scOnlineTrack) return;
+    const s = parseFloat(document.getElementById('storyOnlineAudioTrimStart').value);
+    let e = parseFloat(document.getElementById('storyOnlineAudioTrimEnd').value);
+    // UPDATED: review me poora gaana available tha, ab story par FINAL attach
+    // hote waqt hi 15-sec cap lagta hai.
+    if(e - s > STORY_MAX_TRIM) e = s + STORY_MAX_TRIM;
+    const name = (scOnlineTrack.trackName||'Track')+' — '+(scOnlineTrack.artistName||'');
+    scAudio = { url: scOnlineTrack.previewUrl, start: s, end: e, duration: parseFloat(document.getElementById('storyOnlineAudioTrimEnd').max)||30, name };
+    document.getElementById('storyOnlineAudioTrimPanel').classList.remove('active');
+    document.getElementById('storyOnlineAudioPanel').classList.remove('active');
+    document.getElementById('storyAudioChip').classList.add('active');
+    document.getElementById('storyAudioChipLabel').textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> '+name+' ('+fmtSec(s)+'-'+fmtSec(e)+')';
+    updatePublishState();
+  };
+  window.storyOnlineAudioCancel = function(){
+    stopScOnlineListPreview();
+    document.getElementById('storyOnlineAudioTrimPanel').classList.remove('active');
+    scOnlineTrack = null;
+  };
+
+  // ---- Publish ----
+  window.publishStory = async function(){
+    if(!scPhoto){ alert('Please choose a photo for your story.'); return; }
+    if(!window.localUser) return requireLogin(window.publishStory);
+    const roll = String(window.localUser.rollNumber);
+    const name = window.localUser.name || roll;
+    const id = 'story_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+
+    const payload = { id, authorRoll: roll, authorName: name, media: scPhoto, timestamp: Date.now() };
+    const storyTextEl = document.getElementById('storyTextInput');
+    const storyTextVal = storyTextEl ? storyTextEl.value.trim() : '';
+    if(storyTextVal) payload.text = storyTextVal;
+    if(scAudio){
+      const clipLen = Math.min(STORY_MAX_TRIM, Math.max(1, scAudio.end - scAudio.start));
+      payload.audioUrl = scAudio.url;
+      payload.audioStart = scAudio.start;
+      payload.audioName = scAudio.name;
+      payload.durationMs = Math.round(clipLen*1000);
+    } else {
+      payload.durationMs = STORY_DUR_NO_AUDIO;
+    }
+
+    const btn = document.getElementById('storyPublishBtn');
+    if(btn){ btn.disabled = true; btn.textContent = 'Publishing…'; }
+    try{
+      await set(ref(db, 'portal/stories/'+id), payload);
+      window.closeStoryCreatePage();
+    }catch(e){
+      alert('Story publish failed: '+(e.message||e));
+    } finally {
+      if(btn){ btn.disabled = false; btn.textContent = 'Publish Story'; }
+    }
   };
 })();
 
