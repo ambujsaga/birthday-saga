@@ -319,6 +319,202 @@
             color: #fff;
         }
 
+        /* Live Timetable quick-link widget button - sits just left of Programming button */
+        .timetable-nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #fff;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+            padding: 3px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            max-width: 160px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .timetable-nav-btn:hover {
+            background: var(--primary-blue);
+            color: #fff;
+        }
+
+        .tt-live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #9aa5b1;
+            flex-shrink: 0;
+        }
+
+        .tt-live-dot.on-now {
+            background: #2ecc71;
+            box-shadow: 0 0 0 rgba(46,204,113,0.6);
+            animation: ttPulse 1.5s infinite;
+        }
+
+        @keyframes ttPulse {
+            0% { box-shadow: 0 0 0 0 rgba(46,204,113,0.55); }
+            70% { box-shadow: 0 0 0 6px rgba(46,204,113,0); }
+            100% { box-shadow: 0 0 0 0 rgba(46,204,113,0); }
+        }
+
+        /* Live Timetable full page */
+        .tt-status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 560px) {
+            .tt-status-grid { grid-template-columns: 1fr; }
+        }
+
+        .tt-status-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-top: 4px solid var(--primary-blue);
+        }
+
+        .tt-status-card.tt-now {
+            border-top-color: #2ecc71;
+        }
+
+        .tt-status-card.tt-next {
+            border-top-color: var(--accent-orange);
+        }
+
+        .tt-status-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #888;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .tt-status-subject {
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 3px;
+        }
+
+        .tt-status-meta {
+            font-size: 0.82rem;
+            color: #666;
+        }
+
+        .tt-day-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tt-day-heading h3 {
+            color: var(--primary-blue);
+        }
+
+        .tt-day-heading span {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .tt-schedule-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .tt-schedule-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tt-schedule-list li:last-child {
+            border-bottom: none;
+        }
+
+        .tt-row-time {
+            width: 95px;
+            flex-shrink: 0;
+            font-size: 0.78rem;
+            color: #777;
+            font-weight: bold;
+        }
+
+        .tt-row-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .tt-row-subject {
+            font-weight: bold;
+            color: var(--text-dark);
+            font-size: 0.92rem;
+        }
+
+        .tt-row-teacher {
+            font-size: 0.78rem;
+            color: #888;
+        }
+
+        .tt-row-tag {
+            font-size: 0.68rem;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #eef1f5;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        .tt-schedule-list li.tt-row-active {
+            background: #eafaf0;
+            border-left: 4px solid #2ecc71;
+        }
+
+        .tt-schedule-list li.tt-row-active .tt-row-tag {
+            background: #2ecc71;
+            color: #fff;
+        }
+
+        .tt-schedule-list li.tt-row-upcoming {
+            background: #fff8ec;
+            border-left: 4px solid var(--accent-orange);
+        }
+
+        .tt-schedule-list li.tt-row-upcoming .tt-row-tag {
+            background: var(--accent-orange);
+            color: #fff;
+        }
+
+        .tt-schedule-list li.tt-row-done {
+            opacity: 0.55;
+        }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -997,7 +1193,49 @@
         .user-login-box button:hover { background: #002244; }
         .user-login-box .cancel-btn { background: #e2e8f0; color: #333; }
         .user-login-box .cancel-btn:hover { background: #cbd5e1; }
-    </style>
+    
+/* ================= ADDITIVE: DAILY ATTENDANCE & BUNK MANAGER ================= */
+.attendance-profile-btn{
+  width:100%;margin:14px 0 8px;padding:11px 14px;border:0;border-radius:9px;
+  background:var(--primary-blue);color:#fff;font-weight:800;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 3px 10px rgba(0,51,102,.16)
+}
+.attendance-profile-btn:hover{background:#00264d}
+.attendance-page{width:100%;max-width:820px;margin:0 auto;padding:1rem;min-height:calc(100vh - 135px)}
+.attendance-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.attendance-back{width:40px;height:40px;border:0;border-radius:50%;background:var(--primary-blue);color:#fff;font-size:1.25rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.attendance-header h2{color:var(--primary-blue);font-size:1.2rem;margin:0}
+.attendance-subtitle{color:#64748b;font-size:.82rem;margin:-4px 0 14px}
+.attendance-card{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.09);padding:15px;margin-bottom:14px;border-top:3px solid var(--primary-blue)}
+.attendance-card h3{color:var(--primary-blue);font-size:1rem;margin-bottom:10px}
+.attendance-status{display:flex;align-items:center;gap:10px;padding:12px;border-radius:9px;background:#f8fafc;border:1px solid #e2e8f0}
+.attendance-status-dot{width:12px;height:12px;border-radius:50%;background:#f59e0b;flex:0 0 auto}
+.attendance-status-dot.present{background:#16a34a;box-shadow:0 0 0 4px rgba(22,163,74,.12)}
+.attendance-status-dot.absent{background:#dc2626;box-shadow:0 0 0 4px rgba(220,38,38,.12)}
+.attendance-status-dot.outside{background:#64748b}
+.attendance-status-main{font-weight:800;color:#1e293b}
+.attendance-status-meta{font-size:.76rem;color:#64748b;margin-top:2px}
+.attendance-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.attendance-stat{background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:12px;text-align:center}
+.attendance-stat strong{display:block;font-size:1.25rem;color:var(--primary-blue)}
+.attendance-stat span{font-size:.72rem;color:#64748b}
+.attendance-safe{border-left:4px solid #16a34a;background:#f0fdf4;padding:12px;border-radius:8px}
+.attendance-safe.warning{border-left-color:#f59e0b;background:#fffbeb}
+.attendance-safe.danger{border-left-color:#dc2626;background:#fef2f2}
+.attendance-progress{height:9px;background:#e5e7eb;border-radius:10px;overflow:hidden;margin:8px 0}
+.attendance-progress-fill{height:100%;width:0;background:#16a34a;border-radius:10px;transition:width .3s}
+.attendance-note{font-size:.74rem;color:#64748b;line-height:1.45;margin-top:8px}
+.attendance-location-row{display:flex;gap:8px;flex-wrap:wrap}
+.attendance-location-btn,.attendance-map-btn{border:0;border-radius:8px;padding:9px 12px;font-weight:700;cursor:pointer}
+.attendance-location-btn{background:var(--primary-blue);color:#fff}
+.attendance-map-btn{background:#eef2f7;color:var(--primary-blue);text-decoration:none;display:inline-flex;align-items:center}
+.attendance-month-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.attendance-month-table th,.attendance-month-table td{padding:8px;border-bottom:1px solid #edf0f3;text-align:left}
+.attendance-month-table th{color:var(--primary-blue);background:#f8fafc}
+.attendance-present{color:#15803d;font-weight:800}.attendance-absent{color:#b91c1c;font-weight:800}
+@media(max-width:480px){.attendance-grid{grid-template-columns:1fr 1fr}.attendance-page{padding:.75rem}.attendance-card{padding:12px}}
+
+</style>
 <style>
 
 
@@ -1138,34 +1376,6 @@
 .feed-search-suggestion-item .feed-search-suggestion-name,
 .feed-search-suggestion-item .feed-search-suggestion-roll{max-width:100%}
 .feed-search-suggestion-info{flex:1;min-width:0}
-/* ================= ADDITIVE: FEED SEARCH REELS SUGGESTIONS (Instagram-style) =================
-   Purely additive block. Nothing above this line is edited or removed. */
-.feed-search-reels-grid{margin-top:.6rem;display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
-.feed-search-reel-tile{position:relative;aspect-ratio:9/16;background:#000;border-radius:6px;overflow:hidden;cursor:pointer}
-.feed-search-reel-tile video{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;background:#111}
-.feed-search-reel-tile .feed-search-reel-play-badge{position:absolute;left:6px;bottom:6px;display:flex;align-items:center;gap:3px;color:#fff;font-size:.7rem;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.7)}
-.feed-search-reel-tile .feed-search-reel-play-badge svg{width:13px;height:13px;fill:#fff}
-.feed-search-reels-empty{padding:16px;text-align:center;color:#777;font-size:.88rem;grid-column:1/-1}
-.feed-search-reel-tile.reel-load-error{background:linear-gradient(135deg,#1e293b,#334155)}
-.feed-search-reel-tile.reel-load-error video{opacity:0}
-
-.feed-reels-player-overlay{display:none;position:fixed;inset:0;background:#000;z-index:400}
-.feed-reels-player-overlay.active{display:block}
-.feed-reels-player-close{position:absolute;top:14px;right:14px;z-index:5;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.45);border:0;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.feed-reels-player-close svg{width:18px;height:18px}
-.feed-reels-player-scroll{height:100%;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none}
-.feed-reels-player-scroll::-webkit-scrollbar{display:none}
-.feed-reels-player-slide{position:relative;height:100%;width:100%;scroll-snap-align:start;scroll-snap-stop:always;display:flex;align-items:center;justify-content:center;background:#000}
-.feed-reels-player-slide video{width:100%;height:100%;object-fit:contain;background:#000}
-.feed-reels-player-mute{position:absolute;right:14px;bottom:90px;z-index:4;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.45);border:0;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer}
-.feed-reels-player-tapzone{position:absolute;inset:0;z-index:3}
-.feed-reels-player-center-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:60px;border-radius:50%;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;pointer-events:none;z-index:4}
-.feed-reels-player-center-play svg{width:26px;height:26px;fill:#fff}
-.feed-reels-player-slide.paused .feed-reels-player-center-play{display:flex}
-.feed-reels-player-caption{position:absolute;left:14px;right:60px;bottom:24px;color:#fff;font-size:.82rem;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,.8);z-index:4}
-.feed-reels-player-slide.reel-load-error{background:linear-gradient(135deg,#1e293b,#334155)}
-.feed-reels-player-slide.reel-load-error video{opacity:0}
-/* ================= END ADDITIVE: FEED SEARCH REELS SUGGESTIONS ================= */
 .feed-user-posts-header{display:flex;align-items:center;gap:12px;margin-bottom:1rem}
 .feed-user-posts-info{display:flex;align-items:center;gap:12px}
 .feed-user-posts-avatar{width:46px;height:46px;border-radius:50%;background:var(--primary-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex:0 0 auto}
@@ -1585,6 +1795,7 @@
         <symbol id="icon-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5.5-5.5L4 21"/></symbol>
         <symbol id="icon-scroll" viewBox="0 0 24 24"><path d="M6 3h9l5 5v13H6z"/><path d="M15 3v5h5"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></symbol>
         <symbol id="icon-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></symbol>
+        <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
         <symbol id="icon-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
         <symbol id="icon-live" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="9"/></symbol>
         <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></symbol>
@@ -1654,6 +1865,10 @@
 
         <section class="container">
             <div class="section-top-actions">
+                <button type="button" class="timetable-nav-btn" id="timetableNavBtn" onclick="openTimetablePage()" title="View today's live timetable">
+                    <span class="tt-live-dot" id="ttNavDot"></span>
+                    <span id="ttNavLabel">Timetable</span>
+                </button>
                 <a href="programming.html" class="programming-nav-btn">Programming</a>
             </div>
             <h2 class="section-title">Academic Subjects (Semester-I)</h2>
@@ -1675,6 +1890,33 @@
             <ul class="sarkari-list" id="sarkariNoticeList">
             </ul>
         </div>
+    </div>
+
+    <div id="timetablePage" class="container full-screen-container" style="display: none;">
+        <div class="action-bar">
+            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
+        </div>
+
+        <div class="tt-day-heading">
+            <h3><svg class="ui-icon"><use href="#icon-clock"></use></svg> Today's Live Timetable</h3>
+            <span id="ttTodayLabel"></span>
+        </div>
+
+        <div class="tt-status-grid">
+            <div class="tt-status-card tt-now">
+                <div class="tt-status-label"><svg class="ui-icon"><use href="#icon-live"></use></svg> Now Running</div>
+                <div class="tt-status-subject" id="ttNowSubject">-</div>
+                <div class="tt-status-meta" id="ttNowMeta">-</div>
+            </div>
+            <div class="tt-status-card tt-next">
+                <div class="tt-status-label"><svg class="ui-icon"><use href="#icon-chevron-right"></use></svg> Next Class</div>
+                <div class="tt-status-subject" id="ttNextSubject">-</div>
+                <div class="tt-status-meta" id="ttNextMeta">-</div>
+            </div>
+        </div>
+
+        <ul class="tt-schedule-list" id="ttScheduleList">
+        </ul>
     </div>
 
     <div id="mmitPage" class="mmit-page full-screen-container" style="display: none;">
@@ -1763,10 +2005,7 @@
                 <button type="button" class="feed-search-back" onclick="closeFeedSearch()" title="Back"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
                 <input type="text" id="feedSearchInput" class="feed-search-input" placeholder="Search by Name or Roll Number..." autocomplete="off">
             </div>
-            <div id="feedSearchSuggestions" class="feed-search-suggestions" style="display:none;"></div>
-            <!-- ADDITIVE: Instagram-style reels suggestions grid, shown below the search bar
-                 by default (before the user taps the search bar). Purely additive. -->
-            <div id="feedSearchReelsGrid" class="feed-search-reels-grid"></div>
+            <div id="feedSearchSuggestions" class="feed-search-suggestions"></div>
         </div>
 
         <div id="feedUserPostsView" class="feed-user-posts-view" style="display:none;">
@@ -1784,13 +2023,6 @@
         </div>
 
         <div id="globalFeedList" class="global-feed-list"></div>
-    </div>
-
-    <!-- ================= ADDITIVE: FEED SEARCH REELS FULLSCREEN PLAYER =================
-         Purely additive. Opens when a reel tile is tapped on the search page. -->
-    <div id="feedReelsPlayerOverlay" class="feed-reels-player-overlay">
-        <button type="button" class="feed-reels-player-close" onclick="closeFeedReelsPlayer()" title="Close"><svg class="ui-icon"><use href="#icon-x"></use></svg></button>
-        <div id="feedReelsPlayerScroll" class="feed-reels-player-scroll"></div>
     </div>
 
     <!-- ================= ADDITIVE: STORY FEATURE (create page + viewer) ================= -->
@@ -2214,6 +2446,196 @@
             { id: 3, text: "Practical Exam schedule announced for Diploma Students.", time: "Yesterday", timestamp: Date.now() - 86400000 }
         ];
 
+        // ================= DYNAMIC DAILY TIMETABLE DATA =================
+        const cseTimetable = {
+            "Monday": [
+                { start: "10:00", end: "12:00", subject: "EWP-LAB", teacher: "SH, RSV", type: "Lab" },
+                { start: "12:00", end: "13:00", subject: "SCA", teacher: "S", type: "Activity" },
+                { start: "13:00", end: "14:00", subject: "LUNCH", teacher: "", type: "Break" },
+                { start: "14:00", end: "15:00", subject: "SCA", teacher: "PK", type: "Activity" },
+                { start: "15:00", end: "16:00", subject: "SCA", teacher: "S", type: "Activity" },
+                { start: "16:00", end: "17:00", subject: "NO CLASS", teacher: "-", type: "Free" }
+            ],
+            "Tuesday": [
+                { start: "10:00", end: "11:00", subject: "IT & AI", teacher: "S", type: "Theory" },
+                { start: "11:00", end: "13:00", subject: "CSIE-LAB", teacher: "RK-GL", type: "Lab" },
+                { start: "13:00", end: "14:00", subject: "LUNCH", teacher: "", type: "Break" },
+                { start: "14:00", end: "15:00", subject: "AP-I", teacher: "RPJ-GL", type: "Theory" },
+                { start: "15:00", end: "17:00", subject: "S & Y", teacher: "SPY", type: "Activity" }
+            ],
+            "Wednesday": [
+                { start: "10:00", end: "11:00", subject: "M-I", teacher: "DMS", type: "Theory" },
+                { start: "11:00", end: "13:00", subject: "EWP-LAB", teacher: "JPS, SH, RSV", type: "Lab" },
+                { start: "13:00", end: "14:00", subject: "LUNCH", teacher: "", type: "Break" },
+                { start: "14:00", end: "15:00", subject: "SCA", teacher: "S", type: "Activity" },
+                { start: "15:00", end: "17:00", subject: "AP-I LAB", teacher: "RPJ-GL", type: "Lab" }
+            ],
+            "Thursday": [
+                { start: "10:00", end: "11:00", subject: "M-I", teacher: "DMS", type: "Theory" },
+                { start: "11:00", end: "12:00", subject: "CSIE", teacher: "RK-GL", type: "Theory" },
+                { start: "12:00", end: "13:00", subject: "SCA", teacher: "PK", type: "Activity" },
+                { start: "13:00", end: "14:00", subject: "LUNCH", teacher: "", type: "Break" },
+                { start: "14:00", end: "15:00", subject: "AP-I", teacher: "RPJ-GL", type: "Theory" },
+                { start: "15:00", end: "16:00", subject: "SCA", teacher: "S", type: "Activity" },
+                { start: "16:00", end: "17:00", subject: "NO CLASS", teacher: "-", type: "Free" }
+            ],
+            "Friday": [
+                { start: "10:00", end: "11:00", subject: "IT & AI", teacher: "S", type: "Theory" },
+                { start: "11:00", end: "13:00", subject: "IT & AI LAB (C LAB)", teacher: "S", type: "Lab" },
+                { start: "13:00", end: "14:00", subject: "LUNCH", teacher: "", type: "Break" },
+                { start: "14:00", end: "15:00", subject: "SCA", teacher: "PK", type: "Activity" },
+                { start: "15:00", end: "16:00", subject: "AP-I", teacher: "RPJ-GL", type: "Theory" },
+                { start: "16:00", end: "17:00", subject: "SCA", teacher: "PK", type: "Activity" }
+            ],
+            "Saturday": [
+                { start: "10:00", end: "11:00", subject: "CSIE", teacher: "RK-GL", type: "Theory" },
+                { start: "11:00", end: "12:00", subject: "M-I", teacher: "DMS", type: "Theory" },
+                { start: "12:00", end: "13:00", subject: "ITS LAB (C LAB)", teacher: "S", type: "Lab" },
+                { start: "13:00", end: "14:00", subject: "LUNCH", teacher: "", type: "Break" },
+                { start: "14:00", end: "15:00", subject: "ITS LAB (C LAB)", teacher: "S", type: "Lab" },
+                { start: "15:00", end: "16:00", subject: "SCA", teacher: "S", type: "Activity" },
+                { start: "16:00", end: "17:00", subject: "NO CLASS", teacher: "-", type: "Free" }
+            ],
+            "Sunday": [
+                { start: "00:00", end: "23:59", subject: "HOLIDAY", teacher: "Enjoy!", type: "Free" }
+            ]
+        };
+
+        const ttDayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+        function ttTimeToMinutes(str) {
+            const [h, m] = str.split(':').map(Number);
+            return h * 60 + m;
+        }
+
+        function ttFormatTime(str) {
+            const [h, m] = str.split(':').map(Number);
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            let h12 = h % 12;
+            if (h12 === 0) h12 = 12;
+            return h12 + (m ? ':' + String(m).padStart(2, '0') : ':00') + ' ' + ampm;
+        }
+
+        // Returns { dayKey, schedule, nowMinutes, currentIndex, currentPeriod, nextPeriod }
+        function ttGetLiveStatus() {
+            const now = new Date();
+            const dayKey = ttDayNames[now.getDay()];
+            const schedule = cseTimetable[dayKey] || [];
+            const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+            let currentIndex = -1;
+            let currentPeriod = null;
+            let nextPeriod = null;
+
+            for (let i = 0; i < schedule.length; i++) {
+                const p = schedule[i];
+                const startM = ttTimeToMinutes(p.start);
+                const endM = ttTimeToMinutes(p.end);
+                if (nowMinutes >= startM && nowMinutes < endM) {
+                    currentIndex = i;
+                    currentPeriod = p;
+                }
+            }
+
+            for (let i = 0; i < schedule.length; i++) {
+                const p = schedule[i];
+                const startM = ttTimeToMinutes(p.start);
+                if (startM > nowMinutes) {
+                    nextPeriod = p;
+                    break;
+                }
+            }
+
+            return { dayKey, schedule, nowMinutes, currentIndex, currentPeriod, nextPeriod };
+        }
+
+        // Updates the small home-screen widget button (left of Programming)
+        function updateTimetableWidget() {
+            const dotEl = document.getElementById('ttNavDot');
+            const labelEl = document.getElementById('ttNavLabel');
+            if (!dotEl || !labelEl) return;
+
+            const status = ttGetLiveStatus();
+            const cp = status.currentPeriod;
+
+            if (cp && cp.type !== 'Break' && cp.type !== 'Free' && cp.subject !== 'HOLIDAY') {
+                dotEl.classList.add('on-now');
+                labelEl.textContent = 'Now: ' + cp.subject;
+            } else if (cp && (cp.type === 'Break' || cp.subject === 'HOLIDAY')) {
+                dotEl.classList.remove('on-now');
+                labelEl.textContent = cp.subject === 'HOLIDAY' ? 'Holiday' : 'Lunch Break';
+            } else if (status.nextPeriod) {
+                dotEl.classList.remove('on-now');
+                labelEl.textContent = 'Next: ' + status.nextPeriod.subject;
+            } else {
+                dotEl.classList.remove('on-now');
+                labelEl.textContent = 'Timetable';
+            }
+        }
+
+        // Renders the full Timetable page: now/next cards + full day schedule
+        function renderTimetablePage() {
+            const status = ttGetLiveStatus();
+            const { dayKey, schedule, currentIndex, currentPeriod, nextPeriod } = status;
+
+            const todayLabelEl = document.getElementById('ttTodayLabel');
+            if (todayLabelEl) {
+                todayLabelEl.textContent = dayKey + ', ' + new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+            }
+
+            const nowSubjectEl = document.getElementById('ttNowSubject');
+            const nowMetaEl = document.getElementById('ttNowMeta');
+            if (currentPeriod) {
+                nowSubjectEl.textContent = currentPeriod.subject;
+                let meta = ttFormatTime(currentPeriod.start) + ' - ' + ttFormatTime(currentPeriod.end);
+                if (currentPeriod.teacher) meta += ' • ' + currentPeriod.teacher;
+                nowMetaEl.textContent = meta;
+            } else {
+                nowSubjectEl.textContent = 'No Class Right Now';
+                nowMetaEl.textContent = 'Enjoy the free time!';
+            }
+
+            const nextSubjectEl = document.getElementById('ttNextSubject');
+            const nextMetaEl = document.getElementById('ttNextMeta');
+            if (nextPeriod) {
+                nextSubjectEl.textContent = nextPeriod.subject;
+                let meta = 'Starts at ' + ttFormatTime(nextPeriod.start);
+                if (nextPeriod.teacher) meta += ' • ' + nextPeriod.teacher;
+                nextMetaEl.textContent = meta;
+            } else {
+                nextSubjectEl.textContent = 'No More Classes Today';
+                nextMetaEl.textContent = "That's it for today!";
+            }
+
+            const listEl = document.getElementById('ttScheduleList');
+            if (listEl) {
+                listEl.innerHTML = schedule.map((p, i) => {
+                    let rowClass = '';
+                    let tag = p.type;
+                    if (i === currentIndex && p.type !== 'Break' && p.type !== 'Free' && p.subject !== 'HOLIDAY') {
+                        rowClass = 'tt-row-active';
+                        tag = 'LIVE NOW';
+                    } else if (p === nextPeriod) {
+                        rowClass = 'tt-row-upcoming';
+                        tag = 'UP NEXT';
+                    } else if (ttTimeToMinutes(p.end) <= status.nowMinutes) {
+                        rowClass = 'tt-row-done';
+                    }
+                    const teacherHTML = p.teacher ? `<div class="tt-row-teacher">${p.teacher}</div>` : '';
+                    return `
+                        <li class="${rowClass}">
+                            <div class="tt-row-time">${ttFormatTime(p.start)} - ${ttFormatTime(p.end)}</div>
+                            <div class="tt-row-body">
+                                <div class="tt-row-subject">${p.subject}</div>
+                                ${teacherHTML}
+                            </div>
+                            <div class="tt-row-tag">${tag}</div>
+                        </li>
+                    `;
+                }).join('');
+            }
+        }
+
         const officialNotices = [
             { title: "", date: "", isNew: true },
             { title: "", date: "", isNew: true },
@@ -2352,6 +2774,14 @@
             window.scrollTo(0, 0);
         }
 
+        function openTimetablePage() {
+            closeAllSections();
+            renderTimetablePage();
+            document.getElementById('timetablePage').style.display = 'block';
+            window.scrollTo(0, 0);
+            updateNavState('navHome');
+        }
+
         var currentOpenSubjectId = null;
         
         function openSubjectPage(id) {
@@ -2383,6 +2813,7 @@
             document.getElementById('homePage').style.display = 'none';
             document.getElementById('subjectPage').style.display = 'none';
             document.getElementById('noticePage').style.display = 'none';
+            document.getElementById('timetablePage').style.display = 'none';
             document.getElementById('mmitPage').style.display = 'none';
             document.getElementById('savedPage').style.display = 'none';
             document.getElementById('chatPage').style.display = 'none'; 
@@ -2476,6 +2907,9 @@
             loadSubjects();
             renderNotifications();
             renderNoticeBoard();
+
+            updateTimetableWidget();
+            setInterval(updateTimetableWidget, 30000);
             
             setTimeout(() => {
                 if(localUser && window.setUserActiveStatus) {
@@ -4790,18 +5224,13 @@ onAuthStateChanged(auth, user => {
   window.openFeedSearch = function(){
     const input = document.getElementById('feedSearchInput');
     if(input) input.value='';
-    const box = document.getElementById('feedSearchSuggestions');
-    if(box){ box.innerHTML=''; box.style.display='none'; }
-    // ADDITIVE: default view on opening search is the Instagram-style reels
-    // suggestions grid (not the history list). History now shows only once
-    // the user taps/focuses the search bar — see the 'focus' listener below.
-    if(typeof window.showFeedReelsGrid==='function') window.showFeedReelsGrid();
+    renderSearchHistory();
     showOnly('feedSearchOverlay');
+    if(input) setTimeout(()=>input.focus(),50);
   };
 
   window.closeFeedSearch = function(){
     showOnly('globalFeedList');
-    if(typeof window.pauseFeedReelsGridPreviews==='function') window.pauseFeedReelsGridPreviews();
   };
 
   window.closeFeedUserPostsView = function(){
@@ -4845,14 +5274,6 @@ onAuthStateChanged(auth, user => {
   const searchInputEl = document.getElementById('feedSearchInput');
   if(searchInputEl){
     searchInputEl.addEventListener('input', function(){ renderSuggestions(this.value); });
-    // ADDITIVE: tapping the search bar reveals the history/suggestions box
-    // (Instagram-style) and hides the reels suggestions grid underneath it.
-    searchInputEl.addEventListener('focus', function(){
-      if(typeof window.hideFeedReelsGrid==='function') window.hideFeedReelsGrid();
-      const box = document.getElementById('feedSearchSuggestions');
-      if(box) box.style.display='';
-      renderSuggestions(this.value);
-    });
   }
 
   function openUserPostsFromSearch(roll){
@@ -4915,199 +5336,6 @@ onAuthStateChanged(auth, user => {
       const roll = rollEl.textContent.replace('Roll No: ','').trim();
       if(roll) renderFeedUserPosts(roll);
     }
-  };
-})();
-
-/* =====================================================================
-   ADDITIVE: FEED SEARCH REELS SUGGESTIONS (Instagram-style)
-   Purely additive module. Nothing above this block is edited or removed;
-   only the two small hooks already added above (openFeedSearch showing
-   this grid by default, and the search-bar 'focus' listener hiding it in
-   favour of the existing search-history box) call into this module.
-
-   - Below the search bar, a 3-column grid of short preview video tiles is
-     shown (like Instagram's Explore/reels-suggestions grid), muted and
-     auto-playing on loop when scrolled into view.
-   - Tapping any tile opens a fullscreen, vertically swipeable reels
-     player — video plays with audio, and the user can scroll to watch
-     more suggested videos, exactly like Instagram Reels.
-   - The suggestion pool comes from a small fixed set of free/public demo
-     videos (Google's public sample-media bucket) since this app has no
-     video-post feature of its own yet. The order is reshuffled every time
-     the app/page is freshly loaded, so the suggestions look different on
-     every refresh.
-===================================================================== */
-(function(){
-  // Free, publicly hosted sample videos (Mixkit's public preview CDN, used
-  // across the web for demos/embeds — no key or login needed) used purely
-  // as placeholder "reels" suggestions since the app has no video-upload
-  // feature yet.
-  const REEL_BASE = 'https://assets.mixkit.co/videos/preview/';
-  const REEL_SOURCES = [
-    { file: 'mixkit-waves-in-the-water-1164-large.mp4', title: 'Waves in the Water' },
-    { file: 'mixkit-tree-with-yellow-flowers-1173-large.mp4', title: 'Yellow Flowers' },
-    { file: 'mixkit-girl-in-neon-sign-1232-large.mp4', title: 'Neon Sign' },
-    { file: 'mixkit-man-dancing-under-changing-lights-1240-large.mp4', title: 'Dancing Lights' },
-    { file: 'mixkit-family-walking-together-in-nature-39767-large.mp4', title: 'Family Walk' },
-    { file: 'mixkit-mother-with-her-little-daughter-eating-a-marshmallow-in-nature-39764-large.mp4', title: 'Mother & Daughter' }
-  ].map(r => ({ url: REEL_BASE + r.file, title: r.title }));
-
-  // ---- Reshuffle (Fisher-Yates) once per fresh page load, so suggestions
-  // change every time the app/page is refreshed. ----
-  function shuffledReels(){
-    const arr = REEL_SOURCES.slice();
-    for(let i = arr.length - 1; i > 0; i--){
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  }
-  const currentReelOrder = shuffledReels();
-
-  let gridObserver = null;
-
-  function reEsc(v){ return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-
-  // ---- Explore-style grid (muted autoplay previews) ----
-  function renderReelsGrid(){
-    const box = document.getElementById('feedSearchReelsGrid');
-    if(!box) return;
-    if(!currentReelOrder.length){
-      box.innerHTML = '<div class="feed-search-reels-empty">No suggestions right now.</div>';
-      return;
-    }
-    box.innerHTML = currentReelOrder.map((r,i)=>`
-      <div class="feed-search-reel-tile" data-reel-idx="${i}">
-        <video src="${reEsc(r.url)}" muted loop playsinline preload="metadata"></video>
-        <div class="feed-search-reel-play-badge"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></div>
-      </div>`).join('');
-
-    box.querySelectorAll('.feed-search-reel-tile').forEach(tile=>{
-      tile.addEventListener('click', ()=> openFeedReelsPlayer(parseInt(tile.getAttribute('data-reel-idx'),10)));
-      // Extra safety so the muted-autoplay preview isn't blocked by the
-      // 'muted' HTML attribute not being picked up as the live property in
-      // some webviews.
-      const vid = tile.querySelector('video');
-      if(vid){
-        vid.muted = true;
-        // If a preview genuinely fails to load (network/CORS/etc.), fall
-        // back to a plain gradient tile instead of leaving a dead black
-        // box, and keep the tile tappable.
-        vid.addEventListener('error', ()=> tile.classList.add('reel-load-error'), { once:true });
-      }
-    });
-
-    // Autoplay each tile's muted preview only while it's actually visible
-    // on screen (perf-friendly), like Instagram's Explore grid previews.
-    if(gridObserver) gridObserver.disconnect();
-    gridObserver = new IntersectionObserver((entries)=>{
-      entries.forEach(entry=>{
-        const vid = entry.target.querySelector('video');
-        if(!vid) return;
-        if(entry.isIntersecting) vid.play().catch(()=>{});
-        else vid.pause();
-      });
-    }, { threshold: 0.6 });
-    box.querySelectorAll('.feed-search-reel-tile').forEach(tile => gridObserver.observe(tile));
-  }
-
-  window.showFeedReelsGrid = function(){
-    const box = document.getElementById('feedSearchReelsGrid');
-    if(!box) return;
-    box.style.display = '';
-    if(!box.dataset.built){ renderReelsGrid(); box.dataset.built = '1'; }
-    else {
-      box.querySelectorAll('video').forEach(v=>{
-        const rect = v.closest('.feed-search-reel-tile').getBoundingClientRect();
-        if(rect.top < window.innerHeight && rect.bottom > 0) v.play().catch(()=>{});
-      });
-    }
-  };
-
-  window.hideFeedReelsGrid = function(){
-    const box = document.getElementById('feedSearchReelsGrid');
-    if(!box) return;
-    box.style.display = 'none';
-    window.pauseFeedReelsGridPreviews();
-  };
-
-  window.pauseFeedReelsGridPreviews = function(){
-    const box = document.getElementById('feedSearchReelsGrid');
-    if(!box) return;
-    box.querySelectorAll('video').forEach(v=>{ try{ v.pause(); }catch(e){} });
-  };
-
-  // ---- Fullscreen vertical reels player (Instagram Reels-style) ----
-  let playerObserver = null;
-
-  function buildPlayerSlides(){
-    const scroll = document.getElementById('feedReelsPlayerScroll');
-    if(!scroll) return;
-    scroll.innerHTML = currentReelOrder.map((r,i)=>`
-      <div class="feed-reels-player-slide" data-reel-idx="${i}">
-        <video src="${reEsc(r.url)}" loop playsinline></video>
-        <div class="feed-reels-player-tapzone" data-tapzone></div>
-        <div class="feed-reels-player-center-play"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></div>
-        <button type="button" class="feed-reels-player-mute" data-mutebtn>🔊</button>
-        <div class="feed-reels-player-caption">${reEsc(r.title)}</div>
-      </div>`).join('');
-
-    scroll.querySelectorAll('.feed-reels-player-slide').forEach(slide=>{
-      const vid = slide.querySelector('video');
-      const muteBtn = slide.querySelector('[data-mutebtn]');
-      const tapzone = slide.querySelector('[data-tapzone]');
-      tapzone.addEventListener('click', ()=>{
-        if(vid.paused){ vid.play().catch(()=>{}); slide.classList.remove('paused'); }
-        else { vid.pause(); slide.classList.add('paused'); }
-      });
-      muteBtn.addEventListener('click', (e)=>{
-        e.stopPropagation();
-        vid.muted = !vid.muted;
-        muteBtn.textContent = vid.muted ? '🔇' : '🔊';
-      });
-      vid.addEventListener('error', ()=> slide.classList.add('reel-load-error'), { once:true });
-    });
-  }
-
-  function openFeedReelsPlayer(startIdx){
-    const overlay = document.getElementById('feedReelsPlayerOverlay');
-    const scroll = document.getElementById('feedReelsPlayerScroll');
-    if(!overlay || !scroll) return;
-    if(!scroll.dataset.built){ buildPlayerSlides(); scroll.dataset.built = '1'; }
-
-    overlay.classList.add('active');
-    const slides = scroll.querySelectorAll('.feed-reels-player-slide');
-    const target = slides[startIdx] || slides[0];
-    if(target) scroll.scrollTop = target.offsetTop;
-
-    // Play with audio only for the slide currently in view; pause & rewind
-    // every other slide, so scrolling behaves exactly like Instagram Reels.
-    if(playerObserver) playerObserver.disconnect();
-    playerObserver = new IntersectionObserver((entries)=>{
-      entries.forEach(entry=>{
-        const vid = entry.target.querySelector('video');
-        if(!vid) return;
-        if(entry.isIntersecting && entry.intersectionRatio > 0.6){
-          vid.muted = false;
-          vid.currentTime = 0;
-          vid.play().catch(()=>{ vid.muted = true; vid.play().catch(()=>{}); });
-          entry.target.classList.remove('paused');
-        } else {
-          vid.pause();
-          entry.target.classList.remove('paused');
-        }
-      });
-    }, { root: scroll, threshold: [0, 0.6, 1] });
-    slides.forEach(s => playerObserver.observe(s));
-  }
-  window.openFeedReelsPlayer = openFeedReelsPlayer;
-
-  window.closeFeedReelsPlayer = function(){
-    const overlay = document.getElementById('feedReelsPlayerOverlay');
-    const scroll = document.getElementById('feedReelsPlayerScroll');
-    if(overlay) overlay.classList.remove('active');
-    if(scroll) scroll.querySelectorAll('video').forEach(v=>{ try{ v.pause(); }catch(e){} });
-    if(playerObserver) playerObserver.disconnect();
   };
 })();
 
@@ -5442,11 +5670,17 @@ onAuthStateChanged(auth, user => {
   const knownNotifIds = new Set();
   const knownNoticeIds = new Set();
 
-  function runPushNotifyDiff(){
-    const currentChats = onlineData.chats || [];
-    const currentPosts = onlineData.posts || [];
-    const currentNotifs = onlineData.notifications || [];
-    const currentNotices = onlineData.notices || [];
+  function runPushNotifyDiff(d){
+    // SPEED FIX: raw incoming Firebase snapshot (d) se seedha padhte hain,
+    // taaki is check ko applyOnlineData ke heavy DOM re-render (subjects/
+    // posts/chats/notices render) se PEHLE hi chalaya ja sake — isse
+    // notification bina render ka wait kiye turant fire hoti hai. Data
+    // shape 'onlineData.X' jaisa hi hai (arr() se hi wahan bhi banta hai).
+    const currentChats = arr(d && d.chats);
+    const currentPosts = arr(d && d.posts);
+    const currentNotifs = arr(d && d.notifications);
+    const currentNotices = arr(d && d.notices);
+    const currentSubjects = arr(d && d.subjects).length ? arr(d.subjects) : (onlineData.subjects || []);
 
     if(!pushBaselineReady){
       // Pehla load — sirf baseline record karo, notification mat bhejo.
@@ -5473,7 +5707,7 @@ onAuthStateChanged(auth, user => {
     currentPosts.forEach(function(p){
       if(!p || !p.id || knownPostIds.has(p.id)) return;
       knownPostIds.add(p.id);
-      const subj = (onlineData.subjects || []).find(function(s){ return String(s.id) === String(p.subjectId); });
+      const subj = currentSubjects.find(function(s){ return String(s.id) === String(p.subjectId); });
       const subjName = subj ? subj.title : 'Subject';
       firePortalNotification('New Update On #' + subjName, p.text || '');
     });
@@ -5500,8 +5734,12 @@ onAuthStateChanged(auth, user => {
   // bas realtime data aane ke baad ek extra hook chala diya gaya hai.
   const originalApplyOnlineDataForPush = applyOnlineData;
   applyOnlineData = function(d){
+    // Notify check ko render se PEHLE chalate hain (raw snapshot 'd' par)
+    // taaki phone/browser notification bina kisi rendering-delay ke
+    // turant fire ho. DOM update (asli app UI) uske turant baad hota hai,
+    // jaisa pehle hota tha — bilkul waisa hi, bas order optimize kiya hai.
+    try{ runPushNotifyDiff(d); }catch(e){ console.warn('push notify diff failed', e); }
     originalApplyOnlineDataForPush(d);
-    try{ runPushNotifyDiff(); }catch(e){ console.warn('push notify diff failed', e); }
   };
 })();
 
@@ -6296,6 +6534,483 @@ onAuthStateChanged(auth, user => {
   window.addEventListener('load', () => setTimeout(queueUnseenMcqs, 1200));
 })();
 
+/* ================= ADDITIVE: BACK BUTTON NAVIGATION FIX =================
+   Ismein sirf naya code add kiya gaya hai — upar ka koi bhi purana
+   function, page-open/close logic, ya feature CHHUA/BADLA nahi gaya hai.
+
+   Problem: Phone ke back button se kisi bhi page/panel par se back
+   karne par pura app hi band ho jaata tha (kyunki app kabhi browser
+   history me kuch push hi nahi karta tha, isliye back button ko
+   "andar jaane ke liye" kuch milta hi nahi tha).
+
+   Fix: Jab bhi koi page ya overlay khulta hai, ek history entry push
+   kar dete hain. Back button dabane par (popstate event) sabse pehle
+   yeh check karte hain ki abhi sabse upar kaunsa panel/page khula hai
+   aur usko APP KE APNE EXISTING close/back function se hi band karte
+   hain (jaise back-btn already karta hai) — home page tak. Jab user
+   home page par pahunch jata hai, tab agla back press app ko normally
+   close/exit karne deta hai (kuch rokte nahi).
+================================================================= */
+(function(){
+  // Top-level pages — inme se jo bhi khula ho use band karke seedha
+  // Home par le jaate hain (jaise inke apne back-btn / bottom-nav icon
+  // pehle se karte hain).
+  var TOP_LEVEL_PAGE_IDS = ['subjectPage','noticePage','mmitPage','savedPage','chatPage','profilePage','globalFeedPage'];
+
+  // Pages jo Home ki jagah kisi aur page ke "andar" nested hain — inke
+  // apne maujooda close function hi sahi jagah (Profile) par le jaate hain.
+  var NESTED_PAGE_CLOSERS = [
+    { id: 'storyCreatePage', close: function(){ if(typeof window.closeStoryCreatePage === 'function') window.closeStoryCreatePage(); } },
+    { id: 'userPostCreatePage', close: function(){ if(typeof window.closeUserPostCreatePage === 'function') window.closeUserPostCreatePage(); } }
+  ];
+
+  // Chhote overlays/panels jo kisi page ke UPAR khulte hain — sabse
+  // andar wala (topmost) pehle band hota hai, phir neeche wala page.
+  var OVERLAY_LAYERS = [
+    { isOpen: function(){ var el = document.getElementById('feedUserPostsView'); return !!el && el.style.display === 'block'; },
+      close: function(){ if(typeof window.closeFeedUserPostsView === 'function') window.closeFeedUserPostsView(); } },
+    { isOpen: function(){ var el = document.getElementById('feedSearchOverlay'); return !!el && el.style.display === 'block'; },
+      close: function(){ if(typeof window.closeFeedSearch === 'function') window.closeFeedSearch(); } },
+    { isOpen: function(){ var el = document.getElementById('storyOnlineAudioTrimPanel'); return !!el && el.classList.contains('active'); },
+      close: function(){ if(typeof window.storyOnlineAudioCancel === 'function') window.storyOnlineAudioCancel(); } },
+    { isOpen: function(){ var el = document.getElementById('storyAudioTrimPanel'); return !!el && el.classList.contains('active'); },
+      close: function(){ if(typeof window.storyAudioCancel === 'function') window.storyAudioCancel(); } },
+    { isOpen: function(){ var el = document.getElementById('userPostOnlineAudioTrimPanel'); return !!el && el.classList.contains('active'); },
+      close: function(){ if(typeof window.userPostOnlineAudioTrimCancel === 'function') window.userPostOnlineAudioTrimCancel(); } },
+    { isOpen: function(){ var el = document.getElementById('imageViewerModal'); return !!el && el.style.display === 'flex'; },
+      close: function(){ if(typeof window.closeImageViewer === 'function') window.closeImageViewer(); } },
+    { isOpen: function(){ var el = document.getElementById('storyViewerOverlay'); return !!el && el.classList.contains('active'); },
+      close: function(){ if(typeof window.closeStoryViewer === 'function') window.closeStoryViewer(); } },
+    { isOpen: function(){ var el = document.getElementById('adminModal'); return !!el && el.classList.contains('active'); },
+      close: function(){ if(typeof window.closeAdminPanel === 'function') window.closeAdminPanel(); } },
+    { isOpen: function(){ var el = document.getElementById('notifPanel'); return !!el && el.style.display === 'block'; },
+      close: function(){ var el = document.getElementById('notifPanel'); if(el) el.style.display = 'none'; } },
+    { isOpen: function(){ var el = document.getElementById('mcqPopupOverlay'); return !!el && el.classList.contains('active'); },
+      close: function(){ if(typeof window.mcqPopupSkip === 'function') window.mcqPopupSkip(); } }
+  ];
+
+  function isAnyOverlayOpen(){
+    for(var i=0;i<OVERLAY_LAYERS.length;i++){ if(OVERLAY_LAYERS[i].isOpen()) return true; }
+    return false;
+  }
+  function closeTopOverlay(){
+    for(var i=0;i<OVERLAY_LAYERS.length;i++){
+      if(OVERLAY_LAYERS[i].isOpen()){ OVERLAY_LAYERS[i].close(); return true; }
+    }
+    return false;
+  }
+  function getOpenNestedPage(){
+    for(var i=0;i<NESTED_PAGE_CLOSERS.length;i++){
+      var el = document.getElementById(NESTED_PAGE_CLOSERS[i].id);
+      if(el && el.style.display === 'block') return NESTED_PAGE_CLOSERS[i];
+    }
+    return null;
+  }
+  function isAnyTopLevelPageOpen(){
+    for(var i=0;i<TOP_LEVEL_PAGE_IDS.length;i++){
+      var el = document.getElementById(TOP_LEVEL_PAGE_IDS[i]);
+      if(el && el.style.display === 'block') return true;
+    }
+    return false;
+  }
+  function isAwayFromHome(){
+    return isAnyOverlayOpen() || !!getOpenNestedPage() || isAnyTopLevelPageOpen();
+  }
+
+  // Ek hi "away from home" history entry maintain karte hain — lateral
+  // page-switch (jaise Chat se Profile) par dobara push nahi karte,
+  // taaki back button har lateral switch ke liye alag se na maangey.
+  var backEntryPushed = false;
+  function ensureBackEntry(){
+    if(!backEntryPushed){
+      backEntryPushed = true;
+      try{ history.pushState({ portalAway: true }, ''); }catch(e){}
+    }
+  }
+
+  var checkQueued = false;
+  function scheduleAwaySync(){
+    if(checkQueued) return;
+    checkQueued = true;
+    setTimeout(function(){
+      checkQueued = false;
+      if(isAwayFromHome()) ensureBackEntry();
+      else backEntryPushed = false;
+    }, 0);
+  }
+
+  var watchIds = TOP_LEVEL_PAGE_IDS.concat(
+    NESTED_PAGE_CLOSERS.map(function(x){ return x.id; }),
+    ['feedUserPostsView','feedSearchOverlay','storyOnlineAudioTrimPanel','storyAudioTrimPanel',
+     'userPostOnlineAudioTrimPanel','imageViewerModal','storyViewerOverlay','adminModal',
+     'notifPanel','mcqPopupOverlay']
+  );
+  var mo = new MutationObserver(scheduleAwaySync);
+  watchIds.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) mo.observe(el, { attributes: true, attributeFilter: ['style','class'] });
+  });
+
+  window.addEventListener('popstate', function(){
+    // 1) Sabse upar koi chhota overlay/panel khula ho to pehle usi ko band karo.
+    if(closeTopOverlay()){
+      if(isAwayFromHome()){ backEntryPushed = true; try{ history.pushState({ portalAway: true }, ''); }catch(e){} }
+      else backEntryPushed = false;
+      return;
+    }
+    // 2) Koi nested page (post/story create) khula ho to uska apna close function chalao (Profile par jaata hai).
+    var nested = getOpenNestedPage();
+    if(nested){
+      nested.close();
+      backEntryPushed = false;
+      return;
+    }
+    // 3) Koi top-level page khula ho to Home par le jao.
+    if(isAnyTopLevelPageOpen()){
+      if(typeof window.openHomePage === 'function') window.openHomePage();
+      backEntryPushed = false;
+      return;
+    }
+    // 4) User pehle se Home page par hai — yahan kuch nahi karte,
+    // ab agla back press app/browser ko normally close/exit karne dega.
+  });
+})();
+
 </script>
+
+<script type="module">
+/* ================= ADDITIVE: DAILY ATTENDANCE & BUNK MANAGER =================
+   Existing code/features are not edited. This module only adds the attendance
+   page, profile button, geofence tracking and attendance calculations.
+*/
+import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const attendanceDb = getDatabase(getApp());
+const ATT_CAMPUS = {
+  name: "Mahamaya IT Polytechnic, Maharajganj",
+  address: "Mangalapur Ward No: 32, NPP, Ashok Nagar, MRJ, Dhnewa Dhanei, Uttar Pradesh 273303",
+  /* Campus point is kept in one place so it can be corrected without touching
+     any existing application code. The supplied Google Maps address is used
+     for the map button below. */
+  lat: 27.1440,
+  lng: 83.5630,
+  radiusMeters: 500
+};
+const ATT_MAP_URL = "https://maps.app.goo.gl/FcgE1xVShMqGBKWCA";
+const ATT_START = 10 * 60;
+const ATT_END = 13 * 60;
+let attendanceWatchId = null;
+let attendanceTimer = null;
+let attendanceLastPosition = null;
+
+function attRoll(){
+  return window.localUser && window.localUser.rollNumber ? String(window.localUser.rollNumber) : "";
+}
+function attDateKey(d=new Date()){
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+}
+function attMonthKey(d=new Date()){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+}
+function attMinutes(d=new Date()){ return d.getHours()*60+d.getMinutes(); }
+function attIsSunday(d=new Date()){ return d.getDay()===0; }
+function attMonthLabel(key){
+  const [y,m]=key.split("-").map(Number);
+  return new Date(y,m-1,1).toLocaleDateString("en-IN",{month:"long",year:"numeric"});
+}
+function attDaysInMonth(y,m){
+  return new Date(y,m,0).getDate();
+}
+function attClassDays(y,m){
+  /* Mon-Sat estimate; actual holidays are not available in this app. */
+  let n=0, days=attDaysInMonth(y,m);
+  for(let d=1;d<=days;d++){ const w=new Date(y,m-1,d).getDay(); if(w!==0)n++; }
+  return n;
+}
+function attHaversine(a,b,c,d){
+  const R=6371000, p=Math.PI/180;
+  const x=(c-a)*p, y=(d-b)*p;
+  const h=Math.sin(x/2)**2 + Math.cos(a*p)*Math.cos(c*p)*Math.sin(y/2)**2;
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+function attRecordRef(roll,date){ return ref(attendanceDb,`portal/attendance/${encodeURIComponent(roll)}/${date}`); }
+async function attGetAll(){
+  const roll=attRoll(); if(!roll) return {};
+  try{
+    const snap=await get(ref(attendanceDb,`portal/attendance/${encodeURIComponent(roll)}`));
+    return snap.val() || {};
+  }catch(e){ console.warn("Attendance read failed:",e); return {}; }
+}
+async function attWrite(date,status,extra={}){
+  const roll=attRoll(); if(!roll) return false;
+  const payload={
+    status,
+    date,
+    updatedAt:Date.now(),
+    ...extra
+  };
+  try{
+    await update(attRecordRef(roll,date),payload);
+    return true;
+  }catch(e){
+    console.warn("Attendance write failed:",e);
+    return false;
+  }
+}
+async function attGetToday(){
+  const roll=attRoll(); if(!roll) return null;
+  try{
+    const snap=await get(attRecordRef(roll,attDateKey()));
+    return snap.val() || null;
+  }catch(e){ return null; }
+}
+function attStatusText(rec){
+  if(rec?.status==="present") return ["Present","Attendance marked from campus location.","present"];
+  if(rec?.status==="absent") return ["Absent","Attendance window ended at 1:00 PM.","absent"];
+  if(rec?.status==="outside") return ["Waiting","Outside the campus geofence. Enter before 1:00 PM.","outside"];
+  return ["Pending","Enter campus between 10:00 AM and 1:00 PM.",""];
+}
+function attSetStatus(rec,extraMeta=""){
+  const el=document.getElementById("attTodayStatus");
+  if(!el)return;
+  const [title,msg,cls]=attStatusText(rec);
+  const dot=el.querySelector(".attendance-status-dot");
+  const main=el.querySelector(".attendance-status-main");
+  const meta=el.querySelector(".attendance-status-meta");
+  dot.className="attendance-status-dot "+cls;
+  main.textContent=title;
+  meta.textContent=extraMeta || msg;
+}
+async function attEvaluateToday(){
+  const roll=attRoll(); if(!roll)return;
+  const now=new Date(), key=attDateKey(now);
+  if(attIsSunday(now)){
+    attSetStatus({status:"pending"},"Sunday — no attendance is counted.");
+    return;
+  }
+  let rec=await attGetToday();
+  const mins=attMinutes(now);
+  if(rec?.status==="present"){ attSetStatus(rec); return; }
+  if(mins>=ATT_END){
+    if(rec?.status!=="absent") await attWrite(key,"absent",{reason:"attendance_window_closed"});
+    attSetStatus({status:"absent"});
+    return;
+  }
+  if(mins<ATT_START){
+    attSetStatus(null,"Attendance starts at 10:00 AM. Location permission can remain enabled.");
+    return;
+  }
+  if(rec?.status!=="present"){
+    attSetStatus(rec?.status==="outside"?rec:null);
+  }
+}
+async function attHandlePosition(pos){
+  attendanceLastPosition=pos;
+  const now=new Date();
+  if(attIsSunday(now) || attMinutes(now)<ATT_START || attMinutes(now)>=ATT_END)return;
+  const dist=attHaversine(pos.coords.latitude,pos.coords.longitude,ATT_CAMPUS.lat,ATT_CAMPUS.lng);
+  document.getElementById("attDistance")?.replaceChildren(document.createTextNode(`${Math.round(dist)} m from campus point`));
+  const rec=await attGetToday();
+  if(rec?.status==="present")return;
+  if(dist<=ATT_CAMPUS.radiusMeters){
+    await attWrite(attDateKey(now),"present",{
+      accuracy:Math.round(pos.coords.accuracy||0),
+      distanceMeters:Math.round(dist),
+      markedBy:"campus_geofence"
+    });
+    attSetStatus({status:"present"},`Present — inside campus geofence (${Math.round(dist)} m).`);
+    await renderAttendanceDashboard();
+  }else{
+    attSetStatus({status:"outside"},`Outside campus geofence — ${Math.round(dist)} m away.`);
+  }
+}
+function attGeoError(err){
+  const el=document.getElementById("attLocationPermission");
+  if(el) el.textContent = err.code===1
+    ? "Location permission is blocked. Allow location access in browser settings."
+    : "Could not read your location. Keep GPS/location enabled and try again.";
+}
+function startAttendanceLocation(){
+  if(!navigator.geolocation){
+    attSetStatus(null,"This browser does not support location services.");
+    return;
+  }
+  if(attendanceWatchId!==null)navigator.geolocation.clearWatch(attendanceWatchId);
+  attendanceWatchId=navigator.geolocation.watchPosition(attHandlePosition,attGeoError,{
+    enableHighAccuracy:true, maximumAge:15000, timeout:15000
+  });
+  if(attendanceTimer)clearInterval(attendanceTimer);
+  attendanceTimer=setInterval(attEvaluateToday,30000);
+  navigator.geolocation.getCurrentPosition(attHandlePosition,attGeoError,{enableHighAccuracy:true,maximumAge:0,timeout:15000});
+}
+function stopAttendanceLocation(){
+  if(attendanceWatchId!==null){navigator.geolocation.clearWatch(attendanceWatchId);attendanceWatchId=null;}
+  if(attendanceTimer){clearInterval(attendanceTimer);attendanceTimer=null;}
+}
+function attBunkAllowed(P,A,N){
+  const x=P+N-0.75*(P+A+N);
+  return Math.max(0,Math.floor(x+1e-9));
+}
+function attPercent(P,A){ return (P+A)>0 ? (P/(P+A))*100 : 0; }
+function attAcademicStart(){
+  /* Academic year 2026-27 for this app; future years roll over automatically. */
+  const now=new Date(), startYear=now.getMonth()>=6?now.getFullYear():now.getFullYear()-1;
+  return new Date(startYear,6,1);
+}
+async function renderAttendanceDashboard(){
+  const all=await attGetAll(), now=new Date(), mk=attMonthKey(now);
+  let P=0,A=0;
+  Object.values(all).forEach(r=>{if(r?.status==="present")P++;if(r?.status==="absent")A++;});
+  const pct=attPercent(P,A);
+  const current=Object.values(all).filter(r=>String(r?.date||"").startsWith(mk));
+  const mp=current.filter(r=>r.status==="present").length;
+  const ma=current.filter(r=>r.status==="absent").length;
+  const monthPct=attPercent(mp,ma);
+  const next=new Date(now.getFullYear(),now.getMonth()+1,1);
+  const N=attClassDays(next.getFullYear(),next.getMonth()+1);
+  const bunk=attBunkAllowed(P,A,N);
+
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  set("attMonthName",attMonthLabel(mk));
+  set("attMonthPresent",mp);set("attMonthAbsent",ma);set("attMonthPct",`${monthPct.toFixed(1)}%`);
+  set("attYearPresent",P);set("attYearAbsent",A);set("attYearPct",`${pct.toFixed(1)}%`);
+  set("attNextMonth",next.toLocaleDateString("en-IN",{month:"long",year:"numeric"}));
+  set("attNextClassDays",N);set("attBunkDays",bunk);
+  const fill=document.getElementById("attMonthFill");if(fill)fill.style.width=Math.min(100,monthPct)+"%";
+  const box=document.getElementById("attSafetyBox");
+  if(box){
+    box.className="attendance-safe"+(monthPct<75?(monthPct<60?" danger":" warning"):"");
+    box.innerHTML=monthPct>=75
+      ? `<strong>SAFE ZONE</strong><div>Your tracked monthly attendance is ${monthPct.toFixed(1)}%, above the 75% target.</div>`
+      : `<strong>ATTENTION NEEDED</strong><div>Your tracked monthly attendance is ${monthPct.toFixed(1)}%. Avoid unnecessary bunking and improve attendance.</div>`;
+  }
+  const tbody=document.getElementById("attMonthRows");
+  if(tbody){
+    const rows=Object.values(all).filter(r=>String(r?.date||"").startsWith(mk)).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+    tbody.innerHTML=rows.length?rows.map(r=>`<tr><td>${r.date}</td><td class="${r.status==="present"?"attendance-present":"attendance-absent"}">${r.status==="present"?"Present":"Absent"}</td><td>${r.status==="present"?"Campus":"—"}</td></tr>`).join("")
+    :`<tr><td colspan="3" style="color:#64748b;text-align:center">No tracked attendance yet.</td></tr>`;
+  }
+}
+function ensureAttendancePage(){
+  if(document.getElementById("attendancePage"))return;
+  const page=document.createElement("div");
+  page.id="attendancePage";page.className="attendance-page full-screen-container";page.style.display="none";
+  page.innerHTML=`
+    <div class="attendance-header">
+      <button class="attendance-back" type="button" onclick="closeAttendancePage()" title="Back to Profile"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
+      <div><h2>Daily Attendance & Bunk Manager</h2></div>
+    </div>
+    <p class="attendance-subtitle">Automatic campus-based attendance • Target: 75%</p>
+    <div class="attendance-card">
+      <h3>Today's Attendance</h3>
+      <div class="attendance-status" id="attTodayStatus">
+        <span class="attendance-status-dot"></span><div><div class="attendance-status-main">Pending</div><div class="attendance-status-meta">Checking...</div></div>
+      </div>
+      <div class="attendance-note" id="attDistance">Location distance will appear here.</div>
+      <div class="attendance-note" id="attLocationPermission">Location is checked only during 10:00 AM–1:00 PM for attendance.</div>
+    </div>
+    <div class="attendance-card">
+      <h3 id="attMonthName">This Month</h3>
+      <div class="attendance-grid">
+        <div class="attendance-stat"><strong id="attMonthPresent">0</strong><span>Present</span></div>
+        <div class="attendance-stat"><strong id="attMonthAbsent">0</strong><span>Absent</span></div>
+        <div class="attendance-stat"><strong id="attMonthPct">0%</strong><span>Attendance</span></div>
+        <div class="attendance-stat"><strong>75%</strong><span>Safe Target</span></div>
+      </div>
+      <div class="attendance-progress"><div id="attMonthFill" class="attendance-progress-fill"></div></div>
+      <div id="attSafetyBox" class="attendance-safe"><strong>Checking...</strong></div>
+    </div>
+    <div class="attendance-card">
+      <h3>Next Month Bunk Manager</h3>
+      <div class="attendance-grid">
+        <div class="attendance-stat"><strong id="attBunkDays">0</strong><span>Max estimated bunk days</span></div>
+        <div class="attendance-stat"><strong id="attNextClassDays">0</strong><span>Estimated class days</span></div>
+      </div>
+      <div class="attendance-note">This estimate assumes all other next-month class days are attended and uses the 75% target. Holidays/exams are not automatically known to the app.</div>
+      <div class="attendance-note"><strong id="attNextMonth"></strong></div>
+    </div>
+    <div class="attendance-card">
+      <h3>Tracked Attendance</h3>
+      <div class="attendance-grid">
+        <div class="attendance-stat"><strong id="attYearPresent">0</strong><span>Total Present</span></div>
+        <div class="attendance-stat"><strong id="attYearAbsent">0</strong><span>Total Absent</span></div>
+        <div class="attendance-stat"><strong id="attYearPct">0%</strong><span>Tracked Attendance</span></div>
+        <div class="attendance-stat"><strong>75%</strong><span>Annual Target</span></div>
+      </div>
+    </div>
+    <div class="attendance-card">
+      <h3>College Location</h3>
+      <div style="font-weight:800;color:var(--primary-blue)">${ATT_CAMPUS.name}</div>
+      <div class="attendance-note">${ATT_CAMPUS.address}</div>
+      <div class="attendance-location-row" style="margin-top:10px">
+        <button class="attendance-location-btn" type="button" onclick="startAttendanceLocation()">Refresh Location</button>
+        <a class="attendance-map-btn" href="${ATT_MAP_URL}" target="_blank" rel="noopener">Open College Map</a>
+      </div>
+    </div>
+    <div class="attendance-card">
+      <h3>Monthly Record</h3>
+      <div style="overflow-x:auto"><table class="attendance-month-table"><thead><tr><th>Date</th><th>Status</th><th>Source</th></tr></thead><tbody id="attMonthRows"></tbody></table></div>
+    </div>
+  `;
+  document.body.appendChild(page);
+}
+function ensureAttendanceButton(){
+  const card=document.querySelector("#profilePage .profile-card"); if(!card)return;
+  if(document.getElementById("attendanceProfileBtn"))return;
+  const b=document.createElement("button");
+  b.id="attendanceProfileBtn";b.className="attendance-profile-btn";
+  b.innerHTML=`<svg class="ui-icon"><use href="#icon-calendar"></use></svg> Daily Attendance & Bunk Manager`;
+  b.onclick=()=>window.openAttendancePage();
+  const logout=card.querySelector(".logout-btn");
+  if(logout)card.insertBefore(b,logout);else card.appendChild(b);
+}
+window.openAttendancePage=function(){
+  if(typeof window.requireLogin==="function"){window.requireLogin(()=>openAttendancePageNow());}else openAttendancePageNow();
+};
+async function openAttendancePageNow(){
+  ensureAttendancePage();ensureAttendanceButton();
+  if(typeof window.closeAllSections==="function")window.closeAllSections();
+  const page=document.getElementById("attendancePage");page.style.display="block";
+  if(typeof window.updateNavState==="function")window.updateNavState("navProfile");
+  window.scrollTo(0,0);
+  await attEvaluateToday();await renderAttendanceDashboard();
+  startAttendanceLocation();
+}
+window.closeAttendancePage=function(){
+  stopAttendanceLocation();
+  const p=document.getElementById("attendancePage");if(p)p.style.display="none";
+  if(typeof window.openProfile==="function")window.openProfile();
+};
+function patchCloseAllSections(){
+  const old=window.closeAllSections;
+  if(typeof old!=="function"||old.__attendancePatched)return;
+  function patched(){old();const p=document.getElementById("attendancePage");if(p)p.style.display="none";}
+  patched.__attendancePatched=true;window.closeAllSections=patched;
+}
+function setupBack(){
+  window.addEventListener("popstate",function(){
+    const p=document.getElementById("attendancePage");
+    if(p&&p.style.display==="block"){
+      p.style.display="none";stopAttendanceLocation();
+      if(typeof window.openProfile==="function")window.openProfile();
+    }
+  });
+}
+function bootAttendance(){
+  ensureAttendancePage();ensureAttendanceButton();patchCloseAllSections();setupBack();
+  const oldOpenProfile=window.openProfile;
+  if(typeof oldOpenProfile==="function"&&!oldOpenProfile.__attendanceWrapped){
+    const wrapped=function(){
+      ensureAttendanceButton();
+      return oldOpenProfile.apply(this,arguments);
+    };
+    wrapped.__attendanceWrapped=true;window.openProfile=wrapped;
+  }
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bootAttendance);else bootAttendance();
+</script>
+
 </body>
 </html>
