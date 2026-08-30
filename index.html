@@ -319,6 +319,202 @@
             color: #fff;
         }
 
+        /* Live Timetable quick-link widget button - sits just left of Programming button */
+        .timetable-nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #fff;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+            padding: 3px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            max-width: 160px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .timetable-nav-btn:hover {
+            background: var(--primary-blue);
+            color: #fff;
+        }
+
+        .tt-live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #9aa5b1;
+            flex-shrink: 0;
+        }
+
+        .tt-live-dot.on-now {
+            background: #2ecc71;
+            box-shadow: 0 0 0 rgba(46,204,113,0.6);
+            animation: ttPulse 1.5s infinite;
+        }
+
+        @keyframes ttPulse {
+            0% { box-shadow: 0 0 0 0 rgba(46,204,113,0.55); }
+            70% { box-shadow: 0 0 0 6px rgba(46,204,113,0); }
+            100% { box-shadow: 0 0 0 0 rgba(46,204,113,0); }
+        }
+
+        /* Live Timetable full page */
+        .tt-status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 560px) {
+            .tt-status-grid { grid-template-columns: 1fr; }
+        }
+
+        .tt-status-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-top: 4px solid var(--primary-blue);
+        }
+
+        .tt-status-card.tt-now {
+            border-top-color: #2ecc71;
+        }
+
+        .tt-status-card.tt-next {
+            border-top-color: var(--accent-orange);
+        }
+
+        .tt-status-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #888;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .tt-status-subject {
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 3px;
+        }
+
+        .tt-status-meta {
+            font-size: 0.82rem;
+            color: #666;
+        }
+
+        .tt-day-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tt-day-heading h3 {
+            color: var(--primary-blue);
+        }
+
+        .tt-day-heading span {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .tt-schedule-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .tt-schedule-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tt-schedule-list li:last-child {
+            border-bottom: none;
+        }
+
+        .tt-row-time {
+            width: 95px;
+            flex-shrink: 0;
+            font-size: 0.78rem;
+            color: #777;
+            font-weight: bold;
+        }
+
+        .tt-row-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .tt-row-subject {
+            font-weight: bold;
+            color: var(--text-dark);
+            font-size: 0.92rem;
+        }
+
+        .tt-row-teacher {
+            font-size: 0.78rem;
+            color: #888;
+        }
+
+        .tt-row-tag {
+            font-size: 0.68rem;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #eef1f5;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        .tt-schedule-list li.tt-row-active {
+            background: #eafaf0;
+            border-left: 4px solid #2ecc71;
+        }
+
+        .tt-schedule-list li.tt-row-active .tt-row-tag {
+            background: #2ecc71;
+            color: #fff;
+        }
+
+        .tt-schedule-list li.tt-row-upcoming {
+            background: #fff8ec;
+            border-left: 4px solid var(--accent-orange);
+        }
+
+        .tt-schedule-list li.tt-row-upcoming .tt-row-tag {
+            background: var(--accent-orange);
+            color: #fff;
+        }
+
+        .tt-schedule-list li.tt-row-done {
+            opacity: 0.55;
+        }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -1557,6 +1753,7 @@
         <symbol id="icon-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5.5-5.5L4 21"/></symbol>
         <symbol id="icon-scroll" viewBox="0 0 24 24"><path d="M6 3h9l5 5v13H6z"/><path d="M15 3v5h5"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></symbol>
         <symbol id="icon-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></symbol>
+        <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
         <symbol id="icon-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
         <symbol id="icon-live" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="9"/></symbol>
         <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></symbol>
@@ -1626,6 +1823,10 @@
 
         <section class="container">
             <div class="section-top-actions">
+                <button type="button" class="timetable-nav-btn" id="timetableNavBtn" onclick="openTimetablePage()" title="View today's live timetable">
+                    <span class="tt-live-dot" id="ttNavDot"></span>
+                    <span id="ttNavLabel">Timetable</span>
+                </button>
                 <a href="programming.html" class="programming-nav-btn">Programming</a>
             </div>
             <h2 class="section-title">Academic Subjects (Semester-I)</h2>
@@ -1647,6 +1848,33 @@
             <ul class="sarkari-list" id="sarkariNoticeList">
             </ul>
         </div>
+    </div>
+
+    <div id="timetablePage" class="container full-screen-container" style="display: none;">
+        <div class="action-bar">
+            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
+        </div>
+
+        <div class="tt-day-heading">
+            <h3><svg class="ui-icon"><use href="#icon-clock"></use></svg> Today's Live Timetable</h3>
+            <span id="ttTodayLabel"></span>
+        </div>
+
+        <div class="tt-status-grid">
+            <div class="tt-status-card tt-now">
+                <div class="tt-status-label"><svg class="ui-icon"><use href="#icon-live"></use></svg> Now Running</div>
+                <div class="tt-status-subject" id="ttNowSubject">-</div>
+                <div class="tt-status-meta" id="ttNowMeta">-</div>
+            </div>
+            <div class="tt-status-card tt-next">
+                <div class="tt-status-label"><svg class="ui-icon"><use href="#icon-chevron-right"></use></svg> Next Class</div>
+                <div class="tt-status-subject" id="ttNextSubject">-</div>
+                <div class="tt-status-meta" id="ttNextMeta">-</div>
+            </div>
+        </div>
+
+        <ul class="tt-schedule-list" id="ttScheduleList">
+        </ul>
     </div>
 
     <div id="mmitPage" class="mmit-page full-screen-container" style="display: none;">
@@ -2176,6 +2404,196 @@
             { id: 3, text: "Practical Exam schedule announced for Diploma Students.", time: "Yesterday", timestamp: Date.now() - 86400000 }
         ];
 
+        // ================= DYNAMIC DAILY TIMETABLE DATA =================
+        const cseTimetable = {
+            "Monday": [
+                { start: "10:00", end: "12:00", subject: "EWP-LAB", teacher: "SH, RSV", type: "Lab" },
+                { start: "12:00", end: "13:00", subject: "SCA", teacher: "S", type: "Activity" },
+                { start: "13:00", end: "14:00", subject: "LUNCH", teacher: "", type: "Break" },
+                { start: "14:00", end: "15:00", subject: "SCA", teacher: "PK", type: "Activity" },
+                { start: "15:00", end: "16:00", subject: "SCA", teacher: "S", type: "Activity" },
+                { start: "16:00", end: "17:00", subject: "NO CLASS", teacher: "-", type: "Free" }
+            ],
+            "Tuesday": [
+                { start: "10:00", end: "11:00", subject: "IT & AI", teacher: "S", type: "Theory" },
+                { start: "11:00", end: "13:00", subject: "CSIE-LAB", teacher: "RK-GL", type: "Lab" },
+                { start: "13:00", end: "14:00", subject: "LUNCH", teacher: "", type: "Break" },
+                { start: "14:00", end: "15:00", subject: "AP-I", teacher: "RPJ-GL", type: "Theory" },
+                { start: "15:00", end: "17:00", subject: "S & Y", teacher: "SPY", type: "Activity" }
+            ],
+            "Wednesday": [
+                { start: "10:00", end: "11:00", subject: "M-I", teacher: "DMS", type: "Theory" },
+                { start: "11:00", end: "13:00", subject: "EWP-LAB", teacher: "JPS, SH, RSV", type: "Lab" },
+                { start: "13:00", end: "14:00", subject: "LUNCH", teacher: "", type: "Break" },
+                { start: "14:00", end: "15:00", subject: "SCA", teacher: "S", type: "Activity" },
+                { start: "15:00", end: "17:00", subject: "AP-I LAB", teacher: "RPJ-GL", type: "Lab" }
+            ],
+            "Thursday": [
+                { start: "10:00", end: "11:00", subject: "M-I", teacher: "DMS", type: "Theory" },
+                { start: "11:00", end: "12:00", subject: "CSIE", teacher: "RK-GL", type: "Theory" },
+                { start: "12:00", end: "13:00", subject: "SCA", teacher: "PK", type: "Activity" },
+                { start: "13:00", end: "14:00", subject: "LUNCH", teacher: "", type: "Break" },
+                { start: "14:00", end: "15:00", subject: "AP-I", teacher: "RPJ-GL", type: "Theory" },
+                { start: "15:00", end: "16:00", subject: "SCA", teacher: "S", type: "Activity" },
+                { start: "16:00", end: "17:00", subject: "NO CLASS", teacher: "-", type: "Free" }
+            ],
+            "Friday": [
+                { start: "10:00", end: "11:00", subject: "IT & AI", teacher: "S", type: "Theory" },
+                { start: "11:00", end: "13:00", subject: "IT & AI LAB (C LAB)", teacher: "S", type: "Lab" },
+                { start: "13:00", end: "14:00", subject: "LUNCH", teacher: "", type: "Break" },
+                { start: "14:00", end: "15:00", subject: "SCA", teacher: "PK", type: "Activity" },
+                { start: "15:00", end: "16:00", subject: "AP-I", teacher: "RPJ-GL", type: "Theory" },
+                { start: "16:00", end: "17:00", subject: "SCA", teacher: "PK", type: "Activity" }
+            ],
+            "Saturday": [
+                { start: "10:00", end: "11:00", subject: "CSIE", teacher: "RK-GL", type: "Theory" },
+                { start: "11:00", end: "12:00", subject: "M-I", teacher: "DMS", type: "Theory" },
+                { start: "12:00", end: "13:00", subject: "ITS LAB (C LAB)", teacher: "S", type: "Lab" },
+                { start: "13:00", end: "14:00", subject: "LUNCH", teacher: "", type: "Break" },
+                { start: "14:00", end: "15:00", subject: "ITS LAB (C LAB)", teacher: "S", type: "Lab" },
+                { start: "15:00", end: "16:00", subject: "SCA", teacher: "S", type: "Activity" },
+                { start: "16:00", end: "17:00", subject: "NO CLASS", teacher: "-", type: "Free" }
+            ],
+            "Sunday": [
+                { start: "00:00", end: "23:59", subject: "HOLIDAY", teacher: "Enjoy!", type: "Free" }
+            ]
+        };
+
+        const ttDayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+        function ttTimeToMinutes(str) {
+            const [h, m] = str.split(':').map(Number);
+            return h * 60 + m;
+        }
+
+        function ttFormatTime(str) {
+            const [h, m] = str.split(':').map(Number);
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            let h12 = h % 12;
+            if (h12 === 0) h12 = 12;
+            return h12 + (m ? ':' + String(m).padStart(2, '0') : ':00') + ' ' + ampm;
+        }
+
+        // Returns { dayKey, schedule, nowMinutes, currentIndex, currentPeriod, nextPeriod }
+        function ttGetLiveStatus() {
+            const now = new Date();
+            const dayKey = ttDayNames[now.getDay()];
+            const schedule = cseTimetable[dayKey] || [];
+            const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+            let currentIndex = -1;
+            let currentPeriod = null;
+            let nextPeriod = null;
+
+            for (let i = 0; i < schedule.length; i++) {
+                const p = schedule[i];
+                const startM = ttTimeToMinutes(p.start);
+                const endM = ttTimeToMinutes(p.end);
+                if (nowMinutes >= startM && nowMinutes < endM) {
+                    currentIndex = i;
+                    currentPeriod = p;
+                }
+            }
+
+            for (let i = 0; i < schedule.length; i++) {
+                const p = schedule[i];
+                const startM = ttTimeToMinutes(p.start);
+                if (startM > nowMinutes) {
+                    nextPeriod = p;
+                    break;
+                }
+            }
+
+            return { dayKey, schedule, nowMinutes, currentIndex, currentPeriod, nextPeriod };
+        }
+
+        // Updates the small home-screen widget button (left of Programming)
+        function updateTimetableWidget() {
+            const dotEl = document.getElementById('ttNavDot');
+            const labelEl = document.getElementById('ttNavLabel');
+            if (!dotEl || !labelEl) return;
+
+            const status = ttGetLiveStatus();
+            const cp = status.currentPeriod;
+
+            if (cp && cp.type !== 'Break' && cp.type !== 'Free' && cp.subject !== 'HOLIDAY') {
+                dotEl.classList.add('on-now');
+                labelEl.textContent = 'Now: ' + cp.subject;
+            } else if (cp && (cp.type === 'Break' || cp.subject === 'HOLIDAY')) {
+                dotEl.classList.remove('on-now');
+                labelEl.textContent = cp.subject === 'HOLIDAY' ? 'Holiday' : 'Lunch Break';
+            } else if (status.nextPeriod) {
+                dotEl.classList.remove('on-now');
+                labelEl.textContent = 'Next: ' + status.nextPeriod.subject;
+            } else {
+                dotEl.classList.remove('on-now');
+                labelEl.textContent = 'Timetable';
+            }
+        }
+
+        // Renders the full Timetable page: now/next cards + full day schedule
+        function renderTimetablePage() {
+            const status = ttGetLiveStatus();
+            const { dayKey, schedule, currentIndex, currentPeriod, nextPeriod } = status;
+
+            const todayLabelEl = document.getElementById('ttTodayLabel');
+            if (todayLabelEl) {
+                todayLabelEl.textContent = dayKey + ', ' + new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+            }
+
+            const nowSubjectEl = document.getElementById('ttNowSubject');
+            const nowMetaEl = document.getElementById('ttNowMeta');
+            if (currentPeriod) {
+                nowSubjectEl.textContent = currentPeriod.subject;
+                let meta = ttFormatTime(currentPeriod.start) + ' - ' + ttFormatTime(currentPeriod.end);
+                if (currentPeriod.teacher) meta += ' • ' + currentPeriod.teacher;
+                nowMetaEl.textContent = meta;
+            } else {
+                nowSubjectEl.textContent = 'No Class Right Now';
+                nowMetaEl.textContent = 'Enjoy the free time!';
+            }
+
+            const nextSubjectEl = document.getElementById('ttNextSubject');
+            const nextMetaEl = document.getElementById('ttNextMeta');
+            if (nextPeriod) {
+                nextSubjectEl.textContent = nextPeriod.subject;
+                let meta = 'Starts at ' + ttFormatTime(nextPeriod.start);
+                if (nextPeriod.teacher) meta += ' • ' + nextPeriod.teacher;
+                nextMetaEl.textContent = meta;
+            } else {
+                nextSubjectEl.textContent = 'No More Classes Today';
+                nextMetaEl.textContent = "That's it for today!";
+            }
+
+            const listEl = document.getElementById('ttScheduleList');
+            if (listEl) {
+                listEl.innerHTML = schedule.map((p, i) => {
+                    let rowClass = '';
+                    let tag = p.type;
+                    if (i === currentIndex && p.type !== 'Break' && p.type !== 'Free' && p.subject !== 'HOLIDAY') {
+                        rowClass = 'tt-row-active';
+                        tag = 'LIVE NOW';
+                    } else if (p === nextPeriod) {
+                        rowClass = 'tt-row-upcoming';
+                        tag = 'UP NEXT';
+                    } else if (ttTimeToMinutes(p.end) <= status.nowMinutes) {
+                        rowClass = 'tt-row-done';
+                    }
+                    const teacherHTML = p.teacher ? `<div class="tt-row-teacher">${p.teacher}</div>` : '';
+                    return `
+                        <li class="${rowClass}">
+                            <div class="tt-row-time">${ttFormatTime(p.start)} - ${ttFormatTime(p.end)}</div>
+                            <div class="tt-row-body">
+                                <div class="tt-row-subject">${p.subject}</div>
+                                ${teacherHTML}
+                            </div>
+                            <div class="tt-row-tag">${tag}</div>
+                        </li>
+                    `;
+                }).join('');
+            }
+        }
+
         const officialNotices = [
             { title: "", date: "", isNew: true },
             { title: "", date: "", isNew: true },
@@ -2314,6 +2732,14 @@
             window.scrollTo(0, 0);
         }
 
+        function openTimetablePage() {
+            closeAllSections();
+            renderTimetablePage();
+            document.getElementById('timetablePage').style.display = 'block';
+            window.scrollTo(0, 0);
+            updateNavState('navHome');
+        }
+
         var currentOpenSubjectId = null;
         
         function openSubjectPage(id) {
@@ -2345,6 +2771,7 @@
             document.getElementById('homePage').style.display = 'none';
             document.getElementById('subjectPage').style.display = 'none';
             document.getElementById('noticePage').style.display = 'none';
+            document.getElementById('timetablePage').style.display = 'none';
             document.getElementById('mmitPage').style.display = 'none';
             document.getElementById('savedPage').style.display = 'none';
             document.getElementById('chatPage').style.display = 'none'; 
@@ -2438,6 +2865,9 @@
             loadSubjects();
             renderNotifications();
             renderNoticeBoard();
+
+            updateTimetableWidget();
+            setInterval(updateTimetableWidget, 30000);
             
             setTimeout(() => {
                 if(localUser && window.setUserActiveStatus) {
