@@ -1409,6 +1409,26 @@
   .story-tray-item{width:80px;}
 }
 </style>
+
+<!-- ================= ADDITIVE: MCQ popup (display-only). The MCQ questions
+     themselves are created/deleted from a separate standalone file,
+     mcq-admin.html, which writes directly to the same Firebase database
+     under 'portal/mcqs'. This block only reads that data and shows the
+     poll popup to logged-in students in the main app — nothing above this
+     style block is modified. ================= -->
+<style>
+  .mcq-popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200000;display:none;align-items:center;justify-content:center;padding:18px}
+  .mcq-popup-overlay.active{display:flex}
+  .mcq-popup-box{width:min(400px,100%);background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 20px 55px rgba(0,0,0,.4);animation:fadeIn .2s ease-in-out}
+  .mcq-popup-head{background:var(--primary-blue);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px;font-weight:700}
+  .mcq-popup-body{padding:16px}
+  .mcq-popup-question{font-size:1.02rem;font-weight:700;color:var(--text-dark);margin-bottom:14px;line-height:1.4}
+  .mcq-popup-option{display:block;width:100%;text-align:left;background:#f4f6f9;border:1.5px solid #dfe5ec;border-radius:10px;padding:11px 14px;margin-bottom:10px;font-size:.92rem;color:#1e293b;cursor:pointer;transition:background .15s,border-color .15s}
+  .mcq-popup-option:hover{background:#eaf1fb;border-color:var(--primary-blue)}
+  .mcq-popup-option:active{transform:scale(0.98)}
+  .mcq-popup-skip{display:block;width:100%;text-align:center;background:none;border:none;color:#64748b;font-size:.85rem;padding:8px;cursor:pointer;text-decoration:underline}
+  .mcq-popup-thanks{padding:26px 16px;text-align:center;color:var(--primary-blue);font-weight:700}
+</style>
 </head>
 <body>
 
@@ -1555,6 +1575,7 @@
         <symbol id="icon-edit" viewBox="0 0 24 24"><path d="M4 20h4l11-11-4-4L4 16z"/><path d="M14 5l4 4"/></symbol>
         <symbol id="icon-pin" viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5c0 4-5 11-5 11S7 11 7 7a5 5 0 0 1 5-5z"/><circle cx="12" cy="7" r="2"/></symbol>
         <symbol id="icon-play" viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></symbol>
+        <symbol id="icon-poll" viewBox="0 0 24 24"><line x1="5" y1="20" x2="5" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="19" y1="20" x2="19" y2="15"/></symbol>
       </defs>
     </svg>
 
@@ -1922,6 +1943,14 @@
             <button onclick="processUserLogin()">Secure Login</button>
             <button class="cancel-btn" onclick="closeUserLogin()">Cancel</button>
             <p id="userLoginError" style="color: red; font-size: 0.85rem; margin-top: 10px;"></p>
+        </div>
+    </div>
+
+    <!-- ADDITIVE: MCQ popup shown in the main app (questions come from mcq-admin.html) -->
+    <div id="mcqPopupOverlay" class="mcq-popup-overlay">
+        <div class="mcq-popup-box">
+            <div class="mcq-popup-head"><svg class="ui-icon"><use href="#icon-poll"></use></svg> Quick Question</div>
+            <div class="mcq-popup-body" id="mcqPopupBody"></div>
         </div>
     </div>
 
@@ -5933,6 +5962,96 @@ onAuthStateChanged(auth, user => {
       if(btn){ btn.disabled = false; btn.textContent = 'Publish Story'; }
     }
   };
+})();
+
+/* ================= ADDITIVE: MCQ POPUP (DISPLAY-ONLY) =================
+   This app file (index.html) only DISPLAYS the MCQ poll popup to logged-in
+   students and records their answer/skip. MCQs themselves are created and
+   deleted from a separate standalone admin file — mcq-admin.html — which
+   writes directly to the same Firebase database under 'portal/mcqs'.
+   Nothing above this block is touched — this only reads the existing `db`,
+   `ref`, `onValue`, `set`, `esc` bindings from this module script and adds
+   its own independent Firebase listener on 'portal/mcqs'.
+================================================================= */
+(function(){
+  let mcqsData = [];
+  let mcqPopupQueue = [];
+  let mcqPopupShowingId = null;
+
+  function mcqSeenKey(id){ return 'mcqSeen_' + id; }
+  function isMcqSeen(id){
+    try{ return localStorage.getItem(mcqSeenKey(id)) === '1'; }catch(e){ return false; }
+  }
+  function markMcqSeen(id){
+    try{ localStorage.setItem(mcqSeenKey(id), '1'); }catch(e){}
+  }
+
+  function closeMcqPopup(){
+    const overlay = document.getElementById('mcqPopupOverlay');
+    if(overlay) overlay.classList.remove('active');
+    mcqPopupShowingId = null;
+    setTimeout(showNextMcqPopup, 400);
+  }
+
+  window.mcqPopupSkip = function(){
+    if(mcqPopupShowingId) markMcqSeen(mcqPopupShowingId);
+    closeMcqPopup();
+  };
+
+  window.mcqPopupSelect = async function(optIdx){
+    const id = mcqPopupShowingId;
+    if(!id || !window.localUser) return;
+    markMcqSeen(id);
+    const body = document.getElementById('mcqPopupBody');
+    if(body) body.innerHTML = '<div class="mcq-popup-thanks"><svg class="ui-icon"><use href="#icon-check"></use></svg> Thanks for answering!</div>';
+    try{
+      await set(ref(db, 'portal/mcqs/' + id + '/votes/' + window.localUser.rollNumber), optIdx);
+    }catch(e){ /* silent — popup already closed for this user */ }
+    setTimeout(closeMcqPopup, 650);
+  };
+
+  function showMcqPopup(mcq){
+    mcqPopupShowingId = mcq.id;
+    const body = document.getElementById('mcqPopupBody');
+    const overlay = document.getElementById('mcqPopupOverlay');
+    if(!body || !overlay) return;
+    body.innerHTML = '<div class="mcq-popup-question">' + esc(mcq.question) + '</div>' +
+      (mcq.options||[]).map((opt,i)=> '<button type="button" class="mcq-popup-option" onclick="mcqPopupSelect(' + i + ')">' + esc(opt) + '</button>').join('') +
+      '<button type="button" class="mcq-popup-skip" onclick="mcqPopupSkip()">Skip</button>';
+    overlay.classList.add('active');
+  }
+
+  function showNextMcqPopup(){
+    if(mcqPopupShowingId) return;
+    if(!window.localUser) return; // Voting is tied to Roll Number, so only shown once logged in
+    const adminBox = document.getElementById('adminModal');
+    if(adminBox && adminBox.classList.contains('active')) return;
+    const storyPage = document.getElementById('storyCreatePage');
+    if(storyPage && storyPage.style.display === 'block') return;
+
+    while(mcqPopupQueue.length){
+      const id = mcqPopupQueue.shift();
+      if(!isMcqSeen(id)){
+        const mcq = mcqsData.find(m => m.id === id);
+        if(mcq){ showMcqPopup(mcq); return; }
+      }
+    }
+  }
+
+  function queueUnseenMcqs(){
+    const sorted = [...mcqsData].sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+    mcqPopupQueue = sorted.map(m=>m.id).filter(id => !isMcqSeen(id));
+    showNextMcqPopup();
+  }
+
+  onValue(ref(db, 'portal/mcqs'), snap => {
+    const val = snap.val() || {};
+    mcqsData = Object.entries(val).map(([id,x]) => ({ id, ...x }));
+    queueUnseenMcqs();
+  }, err => console.error('MCQ listener error:', err));
+
+  document.addEventListener('click', function(){ if(window.localUser) queueUnseenMcqs(); }, { once:true, capture:true });
+  window.addEventListener('load', () => setTimeout(queueUnseenMcqs, 1200));
 })();
 
 </script>
