@@ -1146,6 +1146,8 @@
 .feed-search-reel-tile .feed-search-reel-play-badge{position:absolute;left:6px;bottom:6px;display:flex;align-items:center;gap:3px;color:#fff;font-size:.7rem;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.7)}
 .feed-search-reel-tile .feed-search-reel-play-badge svg{width:13px;height:13px;fill:#fff}
 .feed-search-reels-empty{padding:16px;text-align:center;color:#777;font-size:.88rem;grid-column:1/-1}
+.feed-search-reel-tile.reel-load-error{background:linear-gradient(135deg,#1e293b,#334155)}
+.feed-search-reel-tile.reel-load-error video{opacity:0}
 
 .feed-reels-player-overlay{display:none;position:fixed;inset:0;background:#000;z-index:400}
 .feed-reels-player-overlay.active{display:block}
@@ -1161,6 +1163,8 @@
 .feed-reels-player-center-play svg{width:26px;height:26px;fill:#fff}
 .feed-reels-player-slide.paused .feed-reels-player-center-play{display:flex}
 .feed-reels-player-caption{position:absolute;left:14px;right:60px;bottom:24px;color:#fff;font-size:.82rem;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,.8);z-index:4}
+.feed-reels-player-slide.reel-load-error{background:linear-gradient(135deg,#1e293b,#334155)}
+.feed-reels-player-slide.reel-load-error video{opacity:0}
 /* ================= END ADDITIVE: FEED SEARCH REELS SUGGESTIONS ================= */
 .feed-user-posts-header{display:flex;align-items:center;gap:12px;margin-bottom:1rem}
 .feed-user-posts-info{display:flex;align-items:center;gap:12px}
@@ -4934,24 +4938,18 @@ onAuthStateChanged(auth, user => {
      every refresh.
 ===================================================================== */
 (function(){
-  // Free, publicly hosted sample videos (Google's public demo bucket) used
-  // purely as placeholder "reels" suggestions since the app has no video
-  // upload feature yet.
-  const REEL_BASE = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/';
+  // Free, publicly hosted sample videos (Mixkit's public preview CDN, used
+  // across the web for demos/embeds — no key or login needed) used purely
+  // as placeholder "reels" suggestions since the app has no video-upload
+  // feature yet.
+  const REEL_BASE = 'https://assets.mixkit.co/videos/preview/';
   const REEL_SOURCES = [
-    { file: 'BigBuckBunny.mp4', title: 'Big Buck Bunny' },
-    { file: 'ElephantsDream.mp4', title: 'Elephants Dream' },
-    { file: 'ForBiggerBlazes.mp4', title: 'For Bigger Blazes' },
-    { file: 'ForBiggerEscapes.mp4', title: 'For Bigger Escapes' },
-    { file: 'ForBiggerFun.mp4', title: 'For Bigger Fun' },
-    { file: 'ForBiggerJoyrides.mp4', title: 'For Bigger Joyrides' },
-    { file: 'ForBiggerMeltdowns.mp4', title: 'For Bigger Meltdowns' },
-    { file: 'Sintel.mp4', title: 'Sintel' },
-    { file: 'SubaruOutbackOnStreetAndDirt.mp4', title: 'Subaru Outback' },
-    { file: 'TearsOfSteel.mp4', title: 'Tears of Steel' },
-    { file: 'VolkswagenGTIReview.mp4', title: 'Volkswagen GTI Review' },
-    { file: 'WeAreGoingOnBullrun.mp4', title: 'We Are Going On Bullrun' },
-    { file: 'WhatCarCanYouGetForAGrand.mp4', title: 'What Car Can You Get' }
+    { file: 'mixkit-waves-in-the-water-1164-large.mp4', title: 'Waves in the Water' },
+    { file: 'mixkit-tree-with-yellow-flowers-1173-large.mp4', title: 'Yellow Flowers' },
+    { file: 'mixkit-girl-in-neon-sign-1232-large.mp4', title: 'Neon Sign' },
+    { file: 'mixkit-man-dancing-under-changing-lights-1240-large.mp4', title: 'Dancing Lights' },
+    { file: 'mixkit-family-walking-together-in-nature-39767-large.mp4', title: 'Family Walk' },
+    { file: 'mixkit-mother-with-her-little-daughter-eating-a-marshmallow-in-nature-39764-large.mp4', title: 'Mother & Daughter' }
   ].map(r => ({ url: REEL_BASE + r.file, title: r.title }));
 
   // ---- Reshuffle (Fisher-Yates) once per fresh page load, so suggestions
@@ -4986,6 +4984,17 @@ onAuthStateChanged(auth, user => {
 
     box.querySelectorAll('.feed-search-reel-tile').forEach(tile=>{
       tile.addEventListener('click', ()=> openFeedReelsPlayer(parseInt(tile.getAttribute('data-reel-idx'),10)));
+      // Extra safety so the muted-autoplay preview isn't blocked by the
+      // 'muted' HTML attribute not being picked up as the live property in
+      // some webviews.
+      const vid = tile.querySelector('video');
+      if(vid){
+        vid.muted = true;
+        // If a preview genuinely fails to load (network/CORS/etc.), fall
+        // back to a plain gradient tile instead of leaving a dead black
+        // box, and keep the tile tappable.
+        vid.addEventListener('error', ()=> tile.classList.add('reel-load-error'), { once:true });
+      }
     });
 
     // Autoplay each tile's muted preview only while it's actually visible
@@ -5056,6 +5065,7 @@ onAuthStateChanged(auth, user => {
         vid.muted = !vid.muted;
         muteBtn.textContent = vid.muted ? '🔇' : '🔊';
       });
+      vid.addEventListener('error', ()=> slide.classList.add('reel-load-error'), { once:true });
     });
   }
 
