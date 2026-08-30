@@ -1585,7 +1585,7 @@
             <div class="logo-container" onclick="openHomePage()">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Emblem_of_Uttar_Pradesh.svg/1200px-Emblem_of_Uttar_Pradesh.svg.png" alt="Govt Logo">
                 <div class="logo-text">
-                    <h1>POLYTECHNIC ACADEMIC PORTAL</h1>
+                    <h1>MMIT POLYTECHNIC</h1>
                     <p>Computer Science & Engineering (1st Semester)</p>
                 </div>
             </div>
@@ -6050,6 +6050,148 @@ onAuthStateChanged(auth, user => {
 
   document.addEventListener('click', function(){ if(window.localUser) queueUnseenMcqs(); }, { once:true, capture:true });
   window.addEventListener('load', () => setTimeout(queueUnseenMcqs, 1200));
+})();
+
+/* ================= ADDITIVE: BACK BUTTON NAVIGATION FIX =================
+   Ismein sirf naya code add kiya gaya hai — upar ka koi bhi purana
+   function, page-open/close logic, ya feature CHHUA/BADLA nahi gaya hai.
+
+   Problem: Phone ke back button se kisi bhi page/panel par se back
+   karne par pura app hi band ho jaata tha (kyunki app kabhi browser
+   history me kuch push hi nahi karta tha, isliye back button ko
+   "andar jaane ke liye" kuch milta hi nahi tha).
+
+   Fix: Jab bhi koi page ya overlay khulta hai, ek history entry push
+   kar dete hain. Back button dabane par (popstate event) sabse pehle
+   yeh check karte hain ki abhi sabse upar kaunsa panel/page khula hai
+   aur usko APP KE APNE EXISTING close/back function se hi band karte
+   hain (jaise back-btn already karta hai) — home page tak. Jab user
+   home page par pahunch jata hai, tab agla back press app ko normally
+   close/exit karne deta hai (kuch rokte nahi).
+================================================================= */
+(function(){
+  // Top-level pages — inme se jo bhi khula ho use band karke seedha
+  // Home par le jaate hain (jaise inke apne back-btn / bottom-nav icon
+  // pehle se karte hain).
+  var TOP_LEVEL_PAGE_IDS = ['subjectPage','noticePage','mmitPage','savedPage','chatPage','profilePage','globalFeedPage'];
+
+  // Pages jo Home ki jagah kisi aur page ke "andar" nested hain — inke
+  // apne maujooda close function hi sahi jagah (Profile) par le jaate hain.
+  var NESTED_PAGE_CLOSERS = [
+    { id: 'storyCreatePage', close: function(){ if(typeof window.closeStoryCreatePage === 'function') window.closeStoryCreatePage(); } },
+    { id: 'userPostCreatePage', close: function(){ if(typeof window.closeUserPostCreatePage === 'function') window.closeUserPostCreatePage(); } }
+  ];
+
+  // Chhote overlays/panels jo kisi page ke UPAR khulte hain — sabse
+  // andar wala (topmost) pehle band hota hai, phir neeche wala page.
+  var OVERLAY_LAYERS = [
+    { isOpen: function(){ var el = document.getElementById('feedUserPostsView'); return !!el && el.style.display === 'block'; },
+      close: function(){ if(typeof window.closeFeedUserPostsView === 'function') window.closeFeedUserPostsView(); } },
+    { isOpen: function(){ var el = document.getElementById('feedSearchOverlay'); return !!el && el.style.display === 'block'; },
+      close: function(){ if(typeof window.closeFeedSearch === 'function') window.closeFeedSearch(); } },
+    { isOpen: function(){ var el = document.getElementById('storyOnlineAudioTrimPanel'); return !!el && el.classList.contains('active'); },
+      close: function(){ if(typeof window.storyOnlineAudioCancel === 'function') window.storyOnlineAudioCancel(); } },
+    { isOpen: function(){ var el = document.getElementById('storyAudioTrimPanel'); return !!el && el.classList.contains('active'); },
+      close: function(){ if(typeof window.storyAudioCancel === 'function') window.storyAudioCancel(); } },
+    { isOpen: function(){ var el = document.getElementById('userPostOnlineAudioTrimPanel'); return !!el && el.classList.contains('active'); },
+      close: function(){ if(typeof window.userPostOnlineAudioTrimCancel === 'function') window.userPostOnlineAudioTrimCancel(); } },
+    { isOpen: function(){ var el = document.getElementById('imageViewerModal'); return !!el && el.style.display === 'flex'; },
+      close: function(){ if(typeof window.closeImageViewer === 'function') window.closeImageViewer(); } },
+    { isOpen: function(){ var el = document.getElementById('storyViewerOverlay'); return !!el && el.classList.contains('active'); },
+      close: function(){ if(typeof window.closeStoryViewer === 'function') window.closeStoryViewer(); } },
+    { isOpen: function(){ var el = document.getElementById('adminModal'); return !!el && el.classList.contains('active'); },
+      close: function(){ if(typeof window.closeAdminPanel === 'function') window.closeAdminPanel(); } },
+    { isOpen: function(){ var el = document.getElementById('notifPanel'); return !!el && el.style.display === 'block'; },
+      close: function(){ var el = document.getElementById('notifPanel'); if(el) el.style.display = 'none'; } },
+    { isOpen: function(){ var el = document.getElementById('mcqPopupOverlay'); return !!el && el.classList.contains('active'); },
+      close: function(){ if(typeof window.mcqPopupSkip === 'function') window.mcqPopupSkip(); } }
+  ];
+
+  function isAnyOverlayOpen(){
+    for(var i=0;i<OVERLAY_LAYERS.length;i++){ if(OVERLAY_LAYERS[i].isOpen()) return true; }
+    return false;
+  }
+  function closeTopOverlay(){
+    for(var i=0;i<OVERLAY_LAYERS.length;i++){
+      if(OVERLAY_LAYERS[i].isOpen()){ OVERLAY_LAYERS[i].close(); return true; }
+    }
+    return false;
+  }
+  function getOpenNestedPage(){
+    for(var i=0;i<NESTED_PAGE_CLOSERS.length;i++){
+      var el = document.getElementById(NESTED_PAGE_CLOSERS[i].id);
+      if(el && el.style.display === 'block') return NESTED_PAGE_CLOSERS[i];
+    }
+    return null;
+  }
+  function isAnyTopLevelPageOpen(){
+    for(var i=0;i<TOP_LEVEL_PAGE_IDS.length;i++){
+      var el = document.getElementById(TOP_LEVEL_PAGE_IDS[i]);
+      if(el && el.style.display === 'block') return true;
+    }
+    return false;
+  }
+  function isAwayFromHome(){
+    return isAnyOverlayOpen() || !!getOpenNestedPage() || isAnyTopLevelPageOpen();
+  }
+
+  // Ek hi "away from home" history entry maintain karte hain — lateral
+  // page-switch (jaise Chat se Profile) par dobara push nahi karte,
+  // taaki back button har lateral switch ke liye alag se na maangey.
+  var backEntryPushed = false;
+  function ensureBackEntry(){
+    if(!backEntryPushed){
+      backEntryPushed = true;
+      try{ history.pushState({ portalAway: true }, ''); }catch(e){}
+    }
+  }
+
+  var checkQueued = false;
+  function scheduleAwaySync(){
+    if(checkQueued) return;
+    checkQueued = true;
+    setTimeout(function(){
+      checkQueued = false;
+      if(isAwayFromHome()) ensureBackEntry();
+      else backEntryPushed = false;
+    }, 0);
+  }
+
+  var watchIds = TOP_LEVEL_PAGE_IDS.concat(
+    NESTED_PAGE_CLOSERS.map(function(x){ return x.id; }),
+    ['feedUserPostsView','feedSearchOverlay','storyOnlineAudioTrimPanel','storyAudioTrimPanel',
+     'userPostOnlineAudioTrimPanel','imageViewerModal','storyViewerOverlay','adminModal',
+     'notifPanel','mcqPopupOverlay']
+  );
+  var mo = new MutationObserver(scheduleAwaySync);
+  watchIds.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) mo.observe(el, { attributes: true, attributeFilter: ['style','class'] });
+  });
+
+  window.addEventListener('popstate', function(){
+    // 1) Sabse upar koi chhota overlay/panel khula ho to pehle usi ko band karo.
+    if(closeTopOverlay()){
+      if(isAwayFromHome()){ backEntryPushed = true; try{ history.pushState({ portalAway: true }, ''); }catch(e){} }
+      else backEntryPushed = false;
+      return;
+    }
+    // 2) Koi nested page (post/story create) khula ho to uska apna close function chalao (Profile par jaata hai).
+    var nested = getOpenNestedPage();
+    if(nested){
+      nested.close();
+      backEntryPushed = false;
+      return;
+    }
+    // 3) Koi top-level page khula ho to Home par le jao.
+    if(isAnyTopLevelPageOpen()){
+      if(typeof window.openHomePage === 'function') window.openHomePage();
+      backEntryPushed = false;
+      return;
+    }
+    // 4) User pehle se Home page par hai — yahan kuch nahi karte,
+    // ab agla back press app/browser ko normally close/exit karne dega.
+  });
 })();
 
 </script>
