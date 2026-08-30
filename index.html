@@ -1585,7 +1585,7 @@
             <div class="logo-container" onclick="openHomePage()">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Emblem_of_Uttar_Pradesh.svg/1200px-Emblem_of_Uttar_Pradesh.svg.png" alt="Govt Logo">
                 <div class="logo-text">
-                    <h1>MMIT POLYTECHNIC</h1>
+                    <h1>POLYTECHNIC ACADEMIC PORTAL</h1>
                     <p>Computer Science & Engineering (1st Semester)</p>
                 </div>
             </div>
@@ -5198,11 +5198,17 @@ onAuthStateChanged(auth, user => {
   const knownNotifIds = new Set();
   const knownNoticeIds = new Set();
 
-  function runPushNotifyDiff(){
-    const currentChats = onlineData.chats || [];
-    const currentPosts = onlineData.posts || [];
-    const currentNotifs = onlineData.notifications || [];
-    const currentNotices = onlineData.notices || [];
+  function runPushNotifyDiff(d){
+    // SPEED FIX: raw incoming Firebase snapshot (d) se seedha padhte hain,
+    // taaki is check ko applyOnlineData ke heavy DOM re-render (subjects/
+    // posts/chats/notices render) se PEHLE hi chalaya ja sake — isse
+    // notification bina render ka wait kiye turant fire hoti hai. Data
+    // shape 'onlineData.X' jaisa hi hai (arr() se hi wahan bhi banta hai).
+    const currentChats = arr(d && d.chats);
+    const currentPosts = arr(d && d.posts);
+    const currentNotifs = arr(d && d.notifications);
+    const currentNotices = arr(d && d.notices);
+    const currentSubjects = arr(d && d.subjects).length ? arr(d.subjects) : (onlineData.subjects || []);
 
     if(!pushBaselineReady){
       // Pehla load — sirf baseline record karo, notification mat bhejo.
@@ -5229,7 +5235,7 @@ onAuthStateChanged(auth, user => {
     currentPosts.forEach(function(p){
       if(!p || !p.id || knownPostIds.has(p.id)) return;
       knownPostIds.add(p.id);
-      const subj = (onlineData.subjects || []).find(function(s){ return String(s.id) === String(p.subjectId); });
+      const subj = currentSubjects.find(function(s){ return String(s.id) === String(p.subjectId); });
       const subjName = subj ? subj.title : 'Subject';
       firePortalNotification('New Update On #' + subjName, p.text || '');
     });
@@ -5256,8 +5262,12 @@ onAuthStateChanged(auth, user => {
   // bas realtime data aane ke baad ek extra hook chala diya gaya hai.
   const originalApplyOnlineDataForPush = applyOnlineData;
   applyOnlineData = function(d){
+    // Notify check ko render se PEHLE chalate hain (raw snapshot 'd' par)
+    // taaki phone/browser notification bina kisi rendering-delay ke
+    // turant fire ho. DOM update (asli app UI) uske turant baad hota hai,
+    // jaisa pehle hota tha — bilkul waisa hi, bas order optimize kiya hai.
+    try{ runPushNotifyDiff(d); }catch(e){ console.warn('push notify diff failed', e); }
     originalApplyOnlineDataForPush(d);
-    try{ runPushNotifyDiff(); }catch(e){ console.warn('push notify diff failed', e); }
   };
 })();
 
