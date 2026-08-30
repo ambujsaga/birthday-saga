@@ -2896,13 +2896,11 @@ function renderOnlineSubjects(){
     const sortedSubjectPostsForCard = subjectPosts.slice().sort((a,b) => (a.timestamp||0) - (b.timestamp||0));
     const latestPost = sortedSubjectPostsForCard[sortedSubjectPostsForCard.length - 1]; 
     
-    // NEW: "Live Update" snippet on the home card only stays visible for 1 hour after posting.
-    // The post itself is NOT deleted/touched — it remains fully visible inside its own subject page forever.
-    const ONE_HOUR_MS = 60 * 60 * 1000;
-    const latestPostWithinHour = !!(latestPost && latestPost.timestamp && (Date.now() - latestPost.timestamp) < ONE_HOUR_MS);
-
+    // UPDATED: "Live Update" snippet on the home card now stays visible permanently
+    // (no more 1-hour auto-hide). The post itself was never deleted/touched — it
+    // remains fully visible inside its own subject page forever, same as before.
     let latestUpdateHTML = '';
-    if(latestPost && latestPostWithinHour) {
+    if(latestPost) {
         let snippetStr = '';
         if(latestPost.text) {
             snippetStr = latestPost.text.length > 40 ? latestPost.text.substring(0, 40) + '...' : latestPost.text;
@@ -2930,9 +2928,9 @@ function renderOnlineSubjects(){
   }).join('');
 }
 
-// NEW: re-render home subject cards every minute purely so that a "Live Update"
-// snippet auto-disappears once it crosses the 1-hour mark, even if no new post
-// arrives in the meantime. This does not touch/delete any post data.
+// NEW: re-render home subject cards every minute to keep them in sync with the
+// latest post. "Live Update" now stays visible permanently (no auto-hide) — this
+// does not touch/delete any post data.
 if(!window.__subjectCardHourTimer){
   window.__subjectCardHourTimer = setInterval(function(){
     if(typeof renderOnlineSubjects === 'function') renderOnlineSubjects();
