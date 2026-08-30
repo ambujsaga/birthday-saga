@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCQ Admin Panel — CSE 1st Sem</title>
+<style>
+  :root{
+    --primary-blue:#003366;
+    --accent-orange:#ff9900;
+    --bg-color:#f4f6f9;
+    --text-dark:#333;
+    --card-bg:#ffffff;
+    --sarkari-red:#c0392b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Arial','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;}
+  body{background:var(--bg-color);color:var(--text-dark);min-height:100vh;padding-bottom:40px;}
+  .topbar{background:var(--primary-blue);color:#fff;padding:16px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 6px rgba(0,0,0,.1);}
+  .topbar h1{font-size:1.15rem;}
+  .topbar svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .wrap{max-width:760px;margin:22px auto;padding:0 16px;}
+  .card{background:var(--card-bg);border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+  .card h2{color:var(--primary-blue);font-size:1.05rem;margin-bottom:14px;}
+  label{display:block;font-size:.85rem;font-weight:700;color:#334155;margin:10px 0 4px;}
+  input[type=email],input[type=password],input[type=text]{
+    width:100%;padding:11px;border:1px solid #ccc;border-radius:7px;outline:none;font-size:.95rem;
+  }
+  .status{padding:10px 12px;background:#eef6ff;border-radius:7px;font-size:.88rem;margin-bottom:14px;color:#1e3a5f;}
+  .status.error{background:#fdecea;color:var(--sarkari-red);}
+  .btn{border:0;border-radius:7px;padding:10px 16px;background:var(--primary-blue);color:#fff;font-weight:700;cursor:pointer;margin:4px 4px 0 0;font-size:.9rem;}
+  .btn.orange{background:var(--accent-orange);color:#000;}
+  .btn.red{background:var(--sarkari-red);}
+  .btn:disabled{opacity:.6;cursor:not-allowed;}
+  .mcq-option-input-row{display:flex;gap:8px;align-items:center;margin:6px 0;}
+  .mcq-option-input-row input{flex:1;}
+  .mcq-remove-opt{flex:none;border:1px solid #e2b2ae;background:#fdecea;color:var(--sarkari-red);border-radius:6px;padding:8px 10px;cursor:pointer;font-weight:700;}
+  .small{font-size:.8rem;color:#666;display:block;margin-bottom:8px;}
+  .mcq-item{border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:12px;}
+  .mcq-item h3{font-size:.98rem;color:var(--text-dark);margin-bottom:10px;}
+  .mcq-result-row{margin:8px 0;}
+  .mcq-result-label{display:flex;justify-content:space-between;font-size:.85rem;color:#334155;margin-bottom:3px;}
+  .mcq-result-bar-track{background:#eef2f7;border-radius:20px;height:14px;overflow:hidden;border:1px solid #dde3ea;}
+  .mcq-result-bar-fill{height:100%;background:linear-gradient(90deg,var(--primary-blue),#1b6dbf);border-radius:20px;transition:width .35s ease;}
+  .mcq-total-votes{font-size:.78rem;color:#64748b;margin:8px 0;}
+  #loginView{display:block;}
+  #dashView{display:none;}
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <svg viewBox="0 0 24 24"><line x1="5" y1="20" x2="5" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="19" y1="20" x2="19" y2="15"/></svg>
+    <h1>MCQ Admin Panel</h1>
+  </div>
+
+  <div class="wrap">
+
+    <div id="loginView" class="card">
+      <h2>Admin Login</h2>
+      <div class="status">This is a separate control panel — it connects to the same Firebase database used by the main app, and only manages MCQ polls.</div>
+      <label>Admin Email</label>
+      <input id="adminEmail" type="email" placeholder="admin@mmitsce.com" autocomplete="username">
+      <label>Password</label>
+      <input id="adminPassword" type="password" placeholder="Firebase Authentication password" autocomplete="current-password">
+      <button class="btn" onclick="loginAdmin()">Login</button>
+      <p id="loginMsg" class="small" style="margin-top:10px;color:var(--sarkari-red);"></p>
+    </div>
+
+    <div id="dashView">
+      <div class="card">
+        <h2>Create MCQ (like a WhatsApp poll)</h2>
+        <span class="small">It will pop up in the main app for every logged-in student. They can tap an option to answer, or skip it. Results below update live in real time.</span>
+        <label>Question</label>
+        <input id="newMcqQuestion" type="text" placeholder="Type your MCQ question">
+        <label>Options</label>
+        <div id="newMcqOptionsWrap"></div>
+        <button type="button" class="btn orange" onclick="addMcqOptionField()">+ Add Option</button><br>
+        <button class="btn" onclick="publishMCQ()" style="margin-top:10px;">Publish MCQ</button>
+        <p id="createMsg" class="small" style="margin-top:8px;"></p>
+      </div>
+
+      <div class="card">
+        <h2>Published MCQs — Live Results</h2>
+        <div id="mcqsList"><p class="small">Loading…</p></div>
+      </div>
+
+      <button class="btn red" onclick="logoutAdmin()">Logout</button>
+    </div>
+
+  </div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// Same Firebase project as the main app (index.html), so MCQs published here
+// show up instantly in the app's popup, and votes recorded there show up
+// instantly here.
+const firebaseConfig = {
+  apiKey: "AIzaSyAegYu-tHbS662BnPV3pyTFBGoKw1jomMQ",
+  authDomain: "mmitsce.firebaseapp.com",
+  databaseURL: "https://mmitsce-default-rtdb.firebaseio.com",
+  projectId: "mmitsce",
+  storageBucket: "mmitsce.firebasestorage.app"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+const ADMIN_EMAIL = "admin@mmitsce.com";
+
+function esc(v){ return String(v??'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+let mcqsData = [];
+let mcqOptionFieldCount = 0;
+
+window.addMcqOptionField = function(){
+  const wrap = document.getElementById('newMcqOptionsWrap');
+  mcqOptionFieldCount++;
+  const row = document.createElement('div');
+  row.className = 'mcq-option-input-row';
+  row.innerHTML = '<input type="text" class="mcq-opt-field" placeholder="Option ' + mcqOptionFieldCount + '">' +
+    '<button type="button" class="mcq-remove-opt" onclick="this.parentElement.remove()">&times;</button>';
+  wrap.appendChild(row);
+};
+
+function resetCreateForm(){
+  const wrap = document.getElementById('newMcqOptionsWrap');
+  document.getElementById('newMcqQuestion').value = '';
+  wrap.innerHTML = '';
+  mcqOptionFieldCount = 0;
+  addMcqOptionField(); addMcqOptionField(); addMcqOptionField(); addMcqOptionField();
+}
+
+window.publishMCQ = async function(){
+  const msg = document.getElementById('createMsg');
+  const question = document.getElementById('newMcqQuestion').value.trim();
+  if(!question){ msg.textContent = 'Please write the MCQ question.'; msg.style.color = 'var(--sarkari-red)'; return; }
+  const options = Array.from(document.querySelectorAll('#newMcqOptionsWrap .mcq-opt-field')).map(i=>i.value.trim()).filter(Boolean);
+  if(options.length < 2){ msg.textContent = 'Please add at least 2 options.'; msg.style.color = 'var(--sarkari-red)'; return; }
+  const id = 'mcq_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+  try{
+    await set(ref(db, 'portal/mcqs/' + id), { id, question, options, timestamp: Date.now() });
+    resetCreateForm();
+    msg.style.color = 'var(--primary-blue)';
+    msg.textContent = 'MCQ published successfully!';
+  }catch(e){
+    msg.style.color = 'var(--sarkari-red)';
+    msg.textContent = 'Publish failed: ' + (e.message||e);
+  }
+};
+
+window.deleteMCQ = async function(id){
+  if(!confirm('Delete this MCQ? This cannot be undone.')) return;
+  try{ await remove(ref(db, 'portal/mcqs/' + id)); }
+  catch(e){ alert('Delete failed: ' + (e.message||e)); }
+};
+
+function mcqVoteCounts(mcq){
+  const votes = mcq.votes || {};
+  const counts = (mcq.options||[]).map(()=>0);
+  let total = 0;
+  Object.values(votes).forEach(optIdx=>{
+    const i = Number(optIdx);
+    if(counts[i] !== undefined){ counts[i]++; total++; }
+  });
+  return { counts, total };
+}
+
+function renderMcqList(){
+  const container = document.getElementById('mcqsList');
+  const sorted = [...mcqsData].sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+  if(!sorted.length){ container.innerHTML = '<p class="small">No MCQs published yet.</p>'; return; }
+  container.innerHTML = sorted.map(mcq=>{
+    const { counts, total } = mcqVoteCounts(mcq);
+    const rows = (mcq.options||[]).map((opt,i)=>{
+      const pct = total ? Math.round((counts[i]/total)*100) : 0;
+      return '<div class="mcq-result-row">' +
+        '<div class="mcq-result-label"><span>' + esc(opt) + '</span><span>' + pct + '% (' + counts[i] + ')</span></div>' +
+        '<div class="mcq-result-bar-track"><div class="mcq-result-bar-fill" style="width:' + pct + '%"></div></div>' +
+      '</div>';
+    }).join('');
+    return '<div class="mcq-item">' +
+      '<h3>' + esc(mcq.question) + '</h3>' +
+      rows +
+      '<p class="mcq-total-votes">Total responses: ' + total + '</p>' +
+      '<button class="btn red" onclick="deleteMCQ(\'' + mcq.id + '\')">Delete</button>' +
+    '</div>';
+  }).join('');
+}
+
+window.loginAdmin = async function(){
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass = document.getElementById('adminPassword').value;
+  const msg = document.getElementById('loginMsg');
+  if(!email || !pass){ msg.textContent = 'Please enter email and password.'; return; }
+  try{
+    await signInWithEmailAndPassword(auth, email, pass);
+  }catch(e){
+    msg.textContent = 'Login failed: ' + (e.message||e);
+  }
+};
+
+window.logoutAdmin = function(){ signOut(auth); };
+
+onAuthStateChanged(auth, user => {
+  if(user && user.email === ADMIN_EMAIL){
+    document.getElementById('loginView').style.display = 'none';
+    document.getElementById('dashView').style.display = 'block';
+    resetCreateForm();
+    onValue(ref(db, 'portal/mcqs'), snap => {
+      const val = snap.val() || {};
+      mcqsData = Object.entries(val).map(([id,x]) => ({ id, ...x }));
+      renderMcqList();
+    });
+  } else {
+    document.getElementById('loginView').style.display = 'block';
+    document.getElementById('dashView').style.display = 'none';
+  }
+});
+</script>
+</body>
+</html>
