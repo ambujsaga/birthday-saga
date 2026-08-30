@@ -130,12 +130,6 @@
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 82, 82, 0); }
         }
 
-        .menu-icon {
-            font-size: 1.8rem;
-            cursor: pointer;
-            user-select: none;
-        }
-
         /* Notification Panel Dropdown */
         .notif-panel {
             display: none;
@@ -240,62 +234,6 @@
         .notice-bar .notice-btn:hover {
             background: #a93226;
             transform: scale(1.03);
-        }
-
-        /* Side Menu */
-        .side-menu {
-            position: fixed;
-            top: 0;
-            right: -300px;
-            width: 280px;
-            height: 100vh;
-            background-color: #f8f9fa;
-            border-left: 3px solid var(--primary-blue);
-            padding-top: 60px;
-            transition: 0.3s ease-in-out;
-            z-index: 101;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.2);
-        }
-
-        .side-menu.active {
-            right: 0;
-        }
-
-        .menu-header {
-            padding: 0 20px 20px 20px;
-            border-bottom: 2px solid #ddd;
-            margin-bottom: 10px;
-        }
-
-        .menu-header h2 {
-            color: var(--primary-blue);
-            font-size: 1.2rem;
-        }
-
-        .side-menu a {
-            padding: 12px 25px;
-            text-decoration: none;
-            font-size: 1rem;
-            color: var(--text-dark);
-            display: block;
-            transition: 0.2s;
-            border-bottom: 1px solid #eee;
-            font-weight: 500;
-        }
-
-        .side-menu a:hover {
-            color: var(--primary-blue);
-            background-color: #e2e8f0;
-            padding-left: 30px;
-        }
-
-        .close-menu {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 2rem;
-            color: var(--primary-blue);
-            cursor: pointer;
         }
 
         /* Hero Section */
@@ -975,7 +913,7 @@
             background: var(--accent-orange); color: #000; border: none; padding: 0 20px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s;
         }
         .chat-input-area button:hover { background: #e68a00; }
-        
+
         /* CHAT ENHANCEMENTS */
         .chat-date-divider {
             text-align: center;
@@ -1200,6 +1138,30 @@
 .feed-search-suggestion-item .feed-search-suggestion-name,
 .feed-search-suggestion-item .feed-search-suggestion-roll{max-width:100%}
 .feed-search-suggestion-info{flex:1;min-width:0}
+/* ================= ADDITIVE: FEED SEARCH REELS SUGGESTIONS (Instagram-style) =================
+   Purely additive block. Nothing above this line is edited or removed. */
+.feed-search-reels-grid{margin-top:.6rem;display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.feed-search-reel-tile{position:relative;aspect-ratio:9/16;background:#000;border-radius:6px;overflow:hidden;cursor:pointer}
+.feed-search-reel-tile video{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;background:#111}
+.feed-search-reel-tile .feed-search-reel-play-badge{position:absolute;left:6px;bottom:6px;display:flex;align-items:center;gap:3px;color:#fff;font-size:.7rem;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.7)}
+.feed-search-reel-tile .feed-search-reel-play-badge svg{width:13px;height:13px;fill:#fff}
+.feed-search-reels-empty{padding:16px;text-align:center;color:#777;font-size:.88rem;grid-column:1/-1}
+
+.feed-reels-player-overlay{display:none;position:fixed;inset:0;background:#000;z-index:400}
+.feed-reels-player-overlay.active{display:block}
+.feed-reels-player-close{position:absolute;top:14px;right:14px;z-index:5;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.45);border:0;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.feed-reels-player-close svg{width:18px;height:18px}
+.feed-reels-player-scroll{height:100%;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none}
+.feed-reels-player-scroll::-webkit-scrollbar{display:none}
+.feed-reels-player-slide{position:relative;height:100%;width:100%;scroll-snap-align:start;scroll-snap-stop:always;display:flex;align-items:center;justify-content:center;background:#000}
+.feed-reels-player-slide video{width:100%;height:100%;object-fit:contain;background:#000}
+.feed-reels-player-mute{position:absolute;right:14px;bottom:90px;z-index:4;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.45);border:0;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer}
+.feed-reels-player-tapzone{position:absolute;inset:0;z-index:3}
+.feed-reels-player-center-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:60px;border-radius:50%;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;pointer-events:none;z-index:4}
+.feed-reels-player-center-play svg{width:26px;height:26px;fill:#fff}
+.feed-reels-player-slide.paused .feed-reels-player-center-play{display:flex}
+.feed-reels-player-caption{position:absolute;left:14px;right:60px;bottom:24px;color:#fff;font-size:.82rem;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,.8);z-index:4}
+/* ================= END ADDITIVE: FEED SEARCH REELS SUGGESTIONS ================= */
 .feed-user-posts-header{display:flex;align-items:center;gap:12px;margin-bottom:1rem}
 .feed-user-posts-info{display:flex;align-items:center;gap:12px}
 .feed-user-posts-avatar{width:46px;height:46px;border-radius:50%;background:var(--primary-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex:0 0 auto}
@@ -1471,6 +1433,26 @@
   .story-tray-item{width:80px;}
 }
 </style>
+
+<!-- ================= ADDITIVE: MCQ popup (display-only). The MCQ questions
+     themselves are created/deleted from a separate standalone file,
+     mcq-admin.html, which writes directly to the same Firebase database
+     under 'portal/mcqs'. This block only reads that data and shows the
+     poll popup to logged-in students in the main app — nothing above this
+     style block is modified. ================= -->
+<style>
+  .mcq-popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200000;display:none;align-items:center;justify-content:center;padding:18px}
+  .mcq-popup-overlay.active{display:flex}
+  .mcq-popup-box{width:min(400px,100%);background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 20px 55px rgba(0,0,0,.4);animation:fadeIn .2s ease-in-out}
+  .mcq-popup-head{background:var(--primary-blue);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px;font-weight:700}
+  .mcq-popup-body{padding:16px}
+  .mcq-popup-question{font-size:1.02rem;font-weight:700;color:var(--text-dark);margin-bottom:14px;line-height:1.4}
+  .mcq-popup-option{display:block;width:100%;text-align:left;background:#f4f6f9;border:1.5px solid #dfe5ec;border-radius:10px;padding:11px 14px;margin-bottom:10px;font-size:.92rem;color:#1e293b;cursor:pointer;transition:background .15s,border-color .15s}
+  .mcq-popup-option:hover{background:#eaf1fb;border-color:var(--primary-blue)}
+  .mcq-popup-option:active{transform:scale(0.98)}
+  .mcq-popup-skip{display:block;width:100%;text-align:center;background:none;border:none;color:#64748b;font-size:.85rem;padding:8px;cursor:pointer;text-decoration:underline}
+  .mcq-popup-thanks{padding:26px 16px;text-align:center;color:var(--primary-blue);font-weight:700}
+</style>
 </head>
 <body>
 
@@ -1617,22 +1599,9 @@
         <symbol id="icon-edit" viewBox="0 0 24 24"><path d="M4 20h4l11-11-4-4L4 16z"/><path d="M14 5l4 4"/></symbol>
         <symbol id="icon-pin" viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5c0 4-5 11-5 11S7 11 7 7a5 5 0 0 1 5-5z"/><circle cx="12" cy="7" r="2"/></symbol>
         <symbol id="icon-play" viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></symbol>
+        <symbol id="icon-poll" viewBox="0 0 24 24"><line x1="5" y1="20" x2="5" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="19" y1="20" x2="19" y2="15"/></symbol>
       </defs>
     </svg>
-
-    <div id="sideMenu" class="side-menu">
-        <span class="close-menu" onclick="toggleMenu()">&times;</span>
-        <div class="menu-header">
-            <h2>Course Modules</h2>
-        </div>
-        <a href="#" onclick="openHomePage()"><svg class="ui-icon"><use href="#icon-home"></use></svg> Dashboard (Home)</a>
-        <a href="#" onclick="openNoticePage()"><svg class="ui-icon"><use href="#icon-megaphone"></use></svg> Notice Board (Official)</a>
-        <a href="#" onclick="openSubjectPage(1)"><svg class="ui-icon"><use href="#icon-book"></use></svg> Communication Skills-I</a>
-        <a href="#" onclick="openSubjectPage(2)"><svg class="ui-icon"><use href="#icon-plus"></use></svg> Applied Mathematics-I</a>
-        <a href="#" onclick="openSubjectPage(3)"><svg class="ui-icon"><use href="#icon-atom"></use></svg> Applied Physics-I</a>
-        <a href="#" onclick="openSubjectPage(4)"><svg class="ui-icon"><use href="#icon-flask"></use></svg> Applied Chemistry</a>
-        <a href="#" onclick="openSubjectPage(5)"><svg class="ui-icon"><use href="#icon-monitor"></use></svg> Fundamentals of IT (FCIT)</a>
-    </div>
 
     <div id="homePage">
         
@@ -1652,7 +1621,6 @@
                 </div>
                 
                 <div class="website-icon" onclick="openMMITPage()" title="Open MMIT Website"><svg class="ui-icon"><use href="#icon-globe"></use></svg></div>
-                <div class="menu-icon" onclick="toggleMenu()"><svg class="ui-icon"><use href="#icon-menu"></use></svg></div>
             </div>
         </header>
 
@@ -1791,7 +1759,10 @@
                 <button type="button" class="feed-search-back" onclick="closeFeedSearch()" title="Back"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
                 <input type="text" id="feedSearchInput" class="feed-search-input" placeholder="Search by Name or Roll Number..." autocomplete="off">
             </div>
-            <div id="feedSearchSuggestions" class="feed-search-suggestions"></div>
+            <div id="feedSearchSuggestions" class="feed-search-suggestions" style="display:none;"></div>
+            <!-- ADDITIVE: Instagram-style reels suggestions grid, shown below the search bar
+                 by default (before the user taps the search bar). Purely additive. -->
+            <div id="feedSearchReelsGrid" class="feed-search-reels-grid"></div>
         </div>
 
         <div id="feedUserPostsView" class="feed-user-posts-view" style="display:none;">
@@ -1809,6 +1780,13 @@
         </div>
 
         <div id="globalFeedList" class="global-feed-list"></div>
+    </div>
+
+    <!-- ================= ADDITIVE: FEED SEARCH REELS FULLSCREEN PLAYER =================
+         Purely additive. Opens when a reel tile is tapped on the search page. -->
+    <div id="feedReelsPlayerOverlay" class="feed-reels-player-overlay">
+        <button type="button" class="feed-reels-player-close" onclick="closeFeedReelsPlayer()" title="Close"><svg class="ui-icon"><use href="#icon-x"></use></svg></button>
+        <div id="feedReelsPlayerScroll" class="feed-reels-player-scroll"></div>
     </div>
 
     <!-- ================= ADDITIVE: STORY FEATURE (create page + viewer) ================= -->
@@ -1999,6 +1977,14 @@
             <button onclick="processUserLogin()">Secure Login</button>
             <button class="cancel-btn" onclick="closeUserLogin()">Cancel</button>
             <p id="userLoginError" style="color: red; font-size: 0.85rem; margin-top: 10px;"></p>
+        </div>
+    </div>
+
+    <!-- ADDITIVE: MCQ popup shown in the main app (questions come from mcq-admin.html) -->
+    <div id="mcqPopupOverlay" class="mcq-popup-overlay">
+        <div class="mcq-popup-box">
+            <div class="mcq-popup-head"><svg class="ui-icon"><use href="#icon-poll"></use></svg> Quick Question</div>
+            <div class="mcq-popup-body" id="mcqPopupBody"></div>
         </div>
     </div>
 
@@ -2356,11 +2342,6 @@
             updateNavState('navHome'); 
         }
 
-        function toggleMenu() {
-            const menu = document.getElementById('sideMenu');
-            menu.classList.toggle('active');
-        }
-
         function openMMITPage() {
             closeAllSections();
             document.getElementById('mmitPage').style.display = 'block';
@@ -2394,7 +2375,6 @@
         }
 
         function closeAllSections() {
-            document.getElementById('sideMenu').classList.remove('active');
             document.getElementById('notifPanel').style.display = 'none';
             document.getElementById('homePage').style.display = 'none';
             document.getElementById('subjectPage').style.display = 'none';
@@ -2950,13 +2930,11 @@ function renderOnlineSubjects(){
     const sortedSubjectPostsForCard = subjectPosts.slice().sort((a,b) => (a.timestamp||0) - (b.timestamp||0));
     const latestPost = sortedSubjectPostsForCard[sortedSubjectPostsForCard.length - 1]; 
     
-    // NEW: "Live Update" snippet on the home card only stays visible for 1 hour after posting.
-    // The post itself is NOT deleted/touched — it remains fully visible inside its own subject page forever.
-    const ONE_HOUR_MS = 60 * 60 * 1000;
-    const latestPostWithinHour = !!(latestPost && latestPost.timestamp && (Date.now() - latestPost.timestamp) < ONE_HOUR_MS);
-
+    // UPDATED: "Live Update" snippet on the home card now stays visible permanently
+    // (no more 1-hour auto-hide). The post itself was never deleted/touched — it
+    // remains fully visible inside its own subject page forever, same as before.
     let latestUpdateHTML = '';
-    if(latestPost && latestPostWithinHour) {
+    if(latestPost) {
         let snippetStr = '';
         if(latestPost.text) {
             snippetStr = latestPost.text.length > 40 ? latestPost.text.substring(0, 40) + '...' : latestPost.text;
@@ -2984,9 +2962,9 @@ function renderOnlineSubjects(){
   }).join('');
 }
 
-// NEW: re-render home subject cards every minute purely so that a "Live Update"
-// snippet auto-disappears once it crosses the 1-hour mark, even if no new post
-// arrives in the meantime. This does not touch/delete any post data.
+// NEW: re-render home subject cards every minute to keep them in sync with the
+// latest post. "Live Update" now stays visible permanently (no auto-hide) — this
+// does not touch/delete any post data.
 if(!window.__subjectCardHourTimer){
   window.__subjectCardHourTimer = setInterval(function(){
     if(typeof renderOnlineSubjects === 'function') renderOnlineSubjects();
@@ -4304,7 +4282,7 @@ onAuthStateChanged(auth, user => {
     toggleOnlineSearchViewParts(true);
   }
 
-  function currentOnlineTrimRange(){
+  function currentOnlineTrimRange(applyCap){
     const trimPanel = document.getElementById('userPostOnlineAudioTrimPanel');
     const startRange = document.getElementById('userPostOnlineAudioTrimStart');
     const endRange = document.getElementById('userPostOnlineAudioTrimEnd');
@@ -4312,14 +4290,16 @@ onAuthStateChanged(auth, user => {
     let start = parseFloat(startRange?.value || '0');
     let end = parseFloat(endRange?.value || String(dur));
     if(end <= start) end = Math.min(dur, start+1);
-    // ---- ADDITIVE: hard safety cap — window kabhi bhi 30 sec se zyada na ho ----
-    if(end - start > USER_POST_MAX_TRIM_SECONDS) end = Math.min(dur, start + USER_POST_MAX_TRIM_SECONDS);
+    // UPDATED: 30-sec cap ab sirf tab lagta hai jab applyCap=true ho (yani post par
+    // FINAL attach karte waqt) — review/preview ke dauran poora gaana available
+    // rehta hai taaki user apni pasand ki line chun sake.
+    if(applyCap && (end - start > USER_POST_MAX_TRIM_SECONDS)) end = Math.min(dur, start + USER_POST_MAX_TRIM_SECONDS);
     return {start, end, duration: dur};
   }
 
   function previewOnlineTrim(){
     if(!onlineTrimTrack) return;
-    const {start, end} = currentOnlineTrimRange();
+    const {start, end} = currentOnlineTrimRange(false);
     stopOnlinePreview();
     const a = new Audio(onlineTrimTrack.previewUrl);
     onlinePreviewEl = a;
@@ -4334,7 +4314,7 @@ onAuthStateChanged(auth, user => {
 
   function confirmOnlineTrim(){
     if(!onlineTrimTrack) return;
-    const {start, end, duration} = currentOnlineTrimRange();
+    const {start, end, duration} = currentOnlineTrimRange(true);
     const track = onlineTrimTrack;
     selectOnlineTrack(track, duration, start, end);
     onlineTrimTrack = null;
@@ -4502,31 +4482,19 @@ onAuthStateChanged(auth, user => {
       if(e.key === 'Enter'){ e.preventDefault(); searchOnlineAudio(); }
     });
     document.getElementById('userPostOnlineAudioTrimStart').addEventListener('input', function(){
-      const trimPanel = document.getElementById('userPostOnlineAudioTrimPanel');
-      const dur = parseFloat(trimPanel?.dataset.duration||'0');
       let v = parseFloat(this.value);
       const endRange = document.getElementById('userPostOnlineAudioTrimEnd');
       if(v >= parseFloat(endRange.value)) { v = Math.max(0, parseFloat(endRange.value)-1); this.value=v; }
-      // ---- ADDITIVE: keep the selectable window capped at 30 sec (Instagram/WhatsApp style) ----
-      let endV = parseFloat(endRange.value);
-      if(endV - v > USER_POST_MAX_TRIM_SECONDS){
-        endV = Math.min(dur, v + USER_POST_MAX_TRIM_SECONDS);
-        endRange.value = endV;
-        document.getElementById('userPostOnlineAudioTrimEndLabel').textContent = 'End: ' + fmtSec(endV);
-      }
+      // UPDATED: review/preview ke dauran ab 30-sec ka cap nahi lagta — poora
+      // available gaana sunke user apni pasand ki line chun sakta hai. 30 sec
+      // ka cap ab sirf FINAL post par attach hote waqt lagta hai (confirmOnlineTrim/
+      // currentOnlineTrimRange me).
       document.getElementById('userPostOnlineAudioTrimStartLabel').textContent = 'Start: ' + fmtSec(v);
     });
     document.getElementById('userPostOnlineAudioTrimEnd').addEventListener('input', function(){
       let v = parseFloat(this.value);
       const startRange = document.getElementById('userPostOnlineAudioTrimStart');
       if(v <= parseFloat(startRange.value)) { v = parseFloat(startRange.value)+1; this.value=v; }
-      // ---- ADDITIVE: keep the selectable window capped at 30 sec (Instagram/WhatsApp style) ----
-      let startV = parseFloat(startRange.value);
-      if(v - startV > USER_POST_MAX_TRIM_SECONDS){
-        startV = Math.max(0, v - USER_POST_MAX_TRIM_SECONDS);
-        startRange.value = startV;
-        document.getElementById('userPostOnlineAudioTrimStartLabel').textContent = 'Start: ' + fmtSec(startV);
-      }
       document.getElementById('userPostOnlineAudioTrimEndLabel').textContent = 'End: ' + fmtSec(v);
     });
 
@@ -4809,18 +4777,27 @@ onAuthStateChanged(auth, user => {
       const el=document.getElementById(id);
       if(el) el.style.display = (id===idToShow) ? 'block' : 'none';
     });
+    // UPDATED: story tray sirf feed list wale view me dikhega — search bar page
+    // (feedSearchOverlay) ya kisi user ke posts wale view me story tray hide rahega.
+    const storyTrayEl = document.getElementById('storyTray');
+    if(storyTrayEl) storyTrayEl.style.display = (idToShow==='globalFeedList') ? '' : 'none';
   }
 
   window.openFeedSearch = function(){
     const input = document.getElementById('feedSearchInput');
     if(input) input.value='';
-    renderSearchHistory();
+    const box = document.getElementById('feedSearchSuggestions');
+    if(box){ box.innerHTML=''; box.style.display='none'; }
+    // ADDITIVE: default view on opening search is the Instagram-style reels
+    // suggestions grid (not the history list). History now shows only once
+    // the user taps/focuses the search bar — see the 'focus' listener below.
+    if(typeof window.showFeedReelsGrid==='function') window.showFeedReelsGrid();
     showOnly('feedSearchOverlay');
-    if(input) setTimeout(()=>input.focus(),50);
   };
 
   window.closeFeedSearch = function(){
     showOnly('globalFeedList');
+    if(typeof window.pauseFeedReelsGridPreviews==='function') window.pauseFeedReelsGridPreviews();
   };
 
   window.closeFeedUserPostsView = function(){
@@ -4864,6 +4841,14 @@ onAuthStateChanged(auth, user => {
   const searchInputEl = document.getElementById('feedSearchInput');
   if(searchInputEl){
     searchInputEl.addEventListener('input', function(){ renderSuggestions(this.value); });
+    // ADDITIVE: tapping the search bar reveals the history/suggestions box
+    // (Instagram-style) and hides the reels suggestions grid underneath it.
+    searchInputEl.addEventListener('focus', function(){
+      if(typeof window.hideFeedReelsGrid==='function') window.hideFeedReelsGrid();
+      const box = document.getElementById('feedSearchSuggestions');
+      if(box) box.style.display='';
+      renderSuggestions(this.value);
+    });
   }
 
   function openUserPostsFromSearch(roll){
@@ -4926,6 +4911,193 @@ onAuthStateChanged(auth, user => {
       const roll = rollEl.textContent.replace('Roll No: ','').trim();
       if(roll) renderFeedUserPosts(roll);
     }
+  };
+})();
+
+/* =====================================================================
+   ADDITIVE: FEED SEARCH REELS SUGGESTIONS (Instagram-style)
+   Purely additive module. Nothing above this block is edited or removed;
+   only the two small hooks already added above (openFeedSearch showing
+   this grid by default, and the search-bar 'focus' listener hiding it in
+   favour of the existing search-history box) call into this module.
+
+   - Below the search bar, a 3-column grid of short preview video tiles is
+     shown (like Instagram's Explore/reels-suggestions grid), muted and
+     auto-playing on loop when scrolled into view.
+   - Tapping any tile opens a fullscreen, vertically swipeable reels
+     player — video plays with audio, and the user can scroll to watch
+     more suggested videos, exactly like Instagram Reels.
+   - The suggestion pool comes from a small fixed set of free/public demo
+     videos (Google's public sample-media bucket) since this app has no
+     video-post feature of its own yet. The order is reshuffled every time
+     the app/page is freshly loaded, so the suggestions look different on
+     every refresh.
+===================================================================== */
+(function(){
+  // Free, publicly hosted sample videos (Google's public demo bucket) used
+  // purely as placeholder "reels" suggestions since the app has no video
+  // upload feature yet.
+  const REEL_BASE = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/';
+  const REEL_SOURCES = [
+    { file: 'BigBuckBunny.mp4', title: 'Big Buck Bunny' },
+    { file: 'ElephantsDream.mp4', title: 'Elephants Dream' },
+    { file: 'ForBiggerBlazes.mp4', title: 'For Bigger Blazes' },
+    { file: 'ForBiggerEscapes.mp4', title: 'For Bigger Escapes' },
+    { file: 'ForBiggerFun.mp4', title: 'For Bigger Fun' },
+    { file: 'ForBiggerJoyrides.mp4', title: 'For Bigger Joyrides' },
+    { file: 'ForBiggerMeltdowns.mp4', title: 'For Bigger Meltdowns' },
+    { file: 'Sintel.mp4', title: 'Sintel' },
+    { file: 'SubaruOutbackOnStreetAndDirt.mp4', title: 'Subaru Outback' },
+    { file: 'TearsOfSteel.mp4', title: 'Tears of Steel' },
+    { file: 'VolkswagenGTIReview.mp4', title: 'Volkswagen GTI Review' },
+    { file: 'WeAreGoingOnBullrun.mp4', title: 'We Are Going On Bullrun' },
+    { file: 'WhatCarCanYouGetForAGrand.mp4', title: 'What Car Can You Get' }
+  ].map(r => ({ url: REEL_BASE + r.file, title: r.title }));
+
+  // ---- Reshuffle (Fisher-Yates) once per fresh page load, so suggestions
+  // change every time the app/page is refreshed. ----
+  function shuffledReels(){
+    const arr = REEL_SOURCES.slice();
+    for(let i = arr.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+  const currentReelOrder = shuffledReels();
+
+  let gridObserver = null;
+
+  function reEsc(v){ return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  // ---- Explore-style grid (muted autoplay previews) ----
+  function renderReelsGrid(){
+    const box = document.getElementById('feedSearchReelsGrid');
+    if(!box) return;
+    if(!currentReelOrder.length){
+      box.innerHTML = '<div class="feed-search-reels-empty">No suggestions right now.</div>';
+      return;
+    }
+    box.innerHTML = currentReelOrder.map((r,i)=>`
+      <div class="feed-search-reel-tile" data-reel-idx="${i}">
+        <video src="${reEsc(r.url)}" muted loop playsinline preload="metadata"></video>
+        <div class="feed-search-reel-play-badge"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></div>
+      </div>`).join('');
+
+    box.querySelectorAll('.feed-search-reel-tile').forEach(tile=>{
+      tile.addEventListener('click', ()=> openFeedReelsPlayer(parseInt(tile.getAttribute('data-reel-idx'),10)));
+    });
+
+    // Autoplay each tile's muted preview only while it's actually visible
+    // on screen (perf-friendly), like Instagram's Explore grid previews.
+    if(gridObserver) gridObserver.disconnect();
+    gridObserver = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        const vid = entry.target.querySelector('video');
+        if(!vid) return;
+        if(entry.isIntersecting) vid.play().catch(()=>{});
+        else vid.pause();
+      });
+    }, { threshold: 0.6 });
+    box.querySelectorAll('.feed-search-reel-tile').forEach(tile => gridObserver.observe(tile));
+  }
+
+  window.showFeedReelsGrid = function(){
+    const box = document.getElementById('feedSearchReelsGrid');
+    if(!box) return;
+    box.style.display = '';
+    if(!box.dataset.built){ renderReelsGrid(); box.dataset.built = '1'; }
+    else {
+      box.querySelectorAll('video').forEach(v=>{
+        const rect = v.closest('.feed-search-reel-tile').getBoundingClientRect();
+        if(rect.top < window.innerHeight && rect.bottom > 0) v.play().catch(()=>{});
+      });
+    }
+  };
+
+  window.hideFeedReelsGrid = function(){
+    const box = document.getElementById('feedSearchReelsGrid');
+    if(!box) return;
+    box.style.display = 'none';
+    window.pauseFeedReelsGridPreviews();
+  };
+
+  window.pauseFeedReelsGridPreviews = function(){
+    const box = document.getElementById('feedSearchReelsGrid');
+    if(!box) return;
+    box.querySelectorAll('video').forEach(v=>{ try{ v.pause(); }catch(e){} });
+  };
+
+  // ---- Fullscreen vertical reels player (Instagram Reels-style) ----
+  let playerObserver = null;
+
+  function buildPlayerSlides(){
+    const scroll = document.getElementById('feedReelsPlayerScroll');
+    if(!scroll) return;
+    scroll.innerHTML = currentReelOrder.map((r,i)=>`
+      <div class="feed-reels-player-slide" data-reel-idx="${i}">
+        <video src="${reEsc(r.url)}" loop playsinline></video>
+        <div class="feed-reels-player-tapzone" data-tapzone></div>
+        <div class="feed-reels-player-center-play"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></div>
+        <button type="button" class="feed-reels-player-mute" data-mutebtn>🔊</button>
+        <div class="feed-reels-player-caption">${reEsc(r.title)}</div>
+      </div>`).join('');
+
+    scroll.querySelectorAll('.feed-reels-player-slide').forEach(slide=>{
+      const vid = slide.querySelector('video');
+      const muteBtn = slide.querySelector('[data-mutebtn]');
+      const tapzone = slide.querySelector('[data-tapzone]');
+      tapzone.addEventListener('click', ()=>{
+        if(vid.paused){ vid.play().catch(()=>{}); slide.classList.remove('paused'); }
+        else { vid.pause(); slide.classList.add('paused'); }
+      });
+      muteBtn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        vid.muted = !vid.muted;
+        muteBtn.textContent = vid.muted ? '🔇' : '🔊';
+      });
+    });
+  }
+
+  function openFeedReelsPlayer(startIdx){
+    const overlay = document.getElementById('feedReelsPlayerOverlay');
+    const scroll = document.getElementById('feedReelsPlayerScroll');
+    if(!overlay || !scroll) return;
+    if(!scroll.dataset.built){ buildPlayerSlides(); scroll.dataset.built = '1'; }
+
+    overlay.classList.add('active');
+    const slides = scroll.querySelectorAll('.feed-reels-player-slide');
+    const target = slides[startIdx] || slides[0];
+    if(target) scroll.scrollTop = target.offsetTop;
+
+    // Play with audio only for the slide currently in view; pause & rewind
+    // every other slide, so scrolling behaves exactly like Instagram Reels.
+    if(playerObserver) playerObserver.disconnect();
+    playerObserver = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        const vid = entry.target.querySelector('video');
+        if(!vid) return;
+        if(entry.isIntersecting && entry.intersectionRatio > 0.6){
+          vid.muted = false;
+          vid.currentTime = 0;
+          vid.play().catch(()=>{ vid.muted = true; vid.play().catch(()=>{}); });
+          entry.target.classList.remove('paused');
+        } else {
+          vid.pause();
+          entry.target.classList.remove('paused');
+        }
+      });
+    }, { root: scroll, threshold: [0, 0.6, 1] });
+    slides.forEach(s => playerObserver.observe(s));
+  }
+  window.openFeedReelsPlayer = openFeedReelsPlayer;
+
+  window.closeFeedReelsPlayer = function(){
+    const overlay = document.getElementById('feedReelsPlayerOverlay');
+    const scroll = document.getElementById('feedReelsPlayerScroll');
+    if(overlay) overlay.classList.remove('active');
+    if(scroll) scroll.querySelectorAll('video').forEach(v=>{ try{ v.pause(); }catch(e){} });
+    if(playerObserver) playerObserver.disconnect();
   };
 })();
 
@@ -5941,14 +6113,20 @@ onAuthStateChanged(auth, user => {
     document.getElementById('storyOnlineAudioTrimStartLabel').textContent = 'Start: '+fmtSec(0);
     document.getElementById('storyOnlineAudioTrimEndLabel').textContent = 'End: '+fmtSec(endR.value);
   }
+  // UPDATED: review/preview ke dauran ab 15-sec ka cap nahi lagta — poora available
+  // gaana sunke user apni pasand ki line chun sakta hai. 15 sec ka cap ab sirf
+  // story par FINAL use hote waqt lagta hai (storyOnlineAudioConfirm me).
   document.getElementById('storyOnlineAudioTrimStart').addEventListener('input', function(){
-    clampTrimPair(this, document.getElementById('storyOnlineAudioTrimEnd'), 'storyOnlineAudioTrimStartLabel', 'storyOnlineAudioTrimEndLabel', parseFloat(this.max)||30);
+    const endR = document.getElementById('storyOnlineAudioTrimEnd');
+    let s = parseFloat(this.value), e = parseFloat(endR.value);
+    if(e <= s){ e = Math.min(parseFloat(endR.max)||s+1, s+1); endR.value = e; }
+    document.getElementById('storyOnlineAudioTrimStartLabel').textContent = 'Start: '+fmtSec(s);
+    document.getElementById('storyOnlineAudioTrimEndLabel').textContent = 'End: '+fmtSec(e);
   });
   document.getElementById('storyOnlineAudioTrimEnd').addEventListener('input', function(){
     const startR = document.getElementById('storyOnlineAudioTrimStart');
     let s = parseFloat(startR.value), e = parseFloat(this.value);
-    if(e - s > STORY_MAX_TRIM) s = Math.max(0, e - STORY_MAX_TRIM);
-    startR.value = s;
+    if(e <= s){ e = s+1; this.value = e; }
     document.getElementById('storyOnlineAudioTrimStartLabel').textContent = 'Start: '+fmtSec(s);
     document.getElementById('storyOnlineAudioTrimEndLabel').textContent = 'End: '+fmtSec(e);
   });
@@ -5965,7 +6143,10 @@ onAuthStateChanged(auth, user => {
   window.storyOnlineAudioConfirm = function(){
     if(!scOnlineTrack) return;
     const s = parseFloat(document.getElementById('storyOnlineAudioTrimStart').value);
-    const e = parseFloat(document.getElementById('storyOnlineAudioTrimEnd').value);
+    let e = parseFloat(document.getElementById('storyOnlineAudioTrimEnd').value);
+    // UPDATED: review me poora gaana available tha, ab story par FINAL attach
+    // hote waqt hi 15-sec cap lagta hai.
+    if(e - s > STORY_MAX_TRIM) e = s + STORY_MAX_TRIM;
     const name = (scOnlineTrack.trackName||'Track')+' — '+(scOnlineTrack.artistName||'');
     scAudio = { url: scOnlineTrack.previewUrl, start: s, end: e, duration: parseFloat(document.getElementById('storyOnlineAudioTrimEnd').max)||30, name };
     document.getElementById('storyOnlineAudioTrimPanel').classList.remove('active');
@@ -6013,6 +6194,96 @@ onAuthStateChanged(auth, user => {
       if(btn){ btn.disabled = false; btn.textContent = 'Publish Story'; }
     }
   };
+})();
+
+/* ================= ADDITIVE: MCQ POPUP (DISPLAY-ONLY) =================
+   This app file (index.html) only DISPLAYS the MCQ poll popup to logged-in
+   students and records their answer/skip. MCQs themselves are created and
+   deleted from a separate standalone admin file — mcq-admin.html — which
+   writes directly to the same Firebase database under 'portal/mcqs'.
+   Nothing above this block is touched — this only reads the existing `db`,
+   `ref`, `onValue`, `set`, `esc` bindings from this module script and adds
+   its own independent Firebase listener on 'portal/mcqs'.
+================================================================= */
+(function(){
+  let mcqsData = [];
+  let mcqPopupQueue = [];
+  let mcqPopupShowingId = null;
+
+  function mcqSeenKey(id){ return 'mcqSeen_' + id; }
+  function isMcqSeen(id){
+    try{ return localStorage.getItem(mcqSeenKey(id)) === '1'; }catch(e){ return false; }
+  }
+  function markMcqSeen(id){
+    try{ localStorage.setItem(mcqSeenKey(id), '1'); }catch(e){}
+  }
+
+  function closeMcqPopup(){
+    const overlay = document.getElementById('mcqPopupOverlay');
+    if(overlay) overlay.classList.remove('active');
+    mcqPopupShowingId = null;
+    setTimeout(showNextMcqPopup, 400);
+  }
+
+  window.mcqPopupSkip = function(){
+    if(mcqPopupShowingId) markMcqSeen(mcqPopupShowingId);
+    closeMcqPopup();
+  };
+
+  window.mcqPopupSelect = async function(optIdx){
+    const id = mcqPopupShowingId;
+    if(!id || !window.localUser) return;
+    markMcqSeen(id);
+    const body = document.getElementById('mcqPopupBody');
+    if(body) body.innerHTML = '<div class="mcq-popup-thanks"><svg class="ui-icon"><use href="#icon-check"></use></svg> Thanks for answering!</div>';
+    try{
+      await set(ref(db, 'portal/mcqs/' + id + '/votes/' + window.localUser.rollNumber), optIdx);
+    }catch(e){ /* silent — popup already closed for this user */ }
+    setTimeout(closeMcqPopup, 650);
+  };
+
+  function showMcqPopup(mcq){
+    mcqPopupShowingId = mcq.id;
+    const body = document.getElementById('mcqPopupBody');
+    const overlay = document.getElementById('mcqPopupOverlay');
+    if(!body || !overlay) return;
+    body.innerHTML = '<div class="mcq-popup-question">' + esc(mcq.question) + '</div>' +
+      (mcq.options||[]).map((opt,i)=> '<button type="button" class="mcq-popup-option" onclick="mcqPopupSelect(' + i + ')">' + esc(opt) + '</button>').join('') +
+      '<button type="button" class="mcq-popup-skip" onclick="mcqPopupSkip()">Skip</button>';
+    overlay.classList.add('active');
+  }
+
+  function showNextMcqPopup(){
+    if(mcqPopupShowingId) return;
+    if(!window.localUser) return; // Voting is tied to Roll Number, so only shown once logged in
+    const adminBox = document.getElementById('adminModal');
+    if(adminBox && adminBox.classList.contains('active')) return;
+    const storyPage = document.getElementById('storyCreatePage');
+    if(storyPage && storyPage.style.display === 'block') return;
+
+    while(mcqPopupQueue.length){
+      const id = mcqPopupQueue.shift();
+      if(!isMcqSeen(id)){
+        const mcq = mcqsData.find(m => m.id === id);
+        if(mcq){ showMcqPopup(mcq); return; }
+      }
+    }
+  }
+
+  function queueUnseenMcqs(){
+    const sorted = [...mcqsData].sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+    mcqPopupQueue = sorted.map(m=>m.id).filter(id => !isMcqSeen(id));
+    showNextMcqPopup();
+  }
+
+  onValue(ref(db, 'portal/mcqs'), snap => {
+    const val = snap.val() || {};
+    mcqsData = Object.entries(val).map(([id,x]) => ({ id, ...x }));
+    queueUnseenMcqs();
+  }, err => console.error('MCQ listener error:', err));
+
+  document.addEventListener('click', function(){ if(window.localUser) queueUnseenMcqs(); }, { once:true, capture:true });
+  window.addEventListener('load', () => setTimeout(queueUnseenMcqs, 1200));
 })();
 
 </script>
