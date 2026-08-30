@@ -1625,35 +1625,6 @@
   .mcq-popup-skip{display:block;width:100%;text-align:center;background:none;border:none;color:#64748b;font-size:.85rem;padding:8px;cursor:pointer;text-decoration:underline}
   .mcq-popup-thanks{padding:26px 16px;text-align:center;color:var(--primary-blue);font-weight:700}
 </style>
-
-<!-- ================= ADDITIVE: DAILY ATTENDANCE & BUNK MANAGER (styles only) =================
-     Naya, alag se style block — upar ka koi bhi purana CSS chhua nahi gaya hai. ================= -->
-<style>
-  .attn-open-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--primary-blue);color:#fff;border:none;padding:12px 20px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:0.95rem;margin-top:14px;transition:0.2s;}
-  .attn-open-btn:hover{background:#00509e;}
-  .attn-header-bar{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-  .attn-header-bar h2{margin-bottom:0;}
-  .attn-card{background:#fff;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.1);padding:18px;margin-bottom:16px;border-top:3px solid var(--accent-orange);}
-  .attn-card h3{color:var(--primary-blue);margin-bottom:10px;font-size:1rem;display:flex;align-items:center;gap:6px;}
-  .attn-today-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
-  .attn-badge{display:inline-block;padding:6px 14px;border-radius:20px;font-weight:bold;font-size:0.85rem;}
-  .attn-badge.attn-present{background:#e3f8ec;color:#1b7e46;}
-  .attn-badge.attn-absent{background:#fdeceb;color:var(--sarkari-red);}
-  .attn-badge.attn-pending{background:#fff6e0;color:#8a6100;}
-  .attn-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;}
-  .attn-stat-box{background:#f4f6f9;border-radius:8px;padding:12px;text-align:center;}
-  .attn-stat-box .attn-stat-value{font-size:1.5rem;font-weight:bold;color:var(--primary-blue);}
-  .attn-stat-box .attn-stat-label{font-size:0.75rem;color:#666;margin-top:2px;}
-  .attn-zone-badge{display:block;text-align:center;padding:10px;border-radius:8px;font-weight:bold;margin-bottom:10px;font-size:0.92rem;}
-  .attn-zone-badge.attn-zone-safe{background:#e3f8ec;color:#1b7e46;}
-  .attn-zone-badge.attn-zone-danger{background:#fdeceb;color:var(--sarkari-red);}
-  .attn-zone-badge.attn-zone-pending{background:#eef2f7;color:#555;}
-  .attn-bunk-info{font-size:0.88rem;color:#444;line-height:1.5;background:#f9f9f9;border:1px solid #eee;border-radius:6px;padding:10px;}
-  .attn-manual-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--accent-orange);color:#1a1a1a;border:none;padding:11px 18px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:0.9rem;margin-top:6px;}
-  .attn-manual-btn:disabled{opacity:0.6;cursor:not-allowed;}
-  .attn-note{font-size:0.78rem;color:#666;margin-top:10px;line-height:1.5;}
-  .attn-month-count{font-size:0.85rem;color:#555;margin-top:6px;text-align:center;}
-</style>
 </head>
 <body>
 
@@ -1966,53 +1937,10 @@
                 <p><strong>Status:</strong> <span style="color: green; font-weight: bold;">Active</span></p>
             </div>
             <button class="logout-btn" onclick="userLogout()">Log Out</button>
-            <!-- ADDITIVE: naya button — Daily Attendance & Bunk Manager page kholta hai -->
-            <button class="attn-open-btn" onclick="openAttendancePage()"><svg class="ui-icon"><use href="#icon-pin"></use></svg> Daily Attendance & Bunk Manager</button>
             <button class="profile-post-plus" onclick="openUserPostCreatePage()" title="Create Post">+</button>
         </div>
     </div>
 
-    <!-- ================= ADDITIVE: DAILY ATTENDANCE & BUNK MANAGER (page markup) =================
-         Profile page ke "Daily Attendance & Bunk Manager" button se khulta hai. Isse pehle ka
-         koi bhi page/markup chhua nahi gaya hai — yeh bilkul naya, alag page hai. ================= -->
-    <div id="attendancePage" class="container full-screen-container" style="display:none;">
-        <div class="action-bar">
-            <button class="back-btn" onclick="closeAttendancePage()" title="Back to Profile"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
-        </div>
-        <div class="attn-header-bar">
-            <h2 class="section-title" style="margin-bottom:0;"><svg class="ui-icon"><use href="#icon-pin"></use></svg> Daily Attendance & Bunk Manager</h2>
-        </div>
-
-        <div class="attn-card">
-            <h3><svg class="ui-icon"><use href="#icon-calendar"></use></svg> Aaj ka Status</h3>
-            <div class="attn-today-row">
-                <span id="attnTodayStatus"><span class="attn-badge attn-pending">Loading...</span></span>
-                <button type="button" class="attn-manual-btn" id="attnManualBtn" onclick="attnManualCheck()" style="width:auto;margin-top:0;">📍 Check My Location Now</button>
-            </div>
-            <p class="attn-note">Attendance sirf college campus ke andar, subah <strong>10:00 AM se 1:00 PM</strong> ke beech automatic mark hoti hai. Is samay ke baad agar campus nahi gaye to din automatic <strong>Absent</strong> ho jayega. App din mein kam se kam ek baar zaroor kholein.</p>
-        </div>
-
-        <div class="attn-card">
-            <h3><svg class="ui-icon"><use href="#icon-poll"></use></svg> Attendance Overview</h3>
-            <div class="attn-stats-grid">
-                <div class="attn-stat-box">
-                    <div class="attn-stat-value" id="attnMonthPercent">--</div>
-                    <div class="attn-stat-label">Is Mahine ka %</div>
-                </div>
-                <div class="attn-stat-box">
-                    <div class="attn-stat-value" id="attnOverallPercent">--</div>
-                    <div class="attn-stat-label">Overall %</div>
-                </div>
-            </div>
-            <div class="attn-month-count" id="attnMonthCount">-- / -- din present (is mahine)</div>
-        </div>
-
-        <div class="attn-card">
-            <h3><svg class="ui-icon"><use href="#icon-star"></use></svg> Safe Zone & Bunk Planner</h3>
-            <span class="attn-zone-badge attn-zone-pending" id="attnZoneBadge">Loading...</span>
-            <div class="attn-bunk-info" id="attnBunkInfo">Calculating...</div>
-        </div>
-    </div>
 
     <div id="userPostCreatePage" class="user-post-create-page full-screen-container" style="display:none;">
         <div class="user-post-create-header">
@@ -2850,8 +2778,6 @@
             document.getElementById('profilePage').style.display = 'none';
             document.getElementById('userPostCreatePage').style.display = 'none';
             document.getElementById('globalFeedPage').style.display = 'none'; 
-            const attnPageEl = document.getElementById('attendancePage'); // ADDITIVE
-            if(attnPageEl) attnPageEl.style.display = 'none';
         }
 
         window.onclick = function(event) {
@@ -6593,8 +6519,7 @@ onAuthStateChanged(auth, user => {
   // apne maujooda close function hi sahi jagah (Profile) par le jaate hain.
   var NESTED_PAGE_CLOSERS = [
     { id: 'storyCreatePage', close: function(){ if(typeof window.closeStoryCreatePage === 'function') window.closeStoryCreatePage(); } },
-    { id: 'userPostCreatePage', close: function(){ if(typeof window.closeUserPostCreatePage === 'function') window.closeUserPostCreatePage(); } },
-    { id: 'attendancePage', close: function(){ if(typeof window.closeAttendancePage === 'function') window.closeAttendancePage(); } } /* ADDITIVE */
+    { id: 'userPostCreatePage', close: function(){ if(typeof window.closeUserPostCreatePage === 'function') window.closeUserPostCreatePage(); } }
   ];
 
   // Chhote overlays/panels jo kisi page ke UPAR khulte hain — sabse
@@ -6678,8 +6603,6 @@ onAuthStateChanged(auth, user => {
      'userPostOnlineAudioTrimPanel','imageViewerModal','storyViewerOverlay','adminModal',
      'notifPanel','mcqPopupOverlay']
   );
-  var attnWatchEl = document.getElementById('attendancePage'); /* ADDITIVE */
-  if(attnWatchEl) mo.observe(attnWatchEl, { attributes: true, attributeFilter: ['style','class'] });
   var mo = new MutationObserver(scheduleAwaySync);
   watchIds.forEach(function(id){
     var el = document.getElementById(id);
@@ -6708,201 +6631,6 @@ onAuthStateChanged(auth, user => {
     }
     // 4) User pehle se Home page par hai — yahan kuch nahi karte,
     // ab agla back press app/browser ko normally close/exit karne dega.
-  });
-})();
-
-/* ================= ADDITIVE: DAILY ATTENDANCE & BUNK MANAGER (logic) =================
-   Ismein sirf naya code hai — upar ka koi bhi purana function, page, ya feature
-   CHHUA/BADLA nahi gaya hai. Yeh apna alag IIFE hai jo upar wale module script ke
-   db/ref/set/get/onValue/esc/requireLogin/closeAllSections/updateNavState ko
-   directly use karta hai (kyunki yeh sab isi <script type="module"> ke andar hai).
-
-   Kaam kaise karta hai:
-   - Har roz 10:00 AM se 1:00 PM ke beech, agar student college campus ke andar
-     (COLLEGE_LOCATION se radiusMeters ke andar) hai, to us din ka attendance
-     automatic "Present" mark ho jata hai (Firebase: portal/attendance/{roll}/{date}).
-   - 1:00 PM ke baad agar us din ka koi bhi record nahi bana, to automatic "Absent"
-     mark ho jata hai.
-   - Check chalta hai: (a) app/website khulte hi ek baar, (b) jab bhi student
-     "Daily Attendance & Bunk Manager" page kholta hai, aur (c) us page ke khule
-     rehte hue har 5 minute mein.
-   - Page har mahine ka % , overall %, 75% "safe zone" status, aur agle mahine
-     kitne din bunk kiye ja sakte hain — yeh sab dikhata hai.
-
-   ZAROORI: COLLEGE_LOCATION neeche filhaal Maharajganj town-level approximate
-   coordinates hain (exact building-level nahi mil paaye). Sabse sahi attendance
-   ke liye is diye gaye Google Maps link ko kholein:
-   https://maps.app.goo.gl/FcgE1xVShMqGBKWCA — college ke pin ko thodi der
-   dabakar rakhein, jo latitude,longitude number screen par dikhega usko neeche
-   "lat" aur "lng" mein daal dein. ================= */
-(function(){
-  const COLLEGE_LOCATION = { lat: 27.130923, lng: 83.560280, radiusMeters: 250 };
-  const WINDOW_START_HOUR = 10;   // 10:00 AM
-  const WINDOW_END_HOUR   = 13;   // 1:00 PM
-  const WORKING_DAYS_PER_MONTH = 24; // approx. college working days/month (bunk-calculator ke liye)
-  const SAFE_PERCENT = 75;
-  let attnRefreshTimer = null;
-
-  function todayKey(d){
-    d = d || new Date();
-    const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
-    return y + '-' + m + '-' + day;
-  }
-  function distanceMeters(lat1, lng1, lat2, lng2){
-    const R = 6371000, toRad = x => x * Math.PI / 180;
-    const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
-    const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng/2)**2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  }
-  function getRoll(){ return window.localUser ? String(window.localUser.rollNumber) : null; }
-  function withinWindow(now){ const h = now.getHours() + now.getMinutes()/60; return h >= WINDOW_START_HOUR && h < WINDOW_END_HOUR; }
-  function windowOver(now){ const h = now.getHours() + now.getMinutes()/60; return h >= WINDOW_END_HOUR; }
-
-  async function markAttendanceIfUnset(status){
-    const roll = getRoll();
-    if(!roll) return;
-    const dKey = todayKey();
-    try{
-      const snap = await get(ref(db, 'portal/attendance/' + roll + '/' + dKey));
-      if(snap.exists()) return; // aaj ka record pehle se hai, dobara mat likho
-      await set(ref(db, 'portal/attendance/' + roll + '/' + dKey), { status, timestamp: Date.now() });
-    }catch(e){ /* offline/permission issue — chup-chaap skip */ }
-    renderAttendanceUI();
-  }
-
-  function autoCheckAttendance(){
-    const roll = getRoll();
-    if(!roll) return;
-    const now = new Date();
-    if(windowOver(now)){ markAttendanceIfUnset('Absent'); return; }
-    if(!withinWindow(now)) return;
-    if(!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(function(pos){
-      const dist = distanceMeters(pos.coords.latitude, pos.coords.longitude, COLLEGE_LOCATION.lat, COLLEGE_LOCATION.lng);
-      if(dist <= COLLEGE_LOCATION.radiusMeters) markAttendanceIfUnset('Present');
-    }, function(){ /* permission denied ya location off — silently skip */ }, { enableHighAccuracy:true, timeout:15000, maximumAge:60000 });
-  }
-
-  async function fetchAllAttendance(){
-    const roll = getRoll();
-    if(!roll) return {};
-    try{
-      const snap = await get(ref(db, 'portal/attendance/' + roll));
-      return snap.val() || {};
-    }catch(e){ return {}; }
-  }
-
-  function computeStats(records){
-    const now = new Date(), curMonth = todayKey(now).slice(0,7);
-    let monthTotal=0, monthPresent=0, allTotal=0, allPresent=0;
-    Object.entries(records).forEach(([dKey, rec])=>{
-      allTotal++;
-      if(rec.status === 'Present') allPresent++;
-      if(dKey.slice(0,7) === curMonth){ monthTotal++; if(rec.status === 'Present') monthPresent++; }
-    });
-    const monthPercent = monthTotal ? (monthPresent/monthTotal*100) : null;
-    const allPercent = allTotal ? (allPresent/allTotal*100) : null;
-    const isSafe = allPercent === null ? true : allPercent >= SAFE_PERCENT;
-
-    const futureTotal = allTotal + WORKING_DAYS_PER_MONTH;
-    const requiredPresent = Math.ceil((SAFE_PERCENT/100) * futureTotal);
-    const additionalPresentNeeded = Math.max(0, requiredPresent - allPresent);
-    let maxBunkNextMonth = WORKING_DAYS_PER_MONTH - additionalPresentNeeded;
-    if(maxBunkNextMonth < 0) maxBunkNextMonth = 0;
-    if(maxBunkNextMonth > WORKING_DAYS_PER_MONTH) maxBunkNextMonth = WORKING_DAYS_PER_MONTH;
-
-    let classesNeededToRecover = 0;
-    if(!isSafe && allTotal > 0){
-      classesNeededToRecover = Math.max(0, Math.ceil((0.75*allTotal - allPresent)/0.25));
-    }
-    return { monthTotal, monthPresent, monthPercent, allTotal, allPresent, allPercent, isSafe, maxBunkNextMonth, classesNeededToRecover };
-  }
-
-  window.renderAttendanceUI = async function(){
-    const roll = getRoll();
-    if(!roll || !document.getElementById('attendancePage')) return;
-
-    const todaySnap = await get(ref(db, 'portal/attendance/' + roll + '/' + todayKey()));
-    const todayRec = todaySnap.val();
-    const todayStatusEl = document.getElementById('attnTodayStatus');
-    if(todayStatusEl){
-      if(!todayRec) todayStatusEl.innerHTML = '<span class="attn-badge attn-pending">Aaj abhi mark nahi hua</span>';
-      else if(todayRec.status === 'Present') todayStatusEl.innerHTML = '<span class="attn-badge attn-present">✔ Present</span>';
-      else todayStatusEl.innerHTML = '<span class="attn-badge attn-absent">✘ Absent</span>';
-    }
-
-    const records = await fetchAllAttendance();
-    const stats = computeStats(records);
-
-    const monthPercentEl = document.getElementById('attnMonthPercent');
-    if(monthPercentEl) monthPercentEl.textContent = stats.monthPercent === null ? '--' : stats.monthPercent.toFixed(1) + '%';
-    const overallPercentEl = document.getElementById('attnOverallPercent');
-    if(overallPercentEl) overallPercentEl.textContent = stats.allPercent === null ? '--' : stats.allPercent.toFixed(1) + '%';
-    const monthCountEl = document.getElementById('attnMonthCount');
-    if(monthCountEl) monthCountEl.textContent = stats.monthPresent + ' / ' + stats.monthTotal + ' din present (is mahine)';
-
-    const zoneEl = document.getElementById('attnZoneBadge');
-    if(zoneEl){
-      if(stats.allPercent === null){ zoneEl.className = 'attn-zone-badge attn-zone-pending'; zoneEl.textContent = 'Attendance record shuru karein'; }
-      else if(stats.isSafe){ zoneEl.className = 'attn-zone-badge attn-zone-safe'; zoneEl.textContent = '✅ Aap Safe Zone mein hain'; }
-      else { zoneEl.className = 'attn-zone-badge attn-zone-danger'; zoneEl.textContent = '⚠️ Attendance kam hai — 75% se neeche'; }
-    }
-    const bunkEl = document.getElementById('attnBunkInfo');
-    if(bunkEl){
-      if(stats.allPercent !== null && !stats.isSafe){
-        bunkEl.textContent = '75% wapas paane ke liye lagataar ' + stats.classesNeededToRecover + ' din Present rehna hoga. Jab tak safe zone mein nahi aate, agle mahine ke liye bunk allowance 0 din hai.';
-      } else {
-        bunkEl.textContent = 'Agle mahine (~' + WORKING_DAYS_PER_MONTH + ' working days maan kar) aap 75% attendance maintain karte hue lagbhag ' + stats.maxBunkNextMonth + ' din classes bunk kar sakte hain.';
-      }
-    }
-  };
-
-  window.openAttendancePage = function(){
-    requireLogin(function(){
-      closeAllSections();
-      document.getElementById('attendancePage').style.display = 'block';
-      updateNavState('navProfile');
-      window.scrollTo(0,0);
-      autoCheckAttendance();
-      renderAttendanceUI();
-      if(attnRefreshTimer) clearInterval(attnRefreshTimer);
-      attnRefreshTimer = setInterval(function(){ autoCheckAttendance(); renderAttendanceUI(); }, 5*60*1000);
-    });
-  };
-  window.closeAttendancePage = function(){
-    if(attnRefreshTimer){ clearInterval(attnRefreshTimer); attnRefreshTimer = null; }
-    closeAllSections();
-    document.getElementById('profilePage').style.display = 'block';
-    updateNavState('navProfile');
-    window.scrollTo(0,0);
-  };
-  window.attnManualCheck = function(){
-    const btn = document.getElementById('attnManualBtn');
-    if(!getRoll()) return requireLogin(window.attnManualCheck);
-    if(!navigator.geolocation){ alert('Is device/browser mein location supported nahi hai.'); return; }
-    if(btn){ btn.disabled = true; btn.textContent = 'Checking location...'; }
-    navigator.geolocation.getCurrentPosition(function(pos){
-      const dist = distanceMeters(pos.coords.latitude, pos.coords.longitude, COLLEGE_LOCATION.lat, COLLEGE_LOCATION.lng);
-      const now = new Date();
-      if(!withinWindow(now)){
-        alert('Attendance sirf 10:00 AM se 1:00 PM ke beech hi mark hoti hai.');
-      } else if(dist <= COLLEGE_LOCATION.radiusMeters){
-        markAttendanceIfUnset('Present');
-        alert('Aap college campus ke andar hain — attendance Present mark kar di gayi hai.');
-      } else {
-        alert('Aap abhi college campus ke andar nahi hain (lagbhag ' + Math.round(dist) + ' meter door).');
-      }
-      renderAttendanceUI();
-      if(btn){ btn.disabled = false; btn.textContent = '📍 Check My Location Now'; }
-    }, function(){
-      alert('Location access nahi mil paayi. Kripya browser/app settings mein location permission ON karein.');
-      if(btn){ btn.disabled = false; btn.textContent = '📍 Check My Location Now'; }
-    }, { enableHighAccuracy:true, timeout:15000, maximumAge:0 });
-  };
-
-  // App khulte hi (agar user pehle se logged in hai) ek baar automatic check
-  window.addEventListener('load', function(){
-    setTimeout(function(){ if(window.localUser) autoCheckAttendance(); }, 2000);
   });
 })();
 
