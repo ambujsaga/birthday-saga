@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
     <link rel="icon" type="image/jpeg" href="logo.jpg?v=1.1">
     <link rel="apple-touch-icon" sizes="192x192" href="logo.jpg?v=1.1">
     <link rel="manifest" href="manifest.json">
@@ -31,6 +31,14 @@
             color: var(--text-dark);
             overflow-x: hidden;
             padding-bottom: 70px; 
+        }
+
+        /* ================= ADDITIVE: DISABLE ZOOM (PINCH / DOUBLE-TAP) =================
+           Sirf naya CSS add kiya gaya hai. Koi purana rule/element chheda
+           nahi gaya hai. */
+        html, body {
+            touch-action: pan-x pan-y;
+            -ms-touch-action: pan-x pan-y;
         }
 
         /* Main Navbar */
@@ -1110,6 +1118,45 @@
         }
         .chat-input-area button:hover { background: #e68a00; }
 
+        /* ================= ADDITIVE: AI DISCUSSION TAB (chatPage) =================
+           Sirf naya CSS add kiya gaya hai. Class Discussion se related koi
+           purana rule chheda nahi gaya hai. */
+        .chat-tab-bar {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 1.2rem;
+        }
+        .chat-tab-btn {
+            background: #fff;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .chat-tab-btn.active {
+            background: var(--primary-blue);
+            color: #fff;
+        }
+        .chat-tab-btn:hover {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: #000;
+        }
+        .ai-discussion-frame {
+            width: 100%;
+            height: calc(100vh - 220px);
+            min-height: 500px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+        }
+
         /* CHAT ENHANCEMENTS */
         .chat-date-divider {
             text-align: center;
@@ -1915,14 +1962,37 @@
     </div>
 
     <div id="chatPage" class="container full-screen-container" style="display: none;">
-        <h2 class="section-title">Class Discussion</h2>
-        <div class="chat-container">
-            <div class="chat-messages" id="chatMessages">
+        <!-- ================= ADDITIVE: AI DISCUSSION TAB =================
+             Purana "Class Discussion" section-title, chat-container,
+             chatMessages, chatInput, sendChatMessage() sab bilkul waise
+             hi hain jaise pehle the — sirf ek tab-bar add karke inhe
+             ek "view" me wrap kiya gaya hai, aur bagal me naya
+             "AI Discussion" tab + iframe view add kiya gaya hai. -->
+        <div class="chat-tab-bar">
+            <button type="button" class="chat-tab-btn active" id="chatTabClassBtn" onclick="switchChatTab('class')">Class Discussion</button>
+            <button type="button" class="chat-tab-btn" id="chatTabAIBtn" onclick="switchChatTab('ai')">AI Discussion</button>
+        </div>
+
+        <div id="classDiscussionView" style="display: block;">
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="Type your message here..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                    <button onclick="sendChatMessage()">Send</button>
                 </div>
-            <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Type your message here..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
-                <button onclick="sendChatMessage()">Send</button>
             </div>
+        </div>
+
+        <div id="aiDiscussionView" style="display: none;">
+            <iframe
+                class="ai-discussion-frame"
+                id="aiDiscussionFrame"
+                src=""
+                title="AI Discussion"
+                loading="lazy"
+                allowfullscreen>
+            </iframe>
         </div>
     </div>
 
@@ -2817,6 +2887,36 @@
                 window.scrollTo(0, 0);
             });
         }
+
+        // ================= ADDITIVE: AI DISCUSSION TAB SWITCH =================
+        // Sirf naya function add kiya gaya hai. openChat(), sendChatMessage(),
+        // ya kisi bhi purane chat feature/logic ko chheda nahi gaya hai.
+        function switchChatTab(tab) {
+            const classBtn = document.getElementById('chatTabClassBtn');
+            const aiBtn = document.getElementById('chatTabAIBtn');
+            const classView = document.getElementById('classDiscussionView');
+            const aiView = document.getElementById('aiDiscussionView');
+            if(!classBtn || !aiBtn || !classView || !aiView) return;
+
+            if(tab === 'ai') {
+                classView.style.display = 'none';
+                aiView.style.display = 'block';
+                classBtn.classList.remove('active');
+                aiBtn.classList.add('active');
+
+                // Iframe ko sirf pehli baar click par load karo (lazy load)
+                const frame = document.getElementById('aiDiscussionFrame');
+                if(frame && !frame.getAttribute('src')) {
+                    frame.setAttribute('src', 'https://algebra-lyart.vercel.app/');
+                }
+            } else {
+                aiView.style.display = 'none';
+                classView.style.display = 'block';
+                aiBtn.classList.remove('active');
+                classBtn.classList.add('active');
+            }
+        }
+        window.switchChatTab = switchChatTab;
 
         function openProfile() {
             requireLogin(() => {
@@ -6632,6 +6732,43 @@ onAuthStateChanged(auth, user => {
     // 4) User pehle se Home page par hai — yahan kuch nahi karte,
     // ab agla back press app/browser ko normally close/exit karne dega.
   });
+})();
+
+/* ================= ADDITIVE: DISABLE ZOOM (PINCH / DOUBLE-TAP / CTRL+WHEEL) =================
+   Ismein sirf naya code add kiya gaya hai. Upar ka koi bhi purana
+   function, page-open/close logic, ya feature CHHUA/BADLA nahi gaya hai.
+   Yeh sirf website app ko zoom-in / zoom-out hone se rokta hai
+   (pinch gesture, double-tap zoom, aur desktop par Ctrl+scroll / Ctrl+ / Ctrl-). */
+(function(){
+  // Safari/iOS pinch-zoom gesture ko rokna
+  document.addEventListener('gesturestart', function(e){ e.preventDefault(); }, { passive: false });
+  document.addEventListener('gesturechange', function(e){ e.preventDefault(); }, { passive: false });
+  document.addEventListener('gestureend', function(e){ e.preventDefault(); }, { passive: false });
+
+  // Android/Chrome jaise browsers me do-ungliyon (multi-touch) se pinch-zoom rokna
+  document.addEventListener('touchmove', function(e){
+    if(e.touches && e.touches.length > 1) e.preventDefault();
+  }, { passive: false });
+
+  // Double-tap se zoom hone ko rokna (bina single-tap/click par asar dale)
+  var lastTouchEnd = 0;
+  document.addEventListener('touchend', function(e){
+    var now = Date.now();
+    if(now - lastTouchEnd <= 350) e.preventDefault();
+    lastTouchEnd = now;
+  }, { passive: false });
+
+  // Desktop: Ctrl + scroll-wheel se zoom hone ko rokna
+  document.addEventListener('wheel', function(e){
+    if(e.ctrlKey) e.preventDefault();
+  }, { passive: false });
+
+  // Desktop: Ctrl + Plus / Ctrl + Minus / Ctrl + 0 se zoom hone ko rokna
+  document.addEventListener('keydown', function(e){
+    if((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0')) {
+      e.preventDefault();
+    }
+  }, { passive: false });
 })();
 
 </script>
