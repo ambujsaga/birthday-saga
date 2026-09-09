@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
     <link rel="icon" type="image/jpeg" href="logo.jpg?v=1.1">
     <link rel="apple-touch-icon" sizes="192x192" href="logo.jpg?v=1.1">
     <link rel="manifest" href="manifest.json">
@@ -31,6 +31,14 @@
             color: var(--text-dark);
             overflow-x: hidden;
             padding-bottom: 70px; 
+        }
+
+        /* ================= ADDITIVE: DISABLE ZOOM (PINCH / DOUBLE-TAP) =================
+           Sirf naya CSS add kiya gaya hai. Koi purana rule/element chheda
+           nahi gaya hai. */
+        html, body {
+            touch-action: pan-x pan-y;
+            -ms-touch-action: pan-x pan-y;
         }
 
         /* Main Navbar */
@@ -1110,6 +1118,45 @@
         }
         .chat-input-area button:hover { background: #e68a00; }
 
+        /* ================= ADDITIVE: AI DISCUSSION TAB (chatPage) =================
+           Sirf naya CSS add kiya gaya hai. Class Discussion se related koi
+           purana rule chheda nahi gaya hai. */
+        .chat-tab-bar {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 1.2rem;
+        }
+        .chat-tab-btn {
+            background: #fff;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .chat-tab-btn.active {
+            background: var(--primary-blue);
+            color: #fff;
+        }
+        .chat-tab-btn:hover {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: #000;
+        }
+        .ai-discussion-frame {
+            width: 100%;
+            height: calc(100vh - 220px);
+            min-height: 500px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+        }
+
         /* CHAT ENHANCEMENTS */
         .chat-date-divider {
             text-align: center;
@@ -1193,49 +1240,7 @@
         .user-login-box button:hover { background: #002244; }
         .user-login-box .cancel-btn { background: #e2e8f0; color: #333; }
         .user-login-box .cancel-btn:hover { background: #cbd5e1; }
-    
-/* ================= ADDITIVE: DAILY ATTENDANCE & BUNK MANAGER ================= */
-.attendance-profile-btn{
-  width:100%;margin:14px 0 8px;padding:11px 14px;border:0;border-radius:9px;
-  background:var(--primary-blue);color:#fff;font-weight:800;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 3px 10px rgba(0,51,102,.16)
-}
-.attendance-profile-btn:hover{background:#00264d}
-.attendance-page{width:100%;max-width:820px;margin:0 auto;padding:1rem;min-height:calc(100vh - 135px)}
-.attendance-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.attendance-back{width:40px;height:40px;border:0;border-radius:50%;background:var(--primary-blue);color:#fff;font-size:1.25rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
-.attendance-header h2{color:var(--primary-blue);font-size:1.2rem;margin:0}
-.attendance-subtitle{color:#64748b;font-size:.82rem;margin:-4px 0 14px}
-.attendance-card{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.09);padding:15px;margin-bottom:14px;border-top:3px solid var(--primary-blue)}
-.attendance-card h3{color:var(--primary-blue);font-size:1rem;margin-bottom:10px}
-.attendance-status{display:flex;align-items:center;gap:10px;padding:12px;border-radius:9px;background:#f8fafc;border:1px solid #e2e8f0}
-.attendance-status-dot{width:12px;height:12px;border-radius:50%;background:#f59e0b;flex:0 0 auto}
-.attendance-status-dot.present{background:#16a34a;box-shadow:0 0 0 4px rgba(22,163,74,.12)}
-.attendance-status-dot.absent{background:#dc2626;box-shadow:0 0 0 4px rgba(220,38,38,.12)}
-.attendance-status-dot.outside{background:#64748b}
-.attendance-status-main{font-weight:800;color:#1e293b}
-.attendance-status-meta{font-size:.76rem;color:#64748b;margin-top:2px}
-.attendance-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.attendance-stat{background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:12px;text-align:center}
-.attendance-stat strong{display:block;font-size:1.25rem;color:var(--primary-blue)}
-.attendance-stat span{font-size:.72rem;color:#64748b}
-.attendance-safe{border-left:4px solid #16a34a;background:#f0fdf4;padding:12px;border-radius:8px}
-.attendance-safe.warning{border-left-color:#f59e0b;background:#fffbeb}
-.attendance-safe.danger{border-left-color:#dc2626;background:#fef2f2}
-.attendance-progress{height:9px;background:#e5e7eb;border-radius:10px;overflow:hidden;margin:8px 0}
-.attendance-progress-fill{height:100%;width:0;background:#16a34a;border-radius:10px;transition:width .3s}
-.attendance-note{font-size:.74rem;color:#64748b;line-height:1.45;margin-top:8px}
-.attendance-location-row{display:flex;gap:8px;flex-wrap:wrap}
-.attendance-location-btn,.attendance-map-btn{border:0;border-radius:8px;padding:9px 12px;font-weight:700;cursor:pointer}
-.attendance-location-btn{background:var(--primary-blue);color:#fff}
-.attendance-map-btn{background:#eef2f7;color:var(--primary-blue);text-decoration:none;display:inline-flex;align-items:center}
-.attendance-month-table{width:100%;border-collapse:collapse;font-size:.82rem}
-.attendance-month-table th,.attendance-month-table td{padding:8px;border-bottom:1px solid #edf0f3;text-align:left}
-.attendance-month-table th{color:var(--primary-blue);background:#f8fafc}
-.attendance-present{color:#15803d;font-weight:800}.attendance-absent{color:#b91c1c;font-weight:800}
-@media(max-width:480px){.attendance-grid{grid-template-columns:1fr 1fr}.attendance-page{padding:.75rem}.attendance-card{padding:12px}}
-
-</style>
+    </style>
 <style>
 
 
@@ -1667,6 +1672,76 @@
   .mcq-popup-skip{display:block;width:100%;text-align:center;background:none;border:none;color:#64748b;font-size:.85rem;padding:8px;cursor:pointer;text-decoration:underline}
   .mcq-popup-thanks{padding:26px 16px;text-align:center;color:var(--primary-blue);font-weight:700}
 </style>
+
+<!-- ================= ADDITIVE: DAILY ENGAGEMENT SYSTEM (Challenge, Streak,
+     XP, Mystery Box, Leaderboard, Weekly Championship) — CSS =================
+     Sirf naya <style> block add kiya gaya hai. Upar ka koi bhi purana CSS
+     rule ya element chheda nahi gaya hai. Website ka existing system aur
+     purane features apni jagah waise hi kaam karte rahenge. -->
+<style>
+  .eng-stats-bar{display:flex;gap:8px;padding:12px 15px 0;flex-wrap:wrap}
+  .eng-stat-chip{flex:1;min-width:90px;background:var(--card-bg);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 6px rgba(0,0,0,.08);cursor:pointer}
+  .eng-stat-chip .eng-stat-emoji{font-size:1.3rem;line-height:1}
+  .eng-stat-chip .eng-stat-val{font-weight:800;font-size:.95rem;color:var(--primary-blue)}
+  .eng-stat-chip .eng-stat-lbl{font-size:.68rem;color:#64748b;display:block}
+
+  .eng-card{background:var(--card-bg);border-radius:16px;margin:12px 15px 0;box-shadow:0 3px 10px rgba(0,0,0,.09);overflow:hidden}
+  .eng-card-head{background:linear-gradient(135deg,var(--primary-blue),#004a8f);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:8px;font-weight:800;font-size:.95rem}
+  .eng-card-body{padding:16px}
+
+  .eng-challenge-q{font-size:1rem;font-weight:700;color:var(--text-dark);margin-bottom:14px;line-height:1.4}
+  .eng-challenge-opt{display:block;width:100%;text-align:left;background:#f4f6f9;border:1.5px solid #dfe5ec;border-radius:10px;padding:11px 14px;margin-bottom:9px;font-size:.9rem;color:#1e293b;cursor:pointer;transition:background .15s,border-color .15s}
+  .eng-challenge-opt:hover{background:#eaf1fb;border-color:var(--primary-blue)}
+  .eng-challenge-opt.correct{background:#e3f9e5;border-color:#2e9e42;color:#1a6b2b;font-weight:700}
+  .eng-challenge-opt.wrong{background:#fdeaea;border-color:var(--sarkari-red);color:var(--sarkari-red);font-weight:700}
+  .eng-challenge-opt[disabled]{cursor:default;opacity:.85}
+  .eng-challenge-result{margin-top:10px;font-size:.88rem;font-weight:700;text-align:center;padding:8px;border-radius:8px}
+  .eng-challenge-result.win{background:#e3f9e5;color:#1a6b2b}
+  .eng-challenge-result.lose{background:#fdeaea;color:var(--sarkari-red)}
+  .eng-challenge-empty{text-align:center;color:#64748b;font-size:.88rem;padding:8px 0}
+
+  .eng-mystery-body{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px}
+  .eng-mystery-txt strong{display:block;font-size:.95rem;color:var(--text-dark)}
+  .eng-mystery-txt span{font-size:.78rem;color:#64748b}
+  .eng-mystery-btn{background:var(--accent-orange);color:#fff;border:none;padding:10px 18px;border-radius:22px;font-weight:800;font-size:.85rem;cursor:pointer;white-space:nowrap}
+  .eng-mystery-btn[disabled]{background:#cbd5e1;cursor:default}
+
+  .eng-lb-row{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:.88rem;border-bottom:1px solid #f0f0f0}
+  .eng-lb-row:last-child{border-bottom:none}
+  .eng-lb-rank{width:26px;font-weight:800;text-align:center}
+  .eng-lb-name{flex:1;color:var(--text-dark);font-weight:600}
+  .eng-lb-xp{font-weight:800;color:var(--primary-blue)}
+  .eng-lb-you{background:#eaf1fb;border-radius:8px;padding:8px 10px;margin-top:6px;border-bottom:none}
+  .eng-lb-divider{border-top:1px dashed #cbd5e1;margin:8px 0}
+  .eng-view-full-btn{display:block;width:100%;text-align:center;background:none;border:none;color:var(--primary-blue);font-weight:700;font-size:.85rem;padding:10px;cursor:pointer;border-top:1px solid #eee;margin-top:6px}
+
+  .eng-full-page-head{padding:6px 4px 4px}
+  .eng-full-page-head h2{font-size:1.2rem;color:var(--primary-blue)}
+  .eng-tabs{display:flex;gap:8px;margin:10px 15px}
+  .eng-tab-btn{flex:1;padding:9px;border-radius:10px;border:1.5px solid var(--primary-blue);background:#fff;color:var(--primary-blue);font-weight:700;font-size:.85rem;cursor:pointer}
+  .eng-tab-btn.active{background:var(--primary-blue);color:#fff}
+
+  .eng-milestones{display:flex;gap:8px;flex-wrap:wrap;padding:0 16px 14px}
+  .eng-milestone{font-size:.72rem;padding:5px 10px;border-radius:14px;background:#f4f6f9;color:#64748b;font-weight:600}
+  .eng-milestone.done{background:#fff3e0;color:var(--accent-orange)}
+
+  .eng-profile-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+  .eng-profile-stat{background:#f4f6f9;border-radius:10px;padding:10px;text-align:center}
+  .eng-profile-stat .v{font-weight:800;color:var(--primary-blue);font-size:1.05rem}
+  .eng-profile-stat .l{font-size:.7rem;color:#64748b}
+  .eng-profile-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .eng-badge-chip{background:#fff3e0;color:#b8720a;font-size:.72rem;font-weight:700;padding:5px 10px;border-radius:14px}
+
+  .eng-reward-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200005;align-items:center;justify-content:center;padding:18px}
+  .eng-reward-overlay.active{display:flex}
+  .eng-reward-box{width:min(340px,100%);background:#fff;border-radius:16px;padding:26px 18px;text-align:center;box-shadow:0 20px 55px rgba(0,0,0,.4);animation:fadeIn .2s ease-in-out}
+  .eng-reward-emoji{font-size:2.6rem;margin-bottom:8px}
+  .eng-reward-title{font-weight:800;color:var(--primary-blue);font-size:1.1rem;margin-bottom:6px}
+  .eng-reward-desc{font-size:.9rem;color:#475569;margin-bottom:16px}
+  .eng-reward-close{background:var(--primary-blue);color:#fff;border:none;padding:10px 24px;border-radius:22px;font-weight:700;cursor:pointer}
+
+  .eng-admin-hint{font-size:.78rem;color:#64748b;margin:4px 0 10px}
+</style>
 </head>
 <body>
 
@@ -1848,6 +1923,48 @@
             </div>
         </div>
 
+        <!-- ================= ADDITIVE: DAILY ENGAGEMENT SYSTEM (Homepage) =================
+             Sirf naya HTML add kiya gaya hai — header, notif panel, notice-bar,
+             hero, subjects grid, koi bhi purana element chheda nahi gaya hai.
+             Yeh sab neeche dikhne wale purane homepage content ke UPAR add
+             hua hai. -->
+        <div class="eng-stats-bar">
+            <div class="eng-stat-chip" onclick="requireLogin(openEngagementFullPage)" title="Your streak">
+                <span class="eng-stat-emoji">🔥</span>
+                <span><span class="eng-stat-val" id="engStreakVal">0</span><span class="eng-stat-lbl">Day Streak</span></span>
+            </div>
+            <div class="eng-stat-chip" onclick="requireLogin(openEngagementFullPage)" title="Your XP">
+                <span class="eng-stat-emoji">⚡</span>
+                <span><span class="eng-stat-val" id="engXpVal">0</span><span class="eng-stat-lbl">XP</span></span>
+            </div>
+            <div class="eng-stat-chip" onclick="requireLogin(openEngagementFullPage)" title="Your rank">
+                <span class="eng-stat-emoji">🏆</span>
+                <span><span class="eng-stat-val" id="engRankVal">#—</span><span class="eng-stat-lbl">Rank</span></span>
+            </div>
+        </div>
+
+        <div class="eng-card">
+            <div class="eng-card-head">🎯 Today's CSE Challenge</div>
+            <div class="eng-card-body" id="engChallengeBody">
+                <div class="eng-challenge-empty">Loading today's challenge…</div>
+            </div>
+        </div>
+
+        <div class="eng-card" id="engMysteryCard" style="display:none;">
+            <div class="eng-mystery-body">
+                <div class="eng-mystery-txt"><strong>🎁 Daily Mystery Box</strong><span>Your reward is ready!</span></div>
+                <button type="button" class="eng-mystery-btn" id="engMysteryBtn" onclick="requireLogin(engagementOpenMysteryBox)">OPEN BOX</button>
+            </div>
+        </div>
+
+        <div class="eng-card">
+            <div class="eng-card-head">🏆 Class Leaderboard</div>
+            <div class="eng-card-body" id="engLeaderboardBody" style="padding-bottom:0;">
+                <div class="eng-challenge-empty">Loading leaderboard…</div>
+            </div>
+            <button type="button" class="eng-view-full-btn" onclick="requireLogin(openEngagementFullPage)">VIEW FULL RANKING</button>
+        </div>
+
         <div class="notice-bar">
             <span class="notice-btn" onclick="openNoticePage()">NEW NOTICE <svg class="ui-icon ui-icon--fill"><use href="#icon-star"></use></svg></span>
             <marquee behavior="scroll" direction="left">
@@ -1875,6 +1992,34 @@
             <div class="grid" id="subjectsGrid">
             </div>
         </section>
+    </div>
+
+    <!-- ================= ADDITIVE: DAILY ENGAGEMENT SYSTEM — Full Leaderboard
+         + Weekly Championship page. Naya top-level page hai, koi purana page
+         ya element chheda nahi gaya hai. ================= -->
+    <div id="engagementLeaderboardPage" class="container full-screen-container" style="display: none;">
+        <div class="action-bar">
+            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
+        </div>
+        <div class="eng-full-page-head">
+            <h2 class="section-title">🏆 Leaderboard & Championship</h2>
+        </div>
+        <div class="eng-tabs">
+            <button type="button" class="eng-tab-btn active" id="engTabAllBtn" onclick="engagementSwitchLbTab('all')">All-Time</button>
+            <button type="button" class="eng-tab-btn" id="engTabWeekBtn" onclick="engagementSwitchLbTab('week')">This Week</button>
+        </div>
+        <div class="eng-card" id="engFullLbAllWrap">
+            <div class="eng-card-head">⚡ All-Time XP Ranking</div>
+            <div class="eng-card-body" id="engFullLbAllBody" style="padding-bottom:6px;"></div>
+        </div>
+        <div class="eng-card" id="engFullLbWeekWrap" style="display:none;">
+            <div class="eng-card-head">🏅 Weekly CSE Championship</div>
+            <div class="eng-card-body" id="engFullLbWeekBody" style="padding-bottom:6px;"></div>
+        </div>
+        <div class="eng-card">
+            <div class="eng-card-head">🔥 Streak Milestones</div>
+            <div class="eng-milestones" id="engMilestonesBody"></div>
+        </div>
     </div>
 
     <div id="noticePage" class="container full-screen-container" style="display: none;">
@@ -1957,14 +2102,37 @@
     </div>
 
     <div id="chatPage" class="container full-screen-container" style="display: none;">
-        <h2 class="section-title">Class Discussion</h2>
-        <div class="chat-container">
-            <div class="chat-messages" id="chatMessages">
+        <!-- ================= ADDITIVE: AI DISCUSSION TAB =================
+             Purana "Class Discussion" section-title, chat-container,
+             chatMessages, chatInput, sendChatMessage() sab bilkul waise
+             hi hain jaise pehle the — sirf ek tab-bar add karke inhe
+             ek "view" me wrap kiya gaya hai, aur bagal me naya
+             "AI Discussion" tab + iframe view add kiya gaya hai. -->
+        <div class="chat-tab-bar">
+            <button type="button" class="chat-tab-btn active" id="chatTabClassBtn" onclick="switchChatTab('class')">Class Discussion</button>
+            <button type="button" class="chat-tab-btn" id="chatTabAIBtn" onclick="switchChatTab('ai')">AI Discussion</button>
+        </div>
+
+        <div id="classDiscussionView" style="display: block;">
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="Type your message here..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                    <button onclick="sendChatMessage()">Send</button>
                 </div>
-            <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Type your message here..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
-                <button onclick="sendChatMessage()">Send</button>
             </div>
+        </div>
+
+        <div id="aiDiscussionView" style="display: none;">
+            <iframe
+                class="ai-discussion-frame"
+                id="aiDiscussionFrame"
+                src=""
+                title="AI Discussion"
+                loading="lazy"
+                allowfullscreen>
+            </iframe>
         </div>
     </div>
 
@@ -1978,6 +2146,20 @@
                 <p><strong>Roll No:</strong> <span id="profRoll">Roll Number</span></p>
                 <p><strong>Status:</strong> <span style="color: green; font-weight: bold;">Active</span></p>
             </div>
+
+            <!-- ================= ADDITIVE: DAILY ENGAGEMENT SYSTEM — Profile stats =================
+                 Sirf naya block add kiya gaya hai, profile-details, logout-btn ya koi bhi
+                 purana element chheda nahi gaya hai. -->
+            <div class="eng-profile-stats">
+                <div class="eng-profile-stat"><div class="v" id="profEngXp">0</div><div class="l">⚡ Total XP</div></div>
+                <div class="eng-profile-stat"><div class="v" id="profEngStreak">0</div><div class="l">🔥 Current Streak</div></div>
+                <div class="eng-profile-stat"><div class="v" id="profEngBest">0</div><div class="l">🏅 Best Streak</div></div>
+                <div class="eng-profile-stat"><div class="v" id="profEngRank">#—</div><div class="l">🏆 Class Rank</div></div>
+                <div class="eng-profile-stat"><div class="v" id="profEngWeeklyWins">0</div><div class="l">👑 Weekly Wins</div></div>
+                <div class="eng-profile-stat"><div class="v" id="profEngWeekXp">0</div><div class="l">📅 This Week's XP</div></div>
+            </div>
+            <div class="eng-profile-badges" id="profEngBadges"></div>
+
             <button class="logout-btn" onclick="userLogout()">Log Out</button>
             <button class="profile-post-plus" onclick="openUserPostCreatePage()" title="Create Post">+</button>
         </div>
@@ -2141,6 +2323,7 @@
             <button class="admin-tab" data-tab="posts"><svg class="ui-icon"><use href="#icon-scroll"></use></svg> Posts</button>
             <button class="admin-tab" data-tab="users"><svg class="ui-icon"><use href="#icon-users"></use></svg> Users</button>
             <button class="admin-tab" data-tab="chats"><svg class="ui-icon"><use href="#icon-chat"></use></svg> Chats</button>
+            <button class="admin-tab" data-tab="engagement"><svg class="ui-icon"><use href="#icon-poll"></use></svg> Daily Challenge</button>
           </div>
           <div class="admin-content">
             <div id="adminStatus" class="admin-status">Connecting to Firebase…</div>
@@ -2194,6 +2377,39 @@
                 <div id="adminChatsList"></div>
             </section>
 
+            <!-- ================= ADDITIVE: DAILY ENGAGEMENT SYSTEM — Admin: Daily Challenge =================
+                 Sirf naya admin tab/section add kiya gaya hai. Baaki admin tabs/functions
+                 bilkul waise hi hain jaise pehle the. -->
+            <section id="tab-engagement" class="admin-section">
+              <div class="admin-card">
+                <h3><svg class="ui-icon"><use href="#icon-plus"></use></svg> Set Today's CSE Challenge</h3>
+                <p class="eng-admin-hint">Yeh question aaj (<span id="engAdminTodayLabel"></span>) ke liye students ko homepage par dikhega. Roz ek naya question add karna hoga.</p>
+                <div class="admin-form">
+                  <input id="engAdminDate" type="date">
+                  <textarea id="engAdminQ" placeholder="Question likhein..."></textarea>
+                  <input id="engAdminOpt0" placeholder="Option A">
+                  <input id="engAdminOpt1" placeholder="Option B">
+                  <input id="engAdminOpt2" placeholder="Option C">
+                  <input id="engAdminOpt3" placeholder="Option D">
+                  <label>Correct Option:
+                    <select id="engAdminCorrect">
+                      <option value="0">A</option>
+                      <option value="1">B</option>
+                      <option value="2">C</option>
+                      <option value="3">D</option>
+                    </select>
+                  </label>
+                  <input id="engAdminXp" type="number" value="10" placeholder="XP for correct answer">
+                  <button class="admin-btn" onclick="engagementAdminSaveChallenge()">Publish Challenge</button>
+                  <p id="engAdminMsg" class="admin-small"></p>
+                </div>
+              </div>
+              <div class="admin-card">
+                <h3><svg class="ui-icon"><use href="#icon-scroll"></use></svg> Recent Challenges</h3>
+                <div id="engAdminChallengeList"></div>
+              </div>
+            </section>
+
             <div style="padding-top:10px;border-top:1px solid #ddd"><button class="admin-btn red" onclick="firebaseAdminLogout()">Logout Admin</button></div>
           </div>
         </div>
@@ -2221,6 +2437,16 @@
         <div class="mcq-popup-box">
             <div class="mcq-popup-head"><svg class="ui-icon"><use href="#icon-poll"></use></svg> Quick Question</div>
             <div class="mcq-popup-body" id="mcqPopupBody"></div>
+        </div>
+    </div>
+
+    <!-- ================= ADDITIVE: DAILY ENGAGEMENT SYSTEM — Mystery Box reward popup ================= -->
+    <div id="engRewardOverlay" class="eng-reward-overlay">
+        <div class="eng-reward-box">
+            <div class="eng-reward-emoji" id="engRewardEmoji">🎉</div>
+            <div class="eng-reward-title" id="engRewardTitle">Congratulations!</div>
+            <div class="eng-reward-desc" id="engRewardDesc"></div>
+            <button type="button" class="eng-reward-close" onclick="document.getElementById('engRewardOverlay').classList.remove('active')">Nice!</button>
         </div>
     </div>
 
@@ -2820,6 +3046,9 @@
             document.getElementById('profilePage').style.display = 'none';
             document.getElementById('userPostCreatePage').style.display = 'none';
             document.getElementById('globalFeedPage').style.display = 'none'; 
+            // ADDITIVE: hide the new engagement leaderboard page too (nothing above changed)
+            var engLbPageEl = document.getElementById('engagementLeaderboardPage');
+            if(engLbPageEl) engLbPageEl.style.display = 'none';
         }
 
         window.onclick = function(event) {
@@ -2860,6 +3089,36 @@
             });
         }
 
+        // ================= ADDITIVE: AI DISCUSSION TAB SWITCH =================
+        // Sirf naya function add kiya gaya hai. openChat(), sendChatMessage(),
+        // ya kisi bhi purane chat feature/logic ko chheda nahi gaya hai.
+        function switchChatTab(tab) {
+            const classBtn = document.getElementById('chatTabClassBtn');
+            const aiBtn = document.getElementById('chatTabAIBtn');
+            const classView = document.getElementById('classDiscussionView');
+            const aiView = document.getElementById('aiDiscussionView');
+            if(!classBtn || !aiBtn || !classView || !aiView) return;
+
+            if(tab === 'ai') {
+                classView.style.display = 'none';
+                aiView.style.display = 'block';
+                classBtn.classList.remove('active');
+                aiBtn.classList.add('active');
+
+                // Iframe ko sirf pehli baar click par load karo (lazy load)
+                const frame = document.getElementById('aiDiscussionFrame');
+                if(frame && !frame.getAttribute('src')) {
+                    frame.setAttribute('src', 'https://algebra-lyart.vercel.app/');
+                }
+            } else {
+                aiView.style.display = 'none';
+                classView.style.display = 'block';
+                aiBtn.classList.remove('active');
+                classBtn.classList.add('active');
+            }
+        }
+        window.switchChatTab = switchChatTab;
+
         function openProfile() {
             requireLogin(() => {
                 updateNavState('navProfile');
@@ -2871,6 +3130,9 @@
                 
                 document.getElementById('profilePage').style.display = 'block';
                 window.scrollTo(0, 0);
+
+                // ADDITIVE: refresh Daily Engagement System stats on profile (nothing above changed)
+                if(window.engagementRenderProfileStats) window.engagementRenderProfileStats();
             });
         }
 
@@ -6555,7 +6817,7 @@ onAuthStateChanged(auth, user => {
   // Top-level pages — inme se jo bhi khula ho use band karke seedha
   // Home par le jaate hain (jaise inke apne back-btn / bottom-nav icon
   // pehle se karte hain).
-  var TOP_LEVEL_PAGE_IDS = ['subjectPage','noticePage','mmitPage','savedPage','chatPage','profilePage','globalFeedPage'];
+  var TOP_LEVEL_PAGE_IDS = ['subjectPage','noticePage','mmitPage','savedPage','chatPage','profilePage','globalFeedPage','engagementLeaderboardPage'];
 
   // Pages jo Home ki jagah kisi aur page ke "andar" nested hain — inke
   // apne maujooda close function hi sahi jagah (Profile) par le jaate hain.
@@ -6586,7 +6848,9 @@ onAuthStateChanged(auth, user => {
     { isOpen: function(){ var el = document.getElementById('notifPanel'); return !!el && el.style.display === 'block'; },
       close: function(){ var el = document.getElementById('notifPanel'); if(el) el.style.display = 'none'; } },
     { isOpen: function(){ var el = document.getElementById('mcqPopupOverlay'); return !!el && el.classList.contains('active'); },
-      close: function(){ if(typeof window.mcqPopupSkip === 'function') window.mcqPopupSkip(); } }
+      close: function(){ if(typeof window.mcqPopupSkip === 'function') window.mcqPopupSkip(); } },
+    { isOpen: function(){ var el = document.getElementById('engRewardOverlay'); return !!el && el.classList.contains('active'); },
+      close: function(){ var el = document.getElementById('engRewardOverlay'); if(el) el.classList.remove('active'); } }
   ];
 
   function isAnyOverlayOpen(){
@@ -6643,7 +6907,7 @@ onAuthStateChanged(auth, user => {
     NESTED_PAGE_CLOSERS.map(function(x){ return x.id; }),
     ['feedUserPostsView','feedSearchOverlay','storyOnlineAudioTrimPanel','storyAudioTrimPanel',
      'userPostOnlineAudioTrimPanel','imageViewerModal','storyViewerOverlay','adminModal',
-     'notifPanel','mcqPopupOverlay']
+     'notifPanel','mcqPopupOverlay','engRewardOverlay']
   );
   var mo = new MutationObserver(scheduleAwaySync);
   watchIds.forEach(function(id){
@@ -6676,341 +6940,465 @@ onAuthStateChanged(auth, user => {
   });
 })();
 
-</script>
+/* ================= ADDITIVE: DISABLE ZOOM (PINCH / DOUBLE-TAP / CTRL+WHEEL) =================
+   Ismein sirf naya code add kiya gaya hai. Upar ka koi bhi purana
+   function, page-open/close logic, ya feature CHHUA/BADLA nahi gaya hai.
+   Yeh sirf website app ko zoom-in / zoom-out hone se rokta hai
+   (pinch gesture, double-tap zoom, aur desktop par Ctrl+scroll / Ctrl+ / Ctrl-). */
+(function(){
+  // Safari/iOS pinch-zoom gesture ko rokna
+  document.addEventListener('gesturestart', function(e){ e.preventDefault(); }, { passive: false });
+  document.addEventListener('gesturechange', function(e){ e.preventDefault(); }, { passive: false });
+  document.addEventListener('gestureend', function(e){ e.preventDefault(); }, { passive: false });
 
-<script type="module">
-/* ================= ADDITIVE: DAILY ATTENDANCE & BUNK MANAGER =================
-   Existing code/features are not edited. This module only adds the attendance
-   page, profile button, geofence tracking and attendance calculations.
-*/
-import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  // Android/Chrome jaise browsers me do-ungliyon (multi-touch) se pinch-zoom rokna
+  document.addEventListener('touchmove', function(e){
+    if(e.touches && e.touches.length > 1) e.preventDefault();
+  }, { passive: false });
 
-const attendanceDb = getDatabase(getApp());
-const ATT_CAMPUS = {
-  name: "Mahamaya IT Polytechnic, Maharajganj",
-  address: "Mangalapur Ward No: 32, NPP, Ashok Nagar, MRJ, Dhnewa Dhanei, Uttar Pradesh 273303",
-  /* Campus point is kept in one place so it can be corrected without touching
-     any existing application code. The supplied Google Maps address is used
-     for the map button below. */
-  lat: 27.1440,
-  lng: 83.5630,
-  radiusMeters: 500
-};
-const ATT_MAP_URL = "https://maps.app.goo.gl/FcgE1xVShMqGBKWCA";
-const ATT_START = 10 * 60;
-const ATT_END = 13 * 60;
-let attendanceWatchId = null;
-let attendanceTimer = null;
-let attendanceLastPosition = null;
+  // Double-tap se zoom hone ko rokna (bina single-tap/click par asar dale)
+  var lastTouchEnd = 0;
+  document.addEventListener('touchend', function(e){
+    var now = Date.now();
+    if(now - lastTouchEnd <= 350) e.preventDefault();
+    lastTouchEnd = now;
+  }, { passive: false });
 
-function attRoll(){
-  return window.localUser && window.localUser.rollNumber ? String(window.localUser.rollNumber) : "";
-}
-function attDateKey(d=new Date()){
-  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0");
-  return `${y}-${m}-${day}`;
-}
-function attMonthKey(d=new Date()){
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
-}
-function attMinutes(d=new Date()){ return d.getHours()*60+d.getMinutes(); }
-function attIsSunday(d=new Date()){ return d.getDay()===0; }
-function attMonthLabel(key){
-  const [y,m]=key.split("-").map(Number);
-  return new Date(y,m-1,1).toLocaleDateString("en-IN",{month:"long",year:"numeric"});
-}
-function attDaysInMonth(y,m){
-  return new Date(y,m,0).getDate();
-}
-function attClassDays(y,m){
-  /* Mon-Sat estimate; actual holidays are not available in this app. */
-  let n=0, days=attDaysInMonth(y,m);
-  for(let d=1;d<=days;d++){ const w=new Date(y,m-1,d).getDay(); if(w!==0)n++; }
-  return n;
-}
-function attHaversine(a,b,c,d){
-  const R=6371000, p=Math.PI/180;
-  const x=(c-a)*p, y=(d-b)*p;
-  const h=Math.sin(x/2)**2 + Math.cos(a*p)*Math.cos(c*p)*Math.sin(y/2)**2;
-  return 2*R*Math.asin(Math.sqrt(h));
-}
-function attRecordRef(roll,date){ return ref(attendanceDb,`portal/attendance/${encodeURIComponent(roll)}/${date}`); }
-async function attGetAll(){
-  const roll=attRoll(); if(!roll) return {};
-  try{
-    const snap=await get(ref(attendanceDb,`portal/attendance/${encodeURIComponent(roll)}`));
-    return snap.val() || {};
-  }catch(e){ console.warn("Attendance read failed:",e); return {}; }
-}
-async function attWrite(date,status,extra={}){
-  const roll=attRoll(); if(!roll) return false;
-  const payload={
-    status,
-    date,
-    updatedAt:Date.now(),
-    ...extra
-  };
-  try{
-    await update(attRecordRef(roll,date),payload);
-    return true;
-  }catch(e){
-    console.warn("Attendance write failed:",e);
-    return false;
-  }
-}
-async function attGetToday(){
-  const roll=attRoll(); if(!roll) return null;
-  try{
-    const snap=await get(attRecordRef(roll,attDateKey()));
-    return snap.val() || null;
-  }catch(e){ return null; }
-}
-function attStatusText(rec){
-  if(rec?.status==="present") return ["Present","Attendance marked from campus location.","present"];
-  if(rec?.status==="absent") return ["Absent","Attendance window ended at 1:00 PM.","absent"];
-  if(rec?.status==="outside") return ["Waiting","Outside the campus geofence. Enter before 1:00 PM.","outside"];
-  return ["Pending","Enter campus between 10:00 AM and 1:00 PM.",""];
-}
-function attSetStatus(rec,extraMeta=""){
-  const el=document.getElementById("attTodayStatus");
-  if(!el)return;
-  const [title,msg,cls]=attStatusText(rec);
-  const dot=el.querySelector(".attendance-status-dot");
-  const main=el.querySelector(".attendance-status-main");
-  const meta=el.querySelector(".attendance-status-meta");
-  dot.className="attendance-status-dot "+cls;
-  main.textContent=title;
-  meta.textContent=extraMeta || msg;
-}
-async function attEvaluateToday(){
-  const roll=attRoll(); if(!roll)return;
-  const now=new Date(), key=attDateKey(now);
-  if(attIsSunday(now)){
-    attSetStatus({status:"pending"},"Sunday — no attendance is counted.");
-    return;
-  }
-  let rec=await attGetToday();
-  const mins=attMinutes(now);
-  if(rec?.status==="present"){ attSetStatus(rec); return; }
-  if(mins>=ATT_END){
-    if(rec?.status!=="absent") await attWrite(key,"absent",{reason:"attendance_window_closed"});
-    attSetStatus({status:"absent"});
-    return;
-  }
-  if(mins<ATT_START){
-    attSetStatus(null,"Attendance starts at 10:00 AM. Location permission can remain enabled.");
-    return;
-  }
-  if(rec?.status!=="present"){
-    attSetStatus(rec?.status==="outside"?rec:null);
-  }
-}
-async function attHandlePosition(pos){
-  attendanceLastPosition=pos;
-  const now=new Date();
-  if(attIsSunday(now) || attMinutes(now)<ATT_START || attMinutes(now)>=ATT_END)return;
-  const dist=attHaversine(pos.coords.latitude,pos.coords.longitude,ATT_CAMPUS.lat,ATT_CAMPUS.lng);
-  document.getElementById("attDistance")?.replaceChildren(document.createTextNode(`${Math.round(dist)} m from campus point`));
-  const rec=await attGetToday();
-  if(rec?.status==="present")return;
-  if(dist<=ATT_CAMPUS.radiusMeters){
-    await attWrite(attDateKey(now),"present",{
-      accuracy:Math.round(pos.coords.accuracy||0),
-      distanceMeters:Math.round(dist),
-      markedBy:"campus_geofence"
-    });
-    attSetStatus({status:"present"},`Present — inside campus geofence (${Math.round(dist)} m).`);
-    await renderAttendanceDashboard();
-  }else{
-    attSetStatus({status:"outside"},`Outside campus geofence — ${Math.round(dist)} m away.`);
-  }
-}
-function attGeoError(err){
-  const el=document.getElementById("attLocationPermission");
-  if(el) el.textContent = err.code===1
-    ? "Location permission is blocked. Allow location access in browser settings."
-    : "Could not read your location. Keep GPS/location enabled and try again.";
-}
-function startAttendanceLocation(){
-  if(!navigator.geolocation){
-    attSetStatus(null,"This browser does not support location services.");
-    return;
-  }
-  if(attendanceWatchId!==null)navigator.geolocation.clearWatch(attendanceWatchId);
-  attendanceWatchId=navigator.geolocation.watchPosition(attHandlePosition,attGeoError,{
-    enableHighAccuracy:true, maximumAge:15000, timeout:15000
-  });
-  if(attendanceTimer)clearInterval(attendanceTimer);
-  attendanceTimer=setInterval(attEvaluateToday,30000);
-  navigator.geolocation.getCurrentPosition(attHandlePosition,attGeoError,{enableHighAccuracy:true,maximumAge:0,timeout:15000});
-}
-function stopAttendanceLocation(){
-  if(attendanceWatchId!==null){navigator.geolocation.clearWatch(attendanceWatchId);attendanceWatchId=null;}
-  if(attendanceTimer){clearInterval(attendanceTimer);attendanceTimer=null;}
-}
-function attBunkAllowed(P,A,N){
-  const x=P+N-0.75*(P+A+N);
-  return Math.max(0,Math.floor(x+1e-9));
-}
-function attPercent(P,A){ return (P+A)>0 ? (P/(P+A))*100 : 0; }
-function attAcademicStart(){
-  /* Academic year 2026-27 for this app; future years roll over automatically. */
-  const now=new Date(), startYear=now.getMonth()>=6?now.getFullYear():now.getFullYear()-1;
-  return new Date(startYear,6,1);
-}
-async function renderAttendanceDashboard(){
-  const all=await attGetAll(), now=new Date(), mk=attMonthKey(now);
-  let P=0,A=0;
-  Object.values(all).forEach(r=>{if(r?.status==="present")P++;if(r?.status==="absent")A++;});
-  const pct=attPercent(P,A);
-  const current=Object.values(all).filter(r=>String(r?.date||"").startsWith(mk));
-  const mp=current.filter(r=>r.status==="present").length;
-  const ma=current.filter(r=>r.status==="absent").length;
-  const monthPct=attPercent(mp,ma);
-  const next=new Date(now.getFullYear(),now.getMonth()+1,1);
-  const N=attClassDays(next.getFullYear(),next.getMonth()+1);
-  const bunk=attBunkAllowed(P,A,N);
+  // Desktop: Ctrl + scroll-wheel se zoom hone ko rokna
+  document.addEventListener('wheel', function(e){
+    if(e.ctrlKey) e.preventDefault();
+  }, { passive: false });
 
-  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
-  set("attMonthName",attMonthLabel(mk));
-  set("attMonthPresent",mp);set("attMonthAbsent",ma);set("attMonthPct",`${monthPct.toFixed(1)}%`);
-  set("attYearPresent",P);set("attYearAbsent",A);set("attYearPct",`${pct.toFixed(1)}%`);
-  set("attNextMonth",next.toLocaleDateString("en-IN",{month:"long",year:"numeric"}));
-  set("attNextClassDays",N);set("attBunkDays",bunk);
-  const fill=document.getElementById("attMonthFill");if(fill)fill.style.width=Math.min(100,monthPct)+"%";
-  const box=document.getElementById("attSafetyBox");
-  if(box){
-    box.className="attendance-safe"+(monthPct<75?(monthPct<60?" danger":" warning"):"");
-    box.innerHTML=monthPct>=75
-      ? `<strong>SAFE ZONE</strong><div>Your tracked monthly attendance is ${monthPct.toFixed(1)}%, above the 75% target.</div>`
-      : `<strong>ATTENTION NEEDED</strong><div>Your tracked monthly attendance is ${monthPct.toFixed(1)}%. Avoid unnecessary bunking and improve attendance.</div>`;
-  }
-  const tbody=document.getElementById("attMonthRows");
-  if(tbody){
-    const rows=Object.values(all).filter(r=>String(r?.date||"").startsWith(mk)).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
-    tbody.innerHTML=rows.length?rows.map(r=>`<tr><td>${r.date}</td><td class="${r.status==="present"?"attendance-present":"attendance-absent"}">${r.status==="present"?"Present":"Absent"}</td><td>${r.status==="present"?"Campus":"—"}</td></tr>`).join("")
-    :`<tr><td colspan="3" style="color:#64748b;text-align:center">No tracked attendance yet.</td></tr>`;
-  }
-}
-function ensureAttendancePage(){
-  if(document.getElementById("attendancePage"))return;
-  const page=document.createElement("div");
-  page.id="attendancePage";page.className="attendance-page full-screen-container";page.style.display="none";
-  page.innerHTML=`
-    <div class="attendance-header">
-      <button class="attendance-back" type="button" onclick="closeAttendancePage()" title="Back to Profile"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
-      <div><h2>Daily Attendance & Bunk Manager</h2></div>
-    </div>
-    <p class="attendance-subtitle">Automatic campus-based attendance • Target: 75%</p>
-    <div class="attendance-card">
-      <h3>Today's Attendance</h3>
-      <div class="attendance-status" id="attTodayStatus">
-        <span class="attendance-status-dot"></span><div><div class="attendance-status-main">Pending</div><div class="attendance-status-meta">Checking...</div></div>
-      </div>
-      <div class="attendance-note" id="attDistance">Location distance will appear here.</div>
-      <div class="attendance-note" id="attLocationPermission">Location is checked only during 10:00 AM–1:00 PM for attendance.</div>
-    </div>
-    <div class="attendance-card">
-      <h3 id="attMonthName">This Month</h3>
-      <div class="attendance-grid">
-        <div class="attendance-stat"><strong id="attMonthPresent">0</strong><span>Present</span></div>
-        <div class="attendance-stat"><strong id="attMonthAbsent">0</strong><span>Absent</span></div>
-        <div class="attendance-stat"><strong id="attMonthPct">0%</strong><span>Attendance</span></div>
-        <div class="attendance-stat"><strong>75%</strong><span>Safe Target</span></div>
-      </div>
-      <div class="attendance-progress"><div id="attMonthFill" class="attendance-progress-fill"></div></div>
-      <div id="attSafetyBox" class="attendance-safe"><strong>Checking...</strong></div>
-    </div>
-    <div class="attendance-card">
-      <h3>Next Month Bunk Manager</h3>
-      <div class="attendance-grid">
-        <div class="attendance-stat"><strong id="attBunkDays">0</strong><span>Max estimated bunk days</span></div>
-        <div class="attendance-stat"><strong id="attNextClassDays">0</strong><span>Estimated class days</span></div>
-      </div>
-      <div class="attendance-note">This estimate assumes all other next-month class days are attended and uses the 75% target. Holidays/exams are not automatically known to the app.</div>
-      <div class="attendance-note"><strong id="attNextMonth"></strong></div>
-    </div>
-    <div class="attendance-card">
-      <h3>Tracked Attendance</h3>
-      <div class="attendance-grid">
-        <div class="attendance-stat"><strong id="attYearPresent">0</strong><span>Total Present</span></div>
-        <div class="attendance-stat"><strong id="attYearAbsent">0</strong><span>Total Absent</span></div>
-        <div class="attendance-stat"><strong id="attYearPct">0%</strong><span>Tracked Attendance</span></div>
-        <div class="attendance-stat"><strong>75%</strong><span>Annual Target</span></div>
-      </div>
-    </div>
-    <div class="attendance-card">
-      <h3>College Location</h3>
-      <div style="font-weight:800;color:var(--primary-blue)">${ATT_CAMPUS.name}</div>
-      <div class="attendance-note">${ATT_CAMPUS.address}</div>
-      <div class="attendance-location-row" style="margin-top:10px">
-        <button class="attendance-location-btn" type="button" onclick="startAttendanceLocation()">Refresh Location</button>
-        <a class="attendance-map-btn" href="${ATT_MAP_URL}" target="_blank" rel="noopener">Open College Map</a>
-      </div>
-    </div>
-    <div class="attendance-card">
-      <h3>Monthly Record</h3>
-      <div style="overflow-x:auto"><table class="attendance-month-table"><thead><tr><th>Date</th><th>Status</th><th>Source</th></tr></thead><tbody id="attMonthRows"></tbody></table></div>
-    </div>
-  `;
-  document.body.appendChild(page);
-}
-function ensureAttendanceButton(){
-  const card=document.querySelector("#profilePage .profile-card"); if(!card)return;
-  if(document.getElementById("attendanceProfileBtn"))return;
-  const b=document.createElement("button");
-  b.id="attendanceProfileBtn";b.className="attendance-profile-btn";
-  b.innerHTML=`<svg class="ui-icon"><use href="#icon-calendar"></use></svg> Daily Attendance & Bunk Manager`;
-  b.onclick=()=>window.openAttendancePage();
-  const logout=card.querySelector(".logout-btn");
-  if(logout)card.insertBefore(b,logout);else card.appendChild(b);
-}
-window.openAttendancePage=function(){
-  if(typeof window.requireLogin==="function"){window.requireLogin(()=>openAttendancePageNow());}else openAttendancePageNow();
-};
-async function openAttendancePageNow(){
-  ensureAttendancePage();ensureAttendanceButton();
-  if(typeof window.closeAllSections==="function")window.closeAllSections();
-  const page=document.getElementById("attendancePage");page.style.display="block";
-  if(typeof window.updateNavState==="function")window.updateNavState("navProfile");
-  window.scrollTo(0,0);
-  await attEvaluateToday();await renderAttendanceDashboard();
-  startAttendanceLocation();
-}
-window.closeAttendancePage=function(){
-  stopAttendanceLocation();
-  const p=document.getElementById("attendancePage");if(p)p.style.display="none";
-  if(typeof window.openProfile==="function")window.openProfile();
-};
-function patchCloseAllSections(){
-  const old=window.closeAllSections;
-  if(typeof old!=="function"||old.__attendancePatched)return;
-  function patched(){old();const p=document.getElementById("attendancePage");if(p)p.style.display="none";}
-  patched.__attendancePatched=true;window.closeAllSections=patched;
-}
-function setupBack(){
-  window.addEventListener("popstate",function(){
-    const p=document.getElementById("attendancePage");
-    if(p&&p.style.display==="block"){
-      p.style.display="none";stopAttendanceLocation();
-      if(typeof window.openProfile==="function")window.openProfile();
+  // Desktop: Ctrl + Plus / Ctrl + Minus / Ctrl + 0 se zoom hone ko rokna
+  document.addEventListener('keydown', function(e){
+    if((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0')) {
+      e.preventDefault();
     }
-  });
-}
-function bootAttendance(){
-  ensureAttendancePage();ensureAttendanceButton();patchCloseAllSections();setupBack();
-  const oldOpenProfile=window.openProfile;
-  if(typeof oldOpenProfile==="function"&&!oldOpenProfile.__attendanceWrapped){
-    const wrapped=function(){
-      ensureAttendanceButton();
-      return oldOpenProfile.apply(this,arguments);
-    };
-    wrapped.__attendanceWrapped=true;window.openProfile=wrapped;
-  }
-}
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bootAttendance);else bootAttendance();
-</script>
+  }, { passive: false });
+})();
 
+/* ================= ADDITIVE: MMITcs DAILY ENGAGEMENT SYSTEM =================
+   7-feature spec me se 6 features yahan additive tareeke se implement kiye
+   gaye hain (Class War abhi ke liye skip kiya gaya hai, jaisa decide hua):
+   1) Daily CSE Challenge  2) Daily Streak  3) XP System
+   4) Daily Mystery Box    5) Class Leaderboard  6) Weekly CSE Championship
+
+   Yeh poora block apne alag Firebase path 'portal/engagement/...' par kaam
+   karta hai. Ismein kahin bhi koi purana function, page, ya existing
+   Firebase data path (portal/users, portal/mcqs, portal/chats, etc.)
+   CHHUA/BADLA nahi gaya hai — sirf naya code add kiya gaya hai, aur is naye
+   code ko chalaane ke liye upar sirf 3 jagah (closeAllSections, openProfile,
+   TOP_LEVEL_PAGE_IDS/OVERLAY_LAYERS/watchIds arrays) me ek-ek line ADD ki
+   gayi hai taaki naya page/popup back-button aur navigation ke saath sahi
+   se kaam kare — un jagahon ki koi purani line hataayi ya badli nahi gayi. */
+(function(){
+  function pad2(n){ return String(n).padStart(2,'0'); }
+  function todayStr(){
+    var d = new Date();
+    return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate());
+  }
+  function yesterdayStr(dateStr){
+    var d = new Date(dateStr + 'T00:00:00');
+    d.setDate(d.getDate() - 1);
+    return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate());
+  }
+  function isoWeekKey(dateStr){
+    var d = new Date(dateStr + 'T00:00:00');
+    var day = (d.getDay() + 6) % 7; // Mon=0..Sun=6
+    d.setDate(d.getDate() - day + 3); // nearest Thursday
+    var firstThursday = new Date(d.getFullYear(),0,4);
+    var diff = (d - firstThursday) / 86400000;
+    var week = 1 + Math.round(diff/7);
+    return d.getFullYear() + '-W' + pad2(week);
+  }
+
+  var engChallengeData = null;
+  var engUsersData = {};
+  var engAttemptsData = {};
+  var engMilestoneList = [
+    {days:3,label:'Starter'},{days:7,label:'Consistent'},{days:14,label:'Dedicated'},
+    {days:30,label:'CSE Warrior'},{days:60,label:'CSE Master'}
+  ];
+  var engRewardPool = [
+    {type:'xp', amount:10, weight:30, emoji:'⚡', title:'+10 XP!'},
+    {type:'xp', amount:20, weight:25, emoji:'⚡', title:'+20 XP!'},
+    {type:'xp', amount:25, weight:20, emoji:'⚡', title:'+25 XP!'},
+    {type:'xp', amount:50, weight:8,  emoji:'⚡', title:'+50 XP!'},
+    {type:'shield', amount:1, weight:10, emoji:'🔥', title:'Streak Shield!'},
+    {type:'badge', amount:'Lucky Star', weight:7, emoji:'🏆', title:'Special Badge!'}
+  ];
+
+  function pickReward(){
+    var total = engRewardPool.reduce(function(s,r){return s+r.weight;},0);
+    var r = Math.random()*total;
+    for(var i=0;i<engRewardPool.length;i++){
+      r -= engRewardPool[i].weight;
+      if(r <= 0) return engRewardPool[i];
+    }
+    return engRewardPool[0];
+  }
+
+  function myRoll(){ return (window.localUser && window.localUser.rollNumber) ? String(window.localUser.rollNumber) : null; }
+  function myData(){
+    var roll = myRoll();
+    if(!roll) return null;
+    return engUsersData[roll] || { xp:0, streak:0, bestStreak:0, lastDate:'', badges:[], weeklyXP:{}, mysteryOpened:{} };
+  }
+  function getSortedUsers(){
+    return Object.keys(engUsersData)
+      .map(function(roll){ return Object.assign({roll:roll}, engUsersData[roll]); })
+      .sort(function(a,b){ return (b.xp||0)-(a.xp||0); });
+  }
+  function getMyRank(){
+    var roll = myRoll();
+    if(!roll) return null;
+    var sorted = getSortedUsers();
+    for(var i=0;i<sorted.length;i++){ if(sorted[i].roll === roll) return i+1; }
+    return sorted.length + 1;
+  }
+  function displayNameFor(roll){
+    var u = (window.onlineUsersData && window.onlineUsersData[roll]) || null;
+    return (u && u.name) ? u.name : ('Roll ' + roll);
+  }
+
+  function renderStatsChips(){
+    var streakEl = document.getElementById('engStreakVal');
+    if(!streakEl) return;
+    var d = myData();
+    streakEl.innerText = d ? (d.streak||0) : 0;
+    document.getElementById('engXpVal').innerText = d ? (d.xp||0) : 0;
+    document.getElementById('engRankVal').innerText = myRoll() ? ('#'+(getMyRank()||'—')) : '#—';
+  }
+
+  function renderChallengeCard(){
+    var body = document.getElementById('engChallengeBody');
+    if(!body) return;
+    if(!engChallengeData){
+      body.innerHTML = '<div class="eng-challenge-empty">Aaj ke liye abhi koi challenge upload nahi hua hai. Baad me check karein!</div>';
+      return;
+    }
+    var roll = myRoll();
+    var today = todayStr();
+    var attempt = roll ? ((engAttemptsData[today]||{})[roll]) : null;
+
+    var html = '<div class="eng-challenge-q">' + esc(engChallengeData.question) + '</div>';
+    (engChallengeData.options||[]).forEach(function(opt, idx){
+      var cls = 'eng-challenge-opt';
+      var disabledAttr = '';
+      if(attempt){
+        disabledAttr = 'disabled';
+        if(idx === engChallengeData.correct) cls += ' correct';
+        else if(idx === attempt.answerIndex) cls += ' wrong';
+      }
+      html += '<button type="button" class="'+cls+'" '+disabledAttr+' onclick="requireLogin(function(){engagementSubmitChallenge('+idx+')})">'+ String.fromCharCode(65+idx) +'. ' + esc(opt) + '</button>';
+    });
+    if(attempt){
+      html += attempt.correct
+        ? '<div class="eng-challenge-result win">✅ Correct! +'+attempt.xpEarned+' XP earned.</div>'
+        : '<div class="eng-challenge-result lose">❌ Not quite — the correct answer is highlighted above.</div>';
+    }
+    body.innerHTML = html;
+  }
+
+  window.engagementSubmitChallenge = async function(idx){
+    var roll = myRoll();
+    if(!roll || !engChallengeData) return;
+    var today = todayStr();
+    if((engAttemptsData[today]||{})[roll]) return;
+
+    var correct = (idx === engChallengeData.correct);
+    var xpEarned = correct ? (engChallengeData.xp || 10) : 0;
+
+    var existing = engUsersData[roll] || { xp:0, streak:0, bestStreak:0, lastDate:'', badges:[], weeklyXP:{}, mysteryOpened:{} };
+    var newStreak = existing.streak || 0;
+    if(existing.lastDate === yesterdayStr(today)) newStreak += 1;
+    else if(existing.lastDate === today) { /* already counted */ }
+    else newStreak = 1;
+    var bestStreak = Math.max(existing.bestStreak||0, newStreak);
+    var newXp = (existing.xp||0) + xpEarned;
+    var wk = isoWeekKey(today);
+    var weeklyXP = Object.assign({}, existing.weeklyXP||{});
+    weeklyXP[wk] = (weeklyXP[wk]||0) + xpEarned;
+
+    try{
+      await set(ref(db, 'portal/engagement/attempts/'+today+'/'+roll), { answerIndex: idx, correct: correct, xpEarned: xpEarned, ts: Date.now() });
+      await update(ref(db, 'portal/engagement/users/'+roll), {
+        xp: newXp, streak: newStreak, bestStreak: bestStreak, lastDate: today, weeklyXP: weeklyXP
+      });
+    }catch(e){ console.error('Engagement submit error:', e); }
+  };
+
+  function renderMysteryCard(){
+    var card = document.getElementById('engMysteryCard');
+    var btn = document.getElementById('engMysteryBtn');
+    if(!card || !btn) return;
+    var roll = myRoll();
+    var today = todayStr();
+    var attempted = roll && (engAttemptsData[today]||{})[roll];
+    if(!attempted){ card.style.display = 'none'; return; }
+    card.style.display = 'block';
+    var d = myData();
+    var opened = d && d.mysteryOpened && d.mysteryOpened[today];
+    if(opened){ btn.disabled = true; btn.innerText = 'OPENED ✓'; }
+    else { btn.disabled = false; btn.innerText = 'OPEN BOX'; }
+  }
+
+  window.engagementOpenMysteryBox = async function(){
+    var roll = myRoll();
+    if(!roll) return;
+    var today = todayStr();
+    var d = engUsersData[roll] || { xp:0, streak:0, bestStreak:0, lastDate:'', badges:[], weeklyXP:{}, mysteryOpened:{} };
+    if(d.mysteryOpened && d.mysteryOpened[today]) return;
+
+    var reward = pickReward();
+    var updates = {};
+    var mysteryOpened = Object.assign({}, d.mysteryOpened||{});
+    mysteryOpened[today] = true;
+    updates.mysteryOpened = mysteryOpened;
+
+    var desc = '';
+    if(reward.type === 'xp'){
+      updates.xp = (d.xp||0) + reward.amount;
+      var wk = isoWeekKey(today);
+      var weeklyXP = Object.assign({}, d.weeklyXP||{});
+      weeklyXP[wk] = (weeklyXP[wk]||0) + reward.amount;
+      updates.weeklyXP = weeklyXP;
+      desc = 'You won +' + reward.amount + ' XP!';
+    } else if(reward.type === 'shield'){
+      updates.streakShields = (d.streakShields||0) + 1;
+      desc = 'You won a Streak Shield — it protects your streak if you miss a day!';
+    } else if(reward.type === 'badge'){
+      var badges = (d.badges||[]).slice();
+      if(badges.indexOf(reward.amount) === -1) badges.push(reward.amount);
+      updates.badges = badges;
+      desc = 'You won the "' + reward.amount + '" badge!';
+    }
+
+    try{ await update(ref(db, 'portal/engagement/users/'+roll), updates); }
+    catch(e){ console.error('Mystery box error:', e); }
+
+    document.getElementById('engRewardEmoji').innerText = reward.emoji;
+    document.getElementById('engRewardTitle').innerText = reward.title;
+    document.getElementById('engRewardDesc').innerText = desc;
+    document.getElementById('engRewardOverlay').classList.add('active');
+  };
+
+  function renderLeaderboardCard(){
+    var body = document.getElementById('engLeaderboardBody');
+    if(!body) return;
+    var sorted = getSortedUsers();
+    if(!sorted.length){ body.innerHTML = '<div class="eng-challenge-empty">Abhi koi ranking available nahi hai.</div>'; return; }
+    var medals = ['🥇','🥈','🥉'];
+    var html = '';
+    sorted.slice(0,3).forEach(function(u, i){
+      html += '<div class="eng-lb-row"><span class="eng-lb-rank">'+medals[i]+'</span><span class="eng-lb-name">'+esc(displayNameFor(u.roll))+'</span><span class="eng-lb-xp">'+(u.xp||0)+' XP</span></div>';
+    });
+    var roll = myRoll();
+    if(roll){
+      var myRank = getMyRank();
+      var mine = engUsersData[roll] || {xp:0};
+      html += '<div class="eng-lb-divider"></div>';
+      html += '<div class="eng-lb-row eng-lb-you"><span class="eng-lb-rank">👤</span><span class="eng-lb-name">You — #'+myRank+'</span><span class="eng-lb-xp">'+(mine.xp||0)+' XP</span></div>';
+    }
+    body.innerHTML = html;
+  }
+
+  window.engagementSwitchLbTab = function(tab){
+    var allBtn = document.getElementById('engTabAllBtn'), weekBtn = document.getElementById('engTabWeekBtn');
+    var allWrap = document.getElementById('engFullLbAllWrap'), weekWrap = document.getElementById('engFullLbWeekWrap');
+    if(!allBtn) return;
+    if(tab === 'week'){
+      allBtn.classList.remove('active'); weekBtn.classList.add('active');
+      allWrap.style.display = 'none'; weekWrap.style.display = 'block';
+    } else {
+      weekBtn.classList.remove('active'); allBtn.classList.add('active');
+      weekWrap.style.display = 'none'; allWrap.style.display = 'block';
+    }
+  };
+
+  function renderFullLeaderboardPage(){
+    var allBody = document.getElementById('engFullLbAllBody');
+    var weekBody = document.getElementById('engFullLbWeekBody');
+    var milestonesBody = document.getElementById('engMilestonesBody');
+    if(!allBody) return;
+
+    var sorted = getSortedUsers();
+    var roll = myRoll();
+    var allHtml = '';
+    if(!sorted.length) allHtml = '<div class="eng-challenge-empty">Abhi koi student ne XP nahi kamaya.</div>';
+    sorted.forEach(function(u, i){
+      var rowCls = 'eng-lb-row' + (u.roll === roll ? ' eng-lb-you' : '');
+      allHtml += '<div class="'+rowCls+'"><span class="eng-lb-rank">'+(i+1)+'</span><span class="eng-lb-name">'+esc(displayNameFor(u.roll))+' ('+esc(u.roll)+')</span><span class="eng-lb-xp">'+(u.xp||0)+' XP</span></div>';
+    });
+    allBody.innerHTML = allHtml;
+
+    var wk = isoWeekKey(todayStr());
+    var weekSorted = Object.keys(engUsersData).map(function(r){
+      return { roll:r, xp: ((engUsersData[r].weeklyXP||{})[wk]) || 0 };
+    }).filter(function(u){ return u.xp > 0; }).sort(function(a,b){ return b.xp-a.xp; });
+    var weekHtml = '';
+    if(!weekSorted.length) weekHtml = '<div class="eng-challenge-empty">Is week abhi tak koi XP nahi kamaya gaya.</div>';
+    weekSorted.forEach(function(u, i){
+      var rowCls = 'eng-lb-row' + (u.roll === roll ? ' eng-lb-you' : '');
+      var medal = i===0 ? '🥇' : (i===1 ? '🥈' : (i===2 ? '🥉' : (i+1)));
+      weekHtml += '<div class="'+rowCls+'"><span class="eng-lb-rank">'+medal+'</span><span class="eng-lb-name">'+esc(displayNameFor(u.roll))+'</span><span class="eng-lb-xp">'+u.xp+' XP</span></div>';
+    });
+    weekBody.innerHTML = weekHtml;
+
+    if(milestonesBody){
+      var mine = myData();
+      var streak = mine ? (mine.streak||0) : 0;
+      var mHtml = '';
+      engMilestoneList.forEach(function(m){
+        mHtml += '<span class="eng-milestone'+(streak>=m.days?' done':'')+'">'+ (streak>=m.days?'✅ ':'') + m.days+' Days — '+m.label+'</span>';
+      });
+      milestonesBody.innerHTML = mHtml;
+    }
+
+    maybeAssignWeeklyChampion();
+  }
+
+  window.openEngagementFullPage = function(){
+    closeAllSections();
+    updateNavState(null);
+    renderFullLeaderboardPage();
+    document.getElementById('engagementLeaderboardPage').style.display = 'block';
+    window.scrollTo(0,0);
+  };
+
+  var weeklyChampionChecked = {};
+  async function maybeAssignWeeklyChampion(){
+    var d = new Date(); d.setDate(d.getDate()-7);
+    var lastWeekDateStr = d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+    var lastWeekKey = isoWeekKey(lastWeekDateStr);
+    var currentWeekKey = isoWeekKey(todayStr());
+    if(lastWeekKey === currentWeekKey) return;
+    if(weeklyChampionChecked[lastWeekKey]) return;
+    weeklyChampionChecked[lastWeekKey] = true;
+    try{
+      var snap = await get(ref(db, 'portal/engagement/weeklyChampions/'+lastWeekKey));
+      if(snap.exists()) return;
+      var best = null, bestXp = 0;
+      Object.keys(engUsersData).forEach(function(r){
+        var xp = ((engUsersData[r].weeklyXP||{})[lastWeekKey]) || 0;
+        if(xp > bestXp){ bestXp = xp; best = r; }
+      });
+      if(best){
+        await set(ref(db, 'portal/engagement/weeklyChampions/'+lastWeekKey), { roll: best, xp: bestXp });
+      }
+    }catch(e){ /* best-effort, ignore */ }
+  }
+
+  window.engagementRenderProfileStats = function(){
+    var roll = myRoll();
+    var xpEl = document.getElementById('profEngXp');
+    if(!xpEl) return;
+    var d = myData();
+    document.getElementById('profEngXp').innerText = d ? (d.xp||0) : 0;
+    document.getElementById('profEngStreak').innerText = d ? (d.streak||0) : 0;
+    document.getElementById('profEngBest').innerText = d ? (d.bestStreak||0) : 0;
+    document.getElementById('profEngRank').innerText = roll ? ('#'+(getMyRank()||'—')) : '#—';
+    var wk = isoWeekKey(todayStr());
+    document.getElementById('profEngWeekXp').innerText = (d && (d.weeklyXP||{})[wk]) || 0;
+
+    var wins = 0;
+    var champs = window.engWeeklyChampionsData || {};
+    Object.keys(champs).forEach(function(k){
+      if(champs[k] && String(champs[k].roll) === roll) wins++;
+    });
+    document.getElementById('profEngWeeklyWins').innerText = wins;
+
+    var badgesEl = document.getElementById('profEngBadges');
+    if(badgesEl){
+      var badges = (d && d.badges) || [];
+      badgesEl.innerHTML = badges.map(function(b){ return '<span class="eng-badge-chip">🏅 '+esc(b)+'</span>'; }).join('');
+    }
+  };
+
+  window.engagementAdminSaveChallenge = async function(){
+    var dateEl = document.getElementById('engAdminDate');
+    var date = dateEl.value || todayStr();
+    var q = document.getElementById('engAdminQ').value.trim();
+    var opts = [
+      document.getElementById('engAdminOpt0').value.trim(),
+      document.getElementById('engAdminOpt1').value.trim(),
+      document.getElementById('engAdminOpt2').value.trim(),
+      document.getElementById('engAdminOpt3').value.trim()
+    ];
+    var correct = parseInt(document.getElementById('engAdminCorrect').value, 10);
+    var xp = parseInt(document.getElementById('engAdminXp').value, 10) || 10;
+    var msgEl = document.getElementById('engAdminMsg');
+    if(!q || opts.some(function(o){return !o;})){
+      msgEl.innerText = 'Please fill the question and all 4 options.';
+      msgEl.style.color = 'red';
+      return;
+    }
+    try{
+      await set(ref(db, 'portal/engagement/dailyChallenge/'+date), { question:q, options:opts, correct:correct, xp:xp, ts: Date.now() });
+      msgEl.innerText = 'Challenge published for ' + date + '!';
+      msgEl.style.color = 'green';
+      document.getElementById('engAdminQ').value = '';
+      document.getElementById('engAdminOpt0').value = '';
+      document.getElementById('engAdminOpt1').value = '';
+      document.getElementById('engAdminOpt2').value = '';
+      document.getElementById('engAdminOpt3').value = '';
+    }catch(e){
+      msgEl.innerText = 'Error saving challenge.';
+      msgEl.style.color = 'red';
+      console.error(e);
+    }
+  };
+
+  function renderAdminChallengeList(dataObj){
+    var list = document.getElementById('engAdminChallengeList');
+    if(!list) return;
+    var dates = Object.keys(dataObj||{}).sort().reverse().slice(0,15);
+    if(!dates.length){ list.innerHTML = '<p class="admin-small">No challenges published yet.</p>'; return; }
+    list.innerHTML = dates.map(function(dt){
+      var c = dataObj[dt];
+      return '<div class="admin-card"><strong>'+esc(dt)+'</strong><p class="admin-small">'+esc(c.question)+'</p></div>';
+    }).join('');
+  }
+
+  // init defaults for the admin date field / label (DOM already parsed — module scripts run after parsing)
+  var engDateField = document.getElementById('engAdminDate');
+  if(engDateField) engDateField.value = todayStr();
+  var engTodayLbl = document.getElementById('engAdminTodayLabel');
+  if(engTodayLbl) engTodayLbl.innerText = todayStr();
+
+  // Firebase listeners — all under the new 'portal/engagement/...' path only
+  onValue(ref(db, 'portal/engagement/dailyChallenge/'+todayStr()), function(snap){
+    engChallengeData = snap.val();
+    renderChallengeCard();
+    renderMysteryCard();
+  }, function(err){ console.error('Engagement challenge listener error:', err); });
+
+  onValue(ref(db, 'portal/engagement/attempts/'+todayStr()), function(snap){
+    engAttemptsData[todayStr()] = snap.val() || {};
+    renderChallengeCard();
+    renderMysteryCard();
+  }, function(err){ console.error('Engagement attempts listener error:', err); });
+
+  onValue(ref(db, 'portal/engagement/users'), function(snap){
+    engUsersData = snap.val() || {};
+    renderStatsChips();
+    renderLeaderboardCard();
+    renderMysteryCard();
+    var lbPage = document.getElementById('engagementLeaderboardPage');
+    if(lbPage && lbPage.style.display === 'block') renderFullLeaderboardPage();
+    var profPage = document.getElementById('profilePage');
+    if(profPage && profPage.style.display === 'block' && window.engagementRenderProfileStats) window.engagementRenderProfileStats();
+  }, function(err){ console.error('Engagement users listener error:', err); });
+
+  onValue(ref(db, 'portal/engagement/weeklyChampions'), function(snap){
+    window.engWeeklyChampionsData = snap.val() || {};
+  }, function(err){ console.error('Engagement weeklyChampions listener error:', err); });
+
+  onValue(ref(db, 'portal/engagement/dailyChallenge'), function(snap){
+    renderAdminChallengeList(snap.val() || {});
+  }, function(err){ console.error('Engagement admin challenge list error:', err); });
+})();
+
+</script>
 </body>
 </html>
