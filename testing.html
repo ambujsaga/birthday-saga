@@ -2323,7 +2323,6 @@
             <button class="admin-tab" data-tab="posts"><svg class="ui-icon"><use href="#icon-scroll"></use></svg> Posts</button>
             <button class="admin-tab" data-tab="users"><svg class="ui-icon"><use href="#icon-users"></use></svg> Users</button>
             <button class="admin-tab" data-tab="chats"><svg class="ui-icon"><use href="#icon-chat"></use></svg> Chats</button>
-            <button class="admin-tab" data-tab="engagement"><svg class="ui-icon"><use href="#icon-poll"></use></svg> Daily Challenge</button>
           </div>
           <div class="admin-content">
             <div id="adminStatus" class="admin-status">Connecting to Firebase…</div>
@@ -2375,39 +2374,6 @@
             
             <section id="tab-chats" class="admin-section">
                 <div id="adminChatsList"></div>
-            </section>
-
-            <!-- ================= ADDITIVE: DAILY ENGAGEMENT SYSTEM — Admin: Daily Challenge =================
-                 Sirf naya admin tab/section add kiya gaya hai. Baaki admin tabs/functions
-                 bilkul waise hi hain jaise pehle the. -->
-            <section id="tab-engagement" class="admin-section">
-              <div class="admin-card">
-                <h3><svg class="ui-icon"><use href="#icon-plus"></use></svg> Set Today's CSE Challenge</h3>
-                <p class="eng-admin-hint">Yeh question aaj (<span id="engAdminTodayLabel"></span>) ke liye students ko homepage par dikhega. Roz ek naya question add karna hoga.</p>
-                <div class="admin-form">
-                  <input id="engAdminDate" type="date">
-                  <textarea id="engAdminQ" placeholder="Question likhein..."></textarea>
-                  <input id="engAdminOpt0" placeholder="Option A">
-                  <input id="engAdminOpt1" placeholder="Option B">
-                  <input id="engAdminOpt2" placeholder="Option C">
-                  <input id="engAdminOpt3" placeholder="Option D">
-                  <label>Correct Option:
-                    <select id="engAdminCorrect">
-                      <option value="0">A</option>
-                      <option value="1">B</option>
-                      <option value="2">C</option>
-                      <option value="3">D</option>
-                    </select>
-                  </label>
-                  <input id="engAdminXp" type="number" value="10" placeholder="XP for correct answer">
-                  <button class="admin-btn" onclick="engagementAdminSaveChallenge()">Publish Challenge</button>
-                  <p id="engAdminMsg" class="admin-small"></p>
-                </div>
-              </div>
-              <div class="admin-card">
-                <h3><svg class="ui-icon"><use href="#icon-scroll"></use></svg> Recent Challenges</h3>
-                <div id="engAdminChallengeList"></div>
-              </div>
             </section>
 
             <div style="padding-top:10px;border-top:1px solid #ddd"><button class="admin-btn red" onclick="firebaseAdminLogout()">Logout Admin</button></div>
@@ -7315,57 +7281,6 @@ onAuthStateChanged(auth, user => {
     }
   };
 
-  window.engagementAdminSaveChallenge = async function(){
-    var dateEl = document.getElementById('engAdminDate');
-    var date = dateEl.value || todayStr();
-    var q = document.getElementById('engAdminQ').value.trim();
-    var opts = [
-      document.getElementById('engAdminOpt0').value.trim(),
-      document.getElementById('engAdminOpt1').value.trim(),
-      document.getElementById('engAdminOpt2').value.trim(),
-      document.getElementById('engAdminOpt3').value.trim()
-    ];
-    var correct = parseInt(document.getElementById('engAdminCorrect').value, 10);
-    var xp = parseInt(document.getElementById('engAdminXp').value, 10) || 10;
-    var msgEl = document.getElementById('engAdminMsg');
-    if(!q || opts.some(function(o){return !o;})){
-      msgEl.innerText = 'Please fill the question and all 4 options.';
-      msgEl.style.color = 'red';
-      return;
-    }
-    try{
-      await set(ref(db, 'portal/engagement/dailyChallenge/'+date), { question:q, options:opts, correct:correct, xp:xp, ts: Date.now() });
-      msgEl.innerText = 'Challenge published for ' + date + '!';
-      msgEl.style.color = 'green';
-      document.getElementById('engAdminQ').value = '';
-      document.getElementById('engAdminOpt0').value = '';
-      document.getElementById('engAdminOpt1').value = '';
-      document.getElementById('engAdminOpt2').value = '';
-      document.getElementById('engAdminOpt3').value = '';
-    }catch(e){
-      msgEl.innerText = 'Error saving challenge.';
-      msgEl.style.color = 'red';
-      console.error(e);
-    }
-  };
-
-  function renderAdminChallengeList(dataObj){
-    var list = document.getElementById('engAdminChallengeList');
-    if(!list) return;
-    var dates = Object.keys(dataObj||{}).sort().reverse().slice(0,15);
-    if(!dates.length){ list.innerHTML = '<p class="admin-small">No challenges published yet.</p>'; return; }
-    list.innerHTML = dates.map(function(dt){
-      var c = dataObj[dt];
-      return '<div class="admin-card"><strong>'+esc(dt)+'</strong><p class="admin-small">'+esc(c.question)+'</p></div>';
-    }).join('');
-  }
-
-  // init defaults for the admin date field / label (DOM already parsed — module scripts run after parsing)
-  var engDateField = document.getElementById('engAdminDate');
-  if(engDateField) engDateField.value = todayStr();
-  var engTodayLbl = document.getElementById('engAdminTodayLabel');
-  if(engTodayLbl) engTodayLbl.innerText = todayStr();
-
   // Firebase listeners — all under the new 'portal/engagement/...' path only
   onValue(ref(db, 'portal/engagement/dailyChallenge/'+todayStr()), function(snap){
     engChallengeData = snap.val();
@@ -7393,10 +7308,6 @@ onAuthStateChanged(auth, user => {
   onValue(ref(db, 'portal/engagement/weeklyChampions'), function(snap){
     window.engWeeklyChampionsData = snap.val() || {};
   }, function(err){ console.error('Engagement weeklyChampions listener error:', err); });
-
-  onValue(ref(db, 'portal/engagement/dailyChallenge'), function(snap){
-    renderAdminChallengeList(snap.val() || {});
-  }, function(err){ console.error('Engagement admin challenge list error:', err); });
 })();
 
 </script>

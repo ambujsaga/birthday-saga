@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily CSE Challenge — Admin</title>
+<style>
+  :root{
+    --primary-blue:#003366;
+    --accent-orange:#ff9900;
+    --bg-color:#f4f6f9;
+    --text-dark:#333;
+    --card-bg:#ffffff;
+    --sarkari-red:#c0392b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif}
+  body{background:var(--bg-color);color:var(--text-dark);min-height:100vh;padding:18px}
+  .wrap{max-width:760px;margin:0 auto}
+  .head{background:var(--primary-blue);color:#fff;border-radius:12px;padding:16px 18px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .head h1{font-size:1.15rem}
+  .head p{font-size:.8rem;opacity:.85;margin-top:2px}
+  .head a{color:#fff;text-decoration:none;font-size:.8rem;border:1px solid rgba(255,255,255,.5);padding:6px 12px;border-radius:20px}
+
+  .box{background:var(--card-bg);border-radius:12px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:18px;margin-bottom:16px}
+  .box h3{color:var(--primary-blue);margin-bottom:12px;font-size:1rem}
+
+  input,textarea,select{width:100%;padding:11px;border:1px solid #ccc;border-radius:7px;margin:6px 0 12px;outline:none;font-size:.92rem}
+  textarea{min-height:80px;resize:vertical}
+  label{font-size:.82rem;color:#475569;font-weight:600}
+
+  .btn{border:0;border-radius:7px;padding:11px 18px;background:var(--primary-blue);color:#fff;font-weight:700;cursor:pointer;font-size:.9rem}
+  .btn.orange{background:var(--accent-orange);color:#000}
+  .btn.red{background:var(--sarkari-red)}
+  .btn.small{padding:6px 12px;font-size:.78rem}
+  .btn[disabled]{opacity:.6;cursor:default}
+
+  .status{padding:9px 12px;background:#eef6ff;border-radius:7px;margin-bottom:14px;font-size:.85rem}
+  .small{font-size:.78rem;color:#666;margin:4px 0 10px}
+  .msg{font-size:.85rem;margin-top:8px;font-weight:600}
+
+  .opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+
+  .item{border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:10px}
+  .item .q{font-weight:700;color:var(--text-dark);font-size:.9rem;margin-bottom:6px}
+  .item .meta{font-size:.76rem;color:#64748b;margin-bottom:8px}
+  .item .opts{font-size:.8rem;color:#475569;line-height:1.6;margin-bottom:8px}
+  .item .opts .correct{color:#1a6b2b;font-weight:700}
+  .item .actions{display:flex;gap:8px}
+
+  .login-box{max-width:380px;margin:60px auto}
+  .hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <div>
+      <h1>🎯 Daily CSE Challenge — Admin</h1>
+      <p>MMITcs Daily Engagement System</p>
+    </div>
+    <a href="index.html">← Back to Portal</a>
+  </div>
+
+  <!-- LOGIN VIEW -->
+  <div id="loginView" class="box login-box">
+    <h3>🔒 Firebase Admin Login</h3>
+    <p class="small">Same admin account used in the main Portal Admin Panel.</p>
+    <label>Admin Email</label>
+    <input id="loginEmail" type="email" placeholder="admin@mmitsce.com" autocomplete="username">
+    <label>Password</label>
+    <input id="loginPassword" type="password" placeholder="Firebase Authentication password" autocomplete="current-password">
+    <button class="btn" onclick="doLogin()" style="width:100%;">Login</button>
+    <p id="loginMsg" class="msg"></p>
+  </div>
+
+  <!-- DASHBOARD VIEW -->
+  <div id="dashView" class="hide">
+    <div id="connStatus" class="status">Connecting to Firebase…</div>
+
+    <div class="box">
+      <h3>➕ Set / Update a Day's Challenge</h3>
+      <p class="small">Question set for a given date shows to students on that day's homepage. Publish a new one daily.</p>
+      <label>Date</label>
+      <input id="fDate" type="date">
+      <label>Question</label>
+      <textarea id="fQuestion" placeholder="Question likhein..."></textarea>
+      <label>Options</label>
+      <div class="opt-grid">
+        <input id="fOpt0" placeholder="Option A">
+        <input id="fOpt1" placeholder="Option B">
+        <input id="fOpt2" placeholder="Option C">
+        <input id="fOpt3" placeholder="Option D">
+      </div>
+      <label>Correct Option</label>
+      <select id="fCorrect">
+        <option value="0">A</option>
+        <option value="1">B</option>
+        <option value="2">C</option>
+        <option value="3">D</option>
+      </select>
+      <label>XP for a correct answer</label>
+      <input id="fXp" type="number" value="10">
+      <button class="btn" id="fSaveBtn" onclick="saveChallenge()">Publish Challenge</button>
+      <button class="btn orange" onclick="resetForm()">Clear Form</button>
+      <p id="fMsg" class="msg"></p>
+    </div>
+
+    <div class="box">
+      <h3>📋 Recent Challenges</h3>
+      <div id="listBody"><p class="small">Loading…</p></div>
+    </div>
+
+    <button class="btn red" onclick="doLogout()">Logout Admin</button>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// Same Firebase project as the main portal (index.html) — this admin page
+// only ever reads/writes 'portal/engagement/dailyChallenge/...', nothing
+// else in the database is touched from here.
+const firebaseConfig = {
+  apiKey: "AIzaSyAegYu-tHbS662BnPV3pyTFBGoKw1jomMQ",
+  authDomain: "mmitsce.firebaseapp.com",
+  databaseURL: "https://mmitsce-default-rtdb.firebaseio.com",
+  projectId: "mmitsce",
+  storageBucket: "mmitsce.firebasestorage.app"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+
+function esc(v){ return String(v??'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function pad2(n){ return String(n).padStart(2,'0'); }
+function todayStr(){ const d = new Date(); return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
+
+let allChallenges = {};
+
+window.doLogin = function(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPassword').value;
+  const msg = document.getElementById('loginMsg');
+  msg.style.color = '#333'; msg.innerText = 'Logging in…';
+  signInWithEmailAndPassword(auth, email, pass)
+    .catch(err => { msg.style.color = 'red'; msg.innerText = 'Login failed: ' + err.message; });
+};
+
+window.doLogout = function(){ signOut(auth); };
+
+onAuthStateChanged(auth, function(user){
+  const loginView = document.getElementById('loginView');
+  const dashView = document.getElementById('dashView');
+  if(user){
+    loginView.classList.add('hide');
+    dashView.classList.remove('hide');
+    document.getElementById('connStatus').innerText = 'Connected as ' + user.email;
+    startListening();
+  } else {
+    dashView.classList.add('hide');
+    loginView.classList.remove('hide');
+  }
+});
+
+function startListening(){
+  onValue(ref(db, 'portal/engagement/dailyChallenge'), function(snap){
+    allChallenges = snap.val() || {};
+    renderList();
+  }, function(err){
+    document.getElementById('connStatus').innerText = 'Firebase error: ' + err.message;
+  });
+}
+
+function renderList(){
+  const body = document.getElementById('listBody');
+  const dates = Object.keys(allChallenges).sort().reverse();
+  if(!dates.length){ body.innerHTML = '<p class="small">No challenges published yet.</p>'; return; }
+  body.innerHTML = dates.map(function(dt){
+    const c = allChallenges[dt];
+    const optsHtml = (c.options||[]).map(function(o, i){
+      const letter = String.fromCharCode(65+i);
+      return '<span class="'+(i===c.correct?'correct':'')+'">'+letter+'. '+esc(o)+'</span>';
+    }).join('<br>');
+    return '<div class="item">'
+      + '<div class="q">'+esc(dt)+' &middot; +'+ (c.xp||10) +' XP</div>'
+      + '<div class="q" style="font-weight:600;">'+esc(c.question)+'</div>'
+      + '<div class="opts">'+optsHtml+'</div>'
+      + '<div class="actions">'
+      +   '<button class="btn small orange" onclick="editChallenge(\''+dt+'\')">Edit</button>'
+      +   '<button class="btn small red" onclick="deleteChallenge(\''+dt+'\')">Delete</button>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+window.editChallenge = function(dt){
+  const c = allChallenges[dt];
+  if(!c) return;
+  document.getElementById('fDate').value = dt;
+  document.getElementById('fQuestion').value = c.question || '';
+  document.getElementById('fOpt0').value = (c.options||[])[0] || '';
+  document.getElementById('fOpt1').value = (c.options||[])[1] || '';
+  document.getElementById('fOpt2').value = (c.options||[])[2] || '';
+  document.getElementById('fOpt3').value = (c.options||[])[3] || '';
+  document.getElementById('fCorrect').value = String(c.correct ?? 0);
+  document.getElementById('fXp').value = c.xp || 10;
+  window.scrollTo(0,0);
+};
+
+window.deleteChallenge = async function(dt){
+  if(!confirm('Delete the challenge for ' + dt + '?')) return;
+  try{ await remove(ref(db, 'portal/engagement/dailyChallenge/'+dt)); }
+  catch(e){ alert('Error deleting: ' + e.message); }
+};
+
+window.resetForm = function(){
+  document.getElementById('fDate').value = todayStr();
+  document.getElementById('fQuestion').value = '';
+  document.getElementById('fOpt0').value = '';
+  document.getElementById('fOpt1').value = '';
+  document.getElementById('fOpt2').value = '';
+  document.getElementById('fOpt3').value = '';
+  document.getElementById('fCorrect').value = '0';
+  document.getElementById('fXp').value = 10;
+  document.getElementById('fMsg').innerText = '';
+};
+
+window.saveChallenge = async function(){
+  const date = document.getElementById('fDate').value || todayStr();
+  const question = document.getElementById('fQuestion').value.trim();
+  const options = [
+    document.getElementById('fOpt0').value.trim(),
+    document.getElementById('fOpt1').value.trim(),
+    document.getElementById('fOpt2').value.trim(),
+    document.getElementById('fOpt3').value.trim()
+  ];
+  const correct = parseInt(document.getElementById('fCorrect').value, 10);
+  const xp = parseInt(document.getElementById('fXp').value, 10) || 10;
+  const msg = document.getElementById('fMsg');
+
+  if(!question || options.some(o => !o)){
+    msg.style.color = 'red';
+    msg.innerText = 'Please fill the question and all 4 options.';
+    return;
+  }
+
+  const btn = document.getElementById('fSaveBtn');
+  btn.disabled = true;
+  try{
+    await set(ref(db, 'portal/engagement/dailyChallenge/'+date), {
+      question, options, correct, xp, ts: Date.now()
+    });
+    msg.style.color = 'green';
+    msg.innerText = 'Challenge published for ' + date + '!';
+    resetForm();
+    document.getElementById('fDate').value = date;
+  }catch(e){
+    msg.style.color = 'red';
+    msg.innerText = 'Error saving: ' + e.message;
+  }finally{
+    btn.disabled = false;
+  }
+};
+
+// default date = today
+document.getElementById('fDate').value = todayStr();
+</script>
+</body>
+</html>
