@@ -1741,6 +1741,78 @@
   .eng-reward-close{background:var(--primary-blue);color:#fff;border:none;padding:10px 24px;border-radius:22px;font-weight:700;cursor:pointer}
 
   .eng-admin-hint{font-size:.78rem;color:#64748b;margin:4px 0 10px}
+
+  /* ================= ADDITIVE: Daily Engagement System — Homepage
+     single-line quick-access bar (replaces the old inline stats-bar +
+     challenge card + mystery card + leaderboard card on the homepage
+     with one compact, tappable, non-scrolling bar).
+     Purane eng-stat-chip / eng-card / eng-mystery-* / eng-lb-* rules
+     upar bilkul waise hi rehte hain — inhe kahin chheda nahi gaya hai,
+     kyunki wahi purane elements ab naye "engagementHubPage" ke andar
+     move kiye gaye hain aur waise hi kaam karte hain. */
+  .eng-hub-bar{
+    background: linear-gradient(120deg, var(--primary-blue) 0%, #0b5fa8 55%, #146aa8 100%);
+    color:#fff;
+    padding:10px 14px;
+    font-weight:600;
+    font-size:.92rem;
+    display:flex;
+    align-items:center;
+    cursor:pointer;
+    user-select:none;
+    gap:10px;
+    margin:12px 15px 0;
+    border-radius:14px;
+    box-shadow:0 4px 12px rgba(0,51,102,.25);
+    transition: transform .15s, box-shadow .15s;
+  }
+  .eng-hub-bar:hover{ transform:translateY(-1px); box-shadow:0 6px 16px rgba(0,51,102,.32); }
+  .eng-hub-bar:active{ transform:translateY(0); }
+  .eng-hub-bar-badge{
+    background: rgba(255,255,255,.16);
+    color:#fff;
+    padding:5px 12px;
+    border-radius:20px;
+    font-size:.8rem;
+    font-weight:800;
+    letter-spacing:.2px;
+    white-space:nowrap;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    flex-shrink:0;
+    border:1px solid rgba(255,255,255,.25);
+  }
+  .eng-hub-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--accent-orange);
+    flex-shrink:0;
+    display:none;
+    animation: ttPulse 1.5s infinite;
+  }
+  .eng-hub-bar-text{
+    flex:1;
+    min-width:0;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-size:.85rem;
+    color:rgba(255,255,255,.92);
+  }
+  .eng-hub-chevron{
+    flex-shrink:0;
+    font-size:1rem;
+    line-height:1;
+    color:#fff;
+    opacity:.85;
+    transform: rotate(90deg);
+    display:inline-block;
+    animation: engChevronBounce 1.6s ease-in-out infinite;
+  }
+  @keyframes engChevronBounce{
+    0%,100%{ transform: rotate(90deg) translateX(0); }
+    50%{ transform: rotate(90deg) translateX(3px); }
+  }
 </style>
 </head>
 <body>
@@ -1928,6 +2000,83 @@
              hero, subjects grid, koi bhi purana element chheda nahi gaya hai.
              Yeh sab neeche dikhne wale purane homepage content ke UPAR add
              hua hai. -->
+        <div class="notice-bar">
+            <span class="notice-btn" onclick="openNoticePage()">NEW NOTICE <svg class="ui-icon ui-icon--fill"><use href="#icon-star"></use></svg></span>
+            <marquee behavior="scroll" direction="left">
+                Welcome to the official study material portal for Diploma in CSE 1st Semester. All subjects' syllabus and notes are updated as per the latest BTEUP curriculum.
+            </marquee>
+        </div>
+
+        <section class="hero">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h2>Diploma in Computer Science & Engineering</h2>
+                <p>1st Semester Syllabus, Notes & Study Material (As per BTEUP Guidelines)</p>
+            </div>
+        </section>
+
+        <section class="container">
+            <div class="section-top-actions">
+                <button type="button" class="timetable-nav-btn" id="timetableNavBtn" onclick="openTimetablePage()" title="View today's live timetable">
+                    <span class="tt-live-dot" id="ttNavDot"></span>
+                    <span id="ttNavLabel">Timetable</span>
+                </button>
+                <a href="programming.html" class="programming-nav-btn">Programming</a>
+            </div>
+            <div class="eng-hub-bar" id="engHubBar" onclick="requireLogin(openEngagementHubPage)" title="Daily Challenge, Streak, XP, Mystery Box & Leaderboard">
+                <span class="eng-hub-bar-badge">🎯 Daily Engagement<span class="eng-hub-dot" id="engHubDot"></span></span>
+                <span class="eng-hub-bar-text" id="engHubBarText">🔥 0 Day Streak &nbsp; ⚡ 0 XP &nbsp; 🏆 Rank #— &nbsp;— Tap for Challenge, Mystery Box & Leaderboard</span>
+                <span class="eng-hub-chevron">&rsaquo;</span>
+            </div>
+            <h2 class="section-title">Academic Subjects (Semester-I)</h2>
+            <div class="grid" id="subjectsGrid">
+            </div>
+        </section>
+    </div>
+
+    <!-- ================= ADDITIVE: DAILY ENGAGEMENT SYSTEM — Full Leaderboard
+         + Weekly Championship page. Naya top-level page hai, koi purana page
+         ya element chheda nahi gaya hai. ================= -->
+    <div id="engagementLeaderboardPage" class="container full-screen-container" style="display: none;">
+        <div class="action-bar">
+            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
+        </div>
+        <div class="eng-full-page-head">
+            <h2 class="section-title">🏆 Leaderboard & Championship</h2>
+        </div>
+        <div class="eng-tabs">
+            <button type="button" class="eng-tab-btn active" id="engTabAllBtn" onclick="engagementSwitchLbTab('all')">All-Time</button>
+            <button type="button" class="eng-tab-btn" id="engTabWeekBtn" onclick="engagementSwitchLbTab('week')">This Week</button>
+        </div>
+        <div class="eng-card" id="engFullLbAllWrap">
+            <div class="eng-card-head">⚡ All-Time XP Ranking</div>
+            <div class="eng-card-body" id="engFullLbAllBody" style="padding-bottom:6px;"></div>
+        </div>
+        <div class="eng-card" id="engFullLbWeekWrap" style="display:none;">
+            <div class="eng-card-head">🏅 Weekly CSE Championship</div>
+            <div class="eng-card-body" id="engFullLbWeekBody" style="padding-bottom:6px;"></div>
+        </div>
+        <div class="eng-card">
+            <div class="eng-card-head">🔥 Streak Milestones</div>
+            <div class="eng-milestones" id="engMilestonesBody"></div>
+        </div>
+    </div>
+
+    <!-- ================= ADDITIVE: DAILY ENGAGEMENT SYSTEM — Homepage Hub page
+         Yeh sirf ek nayi container hai jisme woh hi purane stats-bar,
+         challenge card, mystery box card aur leaderboard card move kiye
+         gaye hain jo pehle seedhe homepage par dikhte the — same ids,
+         same classes, same onclick handlers, koi bhi purana method ya
+         behaviour chheda nahi gaya. Homepage par ab sirf ek line ka
+         "🎯 DAILY ENGAGEMENT" bar dikhta hai jo is page ko kholta hai. ================= -->
+    <div id="engagementHubPage" class="container full-screen-container" style="display: none;">
+        <div class="action-bar">
+            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
+        </div>
+        <div class="eng-full-page-head">
+            <h2 class="section-title">🎯 Daily Engagement</h2>
+        </div>
+
         <div class="eng-stats-bar">
             <div class="eng-stat-chip" onclick="requireLogin(openEngagementFullPage)" title="Your streak">
                 <span class="eng-stat-emoji">🔥</span>
@@ -1963,62 +2112,6 @@
                 <div class="eng-challenge-empty">Loading leaderboard…</div>
             </div>
             <button type="button" class="eng-view-full-btn" onclick="requireLogin(openEngagementFullPage)">VIEW FULL RANKING</button>
-        </div>
-
-        <div class="notice-bar">
-            <span class="notice-btn" onclick="openNoticePage()">NEW NOTICE <svg class="ui-icon ui-icon--fill"><use href="#icon-star"></use></svg></span>
-            <marquee behavior="scroll" direction="left">
-                Welcome to the official study material portal for Diploma in CSE 1st Semester. All subjects' syllabus and notes are updated as per the latest BTEUP curriculum.
-            </marquee>
-        </div>
-
-        <section class="hero">
-            <div class="hero-overlay"></div>
-            <div class="hero-content">
-                <h2>Diploma in Computer Science & Engineering</h2>
-                <p>1st Semester Syllabus, Notes & Study Material (As per BTEUP Guidelines)</p>
-            </div>
-        </section>
-
-        <section class="container">
-            <div class="section-top-actions">
-                <button type="button" class="timetable-nav-btn" id="timetableNavBtn" onclick="openTimetablePage()" title="View today's live timetable">
-                    <span class="tt-live-dot" id="ttNavDot"></span>
-                    <span id="ttNavLabel">Timetable</span>
-                </button>
-                <a href="programming.html" class="programming-nav-btn">Programming</a>
-            </div>
-            <h2 class="section-title">Academic Subjects (Semester-I)</h2>
-            <div class="grid" id="subjectsGrid">
-            </div>
-        </section>
-    </div>
-
-    <!-- ================= ADDITIVE: DAILY ENGAGEMENT SYSTEM — Full Leaderboard
-         + Weekly Championship page. Naya top-level page hai, koi purana page
-         ya element chheda nahi gaya hai. ================= -->
-    <div id="engagementLeaderboardPage" class="container full-screen-container" style="display: none;">
-        <div class="action-bar">
-            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
-        </div>
-        <div class="eng-full-page-head">
-            <h2 class="section-title">🏆 Leaderboard & Championship</h2>
-        </div>
-        <div class="eng-tabs">
-            <button type="button" class="eng-tab-btn active" id="engTabAllBtn" onclick="engagementSwitchLbTab('all')">All-Time</button>
-            <button type="button" class="eng-tab-btn" id="engTabWeekBtn" onclick="engagementSwitchLbTab('week')">This Week</button>
-        </div>
-        <div class="eng-card" id="engFullLbAllWrap">
-            <div class="eng-card-head">⚡ All-Time XP Ranking</div>
-            <div class="eng-card-body" id="engFullLbAllBody" style="padding-bottom:6px;"></div>
-        </div>
-        <div class="eng-card" id="engFullLbWeekWrap" style="display:none;">
-            <div class="eng-card-head">🏅 Weekly CSE Championship</div>
-            <div class="eng-card-body" id="engFullLbWeekBody" style="padding-bottom:6px;"></div>
-        </div>
-        <div class="eng-card">
-            <div class="eng-card-head">🔥 Streak Milestones</div>
-            <div class="eng-milestones" id="engMilestonesBody"></div>
         </div>
     </div>
 
@@ -3015,6 +3108,9 @@
             // ADDITIVE: hide the new engagement leaderboard page too (nothing above changed)
             var engLbPageEl = document.getElementById('engagementLeaderboardPage');
             if(engLbPageEl) engLbPageEl.style.display = 'none';
+            // ADDITIVE: hide the new engagement hub page too (nothing above changed)
+            var engHubPageEl = document.getElementById('engagementHubPage');
+            if(engHubPageEl) engHubPageEl.style.display = 'none';
         }
 
         window.onclick = function(event) {
@@ -6783,7 +6879,7 @@ onAuthStateChanged(auth, user => {
   // Top-level pages — inme se jo bhi khula ho use band karke seedha
   // Home par le jaate hain (jaise inke apne back-btn / bottom-nav icon
   // pehle se karte hain).
-  var TOP_LEVEL_PAGE_IDS = ['subjectPage','noticePage','mmitPage','savedPage','chatPage','profilePage','globalFeedPage','engagementLeaderboardPage'];
+  var TOP_LEVEL_PAGE_IDS = ['subjectPage','noticePage','mmitPage','savedPage','chatPage','profilePage','globalFeedPage','engagementLeaderboardPage','engagementHubPage'];
 
   // Pages jo Home ki jagah kisi aur page ke "andar" nested hain — inke
   // apne maujooda close function hi sahi jagah (Profile) par le jaate hain.
@@ -7231,6 +7327,39 @@ onAuthStateChanged(auth, user => {
     document.getElementById('engagementLeaderboardPage').style.display = 'block';
     window.scrollTo(0,0);
   };
+
+  // ================= ADDITIVE: Homepage single-line "Daily Engagement" bar =================
+  // Naya opener — purane openEngagementFullPage ya kisi bhi purane function ko
+  // chheda nahi gaya, yeh bilkul alag naya function hai jo naya hub page kholta hai
+  // (jisme wahi purane stats-bar/challenge/mystery/leaderboard cards hain).
+  window.openEngagementHubPage = function(){
+    closeAllSections();
+    updateNavState(null);
+    document.getElementById('engagementHubPage').style.display = 'block';
+    window.scrollTo(0,0);
+  };
+
+  // Homepage bar ko live update karta hai — sirf existing DOM values (jo purane
+  // Firebase listeners pehle se update karte rehte hain) ko padhta hai aur
+  // ek-line summary me dikhata hai. Isse koi purana render function chheda
+  // nahi gaya, sirf naya read-only polling add hua hai (timetable widget jaisa).
+  function engagementUpdateHubBar(){
+    var barText = document.getElementById('engHubBarText');
+    if(!barText) return;
+    var streakEl = document.getElementById('engStreakVal');
+    var xpEl = document.getElementById('engXpVal');
+    var rankEl = document.getElementById('engRankVal');
+    var mysteryEl = document.getElementById('engMysteryCard');
+    var dot = document.getElementById('engHubDot');
+    var streak = streakEl ? streakEl.innerText : '0';
+    var xp = xpEl ? xpEl.innerText : '0';
+    var rank = rankEl ? rankEl.innerText : '#—';
+    var mysteryReady = !!(mysteryEl && mysteryEl.style.display !== 'none');
+    barText.textContent = '🔥 ' + streak + ' Day Streak   ⚡ ' + xp + ' XP   🏆 Rank ' + rank + (mysteryReady ? '   🎁 Mystery Box Ready!' : '') + '   — Tap for Challenge, Mystery Box & Leaderboard';
+    if(dot) dot.style.display = mysteryReady ? 'inline-block' : 'none';
+  }
+  engagementUpdateHubBar();
+  setInterval(engagementUpdateHubBar, 2000);
 
   var weeklyChampionChecked = {};
   async function maybeAssignWeeklyChampion(){
