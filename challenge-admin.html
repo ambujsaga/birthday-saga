@@ -108,13 +108,17 @@
 
     <div class="box">
       <h3>🤖 AI Auto-Generate Mode</h3>
-      <p class="small">Har 60 second me AI naya question + options + correct answer generate karke seedha publish karega (aaj ki date ke slot me, jaisa manual publish karta hai).</p>
-      <label>OpenRouter API Key (yahin paste karein — file me save nahi hoti)</label>
-      <input id="aiKey" type="password" placeholder="sk-or-v1-..." value="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">
-      <label>Model</label>
-      <input id="aiModel" type="text" value="meta-llama/llama-3.1-8b-instruct:free" placeholder="e.g. meta-llama/llama-3.1-8b-instruct:free">
+      <p class="small">API key/model ek baar save karein — phir wahi settings hamesha ke liye yaad rahegi (edit bhi kar sakte hain). AI mode ON karne ke baad page refresh hone par bhi chalta rahega, jab tak aap khud OFF na karein.</p>
+      <label>OpenRouter API Key</label>
+      <input id="aiKey" type="password" placeholder="sk-or-v1-...">
+      <label>Model / Server (e.g. openrouter free model)</label>
+      <input id="aiModel" type="text" placeholder="e.g. meta-llama/llama-3.1-8b-instruct:free">
       <label>XP for a correct answer</label>
       <input id="aiXp" type="number" value="10">
+      <label>Kitne minute ke interval par naya question generate ho?</label>
+      <input id="aiInterval" type="number" min="1" value="1">
+      <button class="btn" onclick="saveAISettings()">💾 Save Settings</button>
+      <p id="aiSaveMsg" class="msg"></p>
       <button class="btn orange" id="aiToggleBtn" onclick="toggleAIMode()">▶ Start AI Auto Mode</button>
       <p id="aiStatus" class="msg"></p>
     </div>
@@ -173,6 +177,7 @@ onAuthStateChanged(auth, function(user){
     dashView.classList.remove('hide');
     document.getElementById('connStatus').innerText = 'Connected as ' + user.email;
     startListening();
+    loadAISettings();
   } else {
     dashView.classList.add('hide');
     loginView.classList.remove('hide');
@@ -283,15 +288,53 @@ window.saveChallenge = async function(){
 let aiTimerId = null;
 let aiRunning = false;
 
+// Fallback default used only the very first time (nothing saved yet) — for testing convenience.
+const AI_DEFAULT_KEY = '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';
+const AI_DEFAULT_MODEL = 'meta-llama/llama-3.1-8b-instruct:free';
+
 function aiSetStatus(text, color){
   const el = document.getElementById('aiStatus');
   el.innerText = text;
   el.style.color = color || '#333';
 }
 
+// Load previously saved settings (permanent, via localStorage) into the still-editable inputs.
+function loadAISettings(){
+  const savedKey = localStorage.getItem('ai_key');
+  const savedModel = localStorage.getItem('ai_model');
+  const savedXp = localStorage.getItem('ai_xp');
+  const savedInterval = localStorage.getItem('ai_interval');
+
+  document.getElementById('aiKey').value = savedKey !== null ? savedKey : AI_DEFAULT_KEY;
+  document.getElementById('aiModel').value = savedModel !== null ? savedModel : AI_DEFAULT_MODEL;
+  document.getElementById('aiXp').value = savedXp !== null ? savedXp : 10;
+  document.getElementById('aiInterval').value = savedInterval !== null ? savedInterval : 1;
+
+  // If nothing was saved yet, save these defaults now so they persist from the start.
+  if(savedKey === null) saveAISettings(true);
+
+  // Resume AI mode automatically if it was left ON before a refresh/reload.
+  if(localStorage.getItem('ai_running') === 'true' && !aiRunning){
+    startAIMode(true);
+  }
+}
+
+// Save current input values permanently. User can edit and re-save anytime.
+window.saveAISettings = function(silent){
+  localStorage.setItem('ai_key', document.getElementById('aiKey').value.trim());
+  localStorage.setItem('ai_model', document.getElementById('aiModel').value.trim() || AI_DEFAULT_MODEL);
+  localStorage.setItem('ai_xp', document.getElementById('aiXp').value);
+  localStorage.setItem('ai_interval', document.getElementById('aiInterval').value);
+  if(!silent){
+    const el = document.getElementById('aiSaveMsg');
+    el.style.color = 'green';
+    el.innerText = '✅ Settings saved — ab yeh permanent hain, aap inhe kabhi bhi edit karke dobara Save kar sakte hain.';
+  }
+};
+
 async function generateAIChallengeOnce(){
   const key = document.getElementById('aiKey').value.trim();
-  const model = document.getElementById('aiModel').value.trim() || 'meta-llama/llama-3.1-8b-instruct:free';
+  const model = document.getElementById('aiModel').value.trim() || AI_DEFAULT_MODEL;
   const xp = parseInt(document.getElementById('aiXp').value, 10) || 10;
 
   if(!key){
@@ -360,25 +403,37 @@ window.toggleAIMode = function(){
   else { startAIMode(); }
 };
 
-function startAIMode(){
+function startAIMode(silentResume){
   if(!document.getElementById('aiKey').value.trim()){
     aiSetStatus('Pehle API key daalein.', 'red');
     return;
   }
+  // Persist whatever is currently in the fields so it's used consistently across refreshes.
+  saveAISettings(true);
+
+  const intervalMin = parseFloat(document.getElementById('aiInterval').value) || 1;
+  const intervalMs = Math.max(intervalMin, 0.1) * 60000;
+
   aiRunning = true;
+  localStorage.setItem('ai_running', 'true');
   document.getElementById('aiToggleBtn').innerText = '⏸ Stop AI Auto Mode';
   document.getElementById('aiToggleBtn').classList.remove('orange');
   document.getElementById('aiToggleBtn').classList.add('red');
-  generateAIChallengeOnce();
-  aiTimerId = setInterval(generateAIChallengeOnce, 60000);
+
+  if(aiTimerId){ clearInterval(aiTimerId); }
+  if(!silentResume){ generateAIChallengeOnce(); }
+  else { aiSetStatus('▶ AI mode resumed after refresh — chal raha hai.', 'green'); }
+  aiTimerId = setInterval(generateAIChallengeOnce, intervalMs);
 }
 
 function stopAIMode(){
   aiRunning = false;
+  localStorage.setItem('ai_running', 'false');
   if(aiTimerId){ clearInterval(aiTimerId); aiTimerId = null; }
   document.getElementById('aiToggleBtn').innerText = '▶ Start AI Auto Mode';
   document.getElementById('aiToggleBtn').classList.remove('red');
   document.getElementById('aiToggleBtn').classList.add('orange');
+  aiSetStatus('AI mode OFF.', '#333');
 }
 // ================== END AI AUTO MODE ==================
 
