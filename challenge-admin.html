@@ -107,6 +107,19 @@
     </div>
 
     <div class="box">
+      <h3>🤖 AI Auto-Generate Mode</h3>
+      <p class="small">Har 60 second me AI naya question + options + correct answer generate karke seedha publish karega (aaj ki date ke slot me, jaisa manual publish karta hai).</p>
+      <label>OpenRouter API Key (yahin paste karein — file me save nahi hoti)</label>
+      <input id="aiKey" type="password" placeholder="sk-or-v1-..." value="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">
+      <label>Model</label>
+      <input id="aiModel" type="text" value="meta-llama/llama-3.1-8b-instruct:free" placeholder="e.g. meta-llama/llama-3.1-8b-instruct:free">
+      <label>XP for a correct answer</label>
+      <input id="aiXp" type="number" value="10">
+      <button class="btn orange" id="aiToggleBtn" onclick="toggleAIMode()">▶ Start AI Auto Mode</button>
+      <p id="aiStatus" class="msg"></p>
+    </div>
+
+    <div class="box">
       <h3>📋 Recent Challenges</h3>
       <div id="listBody"><p class="small">Loading…</p></div>
     </div>
@@ -265,6 +278,109 @@ window.saveChallenge = async function(){
     btn.disabled = false;
   }
 };
+
+// ================== AI AUTO MODE ==================
+let aiTimerId = null;
+let aiRunning = false;
+
+function aiSetStatus(text, color){
+  const el = document.getElementById('aiStatus');
+  el.innerText = text;
+  el.style.color = color || '#333';
+}
+
+async function generateAIChallengeOnce(){
+  const key = document.getElementById('aiKey').value.trim();
+  const model = document.getElementById('aiModel').value.trim() || 'meta-llama/llama-3.1-8b-instruct:free';
+  const xp = parseInt(document.getElementById('aiXp').value, 10) || 10;
+
+  if(!key){
+    aiSetStatus('API key missing — AI mode stopped.', 'red');
+    stopAIMode();
+    return;
+  }
+
+  aiSetStatus('Generating question…');
+
+  const prompt = 'You generate one Computer Science / General Engineering multiple-choice quiz question for college students. '
+    + 'Reply with ONLY raw JSON, no markdown, no code fences, no extra text, in this exact shape: '
+    + '{"question":"...","options":["...","...","...","..."],"correct":0}. '
+    + '"options" must have exactly 4 short items. "correct" is the 0-based index of the correct option. '
+    + 'Pick a different topic each time (DSA, OS, DBMS, networks, OOP, aptitude, current tech).';
+
+  try{
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + key,
+        'HTTP-Referer': window.location.href,
+        'X-Title': 'MMITcs Daily Challenge Admin'
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if(!res.ok){
+      const errText = await res.text();
+      throw new Error('API error ' + res.status + ': ' + errText.slice(0,200));
+    }
+
+    const data = await res.json();
+    let raw = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
+    raw = raw.trim().replace(/^```json/i,'').replace(/^```/,'').replace(/```$/,'').trim();
+
+    let parsed;
+    try{ parsed = JSON.parse(raw); }
+    catch(e){ throw new Error('AI ne valid JSON nahi diya: ' + raw.slice(0,150)); }
+
+    const question = String(parsed.question || '').trim();
+    const options = (parsed.options || []).map(o => String(o).trim());
+    const correct = parseInt(parsed.correct, 10);
+
+    if(!question || options.length !== 4 || options.some(o => !o) || isNaN(correct) || correct < 0 || correct > 3){
+      throw new Error('AI response incomplete/invalid, skipping this round.');
+    }
+
+    const date = todayStr();
+    await set(ref(db, 'portal/engagement/dailyChallenge/' + date), {
+      question, options, correct, xp, ts: Date.now(), source: 'ai'
+    });
+
+    aiSetStatus('✅ Published at ' + new Date().toLocaleTimeString() + ' — "' + question.slice(0,60) + (question.length>60?'…':'') + '"', 'green');
+  }catch(e){
+    aiSetStatus('⚠️ ' + e.message, 'red');
+  }
+}
+
+window.toggleAIMode = function(){
+  if(aiRunning){ stopAIMode(); }
+  else { startAIMode(); }
+};
+
+function startAIMode(){
+  if(!document.getElementById('aiKey').value.trim()){
+    aiSetStatus('Pehle API key daalein.', 'red');
+    return;
+  }
+  aiRunning = true;
+  document.getElementById('aiToggleBtn').innerText = '⏸ Stop AI Auto Mode';
+  document.getElementById('aiToggleBtn').classList.remove('orange');
+  document.getElementById('aiToggleBtn').classList.add('red');
+  generateAIChallengeOnce();
+  aiTimerId = setInterval(generateAIChallengeOnce, 60000);
+}
+
+function stopAIMode(){
+  aiRunning = false;
+  if(aiTimerId){ clearInterval(aiTimerId); aiTimerId = null; }
+  document.getElementById('aiToggleBtn').innerText = '▶ Start AI Auto Mode';
+  document.getElementById('aiToggleBtn').classList.remove('red');
+  document.getElementById('aiToggleBtn').classList.add('orange');
+}
+// ================== END AI AUTO MODE ==================
 
 // default date = today
 document.getElementById('fDate').value = todayStr();
