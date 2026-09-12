@@ -108,10 +108,10 @@
 
     <div class="box">
       <h3>🤖 AI Auto-Generate Mode</h3>
-      <p class="small">API key/model ek baar save karein — phir wahi settings hamesha ke liye yaad rahegi (edit bhi kar sakte hain). AI mode ON karne ke baad page refresh hone par bhi chalta rahega, jab tak aap khud OFF na karein.</p>
+      <p class="small">Yeh settings ab Firebase database me save hoti hain (permanent + hamesha editable). "Start" dabane ke baad question generation ek server-side Cloud Function karega — isliye chahe aap yeh page band kar dein ya phone off ho jaaye, generation ruknа nahi chahiye (setup ke liye niche di gayi Cloud Function file deploy karni hogi, ek hi baar).</p>
       <label>OpenRouter API Key</label>
       <input id="aiKey" type="password" placeholder="sk-or-v1-...">
-      <label>Model / Server (e.g. openrouter free model)</label>
+      <label>Model / Server (e.g. openrouter/free)</label>
       <input id="aiModel" type="text" placeholder="e.g. meta-llama/llama-3.1-8b-instruct:free">
       <label>XP for a correct answer</label>
       <input id="aiXp" type="number" value="10">
@@ -120,6 +120,7 @@
       <button class="btn" onclick="saveAISettings()">💾 Save Settings</button>
       <p id="aiSaveMsg" class="msg"></p>
       <button class="btn orange" id="aiToggleBtn" onclick="toggleAIMode()">▶ Start AI Auto Mode</button>
+      <button class="btn small" onclick="generateAIChallengeOnce()" style="margin-left:8px;">🔄 Generate Now (test)</button>
       <p id="aiStatus" class="msg"></p>
     </div>
 
@@ -285,12 +286,12 @@ window.saveChallenge = async function(){
 };
 
 // ================== AI AUTO MODE ==================
-let aiTimerId = null;
-let aiRunning = false;
-
-// Fallback default used only the very first time (nothing saved yet) — for testing convenience.
-const AI_DEFAULT_KEY = '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';
+// Settings + ON/OFF state ab yahan store hoti hain: portal/engagement/aiConfig
+// Isse ek Cloud Function bhi wahi settings padh sakta hai — page khula ho ya nahi.
+const AI_CONFIG_PATH = 'portal/engagement/aiConfig';
 const AI_DEFAULT_MODEL = 'meta-llama/llama-3.1-8b-instruct:free';
+let aiRunning = false;
+let aiSettingsLoaded = false;
 
 function aiSetStatus(text, color){
   const el = document.getElementById('aiStatus');
@@ -298,143 +299,145 @@ function aiSetStatus(text, color){
   el.style.color = color || '#333';
 }
 
-// Load previously saved settings (permanent, via localStorage) into the still-editable inputs.
+// Database se settings live-load karo — kahin se bhi (is page ya kisi aur device se)
+// save ki hui values yahan turant reflect hongi, aur inputs hamesha editable rehte hain.
 function loadAISettings(){
-  const savedKey = localStorage.getItem('ai_key');
-  const savedModel = localStorage.getItem('ai_model');
-  const savedXp = localStorage.getItem('ai_xp');
-  const savedInterval = localStorage.getItem('ai_interval');
+  onValue(ref(db, AI_CONFIG_PATH), function(snap){
+    const cfg = snap.val() || {};
+    document.getElementById('aiKey').value = cfg.key || '';
+    document.getElementById('aiModel').value = cfg.model || AI_DEFAULT_MODEL;
+    document.getElementById('aiXp').value = cfg.xp || 10;
+    document.getElementById('aiInterval').value = cfg.intervalMinutes || 1;
 
-  document.getElementById('aiKey').value = savedKey !== null ? savedKey : AI_DEFAULT_KEY;
-  document.getElementById('aiModel').value = savedModel !== null ? savedModel : AI_DEFAULT_MODEL;
-  document.getElementById('aiXp').value = savedXp !== null ? savedXp : 10;
-  document.getElementById('aiInterval').value = savedInterval !== null ? savedInterval : 1;
+    aiRunning = !!cfg.running;
+    updateAIToggleButton();
 
-  // If nothing was saved yet, save these defaults now so they persist from the start.
-  if(savedKey === null) saveAISettings(true);
+    if(cfg.lastStatus){
+      aiSetStatus(cfg.lastStatus, cfg.lastStatus.startsWith('error') ? 'red' : 'green');
+    }
+    aiSettingsLoaded = true;
+  });
+}
 
-  // Resume AI mode automatically if it was left ON before a refresh/reload.
-  if(localStorage.getItem('ai_running') === 'true' && !aiRunning){
-    startAIMode(true);
+function updateAIToggleButton(){
+  const btn = document.getElementById('aiToggleBtn');
+  if(aiRunning){
+    btn.innerText = '⏸ Stop AI Auto Mode';
+    btn.classList.remove('orange'); btn.classList.add('red');
+  } else {
+    btn.innerText = '▶ Start AI Auto Mode';
+    btn.classList.remove('red'); btn.classList.add('orange');
   }
 }
 
-// Save current input values permanently. User can edit and re-save anytime.
-window.saveAISettings = function(silent){
-  localStorage.setItem('ai_key', document.getElementById('aiKey').value.trim());
-  localStorage.setItem('ai_model', document.getElementById('aiModel').value.trim() || AI_DEFAULT_MODEL);
-  localStorage.setItem('ai_xp', document.getElementById('aiXp').value);
-  localStorage.setItem('ai_interval', document.getElementById('aiInterval').value);
+// Save current input values permanently to the database. Editable anytime, re-save karke update ho jaata hai.
+window.saveAISettings = async function(silent){
+  await set(ref(db, AI_CONFIG_PATH), {
+    key: document.getElementById('aiKey').value.trim(),
+    model: document.getElementById('aiModel').value.trim() || AI_DEFAULT_MODEL,
+    xp: parseInt(document.getElementById('aiXp').value, 10) || 10,
+    intervalMinutes: parseFloat(document.getElementById('aiInterval').value) || 1,
+    running: aiRunning,
+    lastStatus: document.getElementById('aiStatus').innerText || ''
+  });
   if(!silent){
     const el = document.getElementById('aiSaveMsg');
     el.style.color = 'green';
-    el.innerText = '✅ Settings saved — ab yeh permanent hain, aap inhe kabhi bhi edit karke dobara Save kar sakte hain.';
+    el.innerText = '✅ Settings saved — permanent hain, kabhi bhi edit karke dobara Save kar sakte hain.';
   }
 };
 
-async function generateAIChallengeOnce(){
-  const key = document.getElementById('aiKey').value.trim();
-  const model = document.getElementById('aiModel').value.trim() || AI_DEFAULT_MODEL;
-  const xp = parseInt(document.getElementById('aiXp').value, 10) || 10;
-
-  if(!key){
-    aiSetStatus('API key missing — AI mode stopped.', 'red');
-    stopAIMode();
-    return;
-  }
-
-  aiSetStatus('Generating question…');
-
+async function callOpenRouterOnce(key, model){
   const prompt = 'You generate one Computer Science / General Engineering multiple-choice quiz question for college students. '
     + 'Reply with ONLY raw JSON, no markdown, no code fences, no extra text, in this exact shape: '
     + '{"question":"...","options":["...","...","...","..."],"correct":0}. '
     + '"options" must have exactly 4 short items. "correct" is the 0-based index of the correct option. '
     + 'Pick a different topic each time (DSA, OS, DBMS, networks, OOP, aptitude, current tech).';
 
-  try{
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + key,
-        'HTTP-Referer': window.location.href,
-        'X-Title': 'MMITcs Daily Challenge Admin'
-      },
-      body: JSON.stringify({
-        model: model,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
+  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + key,
+      'HTTP-Referer': window.location.href,
+      'X-Title': 'MMITcs Daily Challenge Admin'
+    },
+    body: JSON.stringify({
+      model: model,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
 
-    if(!res.ok){
-      const errText = await res.text();
-      throw new Error('API error ' + res.status + ': ' + errText.slice(0,200));
-    }
-
-    const data = await res.json();
-    let raw = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
-    raw = raw.trim().replace(/^```json/i,'').replace(/^```/,'').replace(/```$/,'').trim();
-
-    let parsed;
-    try{ parsed = JSON.parse(raw); }
-    catch(e){ throw new Error('AI ne valid JSON nahi diya: ' + raw.slice(0,150)); }
-
-    const question = String(parsed.question || '').trim();
-    const options = (parsed.options || []).map(o => String(o).trim());
-    const correct = parseInt(parsed.correct, 10);
-
-    if(!question || options.length !== 4 || options.some(o => !o) || isNaN(correct) || correct < 0 || correct > 3){
-      throw new Error('AI response incomplete/invalid, skipping this round.');
-    }
-
-    const date = todayStr();
-    await set(ref(db, 'portal/engagement/dailyChallenge/' + date), {
-      question, options, correct, xp, ts: Date.now(), source: 'ai'
-    });
-
-    aiSetStatus('✅ Published at ' + new Date().toLocaleTimeString() + ' — "' + question.slice(0,60) + (question.length>60?'…':'') + '"', 'green');
-  }catch(e){
-    aiSetStatus('⚠️ ' + e.message, 'red');
+  if(!res.ok){
+    const errText = await res.text();
+    throw new Error('API error ' + res.status + ': ' + errText.slice(0,200));
   }
+
+  const data = await res.json();
+  let raw = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
+  raw = raw.trim().replace(/^```json/i,'').replace(/^```/,'').replace(/```$/,'').trim();
+
+  const parsed = JSON.parse(raw); // throws if not valid JSON — caught by caller for retry
+
+  const question = String(parsed.question || '').trim();
+  const options = (parsed.options || []).map(o => String(o).trim());
+  const correct = parseInt(parsed.correct, 10);
+
+  if(!question || options.length !== 4 || options.some(o => !o) || isNaN(correct) || correct < 0 || correct > 3){
+    throw new Error('AI response incomplete/invalid shape');
+  }
+  return { question, options, correct };
 }
 
-window.toggleAIMode = function(){
-  if(aiRunning){ stopAIMode(); }
-  else { startAIMode(); }
-};
+// Manual "Generate Now" button (testing ke liye) — isse background Cloud Function
+// alag hai, yeh sirf turant ek baar generate karke dikhata hai.
+window.generateAIChallengeOnce = async function(){
+  const key = document.getElementById('aiKey').value.trim();
+  const model = document.getElementById('aiModel').value.trim() || AI_DEFAULT_MODEL;
+  const xp = parseInt(document.getElementById('aiXp').value, 10) || 10;
 
-function startAIMode(silentResume){
-  if(!document.getElementById('aiKey').value.trim()){
-    aiSetStatus('Pehle API key daalein.', 'red');
+  if(!key){
+    aiSetStatus('Pehle API key daalein aur Save karein.', 'red');
     return;
   }
-  // Persist whatever is currently in the fields so it's used consistently across refreshes.
-  saveAISettings(true);
 
-  const intervalMin = parseFloat(document.getElementById('aiInterval').value) || 1;
-  const intervalMs = Math.max(intervalMin, 0.1) * 60000;
+  const MAX_ATTEMPTS = 3;
+  let lastErr = null;
 
-  aiRunning = true;
-  localStorage.setItem('ai_running', 'true');
-  document.getElementById('aiToggleBtn').innerText = '⏸ Stop AI Auto Mode';
-  document.getElementById('aiToggleBtn').classList.remove('orange');
-  document.getElementById('aiToggleBtn').classList.add('red');
+  for(let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++){
+    aiSetStatus('Generating question… (attempt ' + attempt + '/' + MAX_ATTEMPTS + ')');
+    try{
+      const { question, options, correct } = await callOpenRouterOnce(key, model);
+      const date = todayStr();
+      await set(ref(db, 'portal/engagement/dailyChallenge/' + date), {
+        question, options, correct, xp, ts: Date.now(), source: 'ai'
+      });
+      const statusMsg = '✅ Published at ' + new Date().toLocaleTimeString() + ' — "' + question.slice(0,60) + (question.length>60?'…':'') + '"';
+      aiSetStatus(statusMsg, 'green');
+      await set(ref(db, AI_CONFIG_PATH + '/lastStatus'), statusMsg);
+      return;
+    }catch(e){
+      lastErr = e;
+      if(String(e.message).includes('API error')) break;
+    }
+  }
+  const errMsg = '⚠️ ' + MAX_ATTEMPTS + ' attempts ke baad bhi fail: ' + lastErr.message;
+  aiSetStatus(errMsg, 'red');
+  await set(ref(db, AI_CONFIG_PATH + '/lastStatus'), errMsg);
+};
 
-  if(aiTimerId){ clearInterval(aiTimerId); }
-  if(!silentResume){ generateAIChallengeOnce(); }
-  else { aiSetStatus('▶ AI mode resumed after refresh — chal raha hai.', 'green'); }
-  aiTimerId = setInterval(generateAIChallengeOnce, intervalMs);
-}
-
-function stopAIMode(){
-  aiRunning = false;
-  localStorage.setItem('ai_running', 'false');
-  if(aiTimerId){ clearInterval(aiTimerId); aiTimerId = null; }
-  document.getElementById('aiToggleBtn').innerText = '▶ Start AI Auto Mode';
-  document.getElementById('aiToggleBtn').classList.remove('red');
-  document.getElementById('aiToggleBtn').classList.add('orange');
-  aiSetStatus('AI mode OFF.', '#333');
-}
+// Start/Stop sirf ek flag ON/OFF karta hai database me — asli generation
+// server-side Cloud Function karega, is page se independent.
+window.toggleAIMode = async function(){
+  if(!document.getElementById('aiKey').value.trim() && !aiRunning){
+    aiSetStatus('Pehle API key daalein aur Save karein.', 'red');
+    return;
+  }
+  aiRunning = !aiRunning;
+  updateAIToggleButton();
+  await saveAISettings(true);
+  aiSetStatus(aiRunning ? '▶ AI mode ON — background me chalega, page band ho tab bhi.' : 'AI mode OFF.', aiRunning ? 'green' : '#333');
+};
 // ================== END AI AUTO MODE ==================
 
 // default date = today

@@ -1,0 +1,30 @@
+name: AI Auto Challenge
+
+on:
+  schedule:
+    # Har 5 minute me chalta hai (GitHub free scheduled runs ke liye
+    # yeh minimum reliable interval hai — exact 1-minute guarantee
+    # GitHub khud nahi deta). Admin panel me "interval" 5 ya usse
+    # zyada minute rakhein taaki timing consistent rahe.
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+    # ^ Yeh line "Actions" tab me manual "Run workflow" button deti hai,
+    #   turant test karne ke liye.
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install firebase-admin
+        run: npm install firebase-admin
+
+      - name: Run AI challenge script
+        run: node scripts/ai-auto-challenge.js
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
