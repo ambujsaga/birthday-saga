@@ -1294,10 +1294,15 @@
 .user-post-footer{display:flex;justify-content:flex-end;align-items:center;border-top:1px solid #eee;padding-top:8px;font-size:.78rem;color:#64748b}
 .user-post-seen{font-weight:700}
 .user-post-empty{text-align:center;color:#777;padding:15px;background:#f8fafc;border-radius:8px}
-.user-post-original-modal{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:15000;display:none;align-items:center;justify-content:center;padding:20px;cursor:pointer}
+.user-post-original-modal{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:15000;display:none;align-items:center;justify-content:center;padding:20px;cursor:pointer;overflow:hidden}
 .user-post-original-modal.active{display:flex}
 .user-post-original-modal img{max-width:96vw;max-height:92vh;width:auto;height:auto;object-fit:contain;box-shadow:0 0 30px rgba(255,255,255,.12);user-select:none}
 .user-post-original-hint{position:absolute;top:16px;left:50%;transform:translateX(-50%);color:#fff;font-size:.78rem;background:rgba(0,0,0,.45);padding:6px 10px;border-radius:14px}
+/* ================= ADDITIVE: pinch/double-tap zoom for the original-size modal =================
+   Sirf naya CSS add kiya gaya hai. Yeh sirf #userPostOriginalImage (long-press se
+   khulne wala original-size view) par apply hota hai — chhoti thumbnail images ya
+   koi bhi purana rule/element chheda nahi gaya hai. */
+.user-post-original-modal img{touch-action:none;transform-origin:center center;will-change:transform}
 @media(max-width:480px){
   .user-post-composer{padding:12px}
   .user-post-delete{font-size:.72rem;padding:5px 7px}
@@ -4206,6 +4211,27 @@ window.updateOnlineUser = async function(oldRoll){
 window.deleteOnlineUser = async function(roll){
     if(!confirm('Are you sure you want to delete this user?')) return;
     await remove(ref(db, 'portal/users/' + roll));
+
+    // ================= ADDITIVE: also clean up this user's other data =================
+    // Sirf naya, additive code hai — upar wali purani line (portal/users/roll delete)
+    // bilkul waisi hi rakhi gayi hai, kuchh chheda nahi gaya. Ab iske saath-saath
+    // us user ka engagement data (XP/streak/class rank) aur uske apne posts + stories
+    // bhi remove kar diye jaate hain, taaki account delete karne par uska sara data
+    // hat jaaye. Best-effort hai — koi ek cleanup fail ho bhi jaaye to user delete
+    // rukta nahi (already ho chuka hai upar).
+    const rollStr = String(roll);
+    try{ await remove(ref(db, 'portal/engagement/users/' + rollStr)); }catch(e){ console.warn('Engagement data cleanup failed', e); }
+    try{
+        const allPosts = (window.adminPostsData || onlineData.posts || []);
+        const ownPosts = allPosts.filter(p => p && String(p.authorRoll || p.userId || p.createdBy || '') === rollStr);
+        await Promise.all(ownPosts.map(p => remove(ref(db, 'portal/posts/' + p.id)).catch(e => console.warn('Post cleanup failed', p.id, e))));
+    }catch(e){ console.warn('Posts cleanup failed', e); }
+    try{
+        const allStories = (window.onlineStoriesData || []);
+        const ownStories = allStories.filter(s => s && String(s.authorRoll || '') === rollStr);
+        await Promise.all(ownStories.map(s => remove(ref(db, 'portal/stories/' + s.id)).catch(e => console.warn('Story cleanup failed', s.id, e))));
+    }catch(e){ console.warn('Stories cleanup failed', e); }
+
     setStatus('User deleted successfully.');
 };
 
@@ -4574,7 +4600,7 @@ onAuthStateChanged(auth, user => {
       document.getElementById('userPostCounter').textContent='0/90';
       document.getElementById('userPostCounter').classList.remove('limit');
       renderUserPhotoPreview([]);
-      alert('Post successfully publish ho gaya.');
+      alert('Post published successfully.');
     }catch(e){
       alert('Post upload failed: '+e.message);
     }finally{
@@ -4728,6 +4754,112 @@ onAuthStateChanged(auth, user => {
   window.bindLongPress=bindLongPress;
   window.ensureOriginalModal=ensureOriginalModal;
   ensureOriginalModal();
+
+  // ================= ADDITIVE: Pinch-to-zoom / double-tap zoom =================
+  // Sirf naya, standalone code add kiya gaya hai. Yeh zoom feature SIRF tabhi
+  // kaam karta hai jab photo ko long-press karke uske "original size" modal
+  // (#userPostOriginalModal / #userPostOriginalImage) me khola gaya ho. Chhoti
+  // thumbnail images, bindLongPress(), openUserPostOriginal(), closeUserPostOriginal()
+  // ya koi bhi purana feature/method bilkul waisa hi hai — kuchh chheda nahi gaya hai.
+  (function(){
+    var zImg=null, zModal=null;
+    var scale=1, panX=0, panY=0;
+    var pointers={};
+    var startDist=0, startScale=1;
+    var startPanX=0, startPanY=0, startPointerX=0, startPointerY=0;
+    var lastTapTime=0, gestureMoved=false;
+    var MIN_SCALE=1, MAX_SCALE=4;
+
+    function applyTransform(){
+      if(zImg) zImg.style.transform='translate('+panX+'px,'+panY+'px) scale('+scale+')';
+    }
+    function resetZoom(){
+      scale=1; panX=0; panY=0;
+      applyTransform();
+    }
+    function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
+    function dist(a,b){ var dx=a.x-b.x, dy=a.y-b.y; return Math.sqrt(dx*dx+dy*dy); }
+
+    function onPointerDown(e){
+      pointers[e.pointerId]={x:e.clientX,y:e.clientY};
+      gestureMoved=false;
+      var ids=Object.keys(pointers);
+      if(ids.length===2){
+        startDist=dist(pointers[ids[0]],pointers[ids[1]]);
+        startScale=scale;
+      } else if(ids.length===1 && scale>1){
+        startPointerX=e.clientX; startPointerY=e.clientY;
+        startPanX=panX; startPanY=panY;
+      }
+    }
+    function onPointerMove(e){
+      if(!pointers[e.pointerId]) return;
+      pointers[e.pointerId]={x:e.clientX,y:e.clientY};
+      var ids=Object.keys(pointers);
+      if(ids.length===2){
+        gestureMoved=true;
+        var newDist=dist(pointers[ids[0]],pointers[ids[1]]);
+        if(startDist>0){
+          scale=clamp(startScale*(newDist/startDist),MIN_SCALE,MAX_SCALE);
+          applyTransform();
+        }
+        e.preventDefault();
+      } else if(ids.length===1 && scale>1){
+        var dx=e.clientX-startPointerX, dy=e.clientY-startPointerY;
+        if(Math.abs(dx)>3 || Math.abs(dy)>3) gestureMoved=true;
+        panX=startPanX+dx; panY=startPanY+dy;
+        applyTransform();
+        e.preventDefault();
+      }
+    }
+    function endPointer(e){
+      delete pointers[e.pointerId];
+      if(Object.keys(pointers).length<2) startDist=0;
+    }
+    function onImgClick(e){
+      // Original modal closes on any click via its own click listener — hum
+      // sirf image ke click ko yaha handle karte hain (stopPropagation) taaki
+      // zoom-in state me tap se modal band na ho jaaye. Background par tap
+      // karne se modal pehle jaisa hi band hota hai (unchanged).
+      e.stopPropagation();
+      if(gestureMoved){ gestureMoved=false; return; }
+      var now=Date.now();
+      if(now-lastTapTime<320){
+        lastTapTime=0;
+        if(scale>1) resetZoom(); else { scale=2.5; applyTransform(); }
+        return;
+      }
+      lastTapTime=now;
+      if(scale>1){
+        resetZoom();
+      } else if(typeof window.closeUserPostOriginal==='function'){
+        window.closeUserPostOriginal();
+      }
+    }
+
+    function bindZoomOnce(){
+      zModal=document.getElementById('userPostOriginalModal');
+      zImg=document.getElementById('userPostOriginalImage');
+      if(!zModal || !zImg || zImg.getAttribute('data-zoom-bound')) return false;
+      zImg.setAttribute('data-zoom-bound','1');
+      zImg.addEventListener('pointerdown',onPointerDown);
+      zImg.addEventListener('pointermove',onPointerMove);
+      zImg.addEventListener('pointerup',endPointer);
+      zImg.addEventListener('pointercancel',endPointer);
+      zImg.addEventListener('click',onImgClick);
+      new MutationObserver(function(muts){
+        muts.forEach(function(m){
+          if(m.attributeName==='class' && zModal.classList.contains('active')) resetZoom();
+        });
+      }).observe(zModal,{attributes:true});
+      return true;
+    }
+    var zoomBindTries=0;
+    var zoomBindTimer=setInterval(function(){
+      zoomBindTries++;
+      if(bindZoomOnce() || zoomBindTries>50) clearInterval(zoomBindTimer);
+    },300);
+  })();
 
   const refreshObserver=setInterval(()=>{
     if(document.getElementById('profilePage')?.style.display==='block'){
@@ -7302,7 +7434,7 @@ onAuthStateChanged(auth, user => {
     var body = document.getElementById('engChallengeBody');
     if(!body) return;
     if(!engChallengeData){
-      body.innerHTML = '<div class="eng-challenge-empty">Is ghante ke liye abhi koi naya question upload nahi hua hai. Thodi der me check karein!</div>';
+      body.innerHTML = '<div class="eng-challenge-empty">No new question has been uploaded for this hour yet. Please check back shortly!</div>';
       return;
     }
     var roll = myRoll();
@@ -7447,7 +7579,7 @@ onAuthStateChanged(auth, user => {
     var body = document.getElementById('engLeaderboardBody');
     if(!body) return;
     var sorted = getSortedUsers();
-    if(!sorted.length){ body.innerHTML = '<div class="eng-challenge-empty">Abhi koi ranking available nahi hai.</div>'; return; }
+    if(!sorted.length){ body.innerHTML = '<div class="eng-challenge-empty">No ranking available yet.</div>'; return; }
     var medals = ['🥇','🥈','🥉'];
     var html = '';
     sorted.slice(0,3).forEach(function(u, i){
@@ -7485,7 +7617,7 @@ onAuthStateChanged(auth, user => {
     var sorted = getSortedUsers();
     var roll = myRoll();
     var allHtml = '';
-    if(!sorted.length) allHtml = '<div class="eng-challenge-empty">Abhi koi student ne XP nahi kamaya.</div>';
+    if(!sorted.length) allHtml = '<div class="eng-challenge-empty">No student has earned XP yet.</div>';
     sorted.forEach(function(u, i){
       var rowCls = 'eng-lb-row' + (u.roll === roll ? ' eng-lb-you' : '');
       allHtml += '<div class="'+rowCls+'"><span class="eng-lb-rank">'+(i+1)+'</span><span class="eng-lb-name">'+esc(displayNameFor(u.roll))+' ('+esc(u.roll)+')'+(window.vTick?window.vTick(u.roll):'')+'</span><span class="eng-lb-xp">'+(u.xp||0)+' XP</span></div>';
@@ -7497,7 +7629,7 @@ onAuthStateChanged(auth, user => {
       return { roll:r, xp: ((engUsersData[r].weeklyXP||{})[wk]) || 0 };
     }).filter(function(u){ return u.xp > 0; }).sort(function(a,b){ return b.xp-a.xp; });
     var weekHtml = '';
-    if(!weekSorted.length) weekHtml = '<div class="eng-challenge-empty">Is week abhi tak koi XP nahi kamaya gaya.</div>';
+    if(!weekSorted.length) weekHtml = '<div class="eng-challenge-empty">No XP has been earned this week yet.</div>';
     weekSorted.forEach(function(u, i){
       var rowCls = 'eng-lb-row' + (u.roll === roll ? ' eng-lb-you' : '');
       var medal = i===0 ? '🥇' : (i===1 ? '🥈' : (i===2 ? '🥉' : (i+1)));
