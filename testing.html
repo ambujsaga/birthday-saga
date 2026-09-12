@@ -2695,6 +2695,19 @@
             
             const users = window.onlineUsersData || {};
             if(users[roll]) {
+                // ================= ADDITIVE: ADMIN FORCE LOGOUT (login-time check) =================
+                // Agar admin ne is roll number ke liye Force Logout panel se signal
+                // bheja hai (portal/users/{roll}/forceLogout === true), to use turant
+                // fresh login karne se bhi rok do — bina uski marzi ke wo app use nahi
+                // kar payega, chahe wo pehle se logged-in tha ya bilkul naya login try
+                // kar raha ho. Baaki poora purana login flow bilkul waisa hi hai, kuchh
+                // chheda nahi gaya.
+                if(users[roll].forceLogout) {
+                    err.innerText = "You have been logged out by the admin. Please try again later or contact your admin.";
+                    if(window.clearForceLogoutFlag) window.clearForceLogoutFlag(roll);
+                    return;
+                }
+
                 // Single-Device Login Lock: check this before finishing login.
                 const deviceId = getDeviceId();
                 if(window.checkAndSetActiveSession) {
