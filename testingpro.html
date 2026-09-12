@@ -1269,6 +1269,14 @@
 .user-post-selected{font-size:.8rem;color:#64748b}
 .user-post-preview{display:flex;gap:7px;overflow-x:auto;padding:2px 0 7px}
 .user-post-preview img{width:72px;height:54px;object-fit:cover;border-radius:6px;border:1px solid #ddd;flex:0 0 auto}
+/* ================= ADDITIVE: remove (x) button on each selected photo thumbnail =================
+   Sirf naya CSS add kiya gaya hai — purana .user-post-preview img rule bilkul waisa
+   hi hai, sirf ab har photo ek wrapper div ke andar hai taaki uske corner par
+   chhota remove button dikha sake. */
+.user-post-photo-thumb{position:relative;flex:0 0 auto}
+.user-post-photo-thumb img{width:72px;height:54px;object-fit:cover;border-radius:6px;border:1px solid #ddd;display:block}
+.user-post-photo-remove{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;border:1.5px solid #fff;background:#b91c1c;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;font-size:10px;box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.user-post-photo-remove svg{width:1em;height:1em}
 .user-post-submit{width:100%;border:0;border-radius:8px;background:var(--primary-blue);color:#fff;padding:11px;font-weight:700;cursor:pointer}
 .user-post-submit:disabled{opacity:.55;cursor:not-allowed}
 .user-profile-posts{margin-top:22px;text-align:left}
@@ -4454,12 +4462,46 @@ onAuthStateChanged(auth, user => {
     if(!box || !label) return;
     label.textContent=(files.length||0) + '/5 photos';
     box.innerHTML='';
-    files.forEach(file=>{
+    files.forEach((file, idx)=>{
+      // ================= ADDITIVE: har photo ab ek wrapper ke andar hai jisme
+      // ek chhota remove (x) button hai, taaki user 1-5 me se koi bhi chuni
+      // hui photo hata sake. Image dikhane ka purana tarika (URL.createObjectURL
+      // + onload par revoke) bilkul waisa hi hai, chheda nahi gaya. =================
+      const thumb=document.createElement('div');
+      thumb.className='user-post-photo-thumb';
       const img=document.createElement('img');
       img.src=URL.createObjectURL(file);
       img.onload=()=>URL.revokeObjectURL(img.src);
-      box.appendChild(img);
+      thumb.appendChild(img);
+      const removeBtn=document.createElement('button');
+      removeBtn.type='button';
+      removeBtn.className='user-post-photo-remove';
+      removeBtn.setAttribute('aria-label','Remove photo');
+      removeBtn.innerHTML='<svg class="ui-icon"><use href="#icon-x"></use></svg>';
+      removeBtn.onclick=function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        removeUserPostPhoto(idx);
+      };
+      thumb.appendChild(removeBtn);
+      box.appendChild(thumb);
     });
+  }
+
+  // ================= ADDITIVE: selected photos me se koi ek photo hatana =================
+  // File input (userPostPhotos) ka FileList read-only hota hai, isliye DataTransfer
+  // use karke ek naya FileList banaya jata hai jisme hataayi gayi photo chhodkar
+  // baaki sab photos hoti hain, aur fileEl.files ko wahi naya FileList assign kar
+  // diya jaata hai. Isse publishUserProfilePost() ka purana method (jo seedha
+  // fileEl.files padhta hai) bilkul bina chhede kaam karta rehta hai.
+  function removeUserPostPhoto(index){
+    const fileEl=document.getElementById('userPostPhotos');
+    if(!fileEl) return;
+    const remaining=Array.from(fileEl.files || []).filter((_,i)=>i!==index);
+    const dt=new DataTransfer();
+    remaining.forEach(f=>dt.items.add(f));
+    fileEl.files=dt.files;
+    renderUserPhotoPreview(remaining);
   }
 
   async function userPostFileToDataURL(file){
@@ -4940,7 +4982,7 @@ onAuthStateChanged(auth, user => {
     probe.onloadedmetadata = function(){
       const dur = isFinite(probe.duration) ? probe.duration : 0;
       URL.revokeObjectURL(objUrl);
-      nameEl.textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + file.name;
+      nameEl.innerHTML = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + esc(file.name);
       startRange.min = 0; startRange.max = Math.max(0, Math.floor(dur)); startRange.value = 0;
       endRange.min = 0; endRange.max = Math.max(1, Math.floor(dur));
       // ---- ADDITIVE: default selection capped at 30 sec, same as Instagram/WhatsApp ----
@@ -5009,7 +5051,7 @@ onAuthStateChanged(auth, user => {
       document.getElementById('userPostAudioPanel')?.classList.remove('active');
       const chip = document.getElementById('userPostAudioChip');
       const chipLabel = document.getElementById('userPostAudioChipLabel');
-      if(chipLabel) chipLabel.textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + selectedAudioFile.name + ' (' + fmtSec(start) + '–' + fmtSec(end) + ')';
+      if(chipLabel) chipLabel.innerHTML = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + esc(selectedAudioFile.name) + ' (' + fmtSec(start) + '–' + fmtSec(end) + ')';
       chip?.classList.add('active');
       if(previewAudioEl){ try{ previewAudioEl.pause(); }catch(e){} previewAudioEl=null; }
     }catch(e){
@@ -5064,7 +5106,7 @@ onAuthStateChanged(auth, user => {
     };
     const chip = document.getElementById('userPostAudioChip');
     const chipLabel = document.getElementById('userPostAudioChipLabel');
-    if(chipLabel) chipLabel.textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + pendingAudio.name + ' (' + fmtSec(s) + '–' + fmtSec(e) + ')';
+    if(chipLabel) chipLabel.innerHTML = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + esc(pendingAudio.name) + ' (' + fmtSec(s) + '–' + fmtSec(e) + ')';
     chip?.classList.add('active');
     document.getElementById('userPostOnlineAudioPanel')?.classList.remove('active');
   }
@@ -5092,7 +5134,7 @@ onAuthStateChanged(auth, user => {
     const startLbl = document.getElementById('userPostOnlineAudioTrimStartLabel');
     const endLbl = document.getElementById('userPostOnlineAudioTrimEndLabel');
     if(!trimPanel || !startRange || !endRange) return;
-    nameEl.textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + (track.trackName || 'Untitled') + (track.artistName ? (' - ' + track.artistName) : '');
+    nameEl.innerHTML = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + esc(track.trackName || 'Untitled') + (track.artistName ? (' - ' + esc(track.artistName)) : '');
     startRange.min = 0; startRange.max = Math.max(0, Math.floor(durSec)); startRange.value = 0;
     endRange.min = 0; endRange.max = Math.max(1, Math.floor(durSec));
     // ---- ADDITIVE: default selection capped at 30 sec, same as Instagram/WhatsApp ----
