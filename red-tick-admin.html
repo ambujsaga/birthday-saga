@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+<title>Red Tick Admin Panel</title>
+<style>
+  :root{
+    --primary-blue:#003366;
+    --accent-orange:#ff9900;
+    --bg-color:#f4f6f9;
+    --text-dark:#333;
+    --card-bg:#ffffff;
+    --tick-red:#e0245e;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Arial','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;}
+  body{background:var(--bg-color);color:var(--text-dark);min-height:100vh;padding-bottom:30px;}
+
+  header{
+    background:var(--primary-blue);color:#fff;padding:16px 18px;
+    display:flex;align-items:center;justify-content:space-between;
+    position:sticky;top:0;z-index:10;box-shadow:0 4px 10px rgba(0,0,0,.15);
+  }
+  header h1{font-size:1.05rem;display:flex;align-items:center;gap:8px;}
+  header .sub{font-size:.72rem;color:#cbd5e1;margin-top:2px;}
+  #logoutBtn{
+    background:var(--tick-red);color:#fff;border:0;padding:8px 12px;border-radius:6px;
+    font-weight:700;font-size:.8rem;cursor:pointer;display:none;
+  }
+
+  .wrap{max-width:760px;margin:0 auto;padding:16px;}
+
+  /* ---------- Login ---------- */
+  #loginView{
+    background:var(--card-bg);border-radius:12px;padding:24px 20px;margin-top:18px;
+    box-shadow:0 6px 20px rgba(0,0,0,.08);
+  }
+  #loginView h2{color:var(--primary-blue);font-size:1.05rem;margin-bottom:6px;}
+  #loginView p.hint{font-size:.8rem;color:#666;margin-bottom:16px;line-height:1.4;}
+  #loginView input{
+    width:100%;padding:11px;border:1px solid #ccc;border-radius:7px;margin:6px 0 12px;outline:none;font-size:.95rem;
+  }
+  #loginView button{
+    width:100%;padding:12px;border:0;border-radius:7px;background:var(--primary-blue);color:#fff;
+    font-weight:700;font-size:.95rem;cursor:pointer;
+  }
+  #loginMsg{font-size:.82rem;color:var(--tick-red);margin-top:10px;min-height:16px;}
+
+  /* ---------- Dashboard ---------- */
+  #dashView{display:none;}
+
+  .stat-bar{
+    display:flex;gap:10px;margin:14px 0;flex-wrap:wrap;
+  }
+  .stat-chip{
+    flex:1;min-width:120px;background:var(--card-bg);border-radius:10px;padding:12px 14px;
+    box-shadow:0 3px 10px rgba(0,0,0,.06);text-align:center;
+  }
+  .stat-chip .num{font-size:1.35rem;font-weight:800;color:var(--primary-blue);}
+  .stat-chip.verified .num{color:var(--tick-red);}
+  .stat-chip .lbl{font-size:.72rem;color:#666;margin-top:2px;}
+
+  .search-box{
+    width:100%;padding:11px 14px;border:1px solid #ccc;border-radius:24px;outline:none;
+    font-size:.9rem;margin-bottom:14px;background:#fff;
+  }
+
+  .status-line{font-size:.82rem;color:#666;margin-bottom:10px;}
+
+  .user-row{
+    background:var(--card-bg);border-radius:10px;padding:12px 14px;margin-bottom:9px;
+    display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);
+  }
+  .user-avatar{
+    width:38px;height:38px;border-radius:50%;background:var(--primary-blue);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0;
+  }
+  .user-info{flex:1;min-width:0;}
+  .user-name{
+    font-weight:700;font-size:.92rem;display:flex;align-items:center;gap:4px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .user-roll{font-size:.76rem;color:#777;margin-top:1px;}
+
+  /* Toggle switch */
+  .tick-toggle{
+    position:relative;width:50px;height:28px;flex-shrink:0;
+  }
+  .tick-toggle input{opacity:0;width:0;height:0;}
+  .tick-slider{
+    position:absolute;cursor:pointer;inset:0;background:#ccc;border-radius:28px;transition:.2s;
+  }
+  .tick-slider:before{
+    content:"";position:absolute;height:22px;width:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;
+    box-shadow:0 1px 3px rgba(0,0,0,.3);
+  }
+  .tick-toggle input:checked + .tick-slider{background:var(--tick-red);}
+  .tick-toggle input:checked + .tick-slider:before{transform:translateX(22px);}
+
+  .empty-msg, .loading-msg{
+    text-align:center;color:#888;padding:30px 10px;font-size:.9rem;
+  }
+
+  /* Reusable red-tick badge preview — same shape used inside testing.html */
+  .verified-tick-badge{display:inline-block;vertical-align:middle;}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🔴 Red Tick Admin Panel</h1>
+    <div class="sub">Verified badge control — CSE 1st Sem Portal</div>
+  </div>
+  <button id="logoutBtn" onclick="doLogout()">Logout</button>
+</header>
+
+<div class="wrap">
+
+  <!-- ===================== LOGIN VIEW ===================== -->
+  <div id="loginView">
+    <h2>🔒 Admin Login</h2>
+    <p class="hint">Same Firebase Admin account jo main portal ke Online Admin Control Panel me use hoti hai, wahi email/password yaha bhi use karein.</p>
+    <label>Admin Email</label>
+    <input id="loginEmail" type="email" placeholder="admin@mmitsce.com" autocomplete="username">
+    <label>Password</label>
+    <input id="loginPassword" type="password" placeholder="Password" autocomplete="current-password">
+    <button onclick="doLogin()">Login</button>
+    <p id="loginMsg"></p>
+  </div>
+
+  <!-- ===================== DASHBOARD VIEW ===================== -->
+  <div id="dashView">
+    <div class="stat-bar">
+      <div class="stat-chip"><div class="num" id="totalCount">0</div><div class="lbl">Total Users</div></div>
+      <div class="stat-chip verified"><div class="num" id="verifiedCount">0</div><div class="lbl">Red Tick Verified</div></div>
+    </div>
+
+    <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search by name or roll number..." oninput="renderUsers()">
+
+    <div class="status-line" id="statusLine">Connecting to Firebase…</div>
+
+    <div id="usersList"></div>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// Same Firebase project jo testing.html use karta hai — isliye 'portal/users'
+// path bilkul wahi data hai, aur yaha kiya gaya har change turant testing.html
+// me bhi (usi user ke naam/roll ke aage) live dikhta hai.
+const firebaseConfig = {
+  apiKey: "AIzaSyAegYu-tHbS662BnPV3pyTFBGoKw1jomMQ",
+  authDomain: "mmitsce.firebaseapp.com",
+  databaseURL: "https://mmitsce-default-rtdb.firebaseio.com",
+  projectId: "mmitsce",
+  storageBucket: "mmitsce.firebasestorage.app"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+const ADMIN_EMAIL = "admin@mmitsce.com";
+
+let usersData = {};
+
+function esc(v){ return String(v??'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+function tickBadgeSVG(size){
+  const s = size || 14;
+  return `<svg class="verified-tick-badge" viewBox="0 0 24 24" width="${s}" height="${s}" xmlns="http://www.w3.org/2000/svg" aria-label="Verified" title="Verified">
+    <circle cx="12" cy="12" r="11" fill="#e0245e"></circle>
+    <path d="M7 12.3l3.2 3.2 6.8-6.8" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path>
+  </svg>`;
+}
+
+function renderUsers(){
+  const list = document.getElementById('usersList');
+  const q = (document.getElementById('searchBox').value || '').trim().toLowerCase();
+  const all = Object.values(usersData || {});
+
+  document.getElementById('totalCount').textContent = all.length;
+  document.getElementById('verifiedCount').textContent = all.filter(u => u.verified).length;
+
+  const filtered = q
+    ? all.filter(u => String(u.name||'').toLowerCase().includes(q) || String(u.rollNumber||'').toLowerCase().includes(q))
+    : all;
+
+  filtered.sort((a,b) => String(a.name||'').localeCompare(String(b.name||'')));
+
+  if(!filtered.length){
+    list.innerHTML = '<div class="empty-msg">No matching users found.</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(u => {
+    const roll = esc(u.rollNumber);
+    const initials = String(u.rollNumber||'?').slice(0,2).toUpperCase();
+    const checked = u.verified ? 'checked' : '';
+    return `<div class="user-row">
+      <div class="user-avatar">${esc(initials)}</div>
+      <div class="user-info">
+        <div class="user-name">${esc(u.name || u.rollNumber)} ${u.verified ? tickBadgeSVG(15) : ''}</div>
+        <div class="user-roll">Roll No: ${roll}</div>
+      </div>
+      <label class="tick-toggle">
+        <input type="checkbox" ${checked} data-roll="${roll}" onchange="window.toggleTick(this)">
+        <span class="tick-slider"></span>
+      </label>
+    </div>`;
+  }).join('');
+}
+window.renderUsers = renderUsers;
+
+window.toggleTick = async function(checkbox){
+  const roll = checkbox.getAttribute('data-roll');
+  const newVal = checkbox.checked;
+  checkbox.disabled = true;
+  try{
+    await update(ref(db, 'portal/users/' + roll), { verified: newVal });
+    // onValue listener neeche se turant fresh data bhi aa jayega,
+    // par local state ko turant update karna UI ko instantly responsive banata hai.
+    if(usersData[roll]) usersData[roll].verified = newVal;
+    renderUsers();
+  }catch(e){
+    alert('Update failed: ' + (e && e.message ? e.message : e));
+    checkbox.checked = !newVal;
+  }finally{
+    checkbox.disabled = false;
+  }
+};
+
+function subscribeUsers(){
+  onValue(ref(db, 'portal/users'), snap => {
+    usersData = snap.val() || {};
+    document.getElementById('statusLine').textContent =
+      'Live synced with Firebase — toggle karte hi turant portal par red tick lag/hat jayega.';
+    renderUsers();
+  }, err => {
+    document.getElementById('statusLine').textContent = 'Firebase error: ' + err.message;
+  });
+}
+
+// ---------------- Auth ----------------
+onAuthStateChanged(auth, user => {
+  const isAdmin = !!(user && user.email === ADMIN_EMAIL);
+  document.getElementById('loginView').style.display = isAdmin ? 'none' : 'block';
+  document.getElementById('dashView').style.display = isAdmin ? 'block' : 'none';
+  document.getElementById('logoutBtn').style.display = isAdmin ? 'inline-block' : 'none';
+  if(isAdmin) subscribeUsers();
+});
+
+window.doLogin = function(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPassword').value;
+  const msg = document.getElementById('loginMsg');
+  msg.textContent = '';
+  if(email !== ADMIN_EMAIL){
+    msg.textContent = 'Only the configured admin email (' + ADMIN_EMAIL + ') can log in here.';
+    return;
+  }
+  signInWithEmailAndPassword(auth, email, pass)
+    .catch(err => { msg.textContent = err.message || 'Login failed.'; });
+};
+
+window.doLogout = function(){
+  signOut(auth);
+};
+</script>
+</body>
+</html>

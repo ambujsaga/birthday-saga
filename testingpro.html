@@ -41,6 +41,18 @@
             -ms-touch-action: pan-x pan-y;
         }
 
+        /* ================= ADDITIVE: RED VERIFIED TICK BADGE =================
+           Sirf naya CSS add kiya gaya hai. Yeh badge har jagah dikhta hai jaha
+           kisi verified user ka naam/roll number show hota hai. Status alag
+           "Red Tick Admin Panel" (red-tick-admin.html) se Firebase me set hota
+           hai — yaha koi purana rule/element chheda nahi gaya hai. */
+        .verified-tick-badge {
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 4px;
+            flex-shrink: 0;
+        }
+
         /* Main Navbar */
         .navbar {
             display: flex;
@@ -1229,21 +1241,6 @@
         .admin-tabs{display:flex;gap:7px;flex-wrap:wrap;padding:12px 15px;border-bottom:1px solid #ddd;background:#f7f9fc;position:sticky;top:57px;z-index:2}.admin-tab{border:1px solid #ccd4df;background:#fff;padding:8px 11px;border-radius:20px;cursor:pointer;font-weight:700;color:#334155}.admin-tab.active{background:var(--primary-blue);color:#fff}
         .admin-content{padding:18px}.admin-section{display:none}.admin-section.active{display:block}.admin-card{border:1px solid #e2e8f0;border-radius:10px;padding:15px;margin-bottom:14px;background:#fff}.admin-card h3{color:var(--primary-blue);margin-bottom:10px}.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.admin-preview{width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #ddd;margin:5px 0 10px}.admin-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.admin-status{padding:9px 12px;background:#eef6ff;border-radius:7px;margin-bottom:12px;font-size:.9rem}.admin-small{font-size:.8rem;color:#666}.admin-post-img{width:90px;height:65px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:8px}
 
-        /* ================= ADDITIVE: RED VERIFIED TICK (site-wide badge) + Admin "Red Tick" panel =================
-           Sirf naya CSS add kiya gaya hai. Koi purana admin-panel ya site rule chheda nahi gaya hai. */
-        .red-tick-badge{display:inline-block;vertical-align:middle;margin-left:3px;flex-shrink:0;position:relative;top:-1px;}
-        .verify-search-box{width:100%;padding:11px;border:1px solid #ccc;border-radius:7px;margin:6px 0 4px;outline:none;}
-        .verify-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:10px;background:#fff;}
-        .verify-toggle-info{display:flex;flex-direction:column;gap:2px;min-width:0;}
-        .verify-toggle-info .vt-name{font-weight:700;color:var(--text-dark);display:flex;align-items:center;overflow-wrap:anywhere;}
-        .verify-toggle-info .vt-roll{font-size:.8rem;color:#666;}
-        .verify-switch{position:relative;display:inline-block;width:46px;height:26px;flex-shrink:0;}
-        .verify-switch input{opacity:0;width:0;height:0;}
-        .verify-switch .vt-slider{position:absolute;cursor:pointer;inset:0;background:#ccc;border-radius:26px;transition:.2s;}
-        .verify-switch .vt-slider:before{position:absolute;content:"";height:20px;width:20px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3);}
-        .verify-switch input:checked + .vt-slider{background:var(--sarkari-red);}
-        .verify-switch input:checked + .vt-slider:before{transform:translateX(20px);}
-
         /* USER LOGIN MODAL */
         .user-login-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 15px; }
         .user-login-box { background: #fff; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -2273,7 +2270,7 @@
         <h2 class="section-title">Student Profile</h2>
         <div class="profile-card">
             <div class="profile-avatar-ring" id="profAvatarRing"><div class="profile-avatar" id="profAvatar"><svg class="ui-icon" style="width:1.5em;height:1.5em;"><use href="#icon-user"></use></svg></div></div>
-            <h3 class="profile-name" id="profName">Student Name<span id="profNameTick"></span></h3>
+            <h3 class="profile-name" id="profName">Student Name</h3>
             <p class="profile-role">Diploma in CSE (1st Sem)</p>
             <div class="profile-details">
                 <p><strong>Roll No:</strong> <span id="profRoll">Roll Number</span></p>
@@ -2455,8 +2452,6 @@
             <button class="admin-tab" data-tab="notices"><svg class="ui-icon"><use href="#icon-megaphone"></use></svg> Notices</button>
             <button class="admin-tab" data-tab="posts"><svg class="ui-icon"><use href="#icon-scroll"></use></svg> Posts</button>
             <button class="admin-tab" data-tab="users"><svg class="ui-icon"><use href="#icon-users"></use></svg> Users</button>
-            <!-- ADDITIVE: Alag/separate "Red Tick" admin tab — purane "Users" tab ko bilkul bhi chheda nahi gaya hai -->
-            <button class="admin-tab" data-tab="verify"><svg class="ui-icon"><use href="#icon-check"></use></svg> Red Tick</button>
             <button class="admin-tab" data-tab="chats"><svg class="ui-icon"><use href="#icon-chat"></use></svg> Chats</button>
           </div>
           <div class="admin-content">
@@ -2505,23 +2500,6 @@
                   </div>
               </div>
               <div id="adminUsersList"></div>
-            </section>
-
-            <!-- ================= ADDITIVE: SEPARATE "Red Tick" ADMIN PANEL =================
-                 Yeh bilkul alag/naya admin tab+section hai (purane "Users" tab se alag).
-                 Yahan sabhi users ka Naam + Roll Number list hota hai, har user ke aage
-                 ek ON/OFF switch hota hai. Switch ON karte hi us user ke naam/roll number
-                 ke aage pure website (profile, leaderboard, posts, comments, chat, search,
-                 stories) me har jagah ek red tick (Instagram blue-tick jaisa) dikhne lagta
-                 hai. Koi purana feature/method chheda nahi gaya hai — yeh sirf naya add
-                 kiya gaya hai. -->
-            <section id="tab-verify" class="admin-section">
-              <div class="admin-card">
-                <h3><svg class="ui-icon"><use href="#icon-check"></use></svg> Red Tick Verified Users</h3>
-                <p class="admin-small">Kisi bhi student ke aage ka switch ON karein — uska naam+roll number pure website me jahan-jahan dikhega, wahan red tick ke saath dikhega.</p>
-                <input id="verifySearchInput" class="verify-search-box" type="text" placeholder="Naam ya Roll Number se search karein..." oninput="renderAdminVerifyList(this.value)">
-              </div>
-              <div id="adminVerifyList"></div>
             </section>
             
             <section id="tab-chats" class="admin-section">
@@ -3245,12 +3223,10 @@
                 updateNavState('navProfile');
                 closeAllSections();
                 
-                document.getElementById('profName').childNodes[0].nodeValue = localUser.name;
+                document.getElementById('profName').innerText = localUser.name;
+                document.getElementById('profName').insertAdjacentHTML('beforeend', window.vTick ? window.vTick(localUser.rollNumber, 15) : '');
                 document.getElementById('profRoll').innerText = localUser.rollNumber;
                 document.getElementById('profAvatar').innerText = localUser.rollNumber; 
-                // ADDITIVE: Red tick agar admin ne is user ko "Red Tick" panel se verify kiya hai
-                var profTickEl = document.getElementById('profNameTick');
-                if(profTickEl) profTickEl.innerHTML = (window.redTickBadgeHtml ? window.redTickBadgeHtml(localUser.rollNumber) : '');
                 
                 document.getElementById('profilePage').style.display = 'block';
                 window.scrollTo(0, 0);
@@ -3341,9 +3317,9 @@
                 }
                 const userRoll = c.userId || c.userName;
                 const rollColor = getColorForRoll(userRoll);
-                const commentTick = window.redTickBadgeHtml ? window.redTickBadgeHtml(userRoll) : '';
+                const cTick = window.vTick ? window.vTick(userRoll) : '';
                 return `<div class="comment-item">
-                            <div><strong style="color: ${rollColor};">${userRoll}</strong>${commentTick}: ${c.text}</div>
+                            <div><strong style="color: ${rollColor};">${userRoll}</strong>${cTick}: ${c.text}</div>
                             ${deleteHTML}
                         </div>`;
             }).join('');
@@ -3560,28 +3536,31 @@ let onlineData={
 };
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-
-/* ================= ADDITIVE: RED VERIFIED TICK (admin-controlled) =================
-   Koi purana function/method chheda nahi gaya hai — yeh do bilkul naye helper
-   function hain. isRollVerified(roll) batata hai ki admin ne us roll number
-   ko "Red Tick" panel se verified mark kiya hai ya nahi. redTickBadgeHtml(roll)
-   ek chhota safe SVG red-tick badge ka HTML string deta hai (agar verified hai),
-   warna khaali string. Ise jahan-jahan bhi student ka naam/roll dikhaya jaata
-   hai, wahan call karke tick dikhaya jaata hai. */
-function isRollVerified(roll){
-  var users = window.onlineUsersData || onlineData.users || {};
-  var u = users[roll];
-  return !!(u && u.verified);
-}
-function redTickBadgeHtml(roll){
-  return isRollVerified(roll)
-    ? ' <svg class="red-tick-badge" viewBox="0 0 24 24" width="14" height="14" aria-label="Verified" role="img"><circle cx="12" cy="12" r="11" fill="#e0261f"></circle><path d="M7 12.5l3.2 3.2L17 8.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>'
-    : '';
-}
-window.isRollVerified = isRollVerified;
-window.redTickBadgeHtml = redTickBadgeHtml;
-
 function setStatus(t){const e=document.getElementById('adminStatus');if(e)e.textContent=t;}
+
+// ================= ADDITIVE: RED VERIFIED TICK (Instagram-style) =================
+// Bilkul naya, standalone global helper hai — koi purana function/variable/method
+// chheda nahi gaya. Verified status 'portal/users/{roll}/verified' field se aata
+// hai (already onValue(ref(db,'portal')) ke through window.onlineUsersData me
+// sync hota hai), jise alag "Red Tick Admin Panel" (red-tick-admin.html) file
+// se on/off kiya jaata hai. Yeh functions window par global hain isliye is file
+// ke andar kisi bhi IIFE/script se call ho sakte hain.
+window.isVerifiedRoll = function(roll){
+  try{
+    var u = (window.onlineUsersData || {})[String(roll)];
+    return !!(u && u.verified);
+  }catch(e){ return false; }
+};
+// HTML/SVG badge — naam ke turant baad use karo (jaha HTML render hota hai)
+window.vTick = function(roll, size){
+  if(!window.isVerifiedRoll(roll)) return '';
+  var s = size || 14;
+  return '<svg class="verified-tick-badge" viewBox="0 0 24 24" width="'+s+'" height="'+s+'" xmlns="http://www.w3.org/2000/svg" aria-label="Verified" title="Verified"><circle cx="12" cy="12" r="11" fill="#e0245e"></circle><path d="M7 12.3l3.2 3.2 6.8-6.8" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+};
+// Plain-text version — sirf wahan use karo jaha HTML allowed nahi hai (jaise <option> ke andar)
+window.vTickText = function(roll){
+  return window.isVerifiedRoll(roll) ? ' \u2714' : '';
+};
 function arr(v){return v?Object.entries(v).map(([id,x])=>({id,...x})):[]}
 
 function applyOnlineData(d){
@@ -3603,10 +3582,10 @@ function applyOnlineData(d){
           window.localUser.name = liveUser.name;
           localStorage.setItem('portalUser', JSON.stringify(window.localUser));
           const profN = document.getElementById('profName');
-          if(profN && profN.childNodes[0]) profN.childNodes[0].nodeValue = window.localUser.name;
-          // ADDITIVE: realtime red-tick refresh (agar admin ne abhi verify/un-verify kiya ho)
-          const profTick2 = document.getElementById('profNameTick');
-          if(profTick2) profTick2.innerHTML = redTickBadgeHtml(window.localUser.rollNumber);
+          if(profN){
+            profN.innerText = window.localUser.name;
+            profN.insertAdjacentHTML('beforeend', window.vTick ? window.vTick(window.localUser.rollNumber, 15) : '');
+          }
       } else if(typeof window.forceLogoutDeletedUser === 'function') {
           // Realtime delete detection: admin ne is user ka profile delete kar diya
           // (ya Roll Number change kar diya), isliye app se automatic logout kar do.
@@ -3739,7 +3718,7 @@ function renderOnlineChats() {
             safeText = safeText.replace(/@([a-zA-Z0-9_]+)/g, '<span style="color: #007bff; font-weight: bold;">@$1</span>');
 
             html += `<div class="chat-msg ${cssClass}">
-                        <div style="font-weight: bold; margin-bottom: 3px; color: ${rollColor};">${esc(chat.userId)}${redTickBadgeHtml(chat.userId)}</div>
+                        <div style="font-weight: bold; margin-bottom: 3px; color: ${rollColor};">${esc(chat.userId)}${window.vTick ? window.vTick(chat.userId) : ''}</div>
                         <div style="word-break: break-word;">${safeText}</div>
                         <div class="chat-msg-footer">
                             <span class="chat-time">${timeStr}</span>
@@ -4222,44 +4201,6 @@ window.deleteOnlineUser = async function(roll){
     setStatus('User deleted successfully.');
 };
 
-/* ================= ADDITIVE: SEPARATE "Red Tick" ADMIN PANEL — logic =================
-   Purane saveOnlineUser/updateOnlineUser/deleteOnlineUser functions bilkul
-   bhi chheda nahi gaya hai. Yeh alag naya function hai jo sirf ek "verified"
-   flag Firebase me us user ke record ke andar ON/OFF karta hai. */
-window.toggleUserVerified = async function(roll, checked){
-    if(!roll) return;
-    await update(ref(db, 'portal/users/' + roll), { verified: !!checked });
-    setStatus(checked ? ('Red tick diya gaya: ' + roll) : ('Red tick hataya gaya: ' + roll));
-};
-
-// Renders the separate "Red Tick" admin panel list (Naam + Roll Number + ON/OFF switch).
-window.renderAdminVerifyList = function(filterText){
-    const box = document.getElementById('adminVerifyList');
-    if(!box) return;
-    const q = String(filterText || '').trim().toLowerCase();
-    let list = Object.values(onlineData.users || {});
-    if(q){
-        list = list.filter(u => String(u.name||'').toLowerCase().includes(q) || String(u.rollNumber||'').toLowerCase().includes(q));
-    }
-    list = list.slice().sort((a,b) => String(a.name||'').localeCompare(String(b.name||'')));
-    if(!list.length){
-        box.innerHTML = '<p class="admin-small">Koi user nahi mila.</p>';
-        return;
-    }
-    box.innerHTML = list.map(u => `
-        <div class="verify-toggle-row">
-            <div class="verify-toggle-info">
-                <span class="vt-name">${esc(u.name || u.rollNumber)}${redTickBadgeHtml(u.rollNumber)}</span>
-                <span class="vt-roll">Roll No: ${esc(u.rollNumber)}</span>
-            </div>
-            <label class="verify-switch">
-                <input type="checkbox" ${u.verified ? 'checked' : ''} onchange="toggleUserVerified('${esc(u.rollNumber)}', this.checked)">
-                <span class="vt-slider"></span>
-            </label>
-        </div>
-    `).join('');
-};
-
 window.renderAdminAll = function() {
     if(!auth.currentUser) return;
     const logoP = document.getElementById('adminLogoPreview');
@@ -4290,7 +4231,7 @@ window.renderAdminAll = function() {
     if(notifUserSelect) {
         let options = '<option value="ALL">Send to All Users (Public Notification)</option>';
         Object.values(onlineData.users || {}).forEach(u => {
-            options += `<option value="${esc(u.rollNumber)}">${esc(u.name)} (${esc(u.rollNumber)})</option>`;
+            options += `<option value="${esc(u.rollNumber)}">${esc(u.name)} (${esc(u.rollNumber)})${window.vTickText ? window.vTickText(u.rollNumber) : ''}</option>`;
         });
         notifUserSelect.innerHTML = options;
     }
@@ -4346,9 +4287,9 @@ window.renderAdminAll = function() {
         usersContainer.innerHTML = Object.values(onlineData.users || {}).map(u => `
             <div class="admin-card">
                 <div class="admin-form">
-                    <p class="admin-small">${u.verified ? 'Red Tick: ON' : 'Red Tick: OFF'} ${redTickBadgeHtml(u.rollNumber)} <span style="color:#94a3b8;">(manage from the "Red Tick" tab)</span></p>
-                    <label>Name</label><input id="un-${esc(u.rollNumber)}" value="${esc(u.name)}">
+                    <label>Name ${window.vTick ? window.vTick(u.rollNumber, 15) : ''}</label><input id="un-${esc(u.rollNumber)}" value="${esc(u.name)}">
                     <label>Roll Number</label><input id="ur-${esc(u.rollNumber)}" value="${esc(u.rollNumber)}">
+                    <p class="admin-small">Red Tick status: ${window.isVerifiedRoll && window.isVerifiedRoll(u.rollNumber) ? '<strong style="color:#e0245e">Verified</strong> — manage from Red Tick Admin Panel' : 'Not verified — manage from Red Tick Admin Panel'}</p>
                     <div class="admin-row">
                         <button class="admin-btn" onclick="updateOnlineUser('${esc(u.rollNumber)}')">Update User</button>
                         <button class="admin-btn red" onclick="deleteOnlineUser('${esc(u.rollNumber)}')">Delete User</button>
@@ -4356,13 +4297,6 @@ window.renderAdminAll = function() {
                 </div>
             </div>
         `).join('');
-    }
-
-    // ADDITIVE: Render the separate "Red Tick" admin panel list — purana
-    // "Render users admin" block (upar) bilkul bhi chheda nahi gaya hai.
-    if(document.getElementById('adminVerifyList')){
-        const verifySearchEl = document.getElementById('verifySearchInput');
-        window.renderAdminVerifyList(verifySearchEl ? verifySearchEl.value : '');
     }
 
     // Render chats admin
@@ -4688,7 +4622,7 @@ onAuthStateChanged(auth, user => {
         <article class="user-post-card" data-user-post-id="${userPostEsc(p.id)}">
           <div class="user-post-head">
             <div>
-              <div class="user-post-author">${userPostEsc(p.authorName || roll)}${window.redTickBadgeHtml ? window.redTickBadgeHtml(p.authorRoll || roll) : ''}</div>
+              <div class="user-post-author">${userPostEsc(p.authorName || roll)}${window.vTick ? window.vTick(p.authorRoll || roll) : ''}</div>
               <div class="user-post-time">${userPostTime(p.timestamp)}</div>
             </div>
             <button class="user-post-delete" onclick="deleteOwnUserPost('${userPostEsc(p.id)}')"><svg class="ui-icon"><use href="#icon-trash"></use></svg> Delete</button>
@@ -4831,7 +4765,8 @@ onAuthStateChanged(auth, user => {
   function userFeedCard(p){
     const photos=userFeedPhotos(p);
     const author=esc(p.authorName || p.authorRoll || p.userId || 'User');
-    const authorTick=window.redTickBadgeHtml ? window.redTickBadgeHtml(p.authorRoll || p.userId || '') : '';
+    const authorRollForTick=p.authorRoll || p.userId || p.createdBy || '';
+    const authorTick=window.vTick ? window.vTick(authorRollForTick) : '';
     const text=p.text?`<div class="user-post-body">${esc(p.text)}</div>`:'';
     const seenCount=p.seenBy ? Object.keys(p.seenBy).filter(k=>p.seenBy[k]).length : 0;
     const ownRoll=window.localUser ? String(window.localUser.rollNumber) : '';
@@ -5639,7 +5574,7 @@ onAuthStateChanged(auth, user => {
       return `<div class="feed-search-suggestion-item" data-roll="${srchEsc(roll)}">
         <div class="feed-search-suggestion-avatar">${initials}</div>
         <div class="feed-search-suggestion-info">
-          <div class="feed-search-suggestion-name">${srchEsc(u.name||roll)}${redTickBadgeHtml(roll)}</div>
+          <div class="feed-search-suggestion-name">${srchEsc(u.name||roll)}</div>
           <div class="feed-search-suggestion-roll">Roll No: ${srchEsc(roll)}</div>
         </div>
         <button type="button" class="feed-search-suggestion-remove" data-remove-roll="${srchEsc(roll)}" title="Remove"><svg class="ui-icon"><use href="#icon-x"></use></svg></button>
@@ -5718,7 +5653,7 @@ onAuthStateChanged(auth, user => {
       return `<div class="feed-search-suggestion-item" data-roll="${srchEsc(roll)}">
         <div class="feed-search-suggestion-avatar">${initials}</div>
         <div>
-          <div class="feed-search-suggestion-name">${srchEsc(u.name||roll)}${redTickBadgeHtml(roll)}</div>
+          <div class="feed-search-suggestion-name">${srchEsc(u.name||roll)}${window.vTick ? window.vTick(roll) : ''}</div>
           <div class="feed-search-suggestion-roll">Roll No: ${srchEsc(roll)}</div>
         </div>
       </div>`;
@@ -5742,7 +5677,10 @@ onAuthStateChanged(auth, user => {
     const nameEl = document.getElementById('feedUserPostsName');
     const rollEl = document.getElementById('feedUserPostsRoll');
     const avEl = document.getElementById('feedUserPostsAvatar');
-    if(nameEl) nameEl.innerHTML = srchEsc(u.name || roll) + redTickBadgeHtml(roll);
+    if(nameEl){
+      nameEl.textContent = u.name || roll;
+      nameEl.insertAdjacentHTML('beforeend', window.vTick ? window.vTick(roll, 15) : '');
+    }
     if(rollEl) rollEl.textContent = 'Roll No: ' + roll;
     if(avEl) avEl.textContent = String(roll).slice(0,2).toUpperCase() || '?';
     showOnly('feedUserPostsView');
@@ -6321,7 +6259,7 @@ onAuthStateChanged(auth, user => {
           ${cover && cover.media ? `<img class="story-frame-thumb" src="${sEsc(cover.media)}">`:''}
           <div class="story-frame-avatar">${sEsc(g.roll)}</div>
         </div></div>
-        <div class="story-tray-name">${sEsc(g.name)}${redTickBadgeHtml(g.roll)}</div>
+        <div class="story-tray-name">${sEsc(g.name)}</div>
       </div>`;
     });
     box.innerHTML = html || '<div class="story-tray-empty">No stories yet.</div>';
@@ -6407,7 +6345,8 @@ onAuthStateChanged(auth, user => {
     row.innerHTML = g.items.map((_,i)=>`<div class="story-progress-bar ${i<sv.storyIdx?'done':''}" data-idx="${i}"><div class="story-progress-fill"></div></div>`).join('');
 
     document.getElementById('storyViewerAvatar').textContent = g.roll;
-    document.getElementById('storyViewerRoll').innerHTML = sEsc(g.name) + ' (' + sEsc(g.roll) + ')' + redTickBadgeHtml(g.roll);
+    document.getElementById('storyViewerRoll').textContent = g.name + ' (' + g.roll + ')';
+    document.getElementById('storyViewerRoll').insertAdjacentHTML('beforeend', window.vTick ? window.vTick(g.roll, 13) : '');
     document.getElementById('storyViewerTime').textContent = storyTimeAgo(story.timestamp);
     document.getElementById('storyMediaImg').src = story.media || '';
     const storyViewerOverlayEl = document.getElementById('storyViewerTextOverlay');
@@ -7470,14 +7409,14 @@ onAuthStateChanged(auth, user => {
     var medals = ['🥇','🥈','🥉'];
     var html = '';
     sorted.slice(0,3).forEach(function(u, i){
-      html += '<div class="eng-lb-row"><span class="eng-lb-rank">'+medals[i]+'</span><span class="eng-lb-name">'+esc(displayNameFor(u.roll))+redTickBadgeHtml(u.roll)+'</span><span class="eng-lb-xp">'+(u.xp||0)+' XP</span></div>';
+      html += '<div class="eng-lb-row"><span class="eng-lb-rank">'+medals[i]+'</span><span class="eng-lb-name">'+esc(displayNameFor(u.roll))+(window.vTick?window.vTick(u.roll):'')+'</span><span class="eng-lb-xp">'+(u.xp||0)+' XP</span></div>';
     });
     var roll = myRoll();
     if(roll){
       var myRank = getMyRank();
       var mine = engUsersData[roll] || {xp:0};
       html += '<div class="eng-lb-divider"></div>';
-      html += '<div class="eng-lb-row eng-lb-you"><span class="eng-lb-rank">👤</span><span class="eng-lb-name">You — #'+myRank+'</span><span class="eng-lb-xp">'+(mine.xp||0)+' XP</span></div>';
+      html += '<div class="eng-lb-row eng-lb-you"><span class="eng-lb-rank">👤</span><span class="eng-lb-name">You — #'+myRank+(window.vTick?window.vTick(myRoll()):'')+'</span><span class="eng-lb-xp">'+(mine.xp||0)+' XP</span></div>';
     }
     body.innerHTML = html;
   }
@@ -7507,7 +7446,7 @@ onAuthStateChanged(auth, user => {
     if(!sorted.length) allHtml = '<div class="eng-challenge-empty">Abhi koi student ne XP nahi kamaya.</div>';
     sorted.forEach(function(u, i){
       var rowCls = 'eng-lb-row' + (u.roll === roll ? ' eng-lb-you' : '');
-      allHtml += '<div class="'+rowCls+'"><span class="eng-lb-rank">'+(i+1)+'</span><span class="eng-lb-name">'+esc(displayNameFor(u.roll))+' ('+esc(u.roll)+')'+redTickBadgeHtml(u.roll)+'</span><span class="eng-lb-xp">'+(u.xp||0)+' XP</span></div>';
+      allHtml += '<div class="'+rowCls+'"><span class="eng-lb-rank">'+(i+1)+'</span><span class="eng-lb-name">'+esc(displayNameFor(u.roll))+' ('+esc(u.roll)+')'+(window.vTick?window.vTick(u.roll):'')+'</span><span class="eng-lb-xp">'+(u.xp||0)+' XP</span></div>';
     });
     allBody.innerHTML = allHtml;
 
@@ -7520,7 +7459,7 @@ onAuthStateChanged(auth, user => {
     weekSorted.forEach(function(u, i){
       var rowCls = 'eng-lb-row' + (u.roll === roll ? ' eng-lb-you' : '');
       var medal = i===0 ? '🥇' : (i===1 ? '🥈' : (i===2 ? '🥉' : (i+1)));
-      weekHtml += '<div class="'+rowCls+'"><span class="eng-lb-rank">'+medal+'</span><span class="eng-lb-name">'+esc(displayNameFor(u.roll))+redTickBadgeHtml(u.roll)+'</span><span class="eng-lb-xp">'+u.xp+' XP</span></div>';
+      weekHtml += '<div class="'+rowCls+'"><span class="eng-lb-rank">'+medal+'</span><span class="eng-lb-name">'+esc(displayNameFor(u.roll))+(window.vTick?window.vTick(u.roll):'')+'</span><span class="eng-lb-xp">'+u.xp+' XP</span></div>';
     });
     weekBody.innerHTML = weekHtml;
 
