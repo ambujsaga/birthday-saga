@@ -1765,23 +1765,77 @@
     border-radius:14px;
     box-shadow:0 4px 12px rgba(0,51,102,.25);
     transition: transform .15s, box-shadow .15s;
+    position:relative; /* ADDITIVE: needed for the new-question corner dot below */
   }
   .eng-hub-bar:hover{ transform:translateY(-1px); box-shadow:0 6px 16px rgba(0,51,102,.32); }
   .eng-hub-bar:active{ transform:translateY(0); }
   .eng-hub-bar-badge{
     background: rgba(255,255,255,.16);
     color:#fff;
-    padding:5px 12px;
+    padding:4px 9px;
     border-radius:20px;
-    font-size:.8rem;
+    font-size:.62rem;
     font-weight:800;
     letter-spacing:.2px;
     white-space:nowrap;
     display:inline-flex;
     align-items:center;
-    gap:7px;
+    gap:6px;
     flex-shrink:0;
     border:1px solid rgba(255,255,255,.25);
+  }
+  /* ADDITIVE: new-question-available signal shown at the corner of the
+     homepage bar. Separate from the existing #engHubDot (mystery box
+     ready) so that old signal keeps working exactly as before. Shows
+     when a fresh hourly question has arrived and this user hasn't
+     answered it yet; hides the instant they answer. */
+  .eng-newq-dot{
+    position:absolute;
+    top:-5px;
+    right:-5px;
+    width:13px;
+    height:13px;
+    background:#ff3333;
+    border-radius:50%;
+    border:2px solid #fff;
+    box-shadow:0 0 6px rgba(255,0,0,.8);
+    animation: pulse 1.5s infinite;
+    display:none;
+  }
+  /* ADDITIVE: Hindi/English reading-language toggle shown next to the
+     challenge question. */
+  .eng-lang-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:10px;
+    flex-wrap:wrap;
+  }
+  .eng-lang-label{
+    font-size:.78rem;
+    color:#666;
+    font-weight:600;
+  }
+  .eng-lang-btn{
+    font-size:.78rem;
+    font-weight:700;
+    padding:4px 12px;
+    border-radius:16px;
+    border:1px solid #ccd6e0;
+    background:#fff;
+    color:var(--primary-blue);
+    cursor:pointer;
+    transition: background .15s, color .15s;
+  }
+  .eng-lang-btn.active{
+    background:var(--primary-blue);
+    color:#fff;
+    border-color:var(--primary-blue);
+  }
+  .eng-lang-loading{
+    font-size:.75rem;
+    color:#888;
+    font-style:italic;
   }
   .eng-hub-dot{
     width:8px;height:8px;border-radius:50%;
@@ -2027,6 +2081,8 @@
                 <span class="eng-hub-bar-badge">🎯 Daily Engagement<span class="eng-hub-dot" id="engHubDot"></span></span>
                 <span class="eng-hub-bar-text" id="engHubBarText">🔥 0 Day Streak &nbsp; ⚡ 0 XP &nbsp; 🏆 Rank #— &nbsp;— Tap for Challenge, Mystery Box & Leaderboard</span>
                 <span class="eng-hub-chevron">&rsaquo;</span>
+                <!-- ADDITIVE: new hourly-question signal (separate from engHubDot) -->
+                <span class="eng-newq-dot" id="engNewQDot" title="New question available"></span>
             </div>
             <h2 class="section-title">Academic Subjects (Semester-I)</h2>
             <div class="grid" id="subjectsGrid">
@@ -7073,10 +7129,26 @@ onAuthStateChanged(auth, user => {
     var week = 1 + Math.round(diff/7);
     return d.getFullYear() + '-W' + pad2(week);
   }
+  /* ADDITIVE: hourly challenge key — same idea as todayStr() but also
+     includes the current hour (0-23), so the challenge/question now
+     changes every 1 hour instead of every 24 hours. Day-based things
+     (streak, weekly XP, mystery box) still use todayStr()/isoWeekKey()
+     exactly as before and are not affected by this. */
+  function engHourKey(){
+    var d = new Date();
+    return todayStr() + '-' + pad2(d.getHours());
+  }
 
   var engChallengeData = null;
   var engUsersData = {};
   var engAttemptsData = {};
+  /* ADDITIVE: reading-language preference for the challenge question
+     ('en' or 'hi') + a per-hour translation cache so we don't call the
+     translation API again for a question already translated. */
+  var engLangPref = 'en';
+  var engTranslationCache = {};
+  var engTranslateInFlight = false;
+  var engTranslateError = false;
   var engMilestoneList = [
     {days:3,label:'Starter'},{days:7,label:'Consistent'},{days:14,label:'Dedicated'},
     {days:30,label:'CSE Warrior'},{days:60,label:'CSE Master'}
@@ -7136,15 +7208,34 @@ onAuthStateChanged(auth, user => {
     var body = document.getElementById('engChallengeBody');
     if(!body) return;
     if(!engChallengeData){
-      body.innerHTML = '<div class="eng-challenge-empty">Aaj ke liye abhi koi challenge upload nahi hua hai. Baad me check karein!</div>';
+      body.innerHTML = '<div class="eng-challenge-empty">Is ghante ke liye abhi koi challenge upload nahi hua hai. Baad me check karein!</div>';
       return;
     }
     var roll = myRoll();
-    var today = todayStr();
-    var attempt = roll ? ((engAttemptsData[today]||{})[roll]) : null;
+    var hk = engHourKey(); // ADDITIVE: hourly key instead of daily, so a new question unlocks every 1 hour
+    var attempt = roll ? ((engAttemptsData[hk]||{})[roll]) : null;
 
-    var html = '<div class="eng-challenge-q">' + esc(engChallengeData.question) + '</div>';
-    (engChallengeData.options||[]).forEach(function(opt, idx){
+    // ADDITIVE: Hindi/English language toggle row, shown right next to the question
+    var tr = engTranslationCache[hk] && engTranslationCache[hk].hi;
+    var questionText = engChallengeData.question;
+    var optionsList = engChallengeData.options || [];
+    if(engLangPref === 'hi' && tr){
+      questionText = tr.question;
+      optionsList = tr.options;
+    }
+    var langHtml = '<div class="eng-lang-row">'
+      + '<span class="eng-lang-label">🌐</span>'
+      + '<button type="button" class="eng-lang-btn'+(engLangPref==='en'?' active':'')+'" onclick="engagementSetLang(\'en\')">English</button>'
+      + '<button type="button" class="eng-lang-btn'+(engLangPref==='hi'?' active':'')+'" onclick="engagementSetLang(\'hi\')">हिंदी</button>';
+    if(engLangPref === 'hi' && !tr){
+      langHtml += engTranslateError
+        ? '<span class="eng-lang-loading">Translation abhi available nahi — English dikhaya ja raha hai.</span>'
+        : '<span class="eng-lang-loading">Translating…</span>';
+    }
+    langHtml += '</div>';
+
+    var html = langHtml + '<div class="eng-challenge-q">' + esc(questionText) + '</div>';
+    optionsList.forEach(function(opt, idx){
       var cls = 'eng-challenge-opt';
       var disabledAttr = '';
       if(attempt){
@@ -7162,11 +7253,72 @@ onAuthStateChanged(auth, user => {
     body.innerHTML = html;
   }
 
+  // ADDITIVE: switch the reading language of the question/options.
+  // Only changes what's displayed — does not touch scoring, streak,
+  // XP or any old logic.
+  window.engagementSetLang = function(lang){
+    engLangPref = lang;
+    if(lang === 'hi'){
+      engTranslateError = false;
+      engagementEnsureTranslation();
+    }
+    renderChallengeCard();
+  };
+
+  // ADDITIVE: calls OpenRouter to translate the current hour's question
+  // + options into Hindi, once per hourly question, then caches it.
+  async function engagementEnsureTranslation(){
+    if(!engChallengeData) return;
+    var hk = engHourKey();
+    if(engTranslationCache[hk] && engTranslationCache[hk].hi) { renderChallengeCard(); return; }
+    if(engTranslateInFlight) return;
+    engTranslateInFlight = true;
+    try{
+      var resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // NOTE: this key is visible to anyone who views this page's source,
+          // since it's called directly from the browser. Fine for quick
+          // testing, but for production move this call behind your own
+          // small backend/serverless function so the key isn't public.
+          'Authorization': 'Bearer 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'
+        },
+        body: JSON.stringify({
+          // NOTE: "openrouter/free" is not a real OpenRouter model slug —
+          // replace this with an actual free model id from
+          // https://openrouter.ai/models (e.g. a ":free" suffixed model).
+          model: 'openrouter/free',
+          messages: [
+            { role: 'system', content: 'You translate quiz questions and multiple-choice options from English into simple, natural Hindi (Devanagari script). Reply with ONLY strict JSON in this exact shape, nothing else: {"question":"...","options":["...","...","...","..."]}' },
+            { role: 'user', content: JSON.stringify({ question: engChallengeData.question, options: engChallengeData.options || [] }) }
+          ]
+        })
+      });
+      var data = await resp.json();
+      var raw = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+      var clean = String(raw||'').replace(/```json|```/g,'').trim();
+      var parsed = JSON.parse(clean);
+      if(parsed && parsed.question && Array.isArray(parsed.options)){
+        if(!engTranslationCache[hk]) engTranslationCache[hk] = {};
+        engTranslationCache[hk].hi = { question: parsed.question, options: parsed.options };
+      } else {
+        engTranslateError = true;
+      }
+    }catch(e){
+      console.error('Engagement translation error:', e);
+      engTranslateError = true;
+    }
+    engTranslateInFlight = false;
+    renderChallengeCard();
+  }
+
   window.engagementSubmitChallenge = async function(idx){
     var roll = myRoll();
     if(!roll || !engChallengeData) return;
     var today = todayStr();
-    if((engAttemptsData[today]||{})[roll]) return;
+    var hk = engHourKey(); // ADDITIVE: guard + attempt storage now per-hour, not per-day
+    if((engAttemptsData[hk]||{})[roll]) return;
 
     var correct = (idx === engChallengeData.correct);
     var xpEarned = correct ? (engChallengeData.xp || 10) : 0;
@@ -7174,7 +7326,7 @@ onAuthStateChanged(auth, user => {
     var existing = engUsersData[roll] || { xp:0, streak:0, bestStreak:0, lastDate:'', badges:[], weeklyXP:{}, mysteryOpened:{} };
     var newStreak = existing.streak || 0;
     if(existing.lastDate === yesterdayStr(today)) newStreak += 1;
-    else if(existing.lastDate === today) { /* already counted */ }
+    else if(existing.lastDate === today) { /* already counted today (streak stays day-based even with hourly questions) */ }
     else newStreak = 1;
     var bestStreak = Math.max(existing.bestStreak||0, newStreak);
     var newXp = (existing.xp||0) + xpEarned;
@@ -7183,11 +7335,12 @@ onAuthStateChanged(auth, user => {
     weeklyXP[wk] = (weeklyXP[wk]||0) + xpEarned;
 
     try{
-      await set(ref(db, 'portal/engagement/attempts/'+today+'/'+roll), { answerIndex: idx, correct: correct, xpEarned: xpEarned, ts: Date.now() });
+      await set(ref(db, 'portal/engagement/attempts/'+hk+'/'+roll), { answerIndex: idx, correct: correct, xpEarned: xpEarned, ts: Date.now() });
       await update(ref(db, 'portal/engagement/users/'+roll), {
         xp: newXp, streak: newStreak, bestStreak: bestStreak, lastDate: today, weeklyXP: weeklyXP
       });
     }catch(e){ console.error('Engagement submit error:', e); }
+    engagementUpdateHubBar(); // ADDITIVE: hide the new-question dot immediately after answering
   };
 
   function renderMysteryCard(){
@@ -7196,7 +7349,10 @@ onAuthStateChanged(auth, user => {
     if(!card || !btn) return;
     var roll = myRoll();
     var today = todayStr();
-    var attempted = roll && (engAttemptsData[today]||{})[roll];
+    // ADDITIVE: attempts are now stored per-hour (see engHourKey), so "attempted
+    // today" (for the once-a-day mystery box) is read from lastDate instead,
+    // which engagementSubmitChallenge already sets on every answer, any hour.
+    var attempted = roll && engUsersData[roll] && engUsersData[roll].lastDate === today;
     if(!attempted){ card.style.display = 'none'; return; }
     card.style.display = 'block';
     var d = myData();
@@ -7344,6 +7500,7 @@ onAuthStateChanged(auth, user => {
   // ek-line summary me dikhata hai. Isse koi purana render function chheda
   // nahi gaya, sirf naya read-only polling add hua hai (timetable widget jaisa).
   function engagementUpdateHubBar(){
+    engSubscribeHourlyChallenge(); // ADDITIVE: re-subscribe to Firebase if the hour just rolled over
     var barText = document.getElementById('engHubBarText');
     if(!barText) return;
     var streakEl = document.getElementById('engStreakVal');
@@ -7351,12 +7508,23 @@ onAuthStateChanged(auth, user => {
     var rankEl = document.getElementById('engRankVal');
     var mysteryEl = document.getElementById('engMysteryCard');
     var dot = document.getElementById('engHubDot');
+    var newQDot = document.getElementById('engNewQDot');
     var streak = streakEl ? streakEl.innerText : '0';
     var xp = xpEl ? xpEl.innerText : '0';
     var rank = rankEl ? rankEl.innerText : '#—';
     var mysteryReady = !!(mysteryEl && mysteryEl.style.display !== 'none');
     barText.textContent = '🔥 ' + streak + ' Day Streak   ⚡ ' + xp + ' XP   🏆 Rank ' + rank + (mysteryReady ? '   🎁 Mystery Box Ready!' : '') + '   — Tap for Challenge, Mystery Box & Leaderboard';
     if(dot) dot.style.display = mysteryReady ? 'inline-block' : 'none';
+
+    // ADDITIVE: new-hourly-question signal — on while a fresh question is
+    // waiting and this user hasn't answered it yet, off the moment they do.
+    if(newQDot){
+      var roll = myRoll();
+      var hk = engHourKey();
+      var alreadyAnswered = roll && (engAttemptsData[hk]||{})[roll];
+      var newQReady = !!(engChallengeData && roll && !alreadyAnswered);
+      newQDot.style.display = newQReady ? 'block' : 'none';
+    }
   }
   engagementUpdateHubBar();
   setInterval(engagementUpdateHubBar, 2000);
@@ -7411,17 +7579,35 @@ onAuthStateChanged(auth, user => {
   };
 
   // Firebase listeners — all under the new 'portal/engagement/...' path only
-  onValue(ref(db, 'portal/engagement/dailyChallenge/'+todayStr()), function(snap){
-    engChallengeData = snap.val();
-    renderChallengeCard();
-    renderMysteryCard();
-  }, function(err){ console.error('Engagement challenge listener error:', err); });
+  // ADDITIVE: the challenge + attempts listeners used to be created once,
+  // pointed at a fixed todayStr() path. Now that the question refreshes
+  // every 1 hour (not every 24), the path itself needs to change every
+  // hour, so this wraps them in a function that unsubscribes from the old
+  // hour's path and resubscribes to the new one whenever the hour changes.
+  // NOTE: your admin/upload side should now push a new question every hour
+  // to 'portal/engagement/dailyChallenge/<YYYY-MM-DD-HH>' (24 keys/day)
+  // instead of one key per day.
+  var engChallengeUnsub = null, engAttemptsUnsub = null, engSubscribedHourKey = null;
+  function engSubscribeHourlyChallenge(){
+    var hk = engHourKey();
+    if(hk === engSubscribedHourKey) return;
+    engSubscribedHourKey = hk;
+    if(engChallengeUnsub) engChallengeUnsub();
+    if(engAttemptsUnsub) engAttemptsUnsub();
 
-  onValue(ref(db, 'portal/engagement/attempts/'+todayStr()), function(snap){
-    engAttemptsData[todayStr()] = snap.val() || {};
-    renderChallengeCard();
-    renderMysteryCard();
-  }, function(err){ console.error('Engagement attempts listener error:', err); });
+    engChallengeUnsub = onValue(ref(db, 'portal/engagement/dailyChallenge/'+hk), function(snap){
+      engChallengeData = snap.val();
+      renderChallengeCard();
+      renderMysteryCard();
+    }, function(err){ console.error('Engagement challenge listener error:', err); });
+
+    engAttemptsUnsub = onValue(ref(db, 'portal/engagement/attempts/'+hk), function(snap){
+      engAttemptsData[hk] = snap.val() || {};
+      renderChallengeCard();
+      renderMysteryCard();
+    }, function(err){ console.error('Engagement attempts listener error:', err); });
+  }
+  engSubscribeHourlyChallenge();
 
   onValue(ref(db, 'portal/engagement/users'), function(snap){
     engUsersData = snap.val() || {};
