@@ -2481,6 +2481,35 @@ function setStatus(t){const e=document.getElementById('adminStatus');if(e)e.text
 function arr(v){return v?Object.entries(v).map(([id,x])=>({id,...x})):[]}
 
 function applyOnlineData(d){
+  // ================= ADDITIVE: CROSS-PANEL STUDENT DELETE CASCADE =================
+  // Purana behaviour (upar/niche) bilkul waisa hi hai — sirf ek naya, alag
+  // check add kiya gaya hai. Yeh 'portal/users' ki nayi snapshot ko purani
+  // snapshot se compare karta hai taaki pata chal sake ki koi roll number is
+  // update me hi gayab hua hai — chahe delete is admin panel se hua ho ya
+  // bilkul alag "testing.html" (main student portal) se. Jis roll ka delete
+  // detect hota hai, uska poora leftover data (engagement XP/streak, apne
+  // posts/stories, active-session login-lock, personal notification)
+  // automatically saaf ho jaata hai — taaki (a) us roll par dobara turant
+  // login block na ho aur (b) baad me usi roll number par naya student add
+  // karne par use purana data mixed hua na mile. Niche wali purani
+  // onlineData.users assignment line bilkul chheda nahi gayi hai.
+  var prevUsersForCascade = onlineData.users || {};
+  var nextUsersForCascade = (d && d.users) ? d.users : {};
+  var prevRollsForCascade = Object.keys(prevUsersForCascade);
+  var nextRollsForCascade = Object.keys(nextUsersForCascade);
+  if(prevRollsForCascade.length){
+    // Safety: agar naya snapshot ekdum khaali aa gaya jab pehle bahut saare
+    // users the, to yeh ek connection glitch ho sakta hai — is case me kuchh
+    // delete nahi karte (poore data ko galti se wipe hone se bachane ke liye).
+    var looksLikeGlitch = nextRollsForCascade.length === 0 && prevRollsForCascade.length > 1;
+    if(!looksLikeGlitch){
+      var newlyDeletedRolls = prevRollsForCascade.filter(function(r){ return !nextUsersForCascade.hasOwnProperty(r); });
+      newlyDeletedRolls.forEach(function(r){
+        if(window.cascadeCleanupDeletedStudentData) window.cascadeCleanupDeletedStudentData(r);
+      });
+    }
+  }
+
   onlineData={...onlineData,...(d||{})};
   onlineData.branding={...onlineData.branding,...((d&&d.branding)||{})};
   onlineData.subjects=arr(d&&d.subjects).length?arr(d.subjects):onlineData.subjects;
@@ -3100,6 +3129,67 @@ window.deleteOnlineUser = async function(roll){
     if(!confirm('Are you sure you want to delete this user?')) return;
     await remove(ref(db, 'portal/users/' + roll));
     setStatus('User deleted successfully.');
+};
+
+// ================= ADDITIVE: CROSS-PANEL STUDENT DELETE CASCADE (cleanup fn) =================
+// Bilkul naya, standalone global helper hai — window.deleteOnlineUser (upar) ya
+// koi bhi purana function/method chheda nahi gaya hai. Yeh function upar wale
+// applyOnlineData() ke realtime "roll number gayab ho gaya" detection se call
+// hota hai, isliye yeh kaam karta hai chahe delete is admin panel se hua ho ya
+// bilkul alag "testing.html" (main student portal) se — dono cases me Firebase
+// ka 'portal/users/{roll}' node hi hata hai, aur yeh function usi ek badlaav
+// ko live sunkar poora cleanup kar deta hai.
+// Har step best-effort + try/catch me hai taaki ek cleanup fail ho bhi jaaye
+// to baaki cleanup rukta nahi, aur agar koi cheez pehle se hi hati hui ho to
+// remove() dobara call karne se koi error/side-effect nahi hota — safe hai.
+// Yeh apna data seedha Firebase se (get() ke through) padhta hai, kisi local
+// cached array se nahi — taaki yeh sahi kaam kare chahe testing.html khula ho
+// ya na ho.
+window.cascadeCleanupDeletedStudentData = async function(roll){
+    const rollStr = String(roll);
+    if(!rollStr) return;
+
+    // 1) Engagement data (XP / streak / weekly XP / badges / class rank)
+    try{ await remove(ref(db, 'portal/engagement/users/' + rollStr)); }catch(e){ console.warn('Cascade: engagement cleanup failed', e); }
+
+    // 2) Student's own posts
+    try{
+        const postsSnap = await get(ref(db, 'portal/posts'));
+        const postsVal = postsSnap.val() || {};
+        const ownPostIds = Object.keys(postsVal).filter(id => {
+            const p = postsVal[id];
+            return p && String(p.authorRoll || p.userId || p.createdBy || '') === rollStr;
+        });
+        await Promise.all(ownPostIds.map(id => remove(ref(db, 'portal/posts/' + id)).catch(e => console.warn('Cascade: post cleanup failed', id, e))));
+    }catch(e){ console.warn('Cascade: posts cleanup failed', e); }
+
+    // 3) Student's own stories
+    try{
+        const storiesSnap = await get(ref(db, 'portal/stories'));
+        const storiesVal = storiesSnap.val() || {};
+        const ownStoryIds = Object.keys(storiesVal).filter(id => storiesVal[id] && String(storiesVal[id].authorRoll || '') === rollStr);
+        await Promise.all(ownStoryIds.map(id => remove(ref(db, 'portal/stories/' + id)).catch(e => console.warn('Cascade: story cleanup failed', id, e))));
+    }catch(e){ console.warn('Cascade: stories cleanup failed', e); }
+
+    // 4) Single-Device Login Lock — agar yeh clear nahi hua to isi roll number
+    //    par naya add kiya gaya student "already logged in on another device"
+    //    error ki wajah se login hi nahi kar payega.
+    try{ await remove(ref(db, 'portal/activeSessions/' + rollStr)); }catch(e){ console.warn('Cascade: active-session cleanup failed', e); }
+
+    // 5) Personal notifications jo sirf isi roll number ke liye targeted thi
+    try{
+        const notifSnap = await get(ref(db, 'portal/notifications'));
+        const notifVal = notifSnap.val() || {};
+        const ownNotifIds = Object.keys(notifVal).filter(id => notifVal[id] && String(notifVal[id].targetUser || '') === rollStr);
+        await Promise.all(ownNotifIds.map(id => remove(ref(db, 'portal/notifications/' + id)).catch(e => console.warn('Cascade: notification cleanup failed', id, e))));
+    }catch(e){ console.warn('Cascade: notifications cleanup failed', e); }
+
+    // 6) Doosre students ke posts par isi roll ke reactions (emoji)
+    try{
+        const postsSnap2 = await get(ref(db, 'portal/posts'));
+        const postsVal2 = postsSnap2.val() || {};
+        await Promise.all(Object.keys(postsVal2).map(id => remove(ref(db, 'portal/reactions/' + id + '/' + rollStr)).catch(()=>{})));
+    }catch(e){ console.warn('Cascade: reactions cleanup failed', e); }
 };
 
 window.renderAdminAll = function() {
