@@ -290,6 +290,45 @@ window.saveChallenge = async function(){
 // Isse ek Cloud Function bhi wahi settings padh sakta hai — page khula ho ya nahi.
 const AI_CONFIG_PATH = 'portal/engagement/aiConfig';
 const AI_DEFAULT_MODEL = 'meta-llama/llama-3.1-8b-instruct:free';
+
+// Fixed syllabus — AI questions ONLY isi syllabus se banenge, koi bahar ya naya
+// (out-of-syllabus) topic allowed nahi hai. Yeh text seedha prompt me jaata hai.
+const SYLLABUS_TEXT = `
+1. Mathematics-I
+- Unit 1: Trigonometry — Angles and Measurement, Degree and Radian, T-ratios, Allied Angles, Sum and Difference Formula, Product Formula, Multiple and Sub-multiple Angles, Graphs: |x|, sin x, cos x, e^x
+- Unit 2: Differential Calculus — Function, Limits, Standard Limits, Differentiation, Differentiation Rules, Trigonometric Functions, Logarithmic Differentiation, Exponential Functions
+- Unit 3: Partial Fractions — Polynomial Fraction, Proper and Improper Fraction, Partial Fractions, Linear Factors, Repeated Linear Factors
+- Unit 4: Binomial Theorem — nPr and nCr, Binomial Theorem, Expansion, General Term, Middle Term, Independent Term
+- Unit 5: Complex Numbers — Real and Imaginary Parts, Cartesian Form, Polar Form, Conjugate, Modulus, Amplitude, Operations on Complex Numbers, De Moivre's Theorem
+
+2. Applied Physics-I
+- Unit 1: Units and Dimensions
+- Unit 2: Force and Motion
+- Unit 3: Work, Power and Energy
+- Unit 4: Circular Motion
+- Unit 5: Rotational Motion of a Rigid Body
+- Unit 6: Properties of Matter
+- Unit 7: Heat and Thermometry
+- Practical: Vernier Calipers, Screw Gauge, Spherometer, Simple Pendulum, Parallelogram Law of Forces, Coefficient of Friction, Viscosity, Conservation of Mechanical Energy, Mercury Thermometer, Hooke's Law
+
+3. IT & AI
+- Introduction to Information Technology, Computer Fundamentals, Basic Computer Components, Hardware and Software, Operating System, Internet and Web, Basic Networking, Information Technology Applications, Introduction to Artificial Intelligence, AI Basics and Concepts, Applications of AI
+
+4. Communication Skills in English
+- Unit 1: Communication — Basics of Communication, Communication Process, Formal and Informal Communication, Verbal and Non-verbal Communication, 7 Cs of Communication, Barriers of Communication
+- Unit 2: Soft Skills — Soft Skills, Hard Skills, Importance of Soft Skills
+- Unit 3: Reading Comprehension — Unseen Passage, Questions and Answers, Prefix and Suffix, Synonyms, Antonyms
+- Unit 4: Functional Grammar — Sentences and Types, Parts of Speech, Tenses, Active and Passive Voice, Punctuation
+- Unit 5: Professional Writing — CV/Resume, Cover Letter, Agenda, Minutes, Notice, Official Letter, Memo, Circular, Office Order, Report, Email
+
+5. Engineering Workshop Practice
+- Carpentry Shop: Woodworking Tools, Planing, Marking, Chiselling, Grooving, Turning, Wood Joints
+- Fitting Shop: Fitting Tools, Filing, Drilling, Tapping, Sawing, Cutting, Marking, Hacksawing
+- Welding Shop: Welding Tools, Arc Welding, Gas Welding, MIG Welding, Gas Cutting, Butt Joint, Lap Joint, T-Joint
+- Sheet Metal Shop: Cutting, Bending, Edging, End Curling, Lancing, Soldering, Brazing, Riveting, Seam Joints, Cylinders
+- Plumbing Shop: Plumbing Tools, Pipes and Fittings, Valves, GI/PVC Pipe Joints, Pipe Cutting, Threading, Pipe Fitting
+- Painting & Polishing: Paints, Varnishes, Surface Preparation, Primer, Painting of Wood, Painting of Metal, Electroplating
+`.trim();
 let aiRunning = false;
 let aiSettingsLoaded = false;
 
@@ -348,11 +387,19 @@ window.saveAISettings = async function(silent){
 };
 
 async function callOpenRouterOnce(key, model){
-  const prompt = 'You generate one Computer Science / General Engineering multiple-choice quiz question for college students. '
+  const prompt = 'You are a quiz-question generator for first-year diploma/engineering students. '
+    + 'You must generate ONE multiple-choice question STRICTLY AND ONLY from the syllabus given below. '
+    + 'Do NOT use any topic, concept, or example that is not explicitly listed in this syllabus — no outside knowledge, '
+    + 'no unrelated subjects, no made-up or general "computer science trivia" topics. Every question must map to a specific '
+    + 'unit/topic line from the syllabus text.\n\n'
+    + '=== SYLLABUS (the ONLY allowed source of topics) ===\n'
+    + SYLLABUS_TEXT
+    + '\n=== END OF SYLLABUS ===\n\n'
+    + 'Pick ONE topic line from the syllabus above (rotate randomly across the 5 subjects and their units so questions '
+    + 'don\'t repeat the same subject every time), and write one clear, exam-style multiple-choice question on it. '
     + 'Reply with ONLY raw JSON, no markdown, no code fences, no extra text, in this exact shape: '
     + '{"question":"...","options":["...","...","...","..."],"correct":0}. '
-    + '"options" must have exactly 4 short items. "correct" is the 0-based index of the correct option. '
-    + 'Pick a different topic each time (DSA, OS, DBMS, networks, OOP, aptitude, current tech).';
+    + '"options" must have exactly 4 short items. "correct" is the 0-based index of the correct option.';
 
   const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
