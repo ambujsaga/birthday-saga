@@ -110,7 +110,8 @@
 
     <div class="box">
       <h3>🤖 AI Auto-Generate Mode</h3>
-      <p class="small">Yeh settings ab Firebase database me save hoti hain (permanent + hamesha editable). "Start" dabane ke baad question generation ek server-side Cloud Function karega — isliye chahe aap yeh page band kar dein ya phone off ho jaaye, generation ruknа nahi chahiye (setup ke liye niche di gayi Cloud Function file deploy karni hogi, ek hi baar). Ab har naya question current hour ke against publish hota hai (24 hours ki jagah 1 hour cycle) — isliye interval 60 minute (ya kam) rakhein taaki har ghante naya question mil jaaye.</p>
+      <p class="small">Settings Firebase database me save hoti hain (permanent + hamesha editable). "Start" dabane ke baad yeh page khud har <b>1 hour</b> me syllabus se ek naya AI question generate karke current hour ke against automatically publish kar dega. Bas auto-generation chalte rehne ke liye is admin page ka tab khula rakhein (agar band ho jaaye, to jab bhi dobara khola jaayega tab turant us waqt ke hour ka question generate ho jaayega aur cycle wahi se aage chalta rahega).</p>
+      <p class="small">🚀 <b>Server-side upgrade available:</b> <code>functions/index.js</code> deploy karne ke baad yeh generation Google ke server par khud chalta hai — is admin tab ko khula rakhna zaroori nahi rahega, chahe browser/laptop band ho. Wahi "Start/Stop" button aur settings dono taraf kaam karte hain (deployment steps README me hain).</p>
       <label>OpenRouter API Key</label>
       <input id="aiKey" type="password" placeholder="sk-or-v1-...">
       <label>Model / Server (e.g. openrouter/free)</label>
@@ -371,6 +372,7 @@ const SYLLABUS_TEXT = `
 `.trim();
 let aiRunning = false;
 let aiSettingsLoaded = false;
+let aiTimer = null; // real in-browser hourly auto-generate timer (replaces old Cloud Function flag approach)
 
 function aiSetStatus(text, color){
   const el = document.getElementById('aiStatus');
@@ -390,6 +392,7 @@ function loadAISettings(){
 
     aiRunning = !!cfg.running;
     updateAIToggleButton();
+    if(aiRunning){ startAutoTimer(); } else { stopAutoTimer(); }
 
     if(cfg.lastStatus){
       aiSetStatus(cfg.lastStatus, cfg.lastStatus.startsWith('error') ? 'red' : 'green');
@@ -515,8 +518,20 @@ window.generateAIChallengeOnce = async function(){
   await set(ref(db, AI_CONFIG_PATH + '/lastStatus'), errMsg);
 };
 
-// Start/Stop sirf ek flag ON/OFF karta hai database me — asli generation
-// server-side Cloud Function karega, is page se independent.
+// Real in-browser auto-generate loop: har intervalMinutes (default 60 = 1 hour)
+// par generateAIChallengeOnce() khud-ba-khud chalta hai jab tak yeh admin tab
+// khula hai. Purana "flag ON/OFF karo, generation kahin aur (Cloud Function)
+// hoga" wala tareeka hata diya gaya hai — ab yahin se seedha auto-publish hota hai.
+function startAutoTimer(){
+  stopAutoTimer();
+  const minutes = parseFloat(document.getElementById('aiInterval').value) || 60;
+  const ms = Math.max(1, minutes) * 60 * 1000;
+  aiTimer = setInterval(function(){ generateAIChallengeOnce(); }, ms);
+}
+function stopAutoTimer(){
+  if(aiTimer){ clearInterval(aiTimer); aiTimer = null; }
+}
+
 window.toggleAIMode = async function(){
   if(!document.getElementById('aiKey').value.trim() && !aiRunning){
     aiSetStatus('Pehle API key daalein aur Save karein.', 'red');
@@ -525,7 +540,14 @@ window.toggleAIMode = async function(){
   aiRunning = !aiRunning;
   updateAIToggleButton();
   await saveAISettings(true);
-  aiSetStatus(aiRunning ? '▶ AI mode ON — background me chalega, page band ho tab bhi.' : 'AI mode OFF.', aiRunning ? 'green' : '#333');
+  if(aiRunning){
+    aiSetStatus('▶ AI Auto Mode ON — har 1 hour me naya question generate + publish hoga (yeh tab khula rakhein).', 'green');
+    await generateAIChallengeOnce(); // turant current hour ke liye publish karo
+    startAutoTimer(); // aur us ke baad har interval par khud-ba-khud repeat
+  } else {
+    stopAutoTimer();
+    aiSetStatus('⏸ AI Auto Mode OFF.', '#333');
+  }
 };
 // ================== END AI AUTO MODE ==================
 
