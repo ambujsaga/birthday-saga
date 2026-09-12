@@ -155,15 +155,28 @@ window.doAdminLogout = () => signOut(auth);
 // Sends the force-logout signal. The main portal app (testingpro.html) is
 // already listening to 'portal/users' in real time and will detect this flag
 // and sign the user out of their own app automatically — the user cannot
-// prevent or dismiss it.
+// prevent or dismiss it. This can be sent again even if a signal is already
+// pending (e.g. the target was offline last time and never picked it up).
 window.forceLogoutUser = async function(roll){
   if(!confirm('Force logout this user from their application right now?')) return;
   const statusLine = document.getElementById('statusLine');
   try{
     await update(ref(db, 'portal/users/' + roll), { forceLogout: true });
-    statusLine.textContent = 'Logout signal sent to ' + roll + '. They will be signed out automatically.';
+    statusLine.textContent = 'Logout signal sent to ' + roll + '. Takes effect the moment their app is open (now, or next time they open it).';
   }catch(e){
     statusLine.textContent = 'Failed to send logout signal: ' + e.message;
+  }
+};
+
+// Clears a stuck/pending signal without waiting for the user's app to do it
+// itself — useful for testing, or if you sent it by mistake.
+window.cancelLogoutSignal = async function(roll){
+  const statusLine = document.getElementById('statusLine');
+  try{
+    await update(ref(db, 'portal/users/' + roll), { forceLogout: false });
+    statusLine.textContent = 'Pending signal cleared for ' + roll + '.';
+  }catch(e){
+    statusLine.textContent = 'Failed to clear signal: ' + e.message;
   }
 };
 
@@ -192,9 +205,12 @@ function renderUsers(){
           <span class="badge ${online ? 'online' : 'offline'}">${online ? 'Online' : 'Offline'}</span>
           ${pending ? '<span class="badge pending">Logout pending…</span>' : ''}
         </div>
-        <button class="logout-btn" ${pending ? 'disabled' : ''} onclick="forceLogoutUser('${roll}')">
-          ${pending ? 'Signal sent' : 'Logout'}
-        </button>
+        <div style="display:flex;gap:8px;">
+          ${pending ? `<button class="logout-admin-btn" onclick="cancelLogoutSignal('${roll}')">Cancel</button>` : ''}
+          <button class="logout-btn" onclick="forceLogoutUser('${roll}')">
+            ${pending ? 'Resend' : 'Logout'}
+          </button>
+        </div>
       </div>
     `;
   }).join('');
