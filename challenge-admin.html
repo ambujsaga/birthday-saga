@@ -79,10 +79,12 @@
     <div id="connStatus" class="status">Connecting to Firebase…</div>
 
     <div class="box">
-      <h3>➕ Set / Update a Day's Challenge</h3>
-      <p class="small">Question set for a given date shows to students on that day's homepage. Publish a new one daily.</p>
+      <h3>➕ Set / Update an Hour's Challenge</h3>
+      <p class="small">Question set for a given date + hour shows to students on the homepage during that hour only. Question ab har 1 hour me badalta hai (pehle 24 hours me badalta tha) — is date/hour ke liye alag-alag challenge publish karein.</p>
       <label>Date</label>
       <input id="fDate" type="date">
+      <label>Hour (0–23, 24-hour format — e.g. 14 = 2 PM)</label>
+      <input id="fHour" type="number" min="0" max="23" step="1">
       <label>Question</label>
       <textarea id="fQuestion" placeholder="Question likhein..."></textarea>
       <label>Options</label>
@@ -108,15 +110,15 @@
 
     <div class="box">
       <h3>🤖 AI Auto-Generate Mode</h3>
-      <p class="small">Yeh settings ab Firebase database me save hoti hain (permanent + hamesha editable). "Start" dabane ke baad question generation ek server-side Cloud Function karega — isliye chahe aap yeh page band kar dein ya phone off ho jaaye, generation ruknа nahi chahiye (setup ke liye niche di gayi Cloud Function file deploy karni hogi, ek hi baar).</p>
+      <p class="small">Yeh settings ab Firebase database me save hoti hain (permanent + hamesha editable). "Start" dabane ke baad question generation ek server-side Cloud Function karega — isliye chahe aap yeh page band kar dein ya phone off ho jaaye, generation ruknа nahi chahiye (setup ke liye niche di gayi Cloud Function file deploy karni hogi, ek hi baar). Ab har naya question current hour ke against publish hota hai (24 hours ki jagah 1 hour cycle) — isliye interval 60 minute (ya kam) rakhein taaki har ghante naya question mil jaaye.</p>
       <label>OpenRouter API Key</label>
       <input id="aiKey" type="password" placeholder="sk-or-v1-...">
       <label>Model / Server (e.g. openrouter/free)</label>
       <input id="aiModel" type="text" placeholder="e.g. meta-llama/llama-3.1-8b-instruct:free">
       <label>XP for a correct answer</label>
       <input id="aiXp" type="number" value="10">
-      <label>Kitne minute ke interval par naya question generate ho?</label>
-      <input id="aiInterval" type="number" min="1" value="1">
+      <label>Kitne minute ke interval par naya question generate ho? (60 = har 1 hour)</label>
+      <input id="aiInterval" type="number" min="1" value="60">
       <button class="btn" onclick="saveAISettings()">💾 Save Settings</button>
       <p id="aiSaveMsg" class="msg"></p>
       <button class="btn orange" id="aiToggleBtn" onclick="toggleAIMode()">▶ Start AI Auto Mode</button>
@@ -156,6 +158,33 @@ const auth = getAuth(app);
 function esc(v){ return String(v??'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 function pad2(n){ return String(n).padStart(2,'0'); }
 function todayStr(){ const d = new Date(); return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
+// ADDITIVE UPDATE: 24 hours -> 1 hour question cycle. hourKey() jaisa
+// "2026-09-12-14" deta hai (aakhri 2 digit ghanta hai, 0-23). Website
+// (testing.html) ab isi format ke hisaab se dailyChallenge/attempts fetch
+// karta hai, isliye admin panel se bhi ab isi period-key par publish hota hai.
+function hourKey(){ const d = new Date(); return todayStr() + '-' + pad2(d.getHours()); }
+// Purane records jo sirf date (Y-M-D) ke against save hue the, unhe bhi
+// list/edit me sahi se dikhane ke liye — period ko date + hour me todta hai.
+function splitPeriod(period){
+  const parts = String(period).split('-');
+  if(parts.length >= 4){
+    const hour = parts.pop();
+    return { date: parts.join('-'), hour: hour };
+  }
+  return { date: period, hour: pad2(new Date().getHours()) };
+}
+function formatPeriodLabel(period){
+  const parts = String(period).split('-');
+  if(parts.length === 4){
+    const hh = parseInt(parts[3], 10);
+    if(!isNaN(hh)){
+      const ampm = hh >= 12 ? 'PM' : 'AM';
+      let h12 = hh % 12; if(h12 === 0) h12 = 12;
+      return parts[2]+'-'+parts[1]+'-'+parts[0]+' · '+h12+':00 '+ampm;
+    }
+  }
+  return period; // purana daily-only record — jaisa hai waisa dikha do
+}
 
 let allChallenges = {};
 
@@ -205,7 +234,7 @@ function renderList(){
       return '<span class="'+(i===c.correct?'correct':'')+'">'+letter+'. '+esc(o)+'</span>';
     }).join('<br>');
     return '<div class="item">'
-      + '<div class="q">'+esc(dt)+' &middot; +'+ (c.xp||10) +' XP</div>'
+      + '<div class="q">'+esc(formatPeriodLabel(dt))+' &middot; +'+ (c.xp||10) +' XP</div>'
       + '<div class="q" style="font-weight:600;">'+esc(c.question)+'</div>'
       + '<div class="opts">'+optsHtml+'</div>'
       + '<div class="actions">'
@@ -219,7 +248,10 @@ function renderList(){
 window.editChallenge = function(dt){
   const c = allChallenges[dt];
   if(!c) return;
-  document.getElementById('fDate').value = dt;
+  // ADDITIVE UPDATE: period key ab date+hour hai — dono field me todkar bharo.
+  const p = splitPeriod(dt);
+  document.getElementById('fDate').value = p.date;
+  document.getElementById('fHour').value = parseInt(p.hour, 10);
   document.getElementById('fQuestion').value = c.question || '';
   document.getElementById('fOpt0').value = (c.options||[])[0] || '';
   document.getElementById('fOpt1').value = (c.options||[])[1] || '';
@@ -231,13 +263,14 @@ window.editChallenge = function(dt){
 };
 
 window.deleteChallenge = async function(dt){
-  if(!confirm('Delete the challenge for ' + dt + '?')) return;
+  if(!confirm('Delete the challenge for ' + formatPeriodLabel(dt) + '?')) return;
   try{ await remove(ref(db, 'portal/engagement/dailyChallenge/'+dt)); }
   catch(e){ alert('Error deleting: ' + e.message); }
 };
 
 window.resetForm = function(){
   document.getElementById('fDate').value = todayStr();
+  document.getElementById('fHour').value = new Date().getHours();
   document.getElementById('fQuestion').value = '';
   document.getElementById('fOpt0').value = '';
   document.getElementById('fOpt1').value = '';
@@ -250,6 +283,12 @@ window.resetForm = function(){
 
 window.saveChallenge = async function(){
   const date = document.getElementById('fDate').value || todayStr();
+  // ADDITIVE UPDATE: hour field se period key banta hai (date + '-' + hour),
+  // isi key par website (testing.html) is ghante ka question fetch karta hai.
+  let hourNum = parseInt(document.getElementById('fHour').value, 10);
+  if(isNaN(hourNum) || hourNum < 0 || hourNum > 23) hourNum = new Date().getHours();
+  const hour = pad2(hourNum);
+  const period = date + '-' + hour;
   const question = document.getElementById('fQuestion').value.trim();
   const options = [
     document.getElementById('fOpt0').value.trim(),
@@ -270,13 +309,14 @@ window.saveChallenge = async function(){
   const btn = document.getElementById('fSaveBtn');
   btn.disabled = true;
   try{
-    await set(ref(db, 'portal/engagement/dailyChallenge/'+date), {
+    await set(ref(db, 'portal/engagement/dailyChallenge/'+period), {
       question, options, correct, xp, ts: Date.now()
     });
     msg.style.color = 'green';
-    msg.innerText = 'Challenge published for ' + date + '!';
+    msg.innerText = 'Challenge published for ' + formatPeriodLabel(period) + '!';
     resetForm();
     document.getElementById('fDate').value = date;
+    document.getElementById('fHour').value = hourNum;
   }catch(e){
     msg.style.color = 'red';
     msg.innerText = 'Error saving: ' + e.message;
@@ -455,11 +495,13 @@ window.generateAIChallengeOnce = async function(){
     aiSetStatus('Generating question… (attempt ' + attempt + '/' + MAX_ATTEMPTS + ')');
     try{
       const { question, options, correct } = await callOpenRouterOnce(key, model);
-      const date = todayStr();
-      await set(ref(db, 'portal/engagement/dailyChallenge/' + date), {
+      // ADDITIVE UPDATE: 24 hours -> 1 hour cycle — ab hourKey() (current
+      // date+hour) ke against publish hota hai, todayStr() ke against nahi.
+      const period = hourKey();
+      await set(ref(db, 'portal/engagement/dailyChallenge/' + period), {
         question, options, correct, xp, ts: Date.now(), source: 'ai'
       });
-      const statusMsg = '✅ Published at ' + new Date().toLocaleTimeString() + ' — "' + question.slice(0,60) + (question.length>60?'…':'') + '"';
+      const statusMsg = '✅ Published for ' + formatPeriodLabel(period) + ' at ' + new Date().toLocaleTimeString() + ' — "' + question.slice(0,60) + (question.length>60?'…':'') + '"';
       aiSetStatus(statusMsg, 'green');
       await set(ref(db, AI_CONFIG_PATH + '/lastStatus'), statusMsg);
       return;
@@ -487,8 +529,9 @@ window.toggleAIMode = async function(){
 };
 // ================== END AI AUTO MODE ==================
 
-// default date = today
+// default date/hour = abhi ka current date aur ghanta
 document.getElementById('fDate').value = todayStr();
+document.getElementById('fHour').value = new Date().getHours();
 </script>
 </body>
 </html>
