@@ -41,6 +41,18 @@
             -ms-touch-action: pan-x pan-y;
         }
 
+        /* ================= ADDITIVE: RED VERIFIED TICK BADGE =================
+           Sirf naya CSS add kiya gaya hai. Yeh badge har jagah dikhta hai jaha
+           kisi verified user ka naam/roll number show hota hai. Status alag
+           "Red Tick Admin Panel" (red-tick-admin.html) se Firebase me set hota
+           hai — yaha koi purana rule/element chheda nahi gaya hai. */
+        .verified-tick-badge {
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 4px;
+            flex-shrink: 0;
+        }
+
         /* Main Navbar */
         .navbar {
             display: flex;
@@ -1257,6 +1269,14 @@
 .user-post-selected{font-size:.8rem;color:#64748b}
 .user-post-preview{display:flex;gap:7px;overflow-x:auto;padding:2px 0 7px}
 .user-post-preview img{width:72px;height:54px;object-fit:cover;border-radius:6px;border:1px solid #ddd;flex:0 0 auto}
+/* ================= ADDITIVE: remove (x) button on each selected photo thumbnail =================
+   Sirf naya CSS add kiya gaya hai — purana .user-post-preview img rule bilkul waisa
+   hi hai, sirf ab har photo ek wrapper div ke andar hai taaki uske corner par
+   chhota remove button dikha sake. */
+.user-post-photo-thumb{position:relative;flex:0 0 auto}
+.user-post-photo-thumb img{width:72px;height:54px;object-fit:cover;border-radius:6px;border:1px solid #ddd;display:block}
+.user-post-photo-remove{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;border:1.5px solid #fff;background:#b91c1c;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;font-size:10px;box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.user-post-photo-remove svg{width:1em;height:1em}
 .user-post-submit{width:100%;border:0;border-radius:8px;background:var(--primary-blue);color:#fff;padding:11px;font-weight:700;cursor:pointer}
 .user-post-submit:disabled{opacity:.55;cursor:not-allowed}
 .user-profile-posts{margin-top:22px;text-align:left}
@@ -1274,10 +1294,15 @@
 .user-post-footer{display:flex;justify-content:flex-end;align-items:center;border-top:1px solid #eee;padding-top:8px;font-size:.78rem;color:#64748b}
 .user-post-seen{font-weight:700}
 .user-post-empty{text-align:center;color:#777;padding:15px;background:#f8fafc;border-radius:8px}
-.user-post-original-modal{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:15000;display:none;align-items:center;justify-content:center;padding:20px;cursor:pointer}
+.user-post-original-modal{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:15000;display:none;align-items:center;justify-content:center;padding:20px;cursor:pointer;overflow:hidden}
 .user-post-original-modal.active{display:flex}
 .user-post-original-modal img{max-width:96vw;max-height:92vh;width:auto;height:auto;object-fit:contain;box-shadow:0 0 30px rgba(255,255,255,.12);user-select:none}
 .user-post-original-hint{position:absolute;top:16px;left:50%;transform:translateX(-50%);color:#fff;font-size:.78rem;background:rgba(0,0,0,.45);padding:6px 10px;border-radius:14px}
+/* ================= ADDITIVE: pinch/double-tap zoom for the original-size modal =================
+   Sirf naya CSS add kiya gaya hai. Yeh sirf #userPostOriginalImage (long-press se
+   khulne wala original-size view) par apply hota hai — chhoti thumbnail images ya
+   koi bhi purana rule/element chheda nahi gaya hai. */
+.user-post-original-modal img{touch-action:none;transform-origin:center center;will-change:transform}
 @media(max-width:480px){
   .user-post-composer{padding:12px}
   .user-post-delete{font-size:.72rem;padding:5px 7px}
@@ -2735,6 +2760,26 @@
         }
         window.forceLogoutDeletedUser = forceLogoutDeletedUser;
 
+        // ================= ADDITIVE: ADMIN FORCE LOGOUT =================
+        // Called automatically (realtime) when the admin clicks "Force Logout"
+        // for this user in the admin panel's Users tab. Logs the user out of
+        // the app immediately — same pattern as forceLogoutDeletedUser, but
+        // clears the 'forceLogout' flag afterwards so the account can log in
+        // normally again. Purana koi function/behaviour chheda nahi gaya.
+        function forceLogoutByAdmin() {
+            const roll = localUser ? localUser.rollNumber : null;
+            if(window.unwatchActiveSession) window.unwatchActiveSession();
+            localStorage.removeItem('portalUser');
+            localUser = null;
+            window.localUser = null;
+            closeAllSections();
+            openHomePage();
+            if(window.renderOnlineChats) window.renderOnlineChats();
+            alert("You have been logged out by the admin.");
+            if(roll && window.clearForceLogoutFlag) window.clearForceLogoutFlag(roll);
+        }
+        window.forceLogoutByAdmin = forceLogoutByAdmin;
+
         // Single-Device Login Lock: called (via watchActiveSession) when another
         // device/system logs in with the same Roll Number while this device is
         // still logged in. This device is logged out immediately with an alert.
@@ -3212,6 +3257,7 @@
                 closeAllSections();
                 
                 document.getElementById('profName').innerText = localUser.name;
+                document.getElementById('profName').insertAdjacentHTML('beforeend', window.vTick ? window.vTick(localUser.rollNumber, 15) : '');
                 document.getElementById('profRoll').innerText = localUser.rollNumber;
                 document.getElementById('profAvatar').innerText = localUser.rollNumber; 
                 
@@ -3304,8 +3350,9 @@
                 }
                 const userRoll = c.userId || c.userName;
                 const rollColor = getColorForRoll(userRoll);
+                const cTick = window.vTick ? window.vTick(userRoll) : '';
                 return `<div class="comment-item">
-                            <div><strong style="color: ${rollColor};">${userRoll}</strong>: ${c.text}</div>
+                            <div><strong style="color: ${rollColor};">${userRoll}</strong>${cTick}: ${c.text}</div>
                             ${deleteHTML}
                         </div>`;
             }).join('');
@@ -3523,6 +3570,30 @@ let onlineData={
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function setStatus(t){const e=document.getElementById('adminStatus');if(e)e.textContent=t;}
+
+// ================= ADDITIVE: RED VERIFIED TICK (Instagram-style) =================
+// Bilkul naya, standalone global helper hai — koi purana function/variable/method
+// chheda nahi gaya. Verified status 'portal/users/{roll}/verified' field se aata
+// hai (already onValue(ref(db,'portal')) ke through window.onlineUsersData me
+// sync hota hai), jise alag "Red Tick Admin Panel" (red-tick-admin.html) file
+// se on/off kiya jaata hai. Yeh functions window par global hain isliye is file
+// ke andar kisi bhi IIFE/script se call ho sakte hain.
+window.isVerifiedRoll = function(roll){
+  try{
+    var u = (window.onlineUsersData || {})[String(roll)];
+    return !!(u && u.verified);
+  }catch(e){ return false; }
+};
+// HTML/SVG badge — naam ke turant baad use karo (jaha HTML render hota hai)
+window.vTick = function(roll, size){
+  if(!window.isVerifiedRoll(roll)) return '';
+  var s = size || 14;
+  return '<svg class="verified-tick-badge" viewBox="0 0 24 24" width="'+s+'" height="'+s+'" xmlns="http://www.w3.org/2000/svg" aria-label="Verified" title="Verified"><circle cx="12" cy="12" r="11" fill="#e0245e"></circle><path d="M7 12.3l3.2 3.2 6.8-6.8" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+};
+// Plain-text version — sirf wahan use karo jaha HTML allowed nahi hai (jaise <option> ke andar)
+window.vTickText = function(roll){
+  return window.isVerifiedRoll(roll) ? ' \u2714' : '';
+};
 function arr(v){return v?Object.entries(v).map(([id,x])=>({id,...x})):[]}
 
 function applyOnlineData(d){
@@ -3539,12 +3610,22 @@ function applyOnlineData(d){
 
   if(window.localUser) {
       const liveUser = window.onlineUsersData[window.localUser.rollNumber];
-      if(liveUser) {
+      if(liveUser && liveUser.forceLogout && typeof window.forceLogoutByAdmin === 'function') {
+          // ================= ADDITIVE: ADMIN FORCE LOGOUT DETECTION =================
+          // Admin ne is user ke liye 'forceLogout' flag set kiya hai (Users tab me
+          // "Force Logout" button se). User ki app isko turant pakad kar automatic
+          // logout kar deti hai — bina user ki marzi ke, jaisa deleted-user wale
+          // case me hota hai. Koi purana code/behaviour chheda nahi gaya.
+          window.forceLogoutByAdmin();
+      } else if(liveUser) {
           // Realtime profile update: agar admin ne naam update kiya hai to turant reflect ho.
           window.localUser.name = liveUser.name;
           localStorage.setItem('portalUser', JSON.stringify(window.localUser));
           const profN = document.getElementById('profName');
-          if(profN) profN.innerText = window.localUser.name;
+          if(profN){
+            profN.innerText = window.localUser.name;
+            profN.insertAdjacentHTML('beforeend', window.vTick ? window.vTick(window.localUser.rollNumber, 15) : '');
+          }
       } else if(typeof window.forceLogoutDeletedUser === 'function') {
           // Realtime delete detection: admin ne is user ka profile delete kar diya
           // (ya Roll Number change kar diya), isliye app se automatic logout kar do.
@@ -3677,7 +3758,7 @@ function renderOnlineChats() {
             safeText = safeText.replace(/@([a-zA-Z0-9_]+)/g, '<span style="color: #007bff; font-weight: bold;">@$1</span>');
 
             html += `<div class="chat-msg ${cssClass}">
-                        <div style="font-weight: bold; margin-bottom: 3px; color: ${rollColor};">${esc(chat.userId)}</div>
+                        <div style="font-weight: bold; margin-bottom: 3px; color: ${rollColor};">${esc(chat.userId)}${window.vTick ? window.vTick(chat.userId) : ''}</div>
                         <div style="word-break: break-word;">${safeText}</div>
                         <div class="chat-msg-footer">
                             <span class="chat-time">${timeStr}</span>
@@ -4154,9 +4235,40 @@ window.updateOnlineUser = async function(oldRoll){
     setStatus('User updated successfully.');
 };
 
+// ================= ADDITIVE: ADMIN FORCE LOGOUT (detection side) =================
+// Yeh app khud force-logout signal nahi bhejta — wo signal ab alag
+// "Force Logout Admin Panel" (force-logout-admin.html) se bheja jaata hai.
+// Yahaan sirf ek chhota helper hai jo is app ke apne aap ko logout karne ke
+// baad 'forceLogout' flag ko wapas clear kar deta hai, taaki user turant
+// dobara normally login kar sake. Koi purana function chheda nahi gaya.
+window.clearForceLogoutFlag = async function(roll){
+    try{ await update(ref(db, 'portal/users/' + roll), { forceLogout: false }); }catch(e){ /* best-effort */ }
+};
+
 window.deleteOnlineUser = async function(roll){
     if(!confirm('Are you sure you want to delete this user?')) return;
     await remove(ref(db, 'portal/users/' + roll));
+
+    // ================= ADDITIVE: also clean up this user's other data =================
+    // Sirf naya, additive code hai — upar wali purani line (portal/users/roll delete)
+    // bilkul waisi hi rakhi gayi hai, kuchh chheda nahi gaya. Ab iske saath-saath
+    // us user ka engagement data (XP/streak/class rank) aur uske apne posts + stories
+    // bhi remove kar diye jaate hain, taaki account delete karne par uska sara data
+    // hat jaaye. Best-effort hai — koi ek cleanup fail ho bhi jaaye to user delete
+    // rukta nahi (already ho chuka hai upar).
+    const rollStr = String(roll);
+    try{ await remove(ref(db, 'portal/engagement/users/' + rollStr)); }catch(e){ console.warn('Engagement data cleanup failed', e); }
+    try{
+        const allPosts = (window.adminPostsData || onlineData.posts || []);
+        const ownPosts = allPosts.filter(p => p && String(p.authorRoll || p.userId || p.createdBy || '') === rollStr);
+        await Promise.all(ownPosts.map(p => remove(ref(db, 'portal/posts/' + p.id)).catch(e => console.warn('Post cleanup failed', p.id, e))));
+    }catch(e){ console.warn('Posts cleanup failed', e); }
+    try{
+        const allStories = (window.onlineStoriesData || []);
+        const ownStories = allStories.filter(s => s && String(s.authorRoll || '') === rollStr);
+        await Promise.all(ownStories.map(s => remove(ref(db, 'portal/stories/' + s.id)).catch(e => console.warn('Story cleanup failed', s.id, e))));
+    }catch(e){ console.warn('Stories cleanup failed', e); }
+
     setStatus('User deleted successfully.');
 };
 
@@ -4190,7 +4302,7 @@ window.renderAdminAll = function() {
     if(notifUserSelect) {
         let options = '<option value="ALL">Send to All Users (Public Notification)</option>';
         Object.values(onlineData.users || {}).forEach(u => {
-            options += `<option value="${esc(u.rollNumber)}">${esc(u.name)} (${esc(u.rollNumber)})</option>`;
+            options += `<option value="${esc(u.rollNumber)}">${esc(u.name)} (${esc(u.rollNumber)})${window.vTickText ? window.vTickText(u.rollNumber) : ''}</option>`;
         });
         notifUserSelect.innerHTML = options;
     }
@@ -4246,8 +4358,9 @@ window.renderAdminAll = function() {
         usersContainer.innerHTML = Object.values(onlineData.users || {}).map(u => `
             <div class="admin-card">
                 <div class="admin-form">
-                    <label>Name</label><input id="un-${esc(u.rollNumber)}" value="${esc(u.name)}">
+                    <label>Name ${window.vTick ? window.vTick(u.rollNumber, 15) : ''}</label><input id="un-${esc(u.rollNumber)}" value="${esc(u.name)}">
                     <label>Roll Number</label><input id="ur-${esc(u.rollNumber)}" value="${esc(u.rollNumber)}">
+                    <p class="admin-small">Red Tick status: ${window.isVerifiedRoll && window.isVerifiedRoll(u.rollNumber) ? '<strong style="color:#e0245e">Verified</strong> — manage from Red Tick Admin Panel' : 'Not verified — manage from Red Tick Admin Panel'}</p>
                     <div class="admin-row">
                         <button class="admin-btn" onclick="updateOnlineUser('${esc(u.rollNumber)}')">Update User</button>
                         <button class="admin-btn red" onclick="deleteOnlineUser('${esc(u.rollNumber)}')">Delete User</button>
@@ -4412,12 +4525,46 @@ onAuthStateChanged(auth, user => {
     if(!box || !label) return;
     label.textContent=(files.length||0) + '/5 photos';
     box.innerHTML='';
-    files.forEach(file=>{
+    files.forEach((file, idx)=>{
+      // ================= ADDITIVE: har photo ab ek wrapper ke andar hai jisme
+      // ek chhota remove (x) button hai, taaki user 1-5 me se koi bhi chuni
+      // hui photo hata sake. Image dikhane ka purana tarika (URL.createObjectURL
+      // + onload par revoke) bilkul waisa hi hai, chheda nahi gaya. =================
+      const thumb=document.createElement('div');
+      thumb.className='user-post-photo-thumb';
       const img=document.createElement('img');
       img.src=URL.createObjectURL(file);
       img.onload=()=>URL.revokeObjectURL(img.src);
-      box.appendChild(img);
+      thumb.appendChild(img);
+      const removeBtn=document.createElement('button');
+      removeBtn.type='button';
+      removeBtn.className='user-post-photo-remove';
+      removeBtn.setAttribute('aria-label','Remove photo');
+      removeBtn.innerHTML='<svg class="ui-icon"><use href="#icon-x"></use></svg>';
+      removeBtn.onclick=function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        removeUserPostPhoto(idx);
+      };
+      thumb.appendChild(removeBtn);
+      box.appendChild(thumb);
     });
+  }
+
+  // ================= ADDITIVE: selected photos me se koi ek photo hatana =================
+  // File input (userPostPhotos) ka FileList read-only hota hai, isliye DataTransfer
+  // use karke ek naya FileList banaya jata hai jisme hataayi gayi photo chhodkar
+  // baaki sab photos hoti hain, aur fileEl.files ko wahi naya FileList assign kar
+  // diya jaata hai. Isse publishUserProfilePost() ka purana method (jo seedha
+  // fileEl.files padhta hai) bilkul bina chhede kaam karta rehta hai.
+  function removeUserPostPhoto(index){
+    const fileEl=document.getElementById('userPostPhotos');
+    if(!fileEl) return;
+    const remaining=Array.from(fileEl.files || []).filter((_,i)=>i!==index);
+    const dt=new DataTransfer();
+    remaining.forEach(f=>dt.items.add(f));
+    fileEl.files=dt.files;
+    renderUserPhotoPreview(remaining);
   }
 
   async function userPostFileToDataURL(file){
@@ -4490,7 +4637,7 @@ onAuthStateChanged(auth, user => {
       document.getElementById('userPostCounter').textContent='0/90';
       document.getElementById('userPostCounter').classList.remove('limit');
       renderUserPhotoPreview([]);
-      alert('Post successfully publish ho gaya.');
+      alert('Post published successfully.');
     }catch(e){
       alert('Post upload failed: '+e.message);
     }finally{
@@ -4580,7 +4727,7 @@ onAuthStateChanged(auth, user => {
         <article class="user-post-card" data-user-post-id="${userPostEsc(p.id)}">
           <div class="user-post-head">
             <div>
-              <div class="user-post-author">${userPostEsc(p.authorName || roll)}</div>
+              <div class="user-post-author">${userPostEsc(p.authorName || roll)}${window.vTick ? window.vTick(p.authorRoll || roll) : ''}</div>
               <div class="user-post-time">${userPostTime(p.timestamp)}</div>
             </div>
             <button class="user-post-delete" onclick="deleteOwnUserPost('${userPostEsc(p.id)}')"><svg class="ui-icon"><use href="#icon-trash"></use></svg> Delete</button>
@@ -4644,6 +4791,112 @@ onAuthStateChanged(auth, user => {
   window.bindLongPress=bindLongPress;
   window.ensureOriginalModal=ensureOriginalModal;
   ensureOriginalModal();
+
+  // ================= ADDITIVE: Pinch-to-zoom / double-tap zoom =================
+  // Sirf naya, standalone code add kiya gaya hai. Yeh zoom feature SIRF tabhi
+  // kaam karta hai jab photo ko long-press karke uske "original size" modal
+  // (#userPostOriginalModal / #userPostOriginalImage) me khola gaya ho. Chhoti
+  // thumbnail images, bindLongPress(), openUserPostOriginal(), closeUserPostOriginal()
+  // ya koi bhi purana feature/method bilkul waisa hi hai — kuchh chheda nahi gaya hai.
+  (function(){
+    var zImg=null, zModal=null;
+    var scale=1, panX=0, panY=0;
+    var pointers={};
+    var startDist=0, startScale=1;
+    var startPanX=0, startPanY=0, startPointerX=0, startPointerY=0;
+    var lastTapTime=0, gestureMoved=false;
+    var MIN_SCALE=1, MAX_SCALE=4;
+
+    function applyTransform(){
+      if(zImg) zImg.style.transform='translate('+panX+'px,'+panY+'px) scale('+scale+')';
+    }
+    function resetZoom(){
+      scale=1; panX=0; panY=0;
+      applyTransform();
+    }
+    function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
+    function dist(a,b){ var dx=a.x-b.x, dy=a.y-b.y; return Math.sqrt(dx*dx+dy*dy); }
+
+    function onPointerDown(e){
+      pointers[e.pointerId]={x:e.clientX,y:e.clientY};
+      gestureMoved=false;
+      var ids=Object.keys(pointers);
+      if(ids.length===2){
+        startDist=dist(pointers[ids[0]],pointers[ids[1]]);
+        startScale=scale;
+      } else if(ids.length===1 && scale>1){
+        startPointerX=e.clientX; startPointerY=e.clientY;
+        startPanX=panX; startPanY=panY;
+      }
+    }
+    function onPointerMove(e){
+      if(!pointers[e.pointerId]) return;
+      pointers[e.pointerId]={x:e.clientX,y:e.clientY};
+      var ids=Object.keys(pointers);
+      if(ids.length===2){
+        gestureMoved=true;
+        var newDist=dist(pointers[ids[0]],pointers[ids[1]]);
+        if(startDist>0){
+          scale=clamp(startScale*(newDist/startDist),MIN_SCALE,MAX_SCALE);
+          applyTransform();
+        }
+        e.preventDefault();
+      } else if(ids.length===1 && scale>1){
+        var dx=e.clientX-startPointerX, dy=e.clientY-startPointerY;
+        if(Math.abs(dx)>3 || Math.abs(dy)>3) gestureMoved=true;
+        panX=startPanX+dx; panY=startPanY+dy;
+        applyTransform();
+        e.preventDefault();
+      }
+    }
+    function endPointer(e){
+      delete pointers[e.pointerId];
+      if(Object.keys(pointers).length<2) startDist=0;
+    }
+    function onImgClick(e){
+      // Original modal closes on any click via its own click listener — hum
+      // sirf image ke click ko yaha handle karte hain (stopPropagation) taaki
+      // zoom-in state me tap se modal band na ho jaaye. Background par tap
+      // karne se modal pehle jaisa hi band hota hai (unchanged).
+      e.stopPropagation();
+      if(gestureMoved){ gestureMoved=false; return; }
+      var now=Date.now();
+      if(now-lastTapTime<320){
+        lastTapTime=0;
+        if(scale>1) resetZoom(); else { scale=2.5; applyTransform(); }
+        return;
+      }
+      lastTapTime=now;
+      if(scale>1){
+        resetZoom();
+      } else if(typeof window.closeUserPostOriginal==='function'){
+        window.closeUserPostOriginal();
+      }
+    }
+
+    function bindZoomOnce(){
+      zModal=document.getElementById('userPostOriginalModal');
+      zImg=document.getElementById('userPostOriginalImage');
+      if(!zModal || !zImg || zImg.getAttribute('data-zoom-bound')) return false;
+      zImg.setAttribute('data-zoom-bound','1');
+      zImg.addEventListener('pointerdown',onPointerDown);
+      zImg.addEventListener('pointermove',onPointerMove);
+      zImg.addEventListener('pointerup',endPointer);
+      zImg.addEventListener('pointercancel',endPointer);
+      zImg.addEventListener('click',onImgClick);
+      new MutationObserver(function(muts){
+        muts.forEach(function(m){
+          if(m.attributeName==='class' && zModal.classList.contains('active')) resetZoom();
+        });
+      }).observe(zModal,{attributes:true});
+      return true;
+    }
+    var zoomBindTries=0;
+    var zoomBindTimer=setInterval(function(){
+      zoomBindTries++;
+      if(bindZoomOnce() || zoomBindTries>50) clearInterval(zoomBindTimer);
+    },300);
+  })();
 
   const refreshObserver=setInterval(()=>{
     if(document.getElementById('profilePage')?.style.display==='block'){
@@ -4723,6 +4976,8 @@ onAuthStateChanged(auth, user => {
   function userFeedCard(p){
     const photos=userFeedPhotos(p);
     const author=esc(p.authorName || p.authorRoll || p.userId || 'User');
+    const authorRollForTick=p.authorRoll || p.userId || p.createdBy || '';
+    const authorTick=window.vTick ? window.vTick(authorRollForTick) : '';
     const text=p.text?`<div class="user-post-body">${esc(p.text)}</div>`:'';
     const seenCount=p.seenBy ? Object.keys(p.seenBy).filter(k=>p.seenBy[k]).length : 0;
     const ownRoll=window.localUser ? String(window.localUser.rollNumber) : '';
@@ -4738,7 +4993,7 @@ onAuthStateChanged(auth, user => {
     }
     return `<article class="global-user-post user-post-card" data-user-post-id="${esc(p.id||'')}">
       <div class="user-post-head">
-        <div><div class="user-post-author">${author}</div><div class="user-post-time">${typeof userPostTime==='function'?userPostTime(p.timestamp):''}</div></div>
+        <div><div class="user-post-author">${author}${authorTick}</div><div class="user-post-time">${typeof userPostTime==='function'?userPostTime(p.timestamp):''}</div></div>
         ${isOwn?`<button class="user-post-delete" onclick="deleteOwnUserPost('${esc(p.id)}')"><svg class="ui-icon"><use href="#icon-trash"></use></svg> Delete</button>`:''}
       </div>
       ${text}${media}
@@ -4896,7 +5151,7 @@ onAuthStateChanged(auth, user => {
     probe.onloadedmetadata = function(){
       const dur = isFinite(probe.duration) ? probe.duration : 0;
       URL.revokeObjectURL(objUrl);
-      nameEl.textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + file.name;
+      nameEl.innerHTML = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + esc(file.name);
       startRange.min = 0; startRange.max = Math.max(0, Math.floor(dur)); startRange.value = 0;
       endRange.min = 0; endRange.max = Math.max(1, Math.floor(dur));
       // ---- ADDITIVE: default selection capped at 30 sec, same as Instagram/WhatsApp ----
@@ -4965,7 +5220,7 @@ onAuthStateChanged(auth, user => {
       document.getElementById('userPostAudioPanel')?.classList.remove('active');
       const chip = document.getElementById('userPostAudioChip');
       const chipLabel = document.getElementById('userPostAudioChipLabel');
-      if(chipLabel) chipLabel.textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + selectedAudioFile.name + ' (' + fmtSec(start) + '–' + fmtSec(end) + ')';
+      if(chipLabel) chipLabel.innerHTML = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + esc(selectedAudioFile.name) + ' (' + fmtSec(start) + '–' + fmtSec(end) + ')';
       chip?.classList.add('active');
       if(previewAudioEl){ try{ previewAudioEl.pause(); }catch(e){} previewAudioEl=null; }
     }catch(e){
@@ -5020,7 +5275,7 @@ onAuthStateChanged(auth, user => {
     };
     const chip = document.getElementById('userPostAudioChip');
     const chipLabel = document.getElementById('userPostAudioChipLabel');
-    if(chipLabel) chipLabel.textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + pendingAudio.name + ' (' + fmtSec(s) + '–' + fmtSec(e) + ')';
+    if(chipLabel) chipLabel.innerHTML = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + esc(pendingAudio.name) + ' (' + fmtSec(s) + '–' + fmtSec(e) + ')';
     chip?.classList.add('active');
     document.getElementById('userPostOnlineAudioPanel')?.classList.remove('active');
   }
@@ -5048,7 +5303,7 @@ onAuthStateChanged(auth, user => {
     const startLbl = document.getElementById('userPostOnlineAudioTrimStartLabel');
     const endLbl = document.getElementById('userPostOnlineAudioTrimEndLabel');
     if(!trimPanel || !startRange || !endRange) return;
-    nameEl.textContent = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + (track.trackName || 'Untitled') + (track.artistName ? (' - ' + track.artistName) : '');
+    nameEl.innerHTML = '<svg class="ui-icon"><use href="#icon-music"></use></svg> ' + esc(track.trackName || 'Untitled') + (track.artistName ? (' - ' + esc(track.artistName)) : '');
     startRange.min = 0; startRange.max = Math.max(0, Math.floor(durSec)); startRange.value = 0;
     endRange.min = 0; endRange.max = Math.max(1, Math.floor(durSec));
     // ---- ADDITIVE: default selection capped at 30 sec, same as Instagram/WhatsApp ----
@@ -5609,7 +5864,7 @@ onAuthStateChanged(auth, user => {
       return `<div class="feed-search-suggestion-item" data-roll="${srchEsc(roll)}">
         <div class="feed-search-suggestion-avatar">${initials}</div>
         <div>
-          <div class="feed-search-suggestion-name">${srchEsc(u.name||roll)}</div>
+          <div class="feed-search-suggestion-name">${srchEsc(u.name||roll)}${window.vTick ? window.vTick(roll) : ''}</div>
           <div class="feed-search-suggestion-roll">Roll No: ${srchEsc(roll)}</div>
         </div>
       </div>`;
@@ -5633,7 +5888,10 @@ onAuthStateChanged(auth, user => {
     const nameEl = document.getElementById('feedUserPostsName');
     const rollEl = document.getElementById('feedUserPostsRoll');
     const avEl = document.getElementById('feedUserPostsAvatar');
-    if(nameEl) nameEl.textContent = u.name || roll;
+    if(nameEl){
+      nameEl.textContent = u.name || roll;
+      nameEl.insertAdjacentHTML('beforeend', window.vTick ? window.vTick(roll, 15) : '');
+    }
     if(rollEl) rollEl.textContent = 'Roll No: ' + roll;
     if(avEl) avEl.textContent = String(roll).slice(0,2).toUpperCase() || '?';
     showOnly('feedUserPostsView');
@@ -6299,6 +6557,7 @@ onAuthStateChanged(auth, user => {
 
     document.getElementById('storyViewerAvatar').textContent = g.roll;
     document.getElementById('storyViewerRoll').textContent = g.name + ' (' + g.roll + ')';
+    document.getElementById('storyViewerRoll').insertAdjacentHTML('beforeend', window.vTick ? window.vTick(g.roll, 13) : '');
     document.getElementById('storyViewerTime').textContent = storyTimeAgo(story.timestamp);
     document.getElementById('storyMediaImg').src = story.media || '';
     const storyViewerOverlayEl = document.getElementById('storyViewerTextOverlay');
@@ -7212,7 +7471,7 @@ onAuthStateChanged(auth, user => {
     var body = document.getElementById('engChallengeBody');
     if(!body) return;
     if(!engChallengeData){
-      body.innerHTML = '<div class="eng-challenge-empty">Is ghante ke liye abhi koi naya question upload nahi hua hai. Thodi der me check karein!</div>';
+      body.innerHTML = '<div class="eng-challenge-empty">No new question has been uploaded for this hour yet. Please check back shortly!</div>';
       return;
     }
     var roll = myRoll();
@@ -7357,18 +7616,18 @@ onAuthStateChanged(auth, user => {
     var body = document.getElementById('engLeaderboardBody');
     if(!body) return;
     var sorted = getSortedUsers();
-    if(!sorted.length){ body.innerHTML = '<div class="eng-challenge-empty">Abhi koi ranking available nahi hai.</div>'; return; }
+    if(!sorted.length){ body.innerHTML = '<div class="eng-challenge-empty">No ranking available yet.</div>'; return; }
     var medals = ['🥇','🥈','🥉'];
     var html = '';
     sorted.slice(0,3).forEach(function(u, i){
-      html += '<div class="eng-lb-row"><span class="eng-lb-rank">'+medals[i]+'</span><span class="eng-lb-name">'+esc(displayNameFor(u.roll))+'</span><span class="eng-lb-xp">'+(u.xp||0)+' XP</span></div>';
+      html += '<div class="eng-lb-row"><span class="eng-lb-rank">'+medals[i]+'</span><span class="eng-lb-name">'+esc(displayNameFor(u.roll))+(window.vTick?window.vTick(u.roll):'')+'</span><span class="eng-lb-xp">'+(u.xp||0)+' XP</span></div>';
     });
     var roll = myRoll();
     if(roll){
       var myRank = getMyRank();
       var mine = engUsersData[roll] || {xp:0};
       html += '<div class="eng-lb-divider"></div>';
-      html += '<div class="eng-lb-row eng-lb-you"><span class="eng-lb-rank">👤</span><span class="eng-lb-name">You — #'+myRank+'</span><span class="eng-lb-xp">'+(mine.xp||0)+' XP</span></div>';
+      html += '<div class="eng-lb-row eng-lb-you"><span class="eng-lb-rank">👤</span><span class="eng-lb-name">You — #'+myRank+(window.vTick?window.vTick(myRoll()):'')+'</span><span class="eng-lb-xp">'+(mine.xp||0)+' XP</span></div>';
     }
     body.innerHTML = html;
   }
@@ -7395,10 +7654,10 @@ onAuthStateChanged(auth, user => {
     var sorted = getSortedUsers();
     var roll = myRoll();
     var allHtml = '';
-    if(!sorted.length) allHtml = '<div class="eng-challenge-empty">Abhi koi student ne XP nahi kamaya.</div>';
+    if(!sorted.length) allHtml = '<div class="eng-challenge-empty">No student has earned XP yet.</div>';
     sorted.forEach(function(u, i){
       var rowCls = 'eng-lb-row' + (u.roll === roll ? ' eng-lb-you' : '');
-      allHtml += '<div class="'+rowCls+'"><span class="eng-lb-rank">'+(i+1)+'</span><span class="eng-lb-name">'+esc(displayNameFor(u.roll))+' ('+esc(u.roll)+')</span><span class="eng-lb-xp">'+(u.xp||0)+' XP</span></div>';
+      allHtml += '<div class="'+rowCls+'"><span class="eng-lb-rank">'+(i+1)+'</span><span class="eng-lb-name">'+esc(displayNameFor(u.roll))+' ('+esc(u.roll)+')'+(window.vTick?window.vTick(u.roll):'')+'</span><span class="eng-lb-xp">'+(u.xp||0)+' XP</span></div>';
     });
     allBody.innerHTML = allHtml;
 
@@ -7407,11 +7666,11 @@ onAuthStateChanged(auth, user => {
       return { roll:r, xp: ((engUsersData[r].weeklyXP||{})[wk]) || 0 };
     }).filter(function(u){ return u.xp > 0; }).sort(function(a,b){ return b.xp-a.xp; });
     var weekHtml = '';
-    if(!weekSorted.length) weekHtml = '<div class="eng-challenge-empty">Is week abhi tak koi XP nahi kamaya gaya.</div>';
+    if(!weekSorted.length) weekHtml = '<div class="eng-challenge-empty">No XP has been earned this week yet.</div>';
     weekSorted.forEach(function(u, i){
       var rowCls = 'eng-lb-row' + (u.roll === roll ? ' eng-lb-you' : '');
       var medal = i===0 ? '🥇' : (i===1 ? '🥈' : (i===2 ? '🥉' : (i+1)));
-      weekHtml += '<div class="'+rowCls+'"><span class="eng-lb-rank">'+medal+'</span><span class="eng-lb-name">'+esc(displayNameFor(u.roll))+'</span><span class="eng-lb-xp">'+u.xp+' XP</span></div>';
+      weekHtml += '<div class="'+rowCls+'"><span class="eng-lb-rank">'+medal+'</span><span class="eng-lb-name">'+esc(displayNameFor(u.roll))+(window.vTick?window.vTick(u.roll):'')+'</span><span class="eng-lb-xp">'+u.xp+' XP</span></div>';
     });
     weekBody.innerHTML = weekHtml;
 
