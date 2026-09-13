@@ -8104,5 +8104,163 @@ onAuthStateChanged(auth, user => {
 })();
 
 </script>
+
+<!-- =====================================================================
+     ADDITIVE: NO INTERNET ALERT OVERLAY
+     Purely additive block. Nothing above this is edited or removed.
+
+     - App offline khulti hai to yeh alert (animated no-internet SVG +
+       message + right-side OK button) turant dikh jaata hai.
+     - OK dabane par sirf alert hat jaata hai.
+     - Uske baad, jab tak internet nahi aata, Timetable button ke alawa
+       koi bhi aur button/link click karne par yeh alert dobara aayega
+       (us click ko rok kar). OK dabate hi alert hat jaata hai AUR user
+       jis button ko kholna chahta tha wahi khul jaata hai.
+     - Timetable button hamesha kaam karta hai (offline data hai) — isko
+       kabhi intercept nahi kiya jaata.
+====================================================================== -->
+<div id="noInternetOverlay" class="no-internet-overlay" style="display:none;">
+    <div class="no-internet-box">
+        <div class="no-internet-icon-wrap">
+            <svg class="no-internet-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="72" r="5" fill="var(--primary-blue, #003366)"/>
+                <path class="no-internet-arc arc3" d="M38 58 A 17 17 0 0 1 62 58" fill="none" stroke="var(--primary-blue, #003366)" stroke-width="5" stroke-linecap="round"/>
+                <path class="no-internet-arc arc2" d="M28 46 A 31 31 0 0 1 72 46" fill="none" stroke="var(--primary-blue, #003366)" stroke-width="5" stroke-linecap="round"/>
+                <path class="no-internet-arc arc1" d="M16 34 A 48 48 0 0 1 84 34" fill="none" stroke="var(--primary-blue, #003366)" stroke-width="5" stroke-linecap="round"/>
+                <line class="no-internet-slash" x1="14" y1="14" x2="86" y2="86" stroke="var(--sarkari-red, #c0392b)" stroke-width="7" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <h3 class="no-internet-title">No Internet Connection</h3>
+        <p class="no-internet-msg">Please connect to the internet and try again.</p>
+        <div class="no-internet-actions">
+            <button type="button" id="noInternetOkBtn" class="no-internet-ok-btn">OK</button>
+        </div>
+    </div>
+</div>
+<style>
+    .no-internet-overlay{
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.65);
+        z-index:999999;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        animation:noNetFadeIn 0.25s ease-in-out;
+    }
+    @keyframes noNetFadeIn{ from{opacity:0;} to{opacity:1;} }
+    .no-internet-box{
+        background:#fff;
+        border-radius:14px;
+        max-width:340px;
+        width:100%;
+        padding:28px 22px 22px;
+        text-align:center;
+        box-shadow:0 10px 40px rgba(0,0,0,0.3);
+        animation:noNetPopIn 0.3s ease-out;
+    }
+    @keyframes noNetPopIn{ from{transform:scale(0.85); opacity:0;} to{transform:scale(1); opacity:1;} }
+    .no-internet-icon-wrap{ margin-bottom:12px; }
+    .no-internet-svg{ width:90px; height:90px; }
+    .no-internet-title{ color:var(--sarkari-red, #c0392b); font-size:1.15rem; margin-bottom:8px; }
+    .no-internet-msg{ color:var(--text-dark, #333); font-size:0.9rem; margin-bottom:20px; line-height:1.4; }
+    .no-internet-actions{ display:flex; justify-content:flex-end; }
+    .no-internet-ok-btn{
+        background:var(--primary-blue, #003366);
+        color:#fff;
+        border:none;
+        padding:9px 28px;
+        border-radius:8px;
+        font-weight:bold;
+        font-size:0.9rem;
+        cursor:pointer;
+        transition:background 0.2s, transform 0.15s;
+    }
+    .no-internet-ok-btn:hover{ background:#002244; }
+    .no-internet-ok-btn:active{ transform:scale(0.95); }
+    .no-internet-arc{ transform-origin:50px 72px; animation:noNetArcPulse 1.6s ease-in-out infinite; opacity:0.3; }
+    .no-internet-arc.arc1{ animation-delay:0s; }
+    .no-internet-arc.arc2{ animation-delay:0.2s; }
+    .no-internet-arc.arc3{ animation-delay:0.4s; }
+    @keyframes noNetArcPulse{ 0%,100%{opacity:0.25;} 50%{opacity:0.9;} }
+    .no-internet-slash{
+        stroke-dasharray:130;
+        stroke-dashoffset:130;
+        animation:noNetSlashDraw 0.6s ease-out forwards, noNetSlashPulse 1.4s ease-in-out 0.6s infinite;
+    }
+    @keyframes noNetSlashDraw{ to{stroke-dashoffset:0;} }
+    @keyframes noNetSlashPulse{ 0%,100%{opacity:1;} 50%{opacity:0.55;} }
+</style>
+<script>
+(function(){
+    // Purely additive IIFE — koi bhi purana function/variable/listener
+    // touch nahi kiya gaya hai.
+    var overlay = document.getElementById('noInternetOverlay');
+    var okBtn = document.getElementById('noInternetOkBtn');
+    var pendingOfflineTarget = null;
+    var bypassOfflineIntercept = false;
+
+    function isOffline(){
+        return !navigator.onLine;
+    }
+
+    function showNoInternetOverlay(){
+        if(overlay){
+            overlay.style.display = 'flex';
+        }
+    }
+
+    function hideNoInternetOverlay(){
+        if(overlay){
+            overlay.style.display = 'none';
+        }
+    }
+
+    if(okBtn){
+        okBtn.addEventListener('click', function(){
+            hideNoInternetOverlay();
+            var target = pendingOfflineTarget;
+            pendingOfflineTarget = null;
+            // Jo button user kholna chahta tha, OK dabane ke baad wahi
+            // (aur sirf wahi) ab khulta hai.
+            if(target && document.body.contains(target)){
+                bypassOfflineIntercept = true;
+                try{ target.click(); }catch(e){}
+                bypassOfflineIntercept = false;
+            }
+        });
+    }
+
+    // App load hote hi agar offline hai to alert turant dikhado.
+    if(isOffline()){
+        showNoInternetOverlay();
+    }
+
+    // Capture-phase click intercept — Timetable button ke alawa (jo
+    // offline bhi kaam karta hai) baaki har button/link click ko, jab
+    // tak offline hai, rok kar pehle yeh alert dikhata hai.
+    document.addEventListener('click', function(e){
+        if(bypassOfflineIntercept) return;
+        if(!isOffline()) return;
+        if(overlay && overlay.contains(e.target)) return;
+
+        var timetableBtn = document.getElementById('timetableNavBtn');
+        if(timetableBtn && (e.target === timetableBtn || timetableBtn.contains(e.target))) return;
+
+        var actionable = e.target.closest('[onclick], button, a[href]');
+        if(!actionable) return;
+        if(actionable.id === 'timetableNavBtn') return;
+
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        pendingOfflineTarget = actionable;
+        showNoInternetOverlay();
+    }, true);
+
+    // Jab internet wapas aa jaaye to koi purana behaviour change nahi
+    // hota — bas agla naya click ab intercept nahi hoga.
+})();
+</script>
 </body>
 </html>
