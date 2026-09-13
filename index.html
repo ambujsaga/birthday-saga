@@ -3541,7 +3541,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, onValue, get, set, update, remove, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -7464,6 +7464,163 @@ onAuthStateChanged(auth, user => {
     return d.getFullYear() + '-W' + pad2(week);
   }
 
+  /* ================= ADDITIVE: SITE-SIDE AI CHALLENGE AUTO-GENERATE =================
+     Pehle sirf challenge-admin.html khula rehne par hi naya AI question generate
+     hota tha (setInterval us tab ke andar chalta tha). Chuki admin tab hamesha
+     khula nahi rakha ja sakta, ab yeh live index.html khud bhi check karta hai:
+     jab bhi koi bhi visitor site kholta hai (ya har naya hour shuru hota hai),
+     yeh dekhta hai ki current hour (hourKey) ke liye Firebase me question
+     already maujood hai ya nahi. Agar nahi hai, to challenge-admin.html wale
+     hi rules/settings (portal/engagement/aiConfig — key, model, xp) aur wahi
+     syllabus use karke ek naya AI question generate karke usi
+     'portal/engagement/dailyChallenge/<hourKey>' path par publish kar deta
+     hai — bilkul admin panel jaisa hi format/behaviour, bas trigger ab
+     "admin tab open hona" ki jagah "koi bhi site kholna" ban gaya hai.
+     Agar aiConfig me koi key hi save nahi hai (AI mode kabhi setup nahi
+     hua), to yeh chup-chaap kuchh nahi karta — purana manual "Set/Update an
+     Hour's Challenge" wala flow (admin se seedha publish) waise ka waisa
+     kaam karta rehta hai, kuchh chheda nahi gaya. */
+  var AI_CONFIG_PATH = 'portal/engagement/aiConfig';
+  var AI_DEFAULT_MODEL = 'meta-llama/llama-3.1-8b-instruct:free';
+  var SYLLABUS_TEXT = [
+    '1. Mathematics-I',
+    '- Unit 1: Trigonometry — Angles and Measurement, Degree and Radian, T-ratios, Allied Angles, Sum and Difference Formula, Product Formula, Multiple and Sub-multiple Angles, Graphs: |x|, sin x, cos x, e^x',
+    '- Unit 2: Differential Calculus — Function, Limits, Standard Limits, Differentiation, Differentiation Rules, Trigonometric Functions, Logarithmic Differentiation, Exponential Functions',
+    '- Unit 3: Partial Fractions — Polynomial Fraction, Proper and Improper Fraction, Partial Fractions, Linear Factors, Repeated Linear Factors',
+    '- Unit 4: Binomial Theorem — nPr and nCr, Binomial Theorem, Expansion, General Term, Middle Term, Independent Term',
+    '- Unit 5: Complex Numbers — Real and Imaginary Parts, Cartesian Form, Polar Form, Conjugate, Modulus, Amplitude, Operations on Complex Numbers, De Moivre\'s Theorem',
+    '',
+    '2. Applied Physics-I',
+    '- Unit 1: Units and Dimensions',
+    '- Unit 2: Force and Motion',
+    '- Unit 3: Work, Power and Energy',
+    '- Unit 4: Circular Motion',
+    '- Unit 5: Rotational Motion of a Rigid Body',
+    '- Unit 6: Properties of Matter',
+    '- Unit 7: Heat and Thermometry',
+    '- Practical: Vernier Calipers, Screw Gauge, Spherometer, Simple Pendulum, Parallelogram Law of Forces, Coefficient of Friction, Viscosity, Conservation of Mechanical Energy, Mercury Thermometer, Hooke\'s Law',
+    '',
+    '3. IT & AI',
+    '- Introduction to Information Technology, Computer Fundamentals, Basic Computer Components, Hardware and Software, Operating System, Internet and Web, Basic Networking, Information Technology Applications, Introduction to Artificial Intelligence, AI Basics and Concepts, Applications of AI',
+    '',
+    '4. Communication Skills in English',
+    '- Unit 1: Communication — Basics of Communication, Communication Process, Formal and Informal Communication, Verbal and Non-verbal Communication, 7 Cs of Communication, Barriers of Communication',
+    '- Unit 2: Soft Skills — Soft Skills, Hard Skills, Importance of Soft Skills',
+    '- Unit 3: Reading Comprehension — Unseen Passage, Questions and Answers, Prefix and Suffix, Synonyms, Antonyms',
+    '- Unit 4: Functional Grammar — Sentences and Types, Parts of Speech, Tenses, Active and Passive Voice, Punctuation',
+    '- Unit 5: Professional Writing — CV/Resume, Cover Letter, Agenda, Minutes, Notice, Official Letter, Memo, Circular, Office Order, Report, Email',
+    '',
+    '5. Engineering Workshop Practice',
+    '- Carpentry Shop: Woodworking Tools, Planing, Marking, Chiselling, Grooving, Turning, Wood Joints',
+    '- Fitting Shop: Fitting Tools, Filing, Drilling, Tapping, Sawing, Cutting, Marking, Hacksawing',
+    '- Welding Shop: Welding Tools, Arc Welding, Gas Welding, MIG Welding, Gas Cutting, Butt Joint, Lap Joint, T-Joint',
+    '- Sheet Metal Shop: Cutting, Bending, Edging, End Curling, Lancing, Soldering, Brazing, Riveting, Seam Joints, Cylinders',
+    '- Plumbing Shop: Plumbing Tools, Pipes and Fittings, Valves, GI/PVC Pipe Joints, Pipe Cutting, Threading, Pipe Fitting',
+    '- Painting & Polishing: Paints, Varnishes, Surface Preparation, Primer, Painting of Wood, Painting of Metal, Electroplating'
+  ].join('\n');
+
+  async function engCallOpenRouterOnce(key, model){
+    var prompt = 'You are a quiz-question generator for first-year diploma/engineering students. '
+      + 'You must generate ONE multiple-choice question STRICTLY AND ONLY from the syllabus given below. '
+      + 'Do NOT use any topic, concept, or example that is not explicitly listed in this syllabus — no outside knowledge, '
+      + 'no unrelated subjects, no made-up or general "computer science trivia" topics. Every question must map to a specific '
+      + 'unit/topic line from the syllabus text.\n\n'
+      + '=== SYLLABUS (the ONLY allowed source of topics) ===\n'
+      + SYLLABUS_TEXT
+      + '\n=== END OF SYLLABUS ===\n\n'
+      + 'Pick ONE topic line from the syllabus above (rotate randomly across the 5 subjects and their units so questions '
+      + 'don\'t repeat the same subject every time), and write one clear, exam-style multiple-choice question on it. '
+      + 'Reply with ONLY raw JSON, no markdown, no code fences, no extra text, in this exact shape: '
+      + '{"question":"...","options":["...","...","...","..."],"correct":0}. '
+      + '"options" must have exactly 4 short items. "correct" is the 0-based index of the correct option.';
+
+    var res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + key,
+        'HTTP-Referer': window.location.href,
+        'X-Title': 'MMITcs Daily Challenge (site auto-gen)'
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if(!res.ok){
+      var errText = await res.text();
+      throw new Error('API error ' + res.status + ': ' + errText.slice(0,200));
+    }
+
+    var data = await res.json();
+    var raw = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
+    raw = raw.trim().replace(/^```json/i,'').replace(/^```/,'').replace(/```$/,'').trim();
+
+    var parsed = JSON.parse(raw); // throws if not valid JSON
+
+    var question = String(parsed.question || '').trim();
+    var options = (parsed.options || []).map(function(o){ return String(o).trim(); });
+    var correct = parseInt(parsed.correct, 10);
+
+    if(!question || options.length !== 4 || options.some(function(o){ return !o; }) || isNaN(correct) || correct < 0 || correct > 3){
+      throw new Error('AI response incomplete/invalid shape');
+    }
+    return { question: question, options: options, correct: correct };
+  }
+
+  // Har period ke liye sirf EK baar generation ho, isliye ek chhota
+  // Firebase transaction-based "lock" (portal/engagement/genLock/<period>)
+  // use kiya gaya hai — agar do visitors ek saath site kholein to bhi
+  // sirf ek hi generate karega, dusra turant lock fail hote hi ruk jaayega.
+  async function engEnsureChallengeForPeriod(period){
+    try{
+      var existing = await get(ref(db, 'portal/engagement/dailyChallenge/'+period));
+      if(existing.exists()) return; // is hour ka question already hai — kuchh mat karo
+
+      var cfgSnap = await get(ref(db, AI_CONFIG_PATH));
+      var cfg = cfgSnap.val() || {};
+      var key = (cfg.key || '').trim();
+      if(!key) return; // AI mode kabhi setup hi nahi hua — chup-chaap skip, manual publish flow waisa hi rahega
+
+      var lockRef = ref(db, 'portal/engagement/genLock/'+period);
+      var lockResult = await runTransaction(lockRef, function(cur){
+        if(cur) return; // kisi aur visitor/tab ne already lock le liya — abort
+        return { by: 'site', ts: Date.now() };
+      });
+      if(!lockResult.committed) return; // lock nahi mila, matlab generation kahin aur ho raha hai
+
+      var model = cfg.model || AI_DEFAULT_MODEL;
+      var xp = parseInt(cfg.xp, 10) || 10;
+
+      // Dobara ek baar check — jab tak lock mila tab tak kisi ne publish to nahi kar diya
+      var recheck = await get(ref(db, 'portal/engagement/dailyChallenge/'+period));
+      if(recheck.exists()) return;
+
+      var MAX_ATTEMPTS = 3, lastErr = null;
+      for(var attempt = 1; attempt <= MAX_ATTEMPTS; attempt++){
+        try{
+          var gen = await engCallOpenRouterOnce(key, model);
+          await set(ref(db, 'portal/engagement/dailyChallenge/'+period), {
+            question: gen.question, options: gen.options, correct: gen.correct, xp: xp, ts: Date.now(), source: 'ai'
+          });
+          var statusMsg = '✅ Published for ' + period + ' (site auto-gen) at ' + new Date().toLocaleTimeString();
+          await set(ref(db, AI_CONFIG_PATH + '/lastStatus'), statusMsg);
+          return;
+        }catch(e){
+          lastErr = e;
+          if(String(e.message).includes('API error')) break;
+        }
+      }
+      if(lastErr){
+        await set(ref(db, AI_CONFIG_PATH + '/lastStatus'), '⚠️ site auto-gen failed for ' + period + ': ' + lastErr.message);
+      }
+    }catch(e){
+      console.error('engEnsureChallengeForPeriod error:', e);
+    }
+  }
+  /* ================= END ADDITIVE: SITE-SIDE AI CHALLENGE AUTO-GENERATE ============= */
+
   var engChallengeData = null;
   var engUsersData = {};
   var engAttemptsData = {};
@@ -7848,6 +8005,11 @@ onAuthStateChanged(auth, user => {
     var period = currentPeriodKey;
     if(unsubEngChallenge){ try{ unsubEngChallenge(); }catch(e){} }
     if(unsubEngAttempts){ try{ unsubEngAttempts(); }catch(e){} }
+
+    // ADDITIVE: site khulte hi (ya naya hour shuru hote hi) is period ke
+    // liye AI question ho na ho check karke, na ho to admin ke rules ke
+    // hisaab se khud generate + publish kara do (dekhein engEnsureChallengeForPeriod).
+    engEnsureChallengeForPeriod(period);
 
     unsubEngChallenge = onValue(ref(db, 'portal/engagement/dailyChallenge/'+period), function(snap){
       engChallengeData = snap.val();
