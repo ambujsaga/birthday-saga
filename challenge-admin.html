@@ -110,8 +110,9 @@
 
     <div class="box">
       <h3>🤖 AI Auto-Generate Mode</h3>
-      <p class="small">Settings Firebase database me save hoti hain (permanent + hamesha editable). "Start" dabane ke baad yeh page khud har <b>1 hour</b> me syllabus se ek naya AI question generate karke current hour ke against automatically publish kar dega. Bas auto-generation chalte rehne ke liye is admin page ka tab khula rakhein (agar band ho jaaye, to jab bhi dobara khola jaayega tab turant us waqt ke hour ka question generate ho jaayega aur cycle wahi se aage chalta rahega).</p>
-      <p class="small">🚀 <b>Server-side upgrade available:</b> <code>functions/index.js</code> deploy karne ke baad yeh generation Google ke server par khud chalta hai — is admin tab ko khula rakhna zaroori nahi rahega, chahe browser/laptop band ho. Wahi "Start/Stop" button aur settings dono taraf kaam karte hain (deployment steps README me hain).</p>
+      <p class="small">✅ <b>Ab koi manual controller/Start-Stop button nahi hai</b> — API key save karte hi yeh mode khud-ba-khud ON ho jaata hai. Settings Firebase database me save hoti hain (permanent + hamesha editable). Is admin page ka tab khula rehte hi yeh khud har <b>1 hour</b> me syllabus se ek naya AI question generate karke current hour ke against automatically publish kar dega — har baar naya-naya question, bina kisi manual step ke.</p>
+      <p class="small">Agar tab band ho jaaye, to jab bhi dobara khola jaayega tab turant us waqt ke hour ka question generate ho jaayega aur cycle wahi se aage khud-ba-khud chalta rahega.</p>
+      <p class="small">🚀 <b>Server-side upgrade available:</b> <code>functions/index.js</code> deploy karne ke baad yeh generation Google ke server par khud chalta hai — is admin tab ko khula rakhna zaroori nahi rahega, chahe browser/laptop band ho. Wahi settings dono taraf kaam karte hain (deployment steps README me hain).</p>
       <label>OpenRouter API Key</label>
       <input id="aiKey" type="password" placeholder="sk-or-v1-...">
       <label>Model / Server (e.g. openrouter/free)</label>
@@ -122,8 +123,7 @@
       <input id="aiInterval" type="number" min="1" value="60">
       <button class="btn" onclick="saveAISettings()">💾 Save Settings</button>
       <p id="aiSaveMsg" class="msg"></p>
-      <button class="btn orange" id="aiToggleBtn" onclick="toggleAIMode()">▶ Start AI Auto Mode</button>
-      <button class="btn small" onclick="generateAIChallengeOnce()" style="margin-left:8px;">🔄 Generate Now (test)</button>
+      <button class="btn small" onclick="generateAIChallengeOnce()">🔄 Generate Now (test)</button>
       <p id="aiStatus" class="msg"></p>
     </div>
 
@@ -390,9 +390,10 @@ function loadAISettings(){
     document.getElementById('aiXp').value = cfg.xp || 10;
     document.getElementById('aiInterval').value = cfg.intervalMinutes || 1;
 
-    aiRunning = !!cfg.running;
-    updateAIToggleButton();
-    if(aiRunning){ startAutoTimer(); } else { stopAutoTimer(); }
+    // ADDITIVE UPDATE: controller hata diya — ab manual ON/OFF flag nahi
+    // dekha jaata, sirf itna dekha jaata hai ki API key maujood hai ya nahi.
+    // Key hone par mode khud-ba-khud auto-run hota hai.
+    applyAIAutoState(!!cfg.key);
 
     if(cfg.lastStatus){
       aiSetStatus(cfg.lastStatus, cfg.lastStatus.startsWith('error') ? 'red' : 'green');
@@ -401,27 +402,23 @@ function loadAISettings(){
   });
 }
 
-function updateAIToggleButton(){
-  const btn = document.getElementById('aiToggleBtn');
-  if(aiRunning){
-    btn.innerText = '⏸ Stop AI Auto Mode';
-    btn.classList.remove('orange'); btn.classList.add('red');
-  } else {
-    btn.innerText = '▶ Start AI Auto Mode';
-    btn.classList.remove('red'); btn.classList.add('orange');
-  }
-}
+// ADDITIVE UPDATE: manual Start/Stop "controller" hata diya gaya hai. Ab
+// AI Auto Mode ek manual toggle par depend nahi karta — jaise hi ek API key
+// database me saved milegi, mode khud-ba-khud "running" maana jaata hai aur
+// hourly timer khud start ho jaata hai (dekhein applyAIAutoState()).
 
 // Save current input values permanently to the database. Editable anytime, re-save karke update ho jaata hai.
 window.saveAISettings = async function(silent){
+  const key = document.getElementById('aiKey').value.trim();
   await set(ref(db, AI_CONFIG_PATH), {
-    key: document.getElementById('aiKey').value.trim(),
+    key: key,
     model: document.getElementById('aiModel').value.trim() || AI_DEFAULT_MODEL,
     xp: parseInt(document.getElementById('aiXp').value, 10) || 10,
     intervalMinutes: parseFloat(document.getElementById('aiInterval').value) || 1,
-    running: aiRunning,
+    running: !!key, // controller hata diya — key hai to mode hamesha "running" hai
     lastStatus: document.getElementById('aiStatus').innerText || ''
   });
+  applyAIAutoState(!!key); // key save hote hi turant auto mode apply karo, manual Start button ki zaroorat nahi
   if(!silent){
     const el = document.getElementById('aiSaveMsg');
     el.style.color = 'green';
@@ -532,23 +529,25 @@ function stopAutoTimer(){
   if(aiTimer){ clearInterval(aiTimer); aiTimer = null; }
 }
 
-window.toggleAIMode = async function(){
-  if(!document.getElementById('aiKey').value.trim() && !aiRunning){
-    aiSetStatus('Pehle API key daalein aur Save karein.', 'red');
-    return;
-  }
-  aiRunning = !aiRunning;
-  updateAIToggleButton();
-  await saveAISettings(true);
+// ADDITIVE UPDATE: purana manual "controller" (Start/Stop toggle button)
+// hata diya gaya hai. Ab yeh function khud decide karta hai ki auto mode
+// chalu rahega ya nahi — sirf iske basis par ki ek API key saved hai ya nahi.
+// Isse saveAISettings() (jab bhi key add/save hoti hai) aur loadAISettings()
+// (jab bhi page/tab dobara khulta hai) dono se call hota hai.
+function applyAIAutoState(hasKey){
+  const wasRunning = aiRunning;
+  aiRunning = hasKey;
   if(aiRunning){
-    aiSetStatus('▶ AI Auto Mode ON — har 1 hour me naya question generate + publish hoga (yeh tab khula rakhein).', 'green');
-    await generateAIChallengeOnce(); // turant current hour ke liye publish karo
+    if(!wasRunning){
+      aiSetStatus('▶ AI Auto Mode ON (automatic) — har 1 hour me naya question generate + publish hoga (yeh tab khula rakhein).', 'green');
+      generateAIChallengeOnce(); // turant current hour ke liye publish karo
+    }
     startAutoTimer(); // aur us ke baad har interval par khud-ba-khud repeat
   } else {
     stopAutoTimer();
-    aiSetStatus('⏸ AI Auto Mode OFF.', '#333');
+    aiSetStatus('API key save karte hi AI Auto Mode khud-ba-khud chalu ho jaayega.', '#333');
   }
-};
+}
 // ================== END AI AUTO MODE ==================
 
 // default date/hour = abhi ka current date aur ghanta
