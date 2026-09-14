@@ -385,6 +385,185 @@
             100% { box-shadow: 0 0 0 0 rgba(46,204,113,0); }
         }
 
+        /* ================= ADDITIVE: ATTENDANCE TRACKER (Nav Button + Page) =================
+           Sirf naya CSS add kiya gaya hai. Timetable/Programming button ka
+           koi bhi purana rule yahan chheda nahi gaya hai. */
+        .attendance-nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #fff;
+            color: var(--accent-orange);
+            border: 2px solid var(--accent-orange);
+            padding: 3px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            margin: 0 6px;
+        }
+
+        .attendance-nav-btn:hover {
+            background: var(--accent-orange);
+            color: #fff;
+        }
+
+        .att-nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #9aa5b1;
+            flex-shrink: 0;
+        }
+
+        .att-overall-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.2rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 1rem;
+        }
+
+        .att-overall-pct {
+            font-size: 2.4rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .att-overall-count {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .att-overall-advice {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            background: #f4f6f9;
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+        }
+
+        .att-required-note {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #888;
+            margin: 4px 0 16px;
+        }
+
+        .att-subject-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.7rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+
+        .att-subject-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .att-subject-meta {
+            font-size: 0.78rem;
+            color: #777;
+            margin-top: 3px;
+        }
+
+        .att-subject-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .att-mark-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .att-present-btn { color: #2ecc71; }
+        .att-present-btn:hover, .att-present-btn.att-marked { background: #2ecc71; color: #fff; border-color: #2ecc71; }
+        .att-absent-btn { color: #c0392b; }
+        .att-absent-btn:hover, .att-absent-btn.att-marked { background: #c0392b; color: #fff; border-color: #c0392b; }
+
+        .att-empty-note {
+            text-align: center;
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem 1rem;
+            color: #777;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+
+        .att-backfill-toggle-wrap {
+            text-align: center;
+            margin: 4px 0 14px;
+        }
+
+        .att-backfill-toggle-btn {
+            background: #fff;
+            border: 2px dashed var(--accent-orange);
+            color: var(--accent-orange);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .att-backfill-toggle-btn:hover {
+            background: var(--accent-orange);
+            color: #fff;
+        }
+
+        .att-backfill-panel {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+
+        .att-backfill-label {
+            display: block;
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .att-backfill-date-input {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .att-section-heading {
+            font-size: 0.9rem;
+            color: #555;
+            margin: 6px 0 10px;
+        }
+        /* ================= END ADDITIVE: ATTENDANCE TRACKER CSS ================= */
+
         /* Live Timetable full page */
         .tt-status-grid {
             display: grid;
@@ -2009,6 +2188,8 @@
         <symbol id="icon-pin" viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5c0 4-5 11-5 11S7 11 7 7a5 5 0 0 1 5-5z"/><circle cx="12" cy="7" r="2"/></symbol>
         <symbol id="icon-play" viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></symbol>
         <symbol id="icon-poll" viewBox="0 0 24 24"><line x1="5" y1="20" x2="5" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="19" y1="20" x2="19" y2="15"/></symbol>
+        <!-- ADDITIVE: new icon used only by the Attendance Tracker (to replace emoji with SVG) -->
+        <symbol id="icon-alert-triangle" viewBox="0 0 24 24"><path d="M12 3l10 18H2z"/><line x1="12" y1="10" x2="12" y2="15"/><line x1="12" y1="17.5" x2="12" y2="17.6"/></symbol>
       </defs>
     </svg>
 
@@ -2067,6 +2248,13 @@
                 <button type="button" class="timetable-nav-btn" id="timetableNavBtn" onclick="openTimetablePage()" title="View today's live timetable">
                     <span class="tt-live-dot" id="ttNavDot"></span>
                     <span id="ttNavLabel">Timetable</span>
+                </button>
+                <!-- ================= ADDITIVE: ATTENDANCE TRACKER QUICK-LINK BUTTON =================
+                     Sirf naya button add kiya gaya hai, Timetable aur Programming button ke
+                     beech me. In dono me se kuchh bhi chheda nahi gaya hai. -->
+                <button type="button" class="attendance-nav-btn" id="attendanceNavBtn" onclick="requireLogin(openAttendancePage)" title="Track your daily attendance">
+                    <span class="att-nav-dot" id="attNavPercentDot"></span>
+                    <span>Attendance</span>
                 </button>
                 <a href="programming.html" class="programming-nav-btn">Programming</a>
             </div>
@@ -2205,6 +2393,40 @@
 
         <ul class="tt-schedule-list" id="ttScheduleList">
         </ul>
+    </div>
+
+    <!-- ================= ADDITIVE: ATTENDANCE TRACKER FULL PAGE =================
+         Bilkul naya page hai. Koi purana page/element chheda nahi gaya hai. -->
+    <div id="attendancePage" class="container full-screen-container" style="display: none;">
+        <div class="action-bar">
+            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
+        </div>
+
+        <div class="tt-day-heading">
+            <h3><svg class="ui-icon"><use href="#icon-poll"></use></svg> My Attendance Tracker</h3>
+            <span id="attTodayLabel"></span>
+        </div>
+
+        <div class="att-overall-card">
+            <div class="att-overall-pct" id="attOverallPct">0%</div>
+            <div class="att-overall-count" id="attOverallCount">0 / 0 classes attended</div>
+            <div class="att-overall-advice" id="attOverallAdvice">Mark today's attendance below</div>
+        </div>
+
+        <p class="att-required-note">Minimum 75% attendance required as per BTEUP norms. Subjects below are pulled live from today's Timetable — mark Present or Absent any time during the day (you can correct it later the same day).</p>
+
+        <div class="att-backfill-toggle-wrap">
+            <button type="button" class="att-backfill-toggle-btn" id="attBackfillToggleBtn" onclick="toggleAttBackfillPanel()">+ Add Past Attendance</button>
+        </div>
+
+        <div class="att-backfill-panel" id="attBackfillPanel" style="display:none;">
+            <label class="att-backfill-label" for="attBackfillDate">Forgot to mark attendance for a previous day (last week, last month, etc.)? Pick the date below:</label>
+            <input type="date" id="attBackfillDate" class="att-backfill-date-input" onchange="attRenderBackfillList(this.value)">
+            <div id="attBackfillList"></div>
+        </div>
+
+        <h4 class="att-section-heading">Today's Classes</h4>
+        <div id="attSubjectList"></div>
     </div>
 
     <div id="mmitPage" class="mmit-page full-screen-container" style="display: none;">
@@ -2870,6 +3092,10 @@
         };
 
         const ttDayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        // ADDITIVE: expose on window so other additive features (Attendance Tracker) can
+        // look up any date's schedule too, without duplicating this data. Nothing above changed.
+        window.cseTimetable = cseTimetable;
+        window.ttDayNames = ttDayNames;
 
         function ttTimeToMinutes(str) {
             const [h, m] = str.split(':').map(Number);
@@ -3194,6 +3420,9 @@
             // ADDITIVE: hide the new engagement hub page too (nothing above changed)
             var engHubPageEl = document.getElementById('engagementHubPage');
             if(engHubPageEl) engHubPageEl.style.display = 'none';
+            // ADDITIVE: hide the new attendance tracker page too (nothing above changed)
+            var attPageEl = document.getElementById('attendancePage');
+            if(attPageEl) attPageEl.style.display = 'none';
         }
 
         window.onclick = function(event) {
@@ -8102,6 +8331,295 @@ onAuthStateChanged(auth, user => {
     window.engWeeklyChampionsData = snap.val() || {};
   }, function(err){ console.error('Engagement weeklyChampions listener error:', err); });
 })();
+
+/* =====================================================================
+   ADDITIVE: DAILY ATTENDANCE TRACKER (100% Local Storage — per device)
+   Purely additive block. Isse upar ka koi bhi function/variable/listener
+   edit ya remove nahi kiya gaya hai. Koi Firebase call yahan use nahi hoti.
+
+   - Naya "Attendance" quick-link button (Timetable/Programming ke beech)
+     is IIFE se chalta hai.
+   - "Aaj ke subject" seedhe existing cseTimetable / ttGetLiveStatus()
+     (Timetable feature) se hi liye jaate hain — koi alag subject list
+     nahi, jo bhi aaj ke din timetable me schedule hai wahi yahan dikhega.
+   - Data browser ke localStorage me store hota hai (key: roll number ke
+     hisaab se), server/Firebase par kuchh nahi bhejta.
+   - Har period slot ke against ek "dates" map store hoti hai
+     (date -> 'P'/'A'), isliye:
+       (a) aaj ke din jitni baar chahe mark/correct kar sakte ho, aur
+       (b) pichle kisi bhi din (pichla hafta/mahina) ka attendance bhi
+           baad me "+ Add Past Attendance" se bharaa/correct kiya ja
+           sakta hai — koi bhi date dobara double-count nahi hoti.
+   - 75% BTEUP minimum ke hisaab se "safe to bunk" / "attend next N
+     classes" advice dikhata hai — sirf SVG icons ke saath, emoji nahi
+     (global users ke liye plain English UI text).
+====================================================================== */
+(function(){
+  var ATT_REQUIRED_PERCENT = 75; // BTEUP/AKTU minimum required attendance %
+
+  function attToday(){
+    var d = new Date();
+    var pad2 = function(n){ return (n < 10 ? '0' : '') + n; };
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+  }
+
+  function attMyRoll(){
+    return (window.localUser && window.localUser.rollNumber) ? String(window.localUser.rollNumber) : 'guest';
+  }
+
+  function attStorageKey(){
+    return 'portalAttendanceLocal_' + attMyRoll();
+  }
+
+  function attLoadData(){
+    try{
+      var raw = localStorage.getItem(attStorageKey());
+      return raw ? JSON.parse(raw) : {};
+    }catch(e){ return {}; }
+  }
+
+  function attSaveData(data){
+    try{ localStorage.setItem(attStorageKey(), JSON.stringify(data)); }catch(e){ console.error('attendance local save error:', e); }
+  }
+
+  // Aaj ke din ke classes seedhe Timetable feature (cseTimetable ke through
+  // ttGetLiveStatus()) se nikale jaate hain — Break/Free/Holiday chhod kar.
+  function attTodaysClasses(){
+    if(typeof ttGetLiveStatus !== 'function') return { dayKey: '', items: [] };
+    var status = ttGetLiveStatus();
+    var items = [];
+    (status.schedule || []).forEach(function(p, idx){
+      if(p.type === 'Break' || p.type === 'Free' || p.subject === 'HOLIDAY') return;
+      items.push({ key: status.dayKey + '_' + idx, subject: p.subject, teacher: p.teacher, start: p.start, end: p.end });
+    });
+    return { dayKey: status.dayKey, items: items };
+  }
+
+  // ADDITIVE: same as attTodaysClasses() but for ANY date (used by the
+  // "+ Add Past Attendance" backfill panel) — reuses the same window-exposed
+  // cseTimetable/ttDayNames data, so it always matches the real Timetable.
+  function attClassesForDate(dateStr){
+    var parts = String(dateStr).split('-').map(Number);
+    var d = new Date(parts[0], (parts[1] || 1) - 1, parts[2] || 1);
+    var days = window.ttDayNames || ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    var dayKey = days[d.getDay()];
+    var schedule = (window.cseTimetable && window.cseTimetable[dayKey]) || [];
+    var items = [];
+    schedule.forEach(function(p, idx){
+      if(p.type === 'Break' || p.type === 'Free' || p.subject === 'HOLIDAY') return;
+      items.push({ key: dayKey + '_' + idx, subject: p.subject, teacher: p.teacher, start: p.start, end: p.end });
+    });
+    return { dayKey: dayKey, items: items };
+  }
+
+  function attCalcStats(rec){
+    var present = (rec && rec.present) || 0;
+    var absent = (rec && rec.absent) || 0;
+    var total = present + absent;
+    var pct = total > 0 ? Math.round((present / total) * 100) : 100;
+    return { present: present, absent: absent, total: total, pct: pct };
+  }
+
+  function attColorFor(pct, total){
+    if(total === 0) return '#9aa5b1';
+    if(pct >= ATT_REQUIRED_PERCENT) return '#2ecc71';
+    if(pct >= ATT_REQUIRED_PERCENT - 10) return '#ff9900';
+    return '#c0392b';
+  }
+
+  // ADDITIVE UPDATE: emoji hata kar SVG icons use kiye (icon-check /
+  // icon-alert-triangle / icon-live), text pura English rakha hai.
+  function attBunkAdvice(stats){
+    var R = ATT_REQUIRED_PERCENT / 100;
+    var checkIcon = '<svg class="ui-icon"><use href="#icon-check"></use></svg>';
+    var warnIcon = '<svg class="ui-icon"><use href="#icon-alert-triangle"></use></svg>';
+    var dueIcon = '<svg class="ui-icon" style="color:#c0392b;"><use href="#icon-live"></use></svg>';
+    if(stats.total === 0) return "Mark today's attendance to get started.";
+    if(stats.pct >= ATT_REQUIRED_PERCENT){
+      var safe = Math.floor(stats.present / R - stats.total);
+      if(safe < 0) safe = 0;
+      return safe > 0
+        ? (checkIcon + ' Safe to miss next ' + safe + ' class' + (safe > 1 ? 'es' : ''))
+        : (warnIcon + ' At the edge — attend the next class!');
+    } else {
+      var need = Math.ceil((R * stats.total - stats.present) / (1 - R));
+      if(need < 1) need = 1;
+      return dueIcon + ' Attend next ' + need + ' class' + (need > 1 ? 'es' : '') + ' to reach ' + ATT_REQUIRED_PERCENT + '%';
+    }
+  }
+
+  function attOverallStats(data){
+    var totalPresent = 0, totalClasses = 0;
+    Object.keys(data).forEach(function(k){
+      var rec = data[k];
+      totalPresent += (rec.present || 0);
+      totalClasses += (rec.present || 0) + (rec.absent || 0);
+    });
+    var pct = totalClasses > 0 ? Math.round((totalPresent / totalClasses) * 100) : 100;
+    return { present: totalPresent, total: totalClasses, pct: pct };
+  }
+
+  window.openAttendancePage = function(){
+    closeAllSections();
+    document.getElementById('attendancePage').style.display = 'block';
+    window.scrollTo(0, 0);
+    updateNavState('navHome');
+    attRenderPage();
+  };
+
+  function attRenderPage(){
+    var data = attLoadData();
+    var overall = attOverallStats(data);
+
+    var pctEl = document.getElementById('attOverallPct');
+    if(pctEl){
+      pctEl.innerText = overall.pct + '%';
+      pctEl.style.color = attColorFor(overall.pct, overall.total);
+    }
+    var countEl = document.getElementById('attOverallCount');
+    if(countEl) countEl.innerText = overall.present + ' / ' + overall.total + ' classes attended';
+    var adviceEl = document.getElementById('attOverallAdvice');
+    if(adviceEl) adviceEl.innerHTML = attBunkAdvice(overall);
+
+    var todays = attTodaysClasses();
+    var dayLabelEl = document.getElementById('attTodayLabel');
+    if(dayLabelEl) dayLabelEl.innerText = todays.dayKey ? ("Today's Classes — " + todays.dayKey) : "Today's Classes";
+
+    var listEl = document.getElementById('attSubjectList');
+    if(!listEl) return;
+
+    if(todays.items.length === 0){
+      listEl.innerHTML = '<div class="att-empty-note"><svg class="ui-icon"><use href="#icon-calendar"></use></svg> No classes scheduled today as per the Timetable. Enjoy your day off!</div>';
+      return;
+    }
+
+    var today = attToday();
+    listEl.innerHTML = todays.items.map(function(it){
+      var rec = data[it.key] || { present: 0, absent: 0, dates: {} };
+      var stats = attCalcStats(rec);
+      var markToday = rec.dates ? rec.dates[today] : undefined;
+      var color = attColorFor(stats.pct, stats.total);
+      var subj = String(it.subject || '').replace(/</g, '&lt;');
+      var timeMeta = (typeof ttFormatTime === 'function' ? (ttFormatTime(it.start) + ' - ' + ttFormatTime(it.end)) : (it.start + ' - ' + it.end)) + (it.teacher ? (' • ' + it.teacher) : '');
+      return '<div class="att-subject-row">' +
+        '<div class="att-subject-info">' +
+          '<div class="att-subject-title">' + subj + '</div>' +
+          '<div class="att-subject-meta">' + timeMeta + '<br>' + stats.present + '/' + stats.total + ' classes • <span style="color:' + color + ';">' + stats.pct + '%</span>' + (markToday ? (' • <span style="color:#888;">marked ' + (markToday === 'P' ? 'Present' : 'Absent') + ' today</span>') : '') + '</div>' +
+        '</div>' +
+        '<div class="att-subject-actions">' +
+          '<button type="button" class="att-mark-btn att-present-btn' + (markToday === 'P' ? ' att-marked' : '') + '" onclick="markAttendance(\'' + it.key + '\', \'P\')" title="Mark Present"><svg class="ui-icon"><use href="#icon-check"></use></svg></button>' +
+          '<button type="button" class="att-mark-btn att-absent-btn' + (markToday === 'A' ? ' att-marked' : '') + '" onclick="markAttendance(\'' + it.key + '\', \'A\')" title="Mark Absent"><svg class="ui-icon"><use href="#icon-x"></use></svg></button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // ADDITIVE: shared marking logic for a specific slot (key) + specific
+  // calendar date. Ek "dates" map (date -> 'P'/'A') maintain hoti hai taaki:
+  //  - us specific date ke liye jitni baar chaho correct kar sako
+  //    (double-count kabhi nahi hota, purana mark hamesha pehle undo hota hai)
+  //  - aaj ke alawa koi bhi PURANI date (pichla hafta/mahina) bhi isi function
+  //    se safely backfill ho sake.
+  function attMark(key, mark, dateStr){
+    if(!(window.localUser && window.localUser.rollNumber)){ requireLogin(function(){ window.openAttendancePage(); }); return; }
+    var data = attLoadData();
+    var existing = data[key] || { present: 0, absent: 0, dates: {} };
+    if(!existing.dates) existing.dates = {}; // backward-safe for any older saved records
+
+    var present = existing.present || 0;
+    var absent = existing.absent || 0;
+    var prevMark = existing.dates[dateStr];
+    if(prevMark === 'P') present = Math.max(0, present - 1);
+    if(prevMark === 'A') absent = Math.max(0, absent - 1);
+    if(mark === 'P') present += 1; else absent += 1;
+
+    existing.dates[dateStr] = mark;
+    existing.present = present;
+    existing.absent = absent;
+    data[key] = existing;
+    attSaveData(data);
+    attUpdateNavDot();
+    attRenderPage();
+    var panelDateInput = document.getElementById('attBackfillDate');
+    if(panelDateInput && panelDateInput.value === dateStr) attRenderBackfillList(dateStr);
+  }
+
+  // Din ke andar jitni baar chahe mark/re-mark (correction) allowed — sirf
+  // us din ka aakhri mark hi count hota hai, double-count nahi hota.
+  window.markAttendance = function(key, mark){
+    attMark(key, mark, attToday());
+  };
+
+  // ADDITIVE: mark/correct attendance for a PAST date, chosen from the
+  // "+ Add Past Attendance" panel below.
+  window.markBackfillAttendance = function(key, mark, dateStr){
+    attMark(key, mark, dateStr);
+  };
+
+  // ADDITIVE: show/hide the "+ Add Past Attendance" panel and, on first
+  // open, default the date picker to today (capped so future dates can't
+  // be picked) and render that date's classes.
+  window.toggleAttBackfillPanel = function(){
+    var panel = document.getElementById('attBackfillPanel');
+    if(!panel) return;
+    var willShow = panel.style.display === 'none' || !panel.style.display;
+    panel.style.display = willShow ? 'block' : 'none';
+    if(willShow){
+      var dateInput = document.getElementById('attBackfillDate');
+      if(dateInput){
+        dateInput.max = attToday();
+        if(!dateInput.value) dateInput.value = attToday();
+        attRenderBackfillList(dateInput.value);
+      }
+    }
+  };
+
+  // ADDITIVE: renders the Present/Absent list for whichever past date the
+  // user picked in the backfill date input.
+  window.attRenderBackfillList = function(dateStr){
+    var listEl = document.getElementById('attBackfillList');
+    if(!listEl || !dateStr) return;
+    var data = attLoadData();
+    var info = attClassesForDate(dateStr);
+
+    if(info.items.length === 0){
+      listEl.innerHTML = '<div class="att-empty-note"><svg class="ui-icon"><use href="#icon-calendar"></use></svg> No classes were scheduled on this date (' + info.dayKey + ').</div>';
+      return;
+    }
+
+    listEl.innerHTML = info.items.map(function(it){
+      var rec = data[it.key] || { present: 0, absent: 0, dates: {} };
+      var mark = rec.dates ? rec.dates[dateStr] : undefined;
+      var subj = String(it.subject || '').replace(/</g, '&lt;');
+      var timeMeta = (typeof ttFormatTime === 'function' ? (ttFormatTime(it.start) + ' - ' + ttFormatTime(it.end)) : (it.start + ' - ' + it.end)) + (it.teacher ? (' • ' + it.teacher) : '');
+      return '<div class="att-subject-row">' +
+        '<div class="att-subject-info">' +
+          '<div class="att-subject-title">' + subj + '</div>' +
+          '<div class="att-subject-meta">' + timeMeta + (mark ? (' • <span style="color:#888;">marked ' + (mark === 'P' ? 'Present' : 'Absent') + '</span>') : '') + '</div>' +
+        '</div>' +
+        '<div class="att-subject-actions">' +
+          '<button type="button" class="att-mark-btn att-present-btn' + (mark === 'P' ? ' att-marked' : '') + '" onclick="markBackfillAttendance(\'' + it.key + '\', \'P\', \'' + dateStr + '\')" title="Mark Present"><svg class="ui-icon"><use href="#icon-check"></use></svg></button>' +
+          '<button type="button" class="att-mark-btn att-absent-btn' + (mark === 'A' ? ' att-marked' : '') + '" onclick="markBackfillAttendance(\'' + it.key + '\', \'A\', \'' + dateStr + '\')" title="Mark Absent"><svg class="ui-icon"><use href="#icon-x"></use></svg></button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  };
+
+  function attUpdateNavDot(){
+    var dot = document.getElementById('attNavPercentDot');
+    if(!dot) return;
+    var overall = attOverallStats(attLoadData());
+    dot.style.background = attColorFor(overall.pct, overall.total);
+  }
+
+  // Local-storage based hai, isliye koi realtime listener chahiye nahi —
+  // bas load par aur har thodi der me nav dot refresh kar dete hain
+  // (login/logout jaisa purana kuchh state change ho to bhi pakड़ le).
+  attUpdateNavDot();
+  setInterval(attUpdateNavDot, 15000);
+})();
+/* ================= END ADDITIVE: DAILY ATTENDANCE TRACKER ================= */
+
 
 </script>
 
