@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Dekhein</title>
+<style>
+  :root {
+    --bg-deep: #0a0e17;
+    --bg-panel: #10151f;
+    --bg-input: #0d1220;
+    --border: #1f2a3d;
+    --border-soft: #232f45;
+    --accent: #7c5cff;
+    --accent-2: #22d3ee;
+    --text-main: #e6edf7;
+    --text-dim: #7c8aa5;
+    --green: #34d399;
+    --red: #f87171;
+    --mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(124,92,255,0.16), transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(34,211,238,0.12), transparent 45%),
+      var(--bg-deep);
+    color: var(--text-main);
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+  }
+  .back-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-soft);
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+  .back-btn:hover { border-color: var(--accent); transform: translateX(-2px); }
+  .back-btn svg { stroke: var(--text-main); }
+  .card {
+    max-width: 420px;
+    width: 100%;
+    background: linear-gradient(180deg, var(--bg-panel), #0c1119);
+    border-radius: 18px;
+    padding: 32px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.55);
+    border: 1px solid var(--border);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  }
+  h1 {
+    font-size: 21px;
+    margin-bottom: 6px;
+    color: #fff;
+    font-family: var(--mono);
+  }
+  p.sub {
+    color: var(--text-dim);
+    font-size: 13.5px;
+    margin-top: 0;
+    margin-bottom: 26px;
+  }
+  input[type="text"] {
+    width: 100%;
+    text-align: center;
+    letter-spacing: 8px;
+    font-size: 22px;
+    padding: 14px;
+    border-radius: 10px;
+    border: 2px solid var(--border-soft);
+    background: var(--bg-input);
+    color: var(--text-main);
+    margin-bottom: 16px;
+    font-family: var(--mono);
+  }
+  input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124,92,255,0.15);
+  }
+  button {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--accent), #9b7bff);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.2s, transform 0.1s;
+  }
+  button:hover { filter: brightness(1.1); }
+  button:active { transform: scale(0.99); }
+  button:disabled { background: #2a3346; cursor: not-allowed; filter: none; }
+  #message {
+    margin-top: 16px;
+    font-size: 14px;
+    min-height: 18px;
+  }
+  .msg-err { color: var(--red); }
+  .msg-ok { color: var(--green); }
+  #resultBox {
+    display: none;
+    margin-top: 24px;
+    border-top: 1px solid var(--border);
+    padding-top: 22px;
+  }
+  #resultBox img {
+    max-width: 100%;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  }
+  .actions {
+    display: flex;
+    gap: 10px;
+  }
+  .actions a, .actions button {
+    flex: 1;
+    text-decoration: none;
+    display: inline-block;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .btn-download {
+    background: linear-gradient(90deg, var(--green), #10b981);
+    color: #06281c;
+  }
+  .btn-download:hover { filter: brightness(1.08); }
+  .btn-reset {
+    background: var(--bg-input);
+    color: var(--text-main);
+    border: 1px solid var(--border-soft) !important;
+    cursor: pointer;
+  }
+  .btn-reset:hover { border-color: var(--accent) !important; }
+  .spinner {
+    display: none;
+    margin: 10px auto 0;
+    width: 22px;
+    height: 22px;
+    border: 3px solid var(--border-soft);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<a class="back-btn" href="index.html" title="Home">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19 12H5"></path>
+    <path d="M12 19l-7-7 7-7"></path>
+  </svg>
+</a>
+<div class="card">
+  <h1>📸 Apni Image Dekhein</h1>
+  <p class="sub">Apne phone number ke last 4 digit daalein</p>
+
+  <form id="searchForm">
+    <input type="text" id="digits" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" placeholder="0000" required autocomplete="off">
+    <button type="submit" id="searchBtn">Dekhein</button>
+    <div class="spinner" id="spinner"></div>
+  </form>
+  <div id="message"></div>
+
+  <div id="resultBox">
+    <img id="resultImg" src="" alt="Image">
+    <div class="actions">
+      <a id="downloadLink" class="btn-download" href="#" download>⬇ Download</a>
+      <button type="button" class="btn-reset" id="resetBtn">Wapas Jaayein</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, onValue, off } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCtedhm7TlywjRg3CNxk6Cq-lDm1Sm0Vak",
+    authDomain: "thejaya-ree.firebaseapp.com",
+    databaseURL: "https://thejaya-ree-default-rtdb.firebaseio.com",
+    projectId: "thejaya-ree",
+    storageBucket: "thejaya-ree.firebasestorage.app",
+    messagingSenderId: "455693511785",
+    appId: "1:455693511785:web:219f743c36966f667d86f8",
+    measurementId: "G-YXH3V9N0N5"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const form = document.getElementById('searchForm');
+  const digitsInput = document.getElementById('digits');
+  const searchBtn = document.getElementById('searchBtn');
+  const messageEl = document.getElementById('message');
+  const spinner = document.getElementById('spinner');
+  const resultBox = document.getElementById('resultBox');
+  const resultImg = document.getElementById('resultImg');
+  const downloadLink = document.getElementById('downloadLink');
+  const resetBtn = document.getElementById('resetBtn');
+
+  function setMessage(msg, type) {
+    messageEl.textContent = msg;
+    messageEl.className = type === 'err' ? 'msg-err' : (type === 'ok' ? 'msg-ok' : '');
+  }
+
+  // Currently active live listener reference, so we can detach it when user
+  // searches a new number or resets — this keeps the page truly real-time:
+  // agar admin isi digits par nayi image upload/update/delete kare, to yeh
+  // page bina refresh kiye khud-ba-khud update ho jayega.
+  let activeRef = null;
+
+  function detachListener() {
+    if (activeRef) {
+      off(activeRef);
+      activeRef = null;
+    }
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const digits = digitsInput.value.trim();
+
+    if (!/^[0-9]{4}$/.test(digits)) {
+      setMessage('Kripya exactly 4 digit number daalein.', 'err');
+      return;
+    }
+
+    detachListener();
+    setMessage('', '');
+    resultBox.style.display = 'none';
+    searchBtn.disabled = true;
+    spinner.style.display = 'block';
+
+    const entryRef = ref(db, 'entries/' + digits);
+    activeRef = entryRef;
+
+    onValue(entryRef, (snap) => {
+      spinner.style.display = 'none';
+      searchBtn.disabled = false;
+
+      if (snap.exists()) {
+        const data = snap.val();
+        resultImg.src = data.url;
+        downloadLink.href = data.url;
+        downloadLink.setAttribute('download', data.fileName || ('image_' + digits + '.jpg'));
+        resultBox.style.display = 'block';
+        setMessage('✅ Image mil gayi! (live)', 'ok');
+      } else {
+        resultBox.style.display = 'none';
+        setMessage('❌ Is number se koi image nahi mili.', 'err');
+      }
+    }, (err) => {
+      console.error(err);
+      spinner.style.display = 'none';
+      searchBtn.disabled = false;
+      setMessage('Error: ' + err.message, 'err');
+    });
+  });
+
+  resetBtn.addEventListener('click', () => {
+    detachListener();
+    resultBox.style.display = 'none';
+    setMessage('', '');
+    digitsInput.value = '';
+    digitsInput.focus();
+  });
+</script>
+</body>
+</html>
