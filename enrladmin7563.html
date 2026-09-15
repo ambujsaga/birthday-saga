@@ -213,7 +213,7 @@
     <label for="digits">Phone Number ke Last 4 Digit</label>
     <input type="text" id="digits" maxlength="4" pattern="[0-9]{4}" placeholder="jaise: 1234" required>
 
-    <label for="fileInput">Image Chuniye</label>
+    <label for="fileInput">Image Chuniye <span style="color:var(--text-dim); font-weight:400;">(max 1.5 MB)</span></label>
     <input type="file" id="fileInput" accept="image/*" required>
 
     <button type="submit" id="submitBtn">Upload Karein</button>
@@ -234,9 +234,6 @@
   import {
     getDatabase, ref, set, remove, onValue
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-  import {
-    getStorage, ref as sRef, uploadBytesResumable, getDownloadURL, deleteObject
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCtedhm7TlywjRg3CNxk6Cq-lDm1Sm0Vak",
@@ -251,7 +248,25 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
-  const storage = getStorage(app);
+
+  // Realtime Database har node ko max ~10MB tak allow karta hai,
+  // aur base64 encoding se size ~33% badh jaata hai, isliye
+  // original file ko is size se chota rakhna zaroori hai.
+  const MAX_FILE_BYTES = 1.5 * 1024 * 1024; // 1.5 MB
+
+  function fileToBase64(file, onProgress) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onprogress = (e) => {
+        if (e.lengthComputable && onProgress) {
+          onProgress((e.loaded / e.total) * 100);
+        }
+      };
+      reader.onload = () => resolve(reader.result); // data:image/...;base64,....
+      reader.onerror = () => reject(reader.error || new Error('File read failed'));
+      reader.readAsDataURL(file);
+    });
+  }
 
   const form = document.getElementById('uploadForm');
   const digitsInput = document.getElementById('digits');
@@ -280,6 +295,10 @@
       setStatus('Kripya ek image chunein.', 'err');
       return;
     }
+    if (file.size > MAX_FILE_BYTES) {
+      setStatus('Image bahut badi hai (max ' + (MAX_FILE_BYTES / (1024*1024)).toFixed(1) + ' MB). Chhoti image chunein.', 'err');
+      return;
+    }
 
     submitBtn.disabled = true;
     setStatus('Upload ho raha hai...', '');
@@ -287,42 +306,29 @@
     progressBar.style.width = '0%';
 
     const timestamp = Date.now();
-    const filePath = `images/${digits}_${timestamp}_${file.name}`;
-    const storageReference = sRef(storage, filePath);
-    const uploadTask = uploadBytesResumable(storageReference, file);
 
-    uploadTask.on('state_changed',
-      (snapshot) => {
-        const pct = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    try {
+      const base64Data = await fileToBase64(file, (pct) => {
         progressBar.style.width = pct + '%';
-      },
-      (error) => {
-        console.error(error);
-        setStatus('Upload fail hua: ' + error.message, 'err');
-        submitBtn.disabled = false;
-        progressWrap.style.display = 'none';
-      },
-      async () => {
-        try {
-          const url = await getDownloadURL(uploadTask.snapshot.ref);
-          const entryRef = ref(db, 'entries/' + digits);
-          await set(entryRef, {
-            url: url,
-            path: filePath,
-            fileName: file.name,
-            timestamp: timestamp
-          });
-          setStatus('✅ Upload safal! Digits "' + digits + '" se tag ho gaya.', 'ok');
-          form.reset();
-        } catch (err) {
-          console.error(err);
-          setStatus('Database save mein error: ' + err.message, 'err');
-        } finally {
-          submitBtn.disabled = false;
-          progressWrap.style.display = 'none';
-        }
-      }
-    );
+      });
+
+      const entryRef = ref(db, 'entries/' + digits);
+      await set(entryRef, {
+        url: base64Data,
+        fileName: file.name,
+        timestamp: timestamp
+      });
+
+      progressBar.style.width = '100%';
+      setStatus('✅ Upload safal! Digits "' + digits + '" se tag ho gaya.', 'ok');
+      form.reset();
+    } catch (err) {
+      console.error(err);
+      setStatus('Upload fail hua: ' + err.message, 'err');
+    } finally {
+      submitBtn.disabled = false;
+      progressWrap.style.display = 'none';
+    }
   });
 
   // Live list of entries
@@ -345,7 +351,7 @@
           <div class="digits">**** ${digits}</div>
           <div>${entry.fileName || ''}</div>
         </div>
-        <button class="del" data-digits="${digits}" data-path="${entry.path || ''}">Delete</button>
+        <button class="del" data-digits="${digits}">Delete</button>
       `;
       entriesList.appendChild(div);
     });
@@ -353,13 +359,9 @@
     entriesList.querySelectorAll('.del').forEach(btn => {
       btn.addEventListener('click', async () => {
         const digits = btn.getAttribute('data-digits');
-        const path = btn.getAttribute('data-path');
         if (!confirm('Kya aap "' + digits + '" ki entry delete karna chahte hain?')) return;
         try {
           await remove(ref(db, 'entries/' + digits));
-          if (path) {
-            try { await deleteObject(sRef(storage, path)); } catch (e) { console.warn('Storage delete warn:', e); }
-          }
         } catch (err) {
           alert('Delete error: ' + err.message);
         }
