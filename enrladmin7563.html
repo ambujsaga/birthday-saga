@@ -236,22 +236,19 @@
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyCtedhm7TlywjRg3CNxk6Cq-lDm1Sm0Vak",
-    authDomain: "thejaya-ree.firebaseapp.com",
-    databaseURL: "https://thejaya-ree-default-rtdb.firebaseio.com",
-    projectId: "thejaya-ree",
-    storageBucket: "thejaya-ree.firebasestorage.app",
-    messagingSenderId: "455693511785",
-    appId: "1:455693511785:web:219f743c36966f667d86f8",
-    measurementId: "G-YXH3V9N0N5"
+    apiKey: "AIzaSyBe-U7wifvDNot0dDQv4DUviWnz0c-FTmM",
+    authDomain: "enrl-87967.firebaseapp.com",
+    databaseURL: "https://enrl-87967-default-rtdb.firebaseio.com",
+    projectId: "enrl-87967",
+    storageBucket: "enrl-87967.firebasestorage.app",
+    messagingSenderId: "656700035261",
+    appId: "1:656700035261:web:2186c045a81bbc4b4827d4",
+    measurementId: "G-29M7EQY5LJ"
   };
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  // Realtime Database har node ko max ~10MB tak allow karta hai,
-  // aur base64 encoding se size ~33% badh jaata hai, isliye
-  // original file ko is size se chota rakhna zaroori hai.
   const MAX_FILE_BYTES = 1.5 * 1024 * 1024; // 1.5 MB
 
   function fileToBase64(file, onProgress) {
@@ -262,7 +259,7 @@
           onProgress((e.loaded / e.total) * 100);
         }
       };
-      reader.onload = () => resolve(reader.result); // data:image/...;base64,....
+      reader.onload = () => resolve(reader.result); 
       reader.onerror = () => reject(reader.error || new Error('File read failed'));
       reader.readAsDataURL(file);
     });
@@ -282,7 +279,7 @@
     statusEl.className = type === 'ok' ? 'status-ok' : (type === 'err' ? 'status-err' : '');
   }
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const digits = digitsInput.value.trim();
     const file = fileInput.files[0];
@@ -331,7 +328,6 @@
     }
   });
 
-  // Live list of entries
   const entriesRef = ref(db, 'entries');
   onValue(entriesRef, (snapshot) => {
     const data = snapshot.val();
