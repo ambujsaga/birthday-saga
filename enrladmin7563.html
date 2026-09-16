@@ -194,6 +194,27 @@
   }
   .entry button.del:hover { background: #4a2020; filter: none; }
   .empty { color: var(--text-dim); font-size: 13px; }
+  .preview-wrap {
+    display: none;
+    margin-bottom: 16px;
+    text-align: center;
+    background: var(--bg-input);
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+    padding: 10px;
+  }
+  .preview-wrap p {
+    margin: 0 0 8px;
+    font-size: 12px;
+    color: var(--text-dim);
+    font-family: var(--mono);
+  }
+  .preview-wrap img {
+    max-width: 100%;
+    max-height: 220px;
+    border-radius: 8px;
+    object-fit: contain;
+  }
 </style>
 </head>
 <body>
@@ -215,6 +236,11 @@
 
     <label for="fileInput">Image Chuniye <span style="color:var(--text-dim); font-weight:400;">(max 1.5 MB)</span></label>
     <input type="file" id="fileInput" accept="image/*" required>
+
+    <div class="preview-wrap" id="previewWrap">
+      <p>👁️ Preview - Confirm karein ki sahi photo hai</p>
+      <img id="previewImg" src="" alt="Preview">
+    </div>
 
     <button type="submit" id="submitBtn">Upload Karein</button>
     <div class="progress-wrap" id="progressWrap">
@@ -273,6 +299,24 @@
   const progressWrap = document.getElementById('progressWrap');
   const progressBar = document.getElementById('progressBar');
   const entriesList = document.getElementById('entriesList');
+  const previewWrap = document.getElementById('previewWrap');
+  const previewImg = document.getElementById('previewImg');
+
+  // Latest snapshot of existing entries, kept in sync by onValue below.
+  // Used to check ki koi digit/number dobara (duplicate) to nahi use ho raha.
+  let latestEntries = {};
+
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      previewImg.src = objectUrl;
+      previewWrap.style.display = 'block';
+    } else {
+      previewImg.src = '';
+      previewWrap.style.display = 'none';
+    }
+  });
 
   function setStatus(msg, type) {
     statusEl.textContent = msg;
@@ -294,6 +338,11 @@
     }
     if (file.size > MAX_FILE_BYTES) {
       setStatus('Image bahut badi hai (max ' + (MAX_FILE_BYTES / (1024*1024)).toFixed(1) + ' MB). Chhoti image chunein.', 'err');
+      return;
+    }
+    if (latestEntries && Object.prototype.hasOwnProperty.call(latestEntries, digits)) {
+      setStatus('⚠️ Yeh number "' + digits + '" pehle se ek photo ke saath available hai. Har photo ka number/password unique hona chahiye, kripya alag digits use karein.', 'err');
+      alert('⚠️ Duplicate! "' + digits + '" pehle se ek entry me use ho chuka hai. Isse dobara use nahi kar sakte.');
       return;
     }
 
@@ -319,6 +368,8 @@
       progressBar.style.width = '100%';
       setStatus('✅ Upload safal! Digits "' + digits + '" se tag ho gaya.', 'ok');
       form.reset();
+      previewImg.src = '';
+      previewWrap.style.display = 'none';
     } catch (err) {
       console.error(err);
       setStatus('Upload fail hua: ' + err.message, 'err');
@@ -331,6 +382,7 @@
   const entriesRef = ref(db, 'entries');
   onValue(entriesRef, (snapshot) => {
     const data = snapshot.val();
+    latestEntries = data || {};
     entriesList.innerHTML = '';
     if (!data) {
       entriesList.innerHTML = '<p class="empty">Abhi koi entry nahi hai.</p>';
