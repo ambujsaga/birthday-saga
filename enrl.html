@@ -1,30 +1,33 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Image Dekhein</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+<title>Diploma Enrollment Details</title>
 <style>
   :root {
-    --bg-deep: #0a0e17;
-    --bg-panel: #10151f;
-    --bg-input: #0d1220;
-    --border: #1f2a3d;
-    --border-soft: #232f45;
-    --accent: #7c5cff;
-    --accent-2: #22d3ee;
-    --text-main: #e6edf7;
-    --text-dim: #7c8aa5;
-    --green: #34d399;
-    --red: #f87171;
+    --bg-deep: #f2f4f9;
+    --bg-panel: #ffffff;
+    --bg-input: #f0f2f7;
+    --border: #dde3ee;
+    --border-soft: #cad2e3;
+    --accent: #6d4aff;
+    --accent-2: #0891b2;
+    --text-main: #1a2130;
+    --text-dim: #64708a;
+    --green: #16a34a;
+    --red: #dc2626;
     --mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
   }
   * { box-sizing: border-box; }
+  html, body {
+    touch-action: manipulation;
+  }
   body {
     font-family: 'Segoe UI', Arial, sans-serif;
     background:
-      radial-gradient(circle at 15% 10%, rgba(124,92,255,0.16), transparent 45%),
-      radial-gradient(circle at 85% 90%, rgba(34,211,238,0.12), transparent 45%),
+      radial-gradient(circle at 15% 10%, rgba(109,74,255,0.08), transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(8,145,178,0.07), transparent 45%),
       var(--bg-deep);
     color: var(--text-main);
     min-height: 100vh;
@@ -50,16 +53,17 @@
     cursor: pointer;
     text-decoration: none;
     transition: border-color 0.2s, transform 0.15s;
+    z-index: 50;
   }
   .back-btn:hover { border-color: var(--accent); transform: translateX(-2px); }
   .back-btn svg { stroke: var(--text-main); }
   .card {
     max-width: 420px;
     width: 100%;
-    background: linear-gradient(180deg, var(--bg-panel), #0c1119);
+    background: linear-gradient(180deg, var(--bg-panel), #f7f9fc);
     border-radius: 18px;
     padding: 32px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.55);
+    box-shadow: 0 20px 50px rgba(30,40,70,0.12);
     border: 1px solid var(--border);
     text-align: center;
     position: relative;
@@ -75,7 +79,7 @@
   h1 {
     font-size: 21px;
     margin-bottom: 6px;
-    color: #fff;
+    color: #10182a;
     font-family: var(--mono);
   }
   p.sub {
@@ -84,7 +88,15 @@
     margin-top: 0;
     margin-bottom: 26px;
   }
-  input[type="text"] {
+  label.field-label {
+    display: block;
+    text-align: left;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+  }
+  input[type="text"], input[type="password"] {
     width: 100%;
     text-align: center;
     letter-spacing: 8px;
@@ -97,11 +109,40 @@
     margin-bottom: 16px;
     font-family: var(--mono);
   }
-  input[type="text"]:focus {
+  input[type="text"]:focus, input[type="password"]:focus {
     outline: none;
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(124,92,255,0.15);
   }
+  .captcha-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .captcha-row canvas {
+    border-radius: 10px;
+    border: 2px solid var(--border-soft);
+    background: var(--bg-input);
+    flex-shrink: 0;
+  }
+  .captcha-refresh {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-soft);
+    color: var(--text-main);
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+  .captcha-refresh:hover { border-color: var(--accent); transform: rotate(45deg); }
+  #captchaInput { margin-bottom: 0; letter-spacing: 4px; font-size: 18px; }
   button {
     width: 100%;
     padding: 13px;
@@ -113,10 +154,11 @@
     font-weight: 600;
     cursor: pointer;
     transition: filter 0.2s, transform 0.1s;
+    margin-top: 18px;
   }
   button:hover { filter: brightness(1.1); }
   button:active { transform: scale(0.99); }
-  button:disabled { background: #2a3346; cursor: not-allowed; filter: none; }
+  button:disabled { background: #c3c9d6; cursor: not-allowed; filter: none; }
   #message {
     margin-top: 16px;
     font-size: 14px;
@@ -124,17 +166,18 @@
   }
   .msg-err { color: var(--red); }
   .msg-ok { color: var(--green); }
-  #resultBox {
-    display: none;
-    margin-top: 24px;
-    border-top: 1px solid var(--border);
-    padding-top: 22px;
-  }
-  #resultBox img {
+  #detailsScreen { display: none; }
+  #detailsScreen img {
     max-width: 100%;
     border-radius: 12px;
     margin-bottom: 16px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    box-shadow: 0 8px 20px rgba(30,40,70,0.18);
+    cursor: zoom-in;
+  }
+  .detail-note {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    margin: -8px 0 16px;
   }
   .actions {
     display: flex;
@@ -148,7 +191,15 @@
     border-radius: 10px;
     font-size: 14px;
     font-weight: 600;
+    margin-top: 0;
   }
+  .btn-view {
+    background: var(--bg-input);
+    color: var(--text-main);
+    border: 1px solid var(--border-soft) !important;
+    cursor: pointer;
+  }
+  .btn-view:hover { border-color: var(--accent-2) !important; }
   .btn-download {
     background: linear-gradient(90deg, var(--green), #10b981);
     color: #06281c;
@@ -172,6 +223,35 @@
     animation: spin 0.8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Fullscreen image viewer */
+  #fullscreenOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(4,6,12,0.94);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+    padding: 20px;
+  }
+  #fullscreenOverlay.open { display: flex; }
+  #fullscreenOverlay img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  }
+  #fullscreenOverlay .fs-hint {
+    position: absolute;
+    bottom: 24px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 12.5px;
+  }
 </style>
 </head>
 <body>
@@ -181,24 +261,47 @@
     <path d="M12 19l-7-7 7-7"></path>
   </svg>
 </a>
-<div class="card">
-  <h1>📸 Apni Image Dekhein</h1>
-  <p class="sub">Apne phone number ke last 4 digit daalein</p>
+
+<!-- PAGE 1: LOGIN -->
+<div class="card" id="loginScreen">
+  <h1>Diploma Enrollment Login</h1>
+  <p class="sub">Enter your Aadhaar Number and the code below to view your enrollment details</p>
 
   <form id="searchForm">
+    <label class="field-label" for="digits">Password (last 4 digits of your Aadhaar Number)</label>
     <input type="text" id="digits" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" placeholder="0000" required autocomplete="off">
-    <button type="submit" id="searchBtn">Dekhein</button>
+
+    <label class="field-label" for="captchaInput">Enter the captcha code shown below</label>
+    <div class="captcha-row">
+      <canvas id="captchaCanvas" width="130" height="46"></canvas>
+      <button type="button" class="captcha-refresh" id="captchaRefreshBtn" title="Refresh captcha"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"></path><path d="M21 3v6h-6"></path></svg></button>
+    </div>
+    <input type="text" id="captchaInput" placeholder="Enter code" required autocomplete="off">
+
+    <button type="submit" id="searchBtn">Login</button>
     <div class="spinner" id="spinner"></div>
   </form>
   <div id="message"></div>
+</div>
 
-  <div id="resultBox">
-    <img id="resultImg" src="" alt="Image">
-    <div class="actions">
-      <a id="downloadLink" class="btn-download" href="#" download>⬇ Download</a>
-      <button type="button" class="btn-reset" id="resetBtn">Wapas Jaayein</button>
-    </div>
+<!-- PAGE 2: DETAILS / IMAGE -->
+<div class="card" id="detailsScreen">
+  <h1>Enrollment Details</h1>
+  <p class="sub">Diploma student enrollment record</p>
+
+  <img id="resultImg" src="" alt="Enrollment details">
+  <p class="detail-note" id="aadhaarNote"></p>
+  <div class="actions">
+    <button type="button" class="btn-view" id="viewBtn"><span style="display:inline-flex;align-items:center;justify-content:center;gap:6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>View</span></button>
+    <a id="downloadLink" class="btn-download" href="#" download><span style="display:inline-flex;align-items:center;justify-content:center;gap:6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg>Download</span></a>
+    <button type="button" class="btn-reset" id="resetBtn"><span style="display:inline-flex;align-items:center;justify-content:center;gap:6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="M12 19l-7-7 7-7"></path></svg>Back</span></button>
   </div>
+</div>
+
+<!-- Fullscreen image overlay -->
+<div id="fullscreenOverlay">
+  <img id="fullscreenImg" src="" alt="Full screen image">
+  <div class="fs-hint">Tap the image again to go back to normal size</div>
 </div>
 
 <script type="module">
@@ -219,21 +322,95 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
+  const loginScreen = document.getElementById('loginScreen');
+  const detailsScreen = document.getElementById('detailsScreen');
+
   const form = document.getElementById('searchForm');
   const digitsInput = document.getElementById('digits');
   const searchBtn = document.getElementById('searchBtn');
   const messageEl = document.getElementById('message');
   const spinner = document.getElementById('spinner');
-  const resultBox = document.getElementById('resultBox');
   const resultImg = document.getElementById('resultImg');
+  const aadhaarNote = document.getElementById('aadhaarNote');
   const downloadLink = document.getElementById('downloadLink');
+  const viewBtn = document.getElementById('viewBtn');
   const resetBtn = document.getElementById('resetBtn');
+
+  const captchaCanvas = document.getElementById('captchaCanvas');
+  const captchaCtx = captchaCanvas.getContext('2d');
+  const captchaInput = document.getElementById('captchaInput');
+  const captchaRefreshBtn = document.getElementById('captchaRefreshBtn');
+
+  const fullscreenOverlay = document.getElementById('fullscreenOverlay');
+  const fullscreenImg = document.getElementById('fullscreenImg');
 
   function setMessage(msg, type) {
     messageEl.textContent = msg;
     messageEl.className = type === 'err' ? 'msg-err' : (type === 'ok' ? 'msg-ok' : '');
   }
 
+  /* ---------- Captcha ---------- */
+  let currentCaptcha = '';
+
+  function generateCaptchaText(length = 5) {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let s = '';
+    for (let i = 0; i < length; i++) {
+      s += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return s;
+  }
+
+  function drawCaptcha(text) {
+    const w = captchaCanvas.width, h = captchaCanvas.height;
+    captchaCtx.clearRect(0, 0, w, h);
+    captchaCtx.fillStyle = '#f0f2f7';
+    captchaCtx.fillRect(0, 0, w, h);
+
+    // noise lines
+    for (let i = 0; i < 5; i++) {
+      captchaCtx.strokeStyle = `rgba(109,74,255,${0.25 + Math.random() * 0.3})`;
+      captchaCtx.beginPath();
+      captchaCtx.moveTo(Math.random() * w, Math.random() * h);
+      captchaCtx.lineTo(Math.random() * w, Math.random() * h);
+      captchaCtx.stroke();
+    }
+
+    const colors = ['#1a2130', '#0891b2', '#6d4aff', '#16a34a'];
+    const charWidth = w / (text.length + 1);
+    for (let i = 0; i < text.length; i++) {
+      captchaCtx.save();
+      const x = charWidth * (i + 0.8);
+      const y = h / 2 + (Math.random() * 8 - 4);
+      captchaCtx.translate(x, y);
+      captchaCtx.rotate((Math.random() * 0.5 - 0.25));
+      captchaCtx.font = 'bold 24px monospace';
+      captchaCtx.fillStyle = colors[i % colors.length];
+      captchaCtx.textAlign = 'center';
+      captchaCtx.textBaseline = 'middle';
+      captchaCtx.fillText(text[i], 0, 0);
+      captchaCtx.restore();
+    }
+
+    // noise dots
+    for (let i = 0; i < 25; i++) {
+      captchaCtx.fillStyle = `rgba(26,33,48,${Math.random() * 0.25})`;
+      captchaCtx.fillRect(Math.random() * w, Math.random() * h, 2, 2);
+    }
+  }
+
+  function refreshCaptcha() {
+    currentCaptcha = generateCaptchaText();
+    drawCaptcha(currentCaptcha);
+    captchaInput.value = '';
+  }
+
+  captchaRefreshBtn.addEventListener('click', refreshCaptcha);
+
+  // Generate a fresh captcha on every page load / refresh
+  refreshCaptcha();
+
+  /* ---------- Login / search (existing lookup method, unchanged) ---------- */
   let activeRef = null;
 
   function detachListener() {
@@ -243,18 +420,34 @@
     }
   }
 
+  function showLoginScreen() {
+    detailsScreen.style.display = 'none';
+    loginScreen.style.display = 'block';
+  }
+
+  function showDetailsScreen() {
+    loginScreen.style.display = 'none';
+    detailsScreen.style.display = 'block';
+  }
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const digits = digitsInput.value.trim();
+    const enteredCaptcha = captchaInput.value.trim();
 
     if (!/^[0-9]{4}$/.test(digits)) {
-      setMessage('Kripya exactly 4 digit number daalein.', 'err');
+      setMessage('Please enter exactly 4 digits of your Aadhaar Number.', 'err');
+      return;
+    }
+
+    if (enteredCaptcha === '' || enteredCaptcha.toUpperCase() !== currentCaptcha.toUpperCase()) {
+      setMessage('Incorrect captcha code. Please try again.', 'err');
+      refreshCaptcha();
       return;
     }
 
     detachListener();
     setMessage('', '');
-    resultBox.style.display = 'none';
     searchBtn.disabled = true;
     spinner.style.display = 'block';
 
@@ -269,26 +462,77 @@
         const data = snap.val();
         resultImg.src = data.url;
         downloadLink.href = data.url;
-        downloadLink.setAttribute('download', data.fileName || ('image_' + digits + '.jpg'));
-        resultBox.style.display = 'block';
-        setMessage('✅ Image mil gayi! (live)', 'ok');
+        setDownloadName(data.url, data.fileName);
+        aadhaarNote.textContent = 'Aadhaar Number: XXXXXXXX' + digits;
+        setMessage('', '');
+        showDetailsScreen();
       } else {
-        resultBox.style.display = 'none';
-        setMessage('❌ Is number se koi image nahi mili.', 'err');
+        setMessage('No enrollment record found for this Aadhaar Number.', 'err');
+        refreshCaptcha();
       }
     }, (err) => {
       console.error(err);
       spinner.style.display = 'none';
       searchBtn.disabled = false;
       setMessage('Error: ' + err.message, 'err');
+      refreshCaptcha();
     });
   });
 
+  /* ---------- Download with a unique file name every time ---------- */
+  function getExtension(url, fileName) {
+    if (fileName && fileName.includes('.')) {
+      return fileName.split('.').pop().split('?')[0];
+    }
+    const match = url.match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
+    return match ? match[1] : 'jpg';
+  }
+
+  function uniqueSuffix() {
+    return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+  }
+
+  function setDownloadName(url, fileName) {
+    const ext = getExtension(url, fileName);
+    downloadLink.setAttribute('download', 'mmitcs-' + uniqueSuffix() + '.' + ext);
+  }
+
+  downloadLink.addEventListener('click', () => {
+    // Give a fresh unique name on every click so repeated downloads
+    // don't collide with a previous file / repeatedly prompt permission.
+    setDownloadName(downloadLink.href, null);
+  });
+
+  /* ---------- Fullscreen image view (tap to toggle) ---------- */
+  function openFullscreen() {
+    fullscreenImg.src = resultImg.src;
+    fullscreenOverlay.classList.add('open');
+  }
+
+  function closeFullscreen() {
+    fullscreenOverlay.classList.remove('open');
+  }
+
+  viewBtn.addEventListener('click', () => {
+    if (fullscreenOverlay.classList.contains('open')) {
+      closeFullscreen();
+    } else {
+      openFullscreen();
+    }
+  });
+
+  fullscreenOverlay.addEventListener('click', () => {
+    closeFullscreen();
+  });
+
+  /* ---------- Back button (page 2 -> page 1) ---------- */
   resetBtn.addEventListener('click', () => {
     detachListener();
-    resultBox.style.display = 'none';
-    setMessage('', '');
+    closeFullscreen();
     digitsInput.value = '';
+    setMessage('', '');
+    refreshCaptcha();
+    showLoginScreen();
     digitsInput.focus();
   });
 </script>
