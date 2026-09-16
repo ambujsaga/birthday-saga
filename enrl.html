@@ -206,14 +206,14 @@
   import { getDatabase, ref, onValue, off } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyCtedhm7TlywjRg3CNxk6Cq-lDm1Sm0Vak",
-    authDomain: "thejaya-ree.firebaseapp.com",
-    databaseURL: "https://thejaya-ree-default-rtdb.firebaseio.com",
-    projectId: "thejaya-ree",
-    storageBucket: "thejaya-ree.firebasestorage.app",
-    messagingSenderId: "455693511785",
-    appId: "1:455693511785:web:219f743c36966f667d86f8",
-    measurementId: "G-YXH3V9N0N5"
+    apiKey: "AIzaSyBe-U7wifvDNot0dDQv4DUviWnz0c-FTmM",
+    authDomain: "enrl-87967.firebaseapp.com",
+    databaseURL: "https://enrl-87967-default-rtdb.firebaseio.com",
+    projectId: "enrl-87967",
+    storageBucket: "enrl-87967.firebasestorage.app",
+    messagingSenderId: "656700035261",
+    appId: "1:656700035261:web:2186c045a81bbc4b4827d4",
+    measurementId: "G-29M7EQY5LJ"
   };
 
   const app = initializeApp(firebaseConfig);
@@ -234,10 +234,6 @@
     messageEl.className = type === 'err' ? 'msg-err' : (type === 'ok' ? 'msg-ok' : '');
   }
 
-  // Currently active live listener reference, so we can detach it when user
-  // searches a new number or resets — this keeps the page truly real-time:
-  // agar admin isi digits par nayi image upload/update/delete kare, to yeh
-  // page bina refresh kiye khud-ba-khud update ho jayega.
   let activeRef = null;
 
   function detachListener() {
