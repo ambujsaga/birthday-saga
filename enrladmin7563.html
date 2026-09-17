@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -228,21 +228,21 @@
 </div>
 <div class="container">
   <h1>🔐 Admin Panel</h1>
-  <p class="sub">Image upload karein aur user ke phone number ke last 4 digit se tag karein.</p>
+  <p class="sub">Upload an image and tag it with the last 4 digits of the user's phone number.</p>
 
   <form id="uploadForm">
-    <label for="digits">Phone Number ke Last 4 Digit</label>
-    <input type="text" id="digits" maxlength="4" pattern="[0-9]{4}" placeholder="jaise: 1234" required>
+    <label for="digits">Last 4 Digits of Phone Number</label>
+    <input type="text" id="digits" maxlength="4" pattern="[0-9]{4}" placeholder="e.g. 1234" required>
 
-    <label for="fileInput">Image Chuniye <span style="color:var(--text-dim); font-weight:400;">(max 1.5 MB)</span></label>
+    <label for="fileInput">Choose Image <span style="color:var(--text-dim); font-weight:400;">(max 1.5 MB)</span></label>
     <input type="file" id="fileInput" accept="image/*" required>
 
     <div class="preview-wrap" id="previewWrap">
-      <p>👁️ Preview - Confirm karein ki sahi photo hai</p>
+      <p>👁️ Preview - Confirm this is the correct photo</p>
       <img id="previewImg" src="" alt="Preview">
     </div>
 
-    <button type="submit" id="submitBtn">Upload Karein</button>
+    <button type="submit" id="submitBtn">Upload</button>
     <div class="progress-wrap" id="progressWrap">
       <div class="progress-bar" id="progressBar"></div>
     </div>
@@ -250,7 +250,7 @@
   </form>
 
   <div class="list">
-    <h2>📋 Uploaded Entries</h2>
+    <h2>📋 Uploaded Entries <span id="entryCount" style="color:var(--accent-2); font-weight:400;"></span></h2>
     <div id="entriesList"><p class="empty">Loading...</p></div>
   </div>
 </div>
@@ -299,11 +299,12 @@
   const progressWrap = document.getElementById('progressWrap');
   const progressBar = document.getElementById('progressBar');
   const entriesList = document.getElementById('entriesList');
+  const entryCount = document.getElementById('entryCount');
   const previewWrap = document.getElementById('previewWrap');
   const previewImg = document.getElementById('previewImg');
 
   // Latest snapshot of existing entries, kept in sync by onValue below.
-  // Used to check ki koi digit/number dobara (duplicate) to nahi use ho raha.
+  // Used to check that a digit/number isn't being reused (duplicate).
   let latestEntries = {};
 
   fileInput.addEventListener('change', () => {
@@ -329,25 +330,25 @@
     const file = fileInput.files[0];
 
     if (!/^[0-9]{4}$/.test(digits)) {
-      setStatus('Kripya exactly 4 digit number daalein.', 'err');
+      setStatus('Please enter exactly 4 digits.', 'err');
       return;
     }
     if (!file) {
-      setStatus('Kripya ek image chunein.', 'err');
+      setStatus('Please choose an image.', 'err');
       return;
     }
     if (file.size > MAX_FILE_BYTES) {
-      setStatus('Image bahut badi hai (max ' + (MAX_FILE_BYTES / (1024*1024)).toFixed(1) + ' MB). Chhoti image chunein.', 'err');
+      setStatus('Image is too large (max ' + (MAX_FILE_BYTES / (1024*1024)).toFixed(1) + ' MB). Please choose a smaller image.', 'err');
       return;
     }
     if (latestEntries && Object.prototype.hasOwnProperty.call(latestEntries, digits)) {
-      setStatus('⚠️ Yeh number "' + digits + '" pehle se ek photo ke saath available hai. Har photo ka number/password unique hona chahiye, kripya alag digits use karein.', 'err');
-      alert('⚠️ Duplicate! "' + digits + '" pehle se ek entry me use ho chuka hai. Isse dobara use nahi kar sakte.');
+      setStatus('⚠️ The number "' + digits + '" is already used with a photo. Each entry\'s number must be unique, please use different digits.', 'err');
+      alert('⚠️ Duplicate! "' + digits + '" is already used in an entry. It cannot be used again.');
       return;
     }
 
     submitBtn.disabled = true;
-    setStatus('Upload ho raha hai...', '');
+    setStatus('Uploading...', '');
     progressWrap.style.display = 'block';
     progressBar.style.width = '0%';
 
@@ -366,13 +367,13 @@
       });
 
       progressBar.style.width = '100%';
-      setStatus('✅ Upload safal! Digits "' + digits + '" se tag ho gaya.', 'ok');
+      setStatus('✅ Upload successful! Tagged with digits "' + digits + '".', 'ok');
       form.reset();
       previewImg.src = '';
       previewWrap.style.display = 'none';
     } catch (err) {
       console.error(err);
-      setStatus('Upload fail hua: ' + err.message, 'err');
+      setStatus('Upload failed: ' + err.message, 'err');
     } finally {
       submitBtn.disabled = false;
       progressWrap.style.display = 'none';
@@ -385,10 +386,12 @@
     latestEntries = data || {};
     entriesList.innerHTML = '';
     if (!data) {
-      entriesList.innerHTML = '<p class="empty">Abhi koi entry nahi hai.</p>';
+      entryCount.textContent = '(Total: 0)';
+      entriesList.innerHTML = '<p class="empty">No entries yet.</p>';
       return;
     }
     const keys = Object.keys(data).sort((a, b) => (data[b].timestamp||0) - (data[a].timestamp||0));
+    entryCount.textContent = '(Total: ' + keys.length + ')';
     keys.forEach((digits) => {
       const entry = data[digits];
       const div = document.createElement('div');
@@ -407,7 +410,7 @@
     entriesList.querySelectorAll('.del').forEach(btn => {
       btn.addEventListener('click', async () => {
         const digits = btn.getAttribute('data-digits');
-        if (!confirm('Kya aap "' + digits + '" ki entry delete karna chahte hain?')) return;
+        if (!confirm('Do you want to delete the entry for "' + digits + '"?')) return;
         try {
           await remove(ref(db, 'entries/' + digits));
         } catch (err) {
