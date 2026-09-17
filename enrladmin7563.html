@@ -84,6 +84,41 @@
     margin-bottom: 24px;
     font-size: 13.5px;
   }
+  
+  /* AI Panel Styles */
+  .ai-panel {
+    background: var(--bg-input);
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+  .ai-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--accent-2);
+    cursor: pointer;
+    font-family: var(--mono);
+    margin-bottom: 0;
+  }
+  .ai-toggle-label input {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+  .ai-config {
+    margin-top: 12px;
+    display: none;
+    border-top: 1px dashed var(--border-soft);
+    padding-top: 12px;
+  }
+  .ai-config input {
+    margin-bottom: 8px !important;
+  }
+
   label {
     display: block;
     margin-bottom: 6px;
@@ -129,6 +164,7 @@
   }
   .status-ok { color: var(--green); }
   .status-err { color: var(--red); }
+  .status-warn { color: var(--accent-2); }
   .progress-wrap {
     background: var(--bg-input);
     border-radius: 8px;
@@ -230,8 +266,21 @@
   <h1>🔐 Admin Panel</h1>
   <p class="sub">Upload an image and tag it with the last 4 digits of the user's phone number.</p>
 
+  <!-- AI Configuration Panel -->
+  <div class="ai-panel">
+    <label class="ai-toggle-label">
+      <input type="checkbox" id="aiToggle"> 🤖 Enable AI Auto-Extract (Last 4 Digits)
+    </label>
+    <div class="ai-config" id="aiConfig">
+      <label for="aiApiKey">OpenRouter API Key</label>
+      <input type="text" id="aiApiKey" placeholder="Enter API Key">
+      <label for="aiModel">Server / Model Name</label>
+      <input type="text" id="aiModel" placeholder="e.g. openrouter/free">
+    </div>
+  </div>
+
   <form id="uploadForm">
-    <label for="digits">Last 4 Digits of Phone Number</label>
+    <label for="digits">Last 4 Digits of Phone/Aadhaar Number</label>
     <input type="text" id="digits" maxlength="4" pattern="[0-9]{4}" placeholder="e.g. 1234" required>
 
     <label for="fileInput">Choose Image <span style="color:var(--text-dim); font-weight:400;">(max 1.5 MB)</span></label>
@@ -291,6 +340,7 @@
     });
   }
 
+  // DOM Elements
   const form = document.getElementById('uploadForm');
   const digitsInput = document.getElementById('digits');
   const fileInput = document.getElementById('fileInput');
@@ -302,28 +352,105 @@
   const entryCount = document.getElementById('entryCount');
   const previewWrap = document.getElementById('previewWrap');
   const previewImg = document.getElementById('previewImg');
+  
+  // AI Elements
+  const aiToggle = document.getElementById('aiToggle');
+  const aiConfig = document.getElementById('aiConfig');
+  const aiApiKey = document.getElementById('aiApiKey');
+  const aiModel = document.getElementById('aiModel');
 
-  // Latest snapshot of existing entries, kept in sync by onValue below.
-  // Used to check that a digit/number isn't being reused (duplicate).
+  // Load and Set AI LocalStorage settings
+  aiApiKey.value = localStorage.getItem('aiApiKey') || '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';
+  aiModel.value = localStorage.getItem('aiModel') || 'openrouter/free';
+  aiToggle.checked = localStorage.getItem('aiToggle') === 'true';
+
+  if (aiToggle.checked) {
+    aiConfig.style.display = 'block';
+  }
+
+  // Real-time Save AI Inputs
+  aiApiKey.addEventListener('input', () => localStorage.setItem('aiApiKey', aiApiKey.value));
+  aiModel.addEventListener('input', () => localStorage.setItem('aiModel', aiModel.value));
+  aiToggle.addEventListener('change', () => {
+    localStorage.setItem('aiToggle', aiToggle.checked);
+    aiConfig.style.display = aiToggle.checked ? 'block' : 'none';
+  });
+
   let latestEntries = {};
 
-  fileInput.addEventListener('change', () => {
+  function setStatus(msg, type) {
+    statusEl.textContent = msg;
+    statusEl.className = type === 'ok' ? 'status-ok' : (type === 'err' ? 'status-err' : (type === 'warn' ? 'status-warn' : ''));
+  }
+
+  // Modified file change event to include AI OCR
+  fileInput.addEventListener('change', async () => {
     const file = fileInput.files[0];
     if (file) {
       const objectUrl = URL.createObjectURL(file);
       previewImg.src = objectUrl;
       previewWrap.style.display = 'block';
+
+      // Execute AI only if Toggle is ON
+      if (aiToggle.checked) {
+        const apiKey = aiApiKey.value.trim();
+        const model = aiModel.value.trim();
+        
+        if (!apiKey || !model) {
+          setStatus('⚠️ Please enter API Key and Server Name for AI.', 'err');
+          return;
+        }
+
+        setStatus('🤖 AI is scanning the image...', 'warn');
+        try {
+          const base64Data = await fileToBase64(file);
+          
+          const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${apiKey}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: [
+                {
+                  role: 'user',
+                  content: [
+                    { type: 'text', text: 'Extract the last 4 digits of the Aadhaar number from this image. Output ONLY the 4 digits, nothing else. If you cannot find them, output NONE.' },
+                    { type: 'image_url', image_url: { url: base64Data } }
+                  ]
+                }
+              ]
+            })
+          });
+
+          const json = await response.json();
+          if (json.error) throw new Error(json.error.message || 'API Error');
+
+          if (json.choices && json.choices.length > 0) {
+            const reply = json.choices[0].message.content.trim();
+            const match = reply.match(/\d{4}/);
+            
+            if (match) {
+              digitsInput.value = match[0];
+              setStatus('✅ AI successfully extracted digits: ' + match[0], 'ok');
+            } else {
+              setStatus('⚠️ AI could not detect the last 4 digits. Please type manually.', 'err');
+            }
+          }
+        } catch (err) {
+          console.error(err);
+          setStatus('❌ AI Error: ' + err.message, 'err');
+        }
+      }
     } else {
       previewImg.src = '';
       previewWrap.style.display = 'none';
     }
   });
 
-  function setStatus(msg, type) {
-    statusEl.textContent = msg;
-    statusEl.className = type === 'ok' ? 'status-ok' : (type === 'err' ? 'status-err' : '');
-  }
-
+  // Original Form Submit logic (Untouched)
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const digits = digitsInput.value.trim();
@@ -380,6 +507,7 @@
     }
   });
 
+  // Original Entries Fetch logic (Untouched)
   const entriesRef = ref(db, 'entries');
   onValue(entriesRef, (snapshot) => {
     const data = snapshot.val();
