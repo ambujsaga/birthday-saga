@@ -78,6 +78,20 @@
     height: 3px;
     background: linear-gradient(90deg, var(--accent), var(--accent-2));
   }
+  .login-heading-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .login-logo {
+    display: block;
+    max-width: 60px;
+    max-height: 60px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
   h1 {
     font-size: 21px;
     margin-bottom: 6px;
@@ -266,7 +280,10 @@
 
 <!-- PAGE 1: LOGIN -->
 <div class="card" id="loginScreen">
-  <h1>Diploma Enrollment Login</h1>
+  <div class="login-heading-row">
+    <img class="login-logo" src="https://i.ibb.co/bMwDrVDv/modiman-lavdenya-bhojyam-removebg-preview.png" alt="Logo">
+    <h1 style="margin-bottom:0;">Diploma Enrollment Login</h1>
+  </div>
   <p class="sub">Enter your Aadhaar Number and the code below to view your enrollment details</p>
 
   <form id="searchForm">
