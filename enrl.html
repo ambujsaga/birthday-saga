@@ -321,7 +321,14 @@
     max-height: 100%;
     border-radius: 8px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    transition: transform 0.15s ease-out;
+    touch-action: none;
+    cursor: zoom-in;
+    user-select: none;
+    -webkit-user-drag: none;
   }
+  #fullscreenOverlay img.zoomed { cursor: grab; }
+  #fullscreenOverlay img.panning { cursor: grabbing; transition: none; }
   #fullscreenOverlay .fs-hint {
     position: absolute;
     bottom: 24px;
@@ -392,7 +399,7 @@
 <!-- Fullscreen image overlay -->
 <div id="fullscreenOverlay">
   <img id="fullscreenImg" src="" alt="Full screen image">
-  <div class="fs-hint">Tap the image again to go back to normal size</div>
+  <div class="fs-hint">Tap image to zoom in / out • pinch or scroll to zoom • tap outside to close</div>
 </div>
 
 <script type="module">
@@ -597,12 +604,127 @@
   /* ---------- Fullscreen image view (tap to toggle) ---------- */
   function openFullscreen() {
     fullscreenImg.src = resultImg.src;
+    resetImageZoom();
     fullscreenOverlay.classList.add('open');
   }
 
   function closeFullscreen() {
     fullscreenOverlay.classList.remove('open');
+    resetImageZoom();
   }
+
+  /* ---------- Image zoom in / zoom out (only inside View screen, image only) ---------- */
+  let zoomScale = 1;
+  const ZOOM_MIN = 1;
+  const ZOOM_MAX = 4;
+  let panX = 0;
+  let panY = 0;
+
+  function applyZoomTransform() {
+    fullscreenImg.style.transform = 'translate(' + panX + 'px, ' + panY + 'px) scale(' + zoomScale + ')';
+    fullscreenImg.classList.toggle('zoomed', zoomScale > ZOOM_MIN);
+  }
+
+  function resetImageZoom() {
+    zoomScale = 1;
+    panX = 0;
+    panY = 0;
+    applyZoomTransform();
+  }
+
+  function setZoomScale(scale) {
+    zoomScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, scale));
+    if (zoomScale === ZOOM_MIN) {
+      panX = 0;
+      panY = 0;
+    }
+    applyZoomTransform();
+  }
+
+  // Tap / click directly on the image toggles zoom in / zoom out.
+  // stopPropagation keeps this from triggering the overlay's close-on-click.
+  fullscreenImg.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setZoomScale(zoomScale > ZOOM_MIN ? ZOOM_MIN : 2.5);
+  });
+
+  // Mouse wheel zoom (desktop) — scoped to the image only.
+  fullscreenImg.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setZoomScale(zoomScale + (e.deltaY > 0 ? -0.3 : 0.3));
+  }, { passive: false });
+
+  // Drag to pan once zoomed in (mouse).
+  let isMousePanning = false;
+  let mousePanStartX = 0, mousePanStartY = 0, mousePanOriginX = 0, mousePanOriginY = 0;
+
+  fullscreenImg.addEventListener('mousedown', (e) => {
+    if (zoomScale <= ZOOM_MIN) return;
+    e.preventDefault();
+    e.stopPropagation();
+    isMousePanning = true;
+    fullscreenImg.classList.add('panning');
+    mousePanStartX = e.clientX;
+    mousePanStartY = e.clientY;
+    mousePanOriginX = panX;
+    mousePanOriginY = panY;
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!isMousePanning) return;
+    panX = mousePanOriginX + (e.clientX - mousePanStartX);
+    panY = mousePanOriginY + (e.clientY - mousePanStartY);
+    applyZoomTransform();
+  });
+  window.addEventListener('mouseup', () => {
+    isMousePanning = false;
+    fullscreenImg.classList.remove('panning');
+  });
+
+  // Pinch to zoom + drag to pan (touch devices).
+  let pinchStartDist = 0;
+  let pinchStartScale = 1;
+  let isTouchPanning = false;
+  let touchPanStartX = 0, touchPanStartY = 0, touchPanOriginX = 0, touchPanOriginY = 0;
+
+  function touchDistance(touches) {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  fullscreenImg.addEventListener('touchstart', (e) => {
+    e.stopPropagation();
+    if (e.touches.length === 2) {
+      pinchStartDist = touchDistance(e.touches);
+      pinchStartScale = zoomScale;
+    } else if (e.touches.length === 1 && zoomScale > ZOOM_MIN) {
+      isTouchPanning = true;
+      touchPanStartX = e.touches[0].clientX;
+      touchPanStartY = e.touches[0].clientY;
+      touchPanOriginX = panX;
+      touchPanOriginY = panY;
+    }
+  }, { passive: false });
+
+  fullscreenImg.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.touches.length === 2 && pinchStartDist > 0) {
+      const dist = touchDistance(e.touches);
+      setZoomScale(pinchStartScale * (dist / pinchStartDist));
+    } else if (e.touches.length === 1 && isTouchPanning) {
+      panX = touchPanOriginX + (e.touches[0].clientX - touchPanStartX);
+      panY = touchPanOriginY + (e.touches[0].clientY - touchPanStartY);
+      applyZoomTransform();
+    }
+  }, { passive: false });
+
+  fullscreenImg.addEventListener('touchend', (e) => {
+    e.stopPropagation();
+    isTouchPanning = false;
+    pinchStartDist = 0;
+  }, { passive: false });
 
   viewBtn.addEventListener('click', () => {
     if (fullscreenOverlay.classList.contains('open')) {
