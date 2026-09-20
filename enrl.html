@@ -130,6 +130,32 @@
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(124,92,255,0.15);
   }
+  /* ---------- Password field wrapper + show/hide eye icon (new, additive only) ---------- */
+  .pwd-wrap {
+    position: relative;
+  }
+  .pwd-wrap input[type="password"],
+  .pwd-wrap input[type="text"] {
+    padding-right: 40px;
+  }
+  .pwd-toggle {
+    position: absolute;
+    right: 10px;
+    bottom: 26px;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-dim);
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+  .pwd-toggle:hover { color: var(--accent); }
+  .pwd-toggle svg { width: 18px; height: 18px; }
+
   .captcha-row {
     display: flex;
     align-items: center;
@@ -239,6 +265,28 @@
     animation: spin 0.8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---------- Wrong-captcha red border flash (new, additive only) ---------- */
+  #redZoneFlash {
+    position: fixed;
+    inset: 0;
+    z-index: 1800;
+    pointer-events: none;
+    opacity: 0;
+    box-shadow: inset 0 0 0 0 rgba(220,38,38,0);
+  }
+  #redZoneFlash.redzone-active {
+    animation: redZonePulse 3s ease-in-out;
+  }
+  @keyframes redZonePulse {
+    0%   { opacity: 0;    box-shadow: inset 0 0 60px 10px rgba(220,38,38,0); }
+    8%   { opacity: 1;    box-shadow: inset 0 0 140px 50px rgba(220,38,38,0.85); }
+    22%  { opacity: 0.45; box-shadow: inset 0 0 90px 25px rgba(220,38,38,0.35); }
+    36%  { opacity: 1;    box-shadow: inset 0 0 140px 50px rgba(220,38,38,0.85); }
+    50%  { opacity: 0.4;  box-shadow: inset 0 0 90px 25px rgba(220,38,38,0.3); }
+    68%  { opacity: 0.9;  box-shadow: inset 0 0 130px 45px rgba(220,38,38,0.7); }
+    100% { opacity: 0;    box-shadow: inset 0 0 60px 10px rgba(220,38,38,0); }
+  }
 
   /* ---------- Page loading splash (new, additive only) ---------- */
   #pageLoader {
@@ -350,6 +398,9 @@
   </div>
 </div>
 
+<!-- Wrong-captcha red border flash overlay (new, additive only) -->
+<div id="redZoneFlash"></div>
+
 <a class="back-btn" href="index.html" title="Home">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M19 12H5"></path>
@@ -367,7 +418,12 @@
 
   <form id="searchForm">
     <label class="field-label" for="digits">Password (last 4 digits of your Aadhaar Number)</label>
-    <input type="text" id="digits" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" placeholder="0000" required autocomplete="off">
+    <div class="pwd-wrap">
+      <input type="password" id="digits" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" placeholder="0000" required autocomplete="off">
+      <button type="button" class="pwd-toggle" id="pwdToggleBtn" title="Show password" aria-label="Show password">
+        <svg id="pwdEyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+      </button>
+    </div>
 
     <label class="field-label" for="captchaInput">Enter the captcha code shown below</label>
     <div class="captcha-row">
@@ -508,6 +564,29 @@
   // Generate a fresh captcha on every page load / refresh
   refreshCaptcha();
 
+  /* ---------- Password show/hide toggle (new, additive only) ---------- */
+  const pwdToggleBtn = document.getElementById('pwdToggleBtn');
+  const pwdEyeIcon = document.getElementById('pwdEyeIcon');
+  const eyeOpenPath = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle>';
+  const eyeClosedPath = '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.6 21.6 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.6 21.6 0 0 1-2.61 3.94M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+
+  pwdToggleBtn.addEventListener('click', () => {
+    const isPassword = digitsInput.type === 'password';
+    digitsInput.type = isPassword ? 'text' : 'password';
+    pwdEyeIcon.innerHTML = isPassword ? eyeClosedPath : eyeOpenPath;
+    pwdToggleBtn.title = isPassword ? 'Hide password' : 'Show password';
+    pwdToggleBtn.setAttribute('aria-label', pwdToggleBtn.title);
+  });
+
+  const redZoneFlash = document.getElementById('redZoneFlash');
+
+  /* ---------- Trigger red border flash on wrong captcha (new, additive only) ---------- */
+  function triggerRedZoneFlash() {
+    redZoneFlash.classList.remove('redzone-active');
+    void redZoneFlash.offsetWidth; // restart animation if triggered again quickly
+    redZoneFlash.classList.add('redzone-active');
+  }
+
   /* ---------- Login / search (existing lookup method, unchanged) ---------- */
   let activeRef = null;
 
@@ -540,6 +619,7 @@
 
     if (enteredCaptcha === '' || enteredCaptcha.toUpperCase() !== currentCaptcha.toUpperCase()) {
       setMessage('Incorrect captcha code. Please try again.', 'err');
+      triggerRedZoneFlash();
       refreshCaptcha();
       return;
     }
