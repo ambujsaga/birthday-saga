@@ -8915,6 +8915,34 @@ onAuthStateChanged(auth, user => {
 })();
 /* ================= END ADDITIVE: FULL OFFLINE MODE ================= */
 
+/* ================= ADDITIVE: NEVER SHOW INTERNAL HARDCODED DATA =================
+   Bilkul naya, standalone code hai — loadSubjects() / renderNotifications() /
+   renderNoticeBoard() (jo is file ke purane, sirf-local/hardcoded internal
+   subjects, notifications aur notices dikhate the) delete ya edit NAHI kiye
+   gaye hain — sirf inhe (bilkul upar wale applyOnlineData wrap jaisi hi
+   technique se) no-op kar diya gaya hai, taaki inka internal/hardcoded data
+   screen par kabhi bhi — chahe online ho ya offline — na dikhe.
+
+   window.onload (jo khud chheda nahi gaya) abhi bhi loadSubjects(),
+   renderNotifications() aur renderNoticeBoard() ko call karta hai — bas ab
+   woh kuchh render nahi karte. subjectsGrid / notifList / sarkariNoticeList
+   ab hamesha sirf real data se hi bharte hain:
+     - Offline: upar wale "FULL OFFLINE MODE" block dwara localStorage se
+       restore kiya gaya, pehle online rehte waqt save hua data (isi purane
+       renderOnlineSubjects / renderOnlineNotifications / renderOnlineNotices
+       ke through).
+     - Online: Firebase se live data (wahi purane renderOnlineSubjects /
+       renderOnlineNotifications / renderOnlineNotices functions, jo
+       applyOnlineData ke andar se hi call hote hain — unko bhi chheda nahi
+       gaya hai). */
+(function(){
+  function noop(){}
+  if(typeof window.loadSubjects === 'function') window.loadSubjects = noop;
+  if(typeof window.renderNotifications === 'function') window.renderNotifications = noop;
+  if(typeof window.renderNoticeBoard === 'function') window.renderNoticeBoard = noop;
+})();
+/* ================= END ADDITIVE: NEVER SHOW INTERNAL HARDCODED DATA ================= */
+
 </script>
 
 <!-- =====================================================================
