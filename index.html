@@ -8879,15 +8879,22 @@ onAuthStateChanged(auth, user => {
   // know that saved data exists, plus a small shared banner it/​we can use.
   window.__offlineHasCache = !!cachedPortal;
 
+  var offlineBannerTimer = null;
   function showOfflineBanner(){
-    if(document.getElementById('offlineModeBanner')) return;
+    if(offlineBannerTimer){ clearTimeout(offlineBannerTimer); offlineBannerTimer = null; }
+    if(document.getElementById('offlineModeBanner')){
+      offlineBannerTimer = setTimeout(hideOfflineBanner, 30000);
+      return;
+    }
     var b = document.createElement('div');
     b.id = 'offlineModeBanner';
-    b.textContent = 'Offline — showing saved data. Will sync when internet is back.';
+    b.textContent = 'Offline — showing saved data.';
     b.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:99998;background:var(--sarkari-red,#c0392b);color:#fff;text-align:center;font-size:0.78rem;padding:7px 10px;box-shadow:0 -2px 10px rgba(0,0,0,0.25);';
     document.body.appendChild(b);
+    offlineBannerTimer = setTimeout(hideOfflineBanner, 30000);
   }
   function hideOfflineBanner(){
+    if(offlineBannerTimer){ clearTimeout(offlineBannerTimer); offlineBannerTimer = null; }
     var b = document.getElementById('offlineModeBanner');
     if(b) b.remove();
   }
