@@ -101,6 +101,47 @@
     text-align:center;color:#888;padding:30px 10px;font-size:.9rem;
   }
 
+  /* ===== ADDITIVE: per-user Badge Image + Avatar Shape/Colour controls ===== */
+  .user-block{margin-bottom:9px;}
+  .user-block .user-row{margin-bottom:0;}
+  .user-block.open .user-row{border-bottom-left-radius:0;border-bottom-right-radius:0;}
+  .cust-btn{
+    border:1px solid #cbd5e1;background:#f1f5f9;color:var(--primary-blue);border-radius:8px;
+    padding:6px 9px;font-size:.74rem;font-weight:700;cursor:pointer;flex-shrink:0;white-space:nowrap;
+  }
+  .user-block.open .cust-btn{background:var(--primary-blue);color:#fff;border-color:var(--primary-blue);}
+  .user-extra{
+    display:none;background:#fbfcfe;border:1px solid #e6eaf0;border-top:0;
+    border-radius:0 0 10px 10px;padding:12px 14px 14px;box-shadow:0 2px 8px rgba(0,0,0,.05);
+  }
+  .user-block.open .user-extra{display:block;}
+  .extra-lbl{font-size:.74rem;font-weight:700;color:#475569;margin:10px 0 5px;}
+  .extra-lbl:first-child{margin-top:0;}
+  .extra-hint{font-size:.7rem;color:#888;margin-top:4px;line-height:1.35;}
+  .img-row{display:flex;gap:6px;align-items:center;}
+  .img-row input[type=text]{
+    flex:1;min-width:0;padding:9px 10px;border:1px solid #ccc;border-radius:7px;font-size:.82rem;outline:none;
+  }
+  .mini-btn{
+    border:0;border-radius:7px;padding:9px 11px;font-size:.78rem;font-weight:700;cursor:pointer;
+    background:var(--primary-blue);color:#fff;flex-shrink:0;
+  }
+  .mini-btn.gray{background:#94a3b8;}
+  .user-img-badge{border-radius:50%;object-fit:cover;background:#eef1f5;}
+  .shape-row,.color-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .shape-btn{
+    display:flex;align-items:center;gap:6px;border:2px solid #cbd5e1;background:#fff;border-radius:8px;
+    padding:5px 9px;font-size:.74rem;font-weight:700;color:#334155;cursor:pointer;
+  }
+  .shape-btn i{display:block;width:16px;height:16px;background:var(--primary-blue);}
+  .shape-btn.sel{border-color:var(--tick-red);color:var(--tick-red);}
+  .swatch{
+    width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #cbd5e1;
+    cursor:pointer;padding:0;
+  }
+  .swatch.sel{box-shadow:0 0 0 2px var(--tick-red);}
+  .color-row input[type=color]{width:34px;height:34px;border:0;padding:0;background:none;cursor:pointer;}
+
   /* Reusable red-tick badge preview — same shape used inside testing.html */
   .verified-tick-badge{display:inline-block;vertical-align:middle;}
 </style>
@@ -177,6 +218,40 @@ function tickBadgeSVG(size){
   </svg>`;
 }
 
+// ---- ADDITIVE: Badge image + avatar shape/colour helpers ----
+const drafts = {};            // roll -> image link jo abhi type ho raha hai (re-render me kho na jaye)
+const openSet = new Set();    // kin users ka Customize panel khula hai
+const RADII = { circle:'50%', square:'0', rounded:'22%' };
+const COLORS = [
+  { n:'Blue (default)', v:'' },
+  { n:'Red', v:'#dc2626' },
+  { n:'Yellow', v:'#facc15' },
+  { n:'Green', v:'#16a34a' },
+  { n:'Purple', v:'#7c3aed' },
+  { n:'Orange', v:'#ea580c' },
+  { n:'Black', v:'#111827' }
+];
+function safeImgUrl(u){
+  u = String(u || '').trim();
+  return /^(https?:\/\/|data:image\/)/i.test(u) ? u : '';
+}
+function validColor(c){
+  c = String(c || '').trim();
+  return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(c) ? c : '';
+}
+function textOn(hex){
+  let h = hex.replace('#','');
+  if(h.length === 3) h = h.split('').map(x => x + x).join('');
+  const r = parseInt(h.substr(0,2),16), g = parseInt(h.substr(2,2),16), b = parseInt(h.substr(4,2),16);
+  return ((0.299*r + 0.587*g + 0.114*b) / 255) > 0.62 ? '#1a1a1a' : '#ffffff';
+}
+function badgeImgHTML(url, size){
+  const src = safeImgUrl(url);
+  if(!src) return '';
+  const s = size || 15;
+  return `<img class="verified-tick-badge user-img-badge" src="${esc(src)}" width="${s}" height="${s}" alt="Badge" referrerpolicy="no-referrer" onerror="this.style.display='none'">`;
+}
+
 function renderUsers(){
   const list = document.getElementById('usersList');
   const q = (document.getElementById('searchBox').value || '').trim().toLowerCase();
@@ -200,16 +275,54 @@ function renderUsers(){
     const roll = esc(u.rollNumber);
     const initials = String(u.rollNumber||'?').slice(0,2).toUpperCase();
     const checked = u.verified ? 'checked' : '';
-    return `<div class="user-row">
-      <div class="user-avatar">${esc(initials)}</div>
-      <div class="user-info">
-        <div class="user-name">${esc(u.name || u.rollNumber)} ${u.verified ? tickBadgeSVG(15) : ''}</div>
-        <div class="user-roll">Roll No: ${roll}</div>
+
+    // --- avatar shape / colour (preview yahi dikhta hai jo portal me dikhega) ---
+    const shape = RADII[u.avatarShape] ? u.avatarShape : 'circle';
+    const color = validColor(u.avatarColor);
+    let avStyle = 'border-radius:' + RADII[shape] + ';';
+    if(color) avStyle += 'background:' + color + ';color:' + textOn(color) + ';';
+
+    // --- badge image ---
+    const savedImg = String(u.badgeImage || '');
+    const draft = (drafts[u.rollNumber] !== undefined) ? drafts[u.rollNumber] : savedImg;
+    const isOpen = openSet.has(String(u.rollNumber)) ? ' open' : '';
+
+    const shapeBtns = [['circle','Circle'],['square','Square'],['rounded','Rounded']].map(([k,label]) =>
+      `<button type="button" class="shape-btn ${shape===k?'sel':''}" data-roll="${roll}" data-shape="${k}" onclick="window.setAvatarShape(this)"><i style="border-radius:${RADII[k]}"></i>${label}</button>`
+    ).join('');
+
+    const swatches = COLORS.map(c =>
+      `<button type="button" class="swatch ${((!color && !c.v) || (color && c.v && color.toLowerCase()===c.v.toLowerCase()))?'sel':''}" title="${c.n}" style="background:${c.v || '#003366'}" data-roll="${roll}" data-color="${c.v}" onclick="window.setAvatarColor(this)"></button>`
+    ).join('');
+
+    return `<div class="user-block${isOpen}">
+      <div class="user-row">
+        <div class="user-avatar" style="${avStyle}">${esc(initials)}</div>
+        <div class="user-info">
+          <div class="user-name">${esc(u.name || u.rollNumber)} ${u.verified ? tickBadgeSVG(15) : ''}${badgeImgHTML(savedImg, 15)}</div>
+          <div class="user-roll">Roll No: ${roll}</div>
+        </div>
+        <button type="button" class="cust-btn" onclick="window.toggleCustomize(this)">⚙ Customize</button>
+        <label class="tick-toggle">
+          <input type="checkbox" ${checked} data-roll="${roll}" onchange="window.toggleTick(this)">
+          <span class="tick-slider"></span>
+        </label>
       </div>
-      <label class="tick-toggle">
-        <input type="checkbox" ${checked} data-roll="${roll}" onchange="window.toggleTick(this)">
-        <span class="tick-slider"></span>
-      </label>
+      <div class="user-extra">
+        <div class="extra-lbl">🖼 Badge Image Link (naam ke saath red tick jaisa dikhega)</div>
+        <div class="img-row">
+          <input type="text" placeholder="https://.../image.png" value="${esc(draft)}" data-roll="${roll}" oninput="window.draftBadge(this)">
+          <button type="button" class="mini-btn" data-roll="${roll}" onclick="window.saveBadge(this)">Save</button>
+          ${savedImg ? `<button type="button" class="mini-btn gray" data-roll="${roll}" onclick="window.removeBadge(this)">Remove</button>` : ''}
+        </div>
+        <div class="extra-hint">Direct image link (https://...) daalein. Khaali chhod kar Save karne se badge hat jayega.</div>
+
+        <div class="extra-lbl">⬛ Profile Shape</div>
+        <div class="shape-row">${shapeBtns}</div>
+
+        <div class="extra-lbl">🎨 Profile Colour</div>
+        <div class="color-row">${swatches}<input type="color" title="Custom colour" value="${color || '#003366'}" data-roll="${roll}" onchange="window.setAvatarColor(this)"></div>
+      </div>
     </div>`;
   }).join('');
 }
@@ -231,6 +344,65 @@ window.toggleTick = async function(checkbox){
   }finally{
     checkbox.disabled = false;
   }
+};
+
+// ---- ADDITIVE: Customize panel actions ----
+async function saveUserField(roll, patch, localPatch){
+  try{
+    await update(ref(db, 'portal/users/' + roll), patch);
+    if(usersData[roll]) Object.assign(usersData[roll], localPatch);
+    renderUsers();
+  }catch(e){
+    alert('Update failed: ' + (e && e.message ? e.message : e));
+  }
+}
+
+window.toggleCustomize = function(btn){
+  const block = btn.closest('.user-block');
+  if(!block) return;
+  const roll = block.querySelector('[data-roll]').getAttribute('data-roll');
+  const nowOpen = block.classList.toggle('open');
+  if(nowOpen) openSet.add(roll); else openSet.delete(roll);
+};
+
+window.draftBadge = function(input){
+  drafts[input.getAttribute('data-roll')] = input.value;
+};
+
+window.saveBadge = async function(btn){
+  const roll = btn.getAttribute('data-roll');
+  const input = btn.parentElement.querySelector('input[type=text]');
+  const val = (input.value || '').trim();
+  if(val && !safeImgUrl(val)){
+    alert('Sahi image link daalein — link https:// ya http:// se shuru hona chahiye.');
+    return;
+  }
+  btn.disabled = true;
+  await saveUserField(roll, { badgeImage: val || null }, { badgeImage: val || null });
+  delete drafts[roll];
+  renderUsers();
+};
+
+window.removeBadge = async function(btn){
+  const roll = btn.getAttribute('data-roll');
+  btn.disabled = true;
+  await saveUserField(roll, { badgeImage: null }, { badgeImage: null });
+  delete drafts[roll];
+  renderUsers();
+};
+
+window.setAvatarShape = function(btn){
+  const roll = btn.getAttribute('data-roll');
+  const shape = btn.getAttribute('data-shape');
+  const val = (shape === 'circle') ? null : shape;   // circle = default, field hata do
+  return saveUserField(roll, { avatarShape: val }, { avatarShape: val });
+};
+
+window.setAvatarColor = function(el){
+  const roll = el.getAttribute('data-roll');
+  const raw = (el.tagName === 'INPUT') ? el.value : el.getAttribute('data-color');
+  const val = validColor(raw) || null;               // '' = Blue default, field hata do
+  return saveUserField(roll, { avatarColor: val }, { avatarColor: val });
 };
 
 function subscribeUsers(){
