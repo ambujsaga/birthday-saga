@@ -8804,6 +8804,109 @@ onAuthStateChanged(auth, user => {
 })();
 /* ================= END ADDITIVE: DAILY ATTENDANCE TRACKER ================= */
 
+/* ================= ADDITIVE: FULL OFFLINE MODE (WhatsApp-style local cache) =================
+   Bilkul naya, standalone code hai — upar ka koi bhi purana function,
+   variable, listener ya feature CHHUA/BADLA nahi gaya hai.
+
+   Yeh block sirf itna karta hai:
+   1) Jab bhi Firebase se live data aata hai (subjects/notices/notifications/
+      posts/users/chats/branding + stories), use turant localStorage me bhi
+      save kar deta hai (applyOnlineData ko wrap karke — bilkul waisi hi
+      technique jaisi is file me openProfile/renderOnlinePosts jaise doosre
+      "ADDITIVE" blocks me pehle se use ho rahi hai).
+   2) App load hote hi (chahe internet ho ya na ho), sabse pehle wahi
+      last-saved data turant screen par laga deta hai — taaki content turant
+      dikhe, jaise WhatsApp me purana chat turant dikhta hai aur internet
+      aane par apne aap fresh/sync ho jaata hai.
+   3) window.__offlineHasCache / window.__offlineShowBanner ko expose karta
+      hai taaki niche wala "No Internet" overlay script (jo is module ke
+      bahar, alag classic <script> me hai) offline hone par har click block
+      karne ki bajaye, agar pehle se saved data maujood hai to app ko
+      normally offline use hone de — bas ek chhota "Offline" banner dikhaye.
+*/
+(function(){
+  var OFFLINE_KEY_PORTAL = 'offlinePortalData';
+  var OFFLINE_KEY_STORIES = 'offlineStoriesData';
+
+  function safeSave(key, val){
+    try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+  }
+  function safeLoad(key){
+    try{
+      var raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  }
+
+  // ---- 1) Cache every live Firebase update of the main 'portal' feed ----
+  var __origApplyOnlineData = applyOnlineData;
+  applyOnlineData = function(d){
+    if(d && Object.keys(d).length){
+      safeSave(OFFLINE_KEY_PORTAL, d);
+    }
+    return __origApplyOnlineData(d);
+  };
+  window.applyOnlineData = applyOnlineData;
+
+  // Stories: existing code already keeps them in window.onlineStoriesData.
+  // A getter/setter lets us cache every future update too, without touching
+  // the original assignment line (portal/stories onValue listener) at all.
+  var __storiesVal = window.onlineStoriesData;
+  try{
+    Object.defineProperty(window, 'onlineStoriesData', {
+      configurable: true,
+      get: function(){ return __storiesVal; },
+      set: function(v){
+        __storiesVal = v;
+        if(v && v.length) safeSave(OFFLINE_KEY_STORIES, v);
+      }
+    });
+  }catch(e){}
+
+  // ---- 2) Restore last-saved data immediately on boot ----
+  var cachedPortal = safeLoad(OFFLINE_KEY_PORTAL);
+  if(cachedPortal){
+    try{ applyOnlineData(cachedPortal); }catch(e){}
+  }
+  var cachedStories = safeLoad(OFFLINE_KEY_STORIES);
+  if(cachedStories){
+    window.onlineStoriesData = cachedStories;
+    try{ if(typeof window.renderStoryTray === 'function') window.renderStoryTray(); }catch(e){}
+    try{ if(typeof window.renderProfileStoryRing === 'function') window.renderProfileStoryRing(); }catch(e){}
+  }
+
+  // ---- 3) Let the "No Internet" overlay (separate classic script below)
+  // know that saved data exists, plus a small shared banner it/​we can use.
+  window.__offlineHasCache = !!cachedPortal;
+
+  function showOfflineBanner(){
+    if(document.getElementById('offlineModeBanner')) return;
+    var b = document.createElement('div');
+    b.id = 'offlineModeBanner';
+    b.textContent = 'Offline — showing saved data. Will sync when internet is back.';
+    b.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:99998;background:var(--sarkari-red,#c0392b);color:#fff;text-align:center;font-size:0.78rem;padding:7px 10px;box-shadow:0 -2px 10px rgba(0,0,0,0.25);';
+    document.body.appendChild(b);
+  }
+  function hideOfflineBanner(){
+    var b = document.getElementById('offlineModeBanner');
+    if(b) b.remove();
+  }
+  window.__offlineShowBanner = showOfflineBanner;
+  window.__offlineHideBanner = hideOfflineBanner;
+
+  window.addEventListener('online', hideOfflineBanner);
+  window.addEventListener('offline', function(){ if(window.__offlineHasCache) showOfflineBanner(); });
+  if(!navigator.onLine && window.__offlineHasCache) showOfflineBanner();
+
+  // Agar koi action (post/chat/login/admin-save waghera) sirf isliye fail
+  // hua kyunki device offline hai, to use silently fail hone dene ki bajaye
+  // yeh chhota banner dikha deta hai — bina us action ke apne purane code ko
+  // chhue.
+  window.addEventListener('unhandledrejection', function(){
+    if(!navigator.onLine) showOfflineBanner();
+  });
+})();
+/* ================= END ADDITIVE: FULL OFFLINE MODE ================= */
 
 </script>
 
@@ -8907,6 +9010,17 @@ onAuthStateChanged(auth, user => {
         return !navigator.onLine;
     }
 
+    // ================= ADDITIVE: OFFLINE-WITH-SAVED-DATA CHECK =================
+    // Naya helper hai — niche ka koi bhi purana function/logic isse chheda
+    // nahi gaya hai. Agar app ne pehle kabhi bhi (kisi bhi purani session
+    // me) data localStorage me save kiya ho (dekhein module script ka
+    // "FULL OFFLINE MODE" block), to iska matlab hai app ab offline bhi
+    // normally use ho sakta hai (saved data ke saath) — isliye aisi
+    // situation me hum har click ko block nahi karte.
+    function hasOfflineCache(){
+        try{ return !!localStorage.getItem('offlinePortalData'); }catch(e){ return false; }
+    }
+
     function showNoInternetOverlay(){
         if(overlay){
             overlay.style.display = 'flex';
@@ -8934,17 +9048,26 @@ onAuthStateChanged(auth, user => {
         });
     }
 
-    // App load hote hi agar offline hai to alert turant dikhado.
-    if(isOffline()){
+    // App load hote hi agar offline hai to alert turant dikhado — LEKIN
+    // sirf tab, jab pehle se koi saved data hi na ho (pehli dafa hi bina
+    // internet ke khola ho). Agar saved data hai, to overlay ki jagah
+    // (module script wala) chhota "Offline" banner dikhega aur app turant
+    // saved data ke saath normally use ho sakta hai.
+    if(isOffline() && !hasOfflineCache()){
         showNoInternetOverlay();
+    } else if(isOffline() && typeof window.__offlineShowBanner === 'function'){
+        window.__offlineShowBanner();
     }
 
     // Capture-phase click intercept — Timetable button ke alawa (jo
     // offline bhi kaam karta hai) baaki har button/link click ko, jab
-    // tak offline hai, rok kar pehle yeh alert dikhata hai.
+    // tak offline hai AUR koi saved data maujood nahi hai, tab tak rok kar
+    // pehle yeh alert dikhata hai. Saved data maujood hone par clicks ab
+    // block nahi hote — app WhatsApp jaisa offline-usable ban jaata hai.
     document.addEventListener('click', function(e){
         if(bypassOfflineIntercept) return;
         if(!isOffline()) return;
+        if(hasOfflineCache()) return;
         if(overlay && overlay.contains(e.target)) return;
 
         var timetableBtn = document.getElementById('timetableNavBtn');
