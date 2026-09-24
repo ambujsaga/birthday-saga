@@ -1499,6 +1499,30 @@
             background: var(--sarkari-red); color: white; border: none; padding: 10px 25px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s;
         }
         .logout-btn:hover { background: #a93226; }
+
+        /* ================= ADDITIVE: USER ABOUT (BIO) FEATURE =================
+           Sirf naya CSS add kiya gaya hai — koi purana rule chheda nahi gaya hai.
+           WhatsApp jaisa chhota "About" (max 50 characters) jo profile me dikhta
+           hai aur edit ho sakta hai, aur feed search me (dusre users ka account
+           search karne par) bhi wahi text dikhta hai. */
+        .profile-about-wrap { display: flex; align-items: center; justify-content: center; gap: 6px; margin: -10px 0 18px; }
+        .profile-about-text { color: #555; font-size: 0.9rem; font-style: italic; word-break: break-word; }
+        .profile-about-edit-btn { background: none; border: none; cursor: pointer; color: var(--primary-blue); opacity: 0.75; padding: 2px; display: inline-flex; }
+        .profile-about-edit-btn:hover { opacity: 1; }
+        .profile-about-editor { text-align: left; background: #f9f9f9; border: 1px solid #eee; border-radius: 6px; padding: 12px; margin: -10px 0 18px; }
+        .profile-about-input { width: 100%; resize: none; border: 1px solid #ccc; border-radius: 6px; padding: 8px; font-size: 0.9rem; min-height: 50px; outline: none; }
+        .profile-about-editor-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+        .profile-about-counter { color: #888; font-size: 0.78rem; }
+        .profile-about-editor-btns { display: flex; gap: 8px; }
+        .profile-about-cancel-btn, .profile-about-save-btn { border: none; border-radius: 4px; padding: 6px 14px; font-size: 0.85rem; font-weight: bold; cursor: pointer; }
+        .profile-about-cancel-btn { background: #e5e7eb; color: #333; }
+        .profile-about-save-btn { background: var(--primary-blue); color: #fff; }
+
+        .feed-search-suggestion-about { color: #888; font-size: 0.78rem; font-style: italic; margin-top: 1px; }
+        .feed-search-suggestion-about:empty { display: none; }
+        .feed-user-posts-about { color: #888; font-size: 0.78rem; font-style: italic; margin-top: 1px; }
+        .feed-user-posts-about:empty { display: none; }
+        /* ================= END ADDITIVE: USER ABOUT (BIO) FEATURE ================= */
     
         /* FIREBASE ONLINE ADMIN PANEL */
         .admin-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:12000;display:none;align-items:center;justify-content:center;padding:15px}
@@ -2703,6 +2727,28 @@
                 <p><strong>Status:</strong> <span style="color: green; font-weight: bold;">Active</span></p>
             </div>
 
+            <!-- ================= ADDITIVE: USER ABOUT (BIO) — WhatsApp jaisa "About" =================
+                 Sirf naya block add kiya gaya hai. profile-details, eng-profile-stats,
+                 logout-btn ya koi bhi purana element chheda nahi gaya hai. Max 50
+                 characters ka About, jo 'portal/users/{roll}/about' me Firebase me
+                 save hota hai — isliye feed search me bhi automatically dikh jaata
+                 hai jab koi is user ka account search karta hai. -->
+            <div class="profile-about-wrap" id="profAboutWrap">
+                <p class="profile-about-text" id="profAboutText">Hey there! I am using CSE 1st Sem Portal.</p>
+                <button type="button" class="profile-about-edit-btn" id="profAboutEditBtn" title="Edit About" onclick="openAboutEditor()"><svg class="ui-icon" style="width:0.9em;height:0.9em;"><use href="#icon-edit"></use></svg></button>
+            </div>
+            <div class="profile-about-editor" id="profAboutEditor" style="display:none;">
+                <textarea id="profAboutInput" class="profile-about-input" maxlength="50" placeholder="Write about yourself (max 50 characters)..."></textarea>
+                <div class="profile-about-editor-row">
+                    <span class="profile-about-counter" id="profAboutCounter">0/50</span>
+                    <div class="profile-about-editor-btns">
+                        <button type="button" class="profile-about-cancel-btn" onclick="closeAboutEditor()">Cancel</button>
+                        <button type="button" class="profile-about-save-btn" onclick="saveAboutText()">Save</button>
+                    </div>
+                </div>
+            </div>
+            <!-- ================= END ADDITIVE: USER ABOUT (BIO) ================= -->
+
             <!-- ================= ADDITIVE: DAILY ENGAGEMENT SYSTEM — Profile stats =================
                  Sirf naya block add kiya gaya hai, profile-details, logout-btn ya koi bhi
                  purana element chheda nahi gaya hai. -->
@@ -2754,6 +2800,8 @@
                     <div>
                         <div class="feed-user-posts-name" id="feedUserPostsName"></div>
                         <div class="feed-user-posts-roll" id="feedUserPostsRoll"></div>
+                        <!-- ADDITIVE: USER ABOUT (BIO) — is user ka About yaha dikhta hai -->
+                        <div class="feed-user-posts-about" id="feedUserPostsAbout"></div>
                     </div>
                 </div>
             </div>
@@ -6419,6 +6467,7 @@ onAuthStateChanged(auth, user => {
         <div class="feed-search-suggestion-info">
           <div class="feed-search-suggestion-name">${srchEsc(u.name||roll)}</div>
           <div class="feed-search-suggestion-roll">Roll No: ${srchEsc(roll)}</div>
+          <div class="feed-search-suggestion-about">${srchEsc(window.getUserAboutText ? window.getUserAboutText(roll) : '')}</div>
         </div>
         <button type="button" class="feed-search-suggestion-remove" data-remove-roll="${srchEsc(roll)}" title="Remove"><svg class="ui-icon"><use href="#icon-x"></use></svg></button>
       </div>`;
@@ -6498,6 +6547,7 @@ onAuthStateChanged(auth, user => {
         <div>
           <div class="feed-search-suggestion-name">${srchEsc(u.name||roll)}${window.vTick ? window.vTick(roll) : ''}</div>
           <div class="feed-search-suggestion-roll">Roll No: ${srchEsc(roll)}</div>
+          <div class="feed-search-suggestion-about">${srchEsc(window.getUserAboutText ? window.getUserAboutText(roll) : '')}</div>
         </div>
       </div>`;
     }).join('');
@@ -6526,6 +6576,9 @@ onAuthStateChanged(auth, user => {
     }
     if(rollEl) rollEl.textContent = 'Roll No: ' + roll;
     if(avEl) avEl.textContent = String(roll).slice(0,2).toUpperCase() || '?';
+    // ADDITIVE: USER ABOUT (BIO) — is user ka About header me dikhado
+    const aboutEl = document.getElementById('feedUserPostsAbout');
+    if(aboutEl) aboutEl.textContent = window.getUserAboutText ? window.getUserAboutText(roll) : '';
     showOnly('feedUserPostsView');
     renderFeedUserPosts(roll);
   }
@@ -9066,6 +9119,94 @@ onAuthStateChanged(auth, user => {
   if(typeof window.renderNoticeBoard === 'function') window.renderNoticeBoard = noop;
 })();
 /* ================= END ADDITIVE: NEVER SHOW INTERNAL HARDCODED DATA ================= */
+
+/* ================= ADDITIVE: USER ABOUT (BIO) FEATURE — WhatsApp jaisa "About" =================
+   Bilkul naya, standalone block hai. Koi bhi purana function/variable/method
+   (openProfile, applyOnlineData, renderSuggestions, renderSearchHistory,
+   openUserPostsFromSearch waghera) delete ya rewrite nahi kiya gaya — jaha
+   zaroorat thi wahan sirf naya HTML/element additively use kiya gaya hai
+   (upar dekhein), aur openProfile ko yahan bhi wahi purani "wrap old function"
+   technique se extend kiya gaya hai jaisi is file me pehle se hi (line ~5409,
+   ~5596) use ho rahi hai. 'about' field 'portal/users/{roll}/about' me
+   Firebase me save hota hai, isliye woh window.onlineUsersData ke through
+   feed search me bhi automatically live dikhta hai. */
+(function(){
+  var DEFAULT_ABOUT = 'Hey there! I am using CSE 1st Sem Portal.';
+  var ABOUT_MAX = 50;
+
+  // Kisi bhi roll ka current About text — live Firebase data se, warna
+  // (apne hi profile ke liye) localUser se, warna WhatsApp jaisa default text.
+  window.getUserAboutText = function(roll){
+    try{
+      var live = (window.onlineUsersData || {})[String(roll)];
+      if(live && typeof live.about === 'string' && live.about.trim()) return live.about;
+    }catch(e){}
+    try{
+      if(window.localUser && String(window.localUser.rollNumber) === String(roll) && window.localUser.about) return window.localUser.about;
+    }catch(e){}
+    return DEFAULT_ABOUT;
+  };
+
+  function renderOwnAbout(){
+    if(!window.localUser) return;
+    var t = document.getElementById('profAboutText');
+    if(t) t.textContent = window.getUserAboutText(window.localUser.rollNumber);
+  }
+
+  window.openAboutEditor = function(){
+    if(!window.localUser) return;
+    var editor = document.getElementById('profAboutEditor');
+    var input = document.getElementById('profAboutInput');
+    var counter = document.getElementById('profAboutCounter');
+    var wrap = document.getElementById('profAboutWrap');
+    if(!editor || !input) return;
+    var cur = window.getUserAboutText(window.localUser.rollNumber);
+    input.value = (cur === DEFAULT_ABOUT) ? '' : cur;
+    if(counter) counter.textContent = input.value.length + '/' + ABOUT_MAX;
+    if(wrap) wrap.style.display = 'none';
+    editor.style.display = 'block';
+    setTimeout(function(){ input.focus(); }, 30);
+  };
+
+  window.closeAboutEditor = function(){
+    var editor = document.getElementById('profAboutEditor');
+    var wrap = document.getElementById('profAboutWrap');
+    if(editor) editor.style.display = 'none';
+    if(wrap) wrap.style.display = '';
+  };
+
+  window.saveAboutText = async function(){
+    if(!window.localUser) return;
+    var input = document.getElementById('profAboutInput');
+    if(!input) return;
+    var text = input.value.trim().slice(0, ABOUT_MAX);
+    var toSave = text || DEFAULT_ABOUT;
+    try{
+      await update(ref(db, 'portal/users/' + window.localUser.rollNumber), { about: toSave });
+    }catch(e){ /* best-effort — save fail hone par bhi purana UI kabhi nahi rukta */ }
+    window.localUser.about = toSave;
+    try{ localStorage.setItem('portalUser', JSON.stringify(window.localUser)); }catch(e){}
+    renderOwnAbout();
+    window.closeAboutEditor();
+  };
+
+  document.addEventListener('input', function(e){
+    if(e.target && e.target.id === 'profAboutInput'){
+      var counter = document.getElementById('profAboutCounter');
+      if(counter) counter.textContent = e.target.value.length + '/' + ABOUT_MAX;
+    }
+  });
+
+  // Apna profile khulte hi About turant render ho jaaye — purani openProfile()
+  // (aur uske upar ke sab wrappers) bilkul pehle jaisa hi chalta hai, bas iske
+  // baad naya About render extra ho jaata hai.
+  var prevOpenProfileForAbout = window.openProfile;
+  window.openProfile = function(){
+    if(typeof prevOpenProfileForAbout === 'function') prevOpenProfileForAbout();
+    setTimeout(renderOwnAbout, 45);
+  };
+})();
+/* ================= END ADDITIVE: USER ABOUT (BIO) FEATURE ================= */
 
 </script>
 
