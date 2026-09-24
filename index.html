@@ -61,6 +61,10 @@
             border-radius: 50%;
             object-fit: cover;
             background: #eef1f5;
+            /* Twitter jaisa: image badge thoda bada, naam ke paas; line height na badhe isliye vertical margin negative */
+            margin-left: 3px;
+            margin-top: -2px;
+            margin-bottom: -2px;
         }
 
         /* Main Navbar */
@@ -4048,7 +4052,7 @@ window.vTickText = function(roll){
     if(!u) return '';
     var src = safeImgUrl(u.badgeImage);
     if(!src) return '';
-    var s = size || 14;
+    var s = Math.round((size || 14) * 1.3); // Twitter jaisa: sirf image badge ~30% bada (red tick same size)
     return '<img class="verified-tick-badge user-img-badge" src="'+attrEsc(src)+'" width="'+s+'" height="'+s+'" alt="Badge" title="Badge" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">';
   };
   // Purana vTick same rehta hai (red tick); uske baad badge image jod di jaati hai.
