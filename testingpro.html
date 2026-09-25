@@ -1291,12 +1291,7 @@
             border: 1px solid #eee;
             user-select: none;
             -webkit-user-drag: none;
-            /* FIX: pehle "manipulation" tha jo pinch-zoom bhi allow karta
-               tha — yeh page ke global zoom-disable logic se clash karke
-               kuch mobile browsers me image par finger rakh ke vertical
-               scroll rok raha tha. Ab sirf vertical pan (scroll) allow
-               hai, baaki sab (long-press, click, view button) same rahega. */
-            touch-action: pan-y;
+            touch-action: manipulation;
         }
 
         .post-actions {
@@ -1631,7 +1626,7 @@
 .user-post-body{font-size:.95rem;line-height:1.5;color:#374151;white-space:pre-wrap;word-break:break-word;margin-bottom:10px}
 .user-post-carousel{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:thin;margin:0 -1px 10px}
 .user-post-carousel::-webkit-scrollbar{height:5px}
-.user-post-carousel img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:7px;border:1px solid #eee;flex:0 0 100%;scroll-snap-align:center;user-select:none;-webkit-user-drag:none;touch-action:pan-x}
+.user-post-carousel img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:7px;border:1px solid #eee;flex:0 0 100%;scroll-snap-align:center;user-select:none;-webkit-user-drag:none;touch-action:pan-x pan-y}
 .user-post-photo-count{text-align:center;font-size:.72rem;color:#64748b;margin-top:-5px;margin-bottom:8px}
 .user-post-footer{display:flex;justify-content:flex-end;align-items:center;border-top:1px solid #eee;padding-top:8px;font-size:.78rem;color:#64748b}
 .user-post-seen{font-weight:700}
