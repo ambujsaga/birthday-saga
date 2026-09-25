@@ -1291,7 +1291,12 @@
             border: 1px solid #eee;
             user-select: none;
             -webkit-user-drag: none;
-            touch-action: manipulation;
+            /* FIX: pehle "manipulation" tha jo pinch-zoom bhi allow karta
+               tha — yeh page ke global zoom-disable logic se clash karke
+               kuch mobile browsers me image par finger rakh ke vertical
+               scroll rok raha tha. Ab sirf vertical pan (scroll) allow
+               hai, baaki sab (long-press, click, view button) same rahega. */
+            touch-action: pan-y;
         }
 
         .post-actions {
