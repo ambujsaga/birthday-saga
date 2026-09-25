@@ -53,6 +53,20 @@
             flex-shrink: 0;
         }
 
+        /* ================= ADDITIVE: PER-USER BADGE IMAGE + AVATAR STYLE =================
+           Red Tick Admin Panel se har user ke liye 'badgeImage' (naam ke saath red tick
+           jaisa chhota image), 'avatarShape' (circle/square/rounded) aur 'avatarColor'
+           set hota hai. Purana koi CSS rule change nahi kiya gaya. */
+        .user-img-badge {
+            border-radius: 50%;
+            object-fit: cover;
+            background: #eef1f5;
+            /* Twitter jaisa: image badge thoda bada, naam ke paas; line height na badhe isliye vertical margin negative */
+            margin-left: 3px;
+            margin-top: -2px;
+            margin-bottom: -2px;
+        }
+
         /* Main Navbar */
         .navbar {
             display: flex;
@@ -384,6 +398,185 @@
             70% { box-shadow: 0 0 0 6px rgba(46,204,113,0); }
             100% { box-shadow: 0 0 0 0 rgba(46,204,113,0); }
         }
+
+        /* ================= ADDITIVE: ATTENDANCE TRACKER (Nav Button + Page) =================
+           Sirf naya CSS add kiya gaya hai. Timetable/Programming button ka
+           koi bhi purana rule yahan chheda nahi gaya hai. */
+        .attendance-nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #fff;
+            color: var(--accent-orange);
+            border: 2px solid var(--accent-orange);
+            padding: 3px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            margin: 0 6px;
+        }
+
+        .attendance-nav-btn:hover {
+            background: var(--accent-orange);
+            color: #fff;
+        }
+
+        .att-nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #9aa5b1;
+            flex-shrink: 0;
+        }
+
+        .att-overall-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.2rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 1rem;
+        }
+
+        .att-overall-pct {
+            font-size: 2.4rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .att-overall-count {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .att-overall-advice {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            background: #f4f6f9;
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+        }
+
+        .att-required-note {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #888;
+            margin: 4px 0 16px;
+        }
+
+        .att-subject-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.7rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+
+        .att-subject-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .att-subject-meta {
+            font-size: 0.78rem;
+            color: #777;
+            margin-top: 3px;
+        }
+
+        .att-subject-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .att-mark-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .att-present-btn { color: #2ecc71; }
+        .att-present-btn:hover, .att-present-btn.att-marked { background: #2ecc71; color: #fff; border-color: #2ecc71; }
+        .att-absent-btn { color: #c0392b; }
+        .att-absent-btn:hover, .att-absent-btn.att-marked { background: #c0392b; color: #fff; border-color: #c0392b; }
+
+        .att-empty-note {
+            text-align: center;
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem 1rem;
+            color: #777;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+
+        .att-backfill-toggle-wrap {
+            text-align: center;
+            margin: 4px 0 14px;
+        }
+
+        .att-backfill-toggle-btn {
+            background: #fff;
+            border: 2px dashed var(--accent-orange);
+            color: var(--accent-orange);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .att-backfill-toggle-btn:hover {
+            background: var(--accent-orange);
+            color: #fff;
+        }
+
+        .att-backfill-panel {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+
+        .att-backfill-label {
+            display: block;
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .att-backfill-date-input {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .att-section-heading {
+            font-size: 0.9rem;
+            color: #555;
+            margin: 6px 0 10px;
+        }
+        /* ================= END ADDITIVE: ATTENDANCE TRACKER CSS ================= */
 
         /* Live Timetable full page */
         .tt-status-grid {
@@ -776,6 +969,83 @@
             font-size: 0.8rem;
             color: #666;
             white-space: nowrap;
+        }
+
+        /* ================= ADDITIVE: NOTICE SHARE BUTTON + HIGHLIGHT + TOAST =================
+           Sirf naya CSS add kiya gaya hai. Koi purana rule/element chheda nahi
+           gaya hai. Yeh notice list ke har item me ek share button dikhata hai,
+           aur share link se khule notice ko highlight/scroll karne ke liye
+           animation deta hai. */
+        .notice-side-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .notice-share-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            background: #f4f6f9;
+            color: var(--primary-blue);
+            cursor: pointer;
+            padding: 0;
+            transition: background 0.2s, transform 0.15s;
+            flex-shrink: 0;
+        }
+
+        .notice-share-btn svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        .notice-share-btn:hover {
+            background: #e6ecf5;
+        }
+
+        .notice-share-btn:active {
+            transform: scale(0.9);
+        }
+
+        .sarkari-list li.notice-item-highlighted {
+            animation: noticeHighlightPulse 1.5s ease-in-out 2;
+            background-color: #fff6e0 !important;
+        }
+
+        @keyframes noticeHighlightPulse {
+            0%, 100% { box-shadow: inset 0 0 0 0 rgba(255, 153, 0, 0); }
+            50% { box-shadow: inset 0 0 0 3px rgba(255, 153, 0, 0.7); }
+        }
+
+        .notice-share-toast {
+            position: fixed;
+            left: 50%;
+            bottom: 90px;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 999998;
+            opacity: 1;
+            transition: opacity 0.4s ease-in-out;
+            white-space: nowrap;
+        }
+
+        .notice-share-toast.notice-share-toast-hide {
+            opacity: 0;
+        }
+
+        @media(max-width: 768px) {
+            .notice-side-meta {
+                align-self: flex-end;
+            }
         }
 
         /* Responsive */
@@ -1229,6 +1499,39 @@
             background: var(--sarkari-red); color: white; border: none; padding: 10px 25px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s;
         }
         .logout-btn:hover { background: #a93226; }
+
+        /* ================= ADDITIVE: USER ABOUT (BIO) FEATURE =================
+           Sirf naya CSS add kiya gaya hai — koi purana rule chheda nahi gaya hai.
+           WhatsApp jaisa chhota "About" (max 50 characters) jo profile me dikhta
+           hai aur edit ho sakta hai, aur feed search me (dusre users ka account
+           search karne par) bhi wahi text dikhta hai. */
+        .profile-about-wrap { display: flex; align-items: center; justify-content: center; gap: 6px; margin: -10px 0 18px; }
+        .profile-about-text { color: #555; font-size: 0.9rem; font-style: italic; word-break: break-word; }
+        .profile-about-edit-btn { background: none; border: none; cursor: pointer; color: var(--primary-blue); opacity: 0.75; padding: 2px; display: inline-flex; }
+        .profile-about-edit-btn:hover { opacity: 1; }
+        .profile-about-editor { text-align: left; background: #f9f9f9; border: 1px solid #eee; border-radius: 6px; padding: 12px; margin: -10px 0 18px; }
+        .profile-about-input { width: 100%; resize: none; border: 1px solid #ccc; border-radius: 6px; padding: 8px; font-size: 0.9rem; min-height: 50px; outline: none; }
+        .profile-about-editor-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+        .profile-about-counter { color: #888; font-size: 0.78rem; }
+        .profile-about-editor-btns { display: flex; gap: 8px; }
+        .profile-about-cancel-btn, .profile-about-save-btn { border: none; border-radius: 4px; padding: 6px 14px; font-size: 0.85rem; font-weight: bold; cursor: pointer; }
+        .profile-about-cancel-btn { background: #e5e7eb; color: #333; }
+        .profile-about-save-btn { background: var(--primary-blue); color: #fff; }
+
+        .feed-search-suggestion-about { color: #888; font-size: 0.78rem; font-style: italic; margin-top: 1px; }
+        .feed-search-suggestion-about:empty { display: none; }
+        .feed-user-posts-about { color: #888; font-size: 0.78rem; font-style: italic; margin-top: 1px; }
+        .feed-user-posts-about:empty { display: none; }
+        /* ================= END ADDITIVE: USER ABOUT (BIO) FEATURE ================= */
+
+        /* ================= ADDITIVE: ABOUT TEXT AUTO-LINK STYLE =================
+           About me me agar user koi link ya dns/domain likhta hai, to wahi
+           hissa is style se dikhta hai. "https://" kabhi show nahi hota —
+           sirf link/dns ka naam dikhta hai, click karne par asli link
+           (https:// ke saath) naye tab me open ho jaata hai. Purana koi
+           CSS rule chheda nahi gaya, sirf naya rule add kiya gaya hai. */
+        .about-link { color: var(--primary-blue); text-decoration: underline; word-break: break-all; }
+        .about-link:hover, .about-link:active { opacity: 0.8; }
     
         /* FIREBASE ONLINE ADMIN PANEL */
         .admin-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:12000;display:none;align-items:center;justify-content:center;padding:15px}
@@ -1420,6 +1723,23 @@
 .post-reaction-count{font-size:.72rem;font-weight:700;color:#334155}
 .post-card .post-reaction-bar{margin-top:10px}
 .user-post-card .post-reaction-bar{border-top:none;margin-top:0;padding-top:0;margin-bottom:6px}
+
+/* ================= ADDITIVE: REACTION EMOJI POP ANIMATION (Twitter-like) =================
+   Sirf naya CSS add kiya gaya hai. Purana .post-reaction-btn / .post-reaction-count
+   ka koi rule chheda nahi gaya. Yeh sirf emoji span par lagta hai (count number
+   par nahi), taaki jaisa Twitter par like karne par icon "aala aala" (bouncy pop)
+   hota hai waisa hi effect kisi bhi reaction emoji par click karne par ho. */
+.post-reaction-btn .reaction-emoji{display:inline-block;transform-origin:center center;will-change:transform}
+@keyframes reactionPopAnim{
+  0%{transform:scale(1) rotate(0deg);}
+  25%{transform:scale(1.6) rotate(-12deg);}
+  50%{transform:scale(0.82) rotate(8deg);}
+  75%{transform:scale(1.22) rotate(-4deg);}
+  100%{transform:scale(1) rotate(0deg);}
+}
+.post-reaction-btn .reaction-emoji.reaction-pop{
+  animation:reactionPopAnim .5s cubic-bezier(.17,.89,.32,1.49);
+}
 </style>
 <style>
 /* ================= ADDITIVE: BOOT LOADER (8s intro animation) ================= */
@@ -2009,6 +2329,10 @@
         <symbol id="icon-pin" viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5c0 4-5 11-5 11S7 11 7 7a5 5 0 0 1 5-5z"/><circle cx="12" cy="7" r="2"/></symbol>
         <symbol id="icon-play" viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></symbol>
         <symbol id="icon-poll" viewBox="0 0 24 24"><line x1="5" y1="20" x2="5" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="19" y1="20" x2="19" y2="15"/></symbol>
+        <!-- ADDITIVE: new icon used only by the Attendance Tracker (to replace emoji with SVG) -->
+        <symbol id="icon-alert-triangle" viewBox="0 0 24 24"><path d="M12 3l10 18H2z"/><line x1="12" y1="10" x2="12" y2="15"/><line x1="12" y1="17.5" x2="12" y2="17.6"/></symbol>
+        <!-- ADDITIVE: naya share icon, sirf notice share button ke liye use hota hai -->
+        <symbol id="icon-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><line x1="8.2" y1="10.8" x2="15.8" y2="6.2"/><line x1="8.2" y1="13.2" x2="15.8" y2="17.8"/></symbol>
       </defs>
     </svg>
 
@@ -2067,6 +2391,13 @@
                 <button type="button" class="timetable-nav-btn" id="timetableNavBtn" onclick="openTimetablePage()" title="View today's live timetable">
                     <span class="tt-live-dot" id="ttNavDot"></span>
                     <span id="ttNavLabel">Timetable</span>
+                </button>
+                <!-- ================= ADDITIVE: ATTENDANCE TRACKER QUICK-LINK BUTTON =================
+                     Sirf naya button add kiya gaya hai, Timetable aur Programming button ke
+                     beech me. In dono me se kuchh bhi chheda nahi gaya hai. -->
+                <button type="button" class="attendance-nav-btn" id="attendanceNavBtn" onclick="requireLogin(openAttendancePage)" title="Track your daily attendance">
+                    <span class="att-nav-dot" id="attNavPercentDot"></span>
+                    <span>Attendance</span>
                 </button>
                 <a href="programming.html" class="programming-nav-btn">Programming</a>
             </div>
@@ -2180,6 +2511,104 @@
         </div>
     </div>
 
+    <!-- =====================================================================
+         ADDITIVE: SHARE NOTICE (DEEP LINK) SUPPORT
+         Purely additive block. Koi purana page/element/function chheda nahi
+         gaya hai.
+
+         - Har notice ke saath ab ek share button milta hai (renderOnlineNotices
+           me add kiya gaya). Usse jo link banta/share hota hai woh hai:
+           <site-url>#notice=NOTICE_ID
+         - Jab koi is link ko tap karta hai, app khulte hi (ya data sync hote
+           hi) woh khaas notice apne aap Notice page ke andar highlight ho
+           jaata hai — scroll karke uske paas le jaata hai aur thodi der ke
+           liye glow karta hai.
+         - Yeh sirf tabhi kaam karta hai jab link me '#notice=' hash ho —
+           normal Notice button/app-use par koi asar nahi.
+    ====================================================================== -->
+    <script>
+        // App load hote hi, agar URL me '#notice=ID' hash hai to yaad rakh lo.
+        window.pendingSharedNoticeId = (function(){
+            var h = window.location.hash || '';
+            var m = h.match(/^#notice=(.+)$/);
+            return m ? decodeURIComponent(m[1]) : null;
+        })();
+
+        // Kisi notice ka shareable link banata hai.
+        window.buildNoticeShareLink = function(id){
+            return window.location.origin + window.location.pathname + '#notice=' + encodeURIComponent(id);
+        };
+
+        // data-notice-id attribute selector ke liye safe-escape helper.
+        window.escNoticeSelId = function(id){
+            return (window.CSS && CSS.escape) ? CSS.escape(String(id)) : String(id).replace(/["\\]/g, '\\$&');
+        };
+
+        // Chhota, additive toast (sirf link-copy confirmation ke liye).
+        window.showShareToast = function(msg){
+            var existing = document.getElementById('noticeShareToast');
+            if(existing) existing.remove();
+            var t = document.createElement('div');
+            t.id = 'noticeShareToast';
+            t.className = 'notice-share-toast';
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(function(){ t.classList.add('notice-share-toast-hide'); }, 1800);
+            setTimeout(function(){ if(t && t.parentNode) t.remove(); }, 2300);
+        };
+
+        // Notice share button ka click handler — Web Share API available ho
+        // to native share sheet, warna link clipboard me copy. Title seedha
+        // rendered notice item (DOM) se liya jaata hai, isliye kisi module-
+        // scoped data par depend nahi karta.
+        window.shareNotice = function(id){
+            var link = window.buildNoticeShareLink(id);
+            var title = 'Notice';
+            var li = document.querySelector('#sarkariNoticeList li[data-notice-id="' + window.escNoticeSelId(id) + '"]');
+            if(li){
+                var aEl = li.querySelector('a');
+                if(aEl) title = aEl.textContent.replace(/\s+/g, ' ').replace(/NEW\s*$/, '').trim() || 'Notice';
+            }
+            if(navigator.share){
+                navigator.share({ title: title, text: title, url: link }).catch(function(){});
+            } else if(navigator.clipboard && navigator.clipboard.writeText){
+                navigator.clipboard.writeText(link).then(function(){
+                    window.showShareToast('Notice link copied!');
+                }).catch(function(){
+                    window.prompt('Copy this notice link:', link);
+                });
+            } else {
+                window.prompt('Copy this notice link:', link);
+            }
+        };
+
+        // Ek specific notice ko Notice page ke andar highlight + scroll karta hai.
+        window.highlightSharedNotice = function(id){
+            var li = document.querySelector('#sarkariNoticeList li[data-notice-id="' + window.escNoticeSelId(id) + '"]');
+            if(!li) return false;
+            li.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            li.classList.add('notice-item-highlighted');
+            setTimeout(function(){ li.classList.remove('notice-item-highlighted'); }, 3200);
+            return true;
+        };
+
+        // Notice list refresh hone ke baad (renderOnlineNotices se call hota
+        // hai, DOM me list ban chuki hone ke baad) check karta hai ki koi
+        // pending shared-notice hai to use Notice page me khol kar highlight
+        // kare — sirf ek baar successful hone ke baad pending id clear hoti
+        // hai, warna agli baar phir try hoga (jaise login ke baad data
+        // dobara sync hone par).
+        window.tryApplyPendingSharedNotice = function(){
+            if(!window.pendingSharedNoticeId) return;
+            var li = document.querySelector('#sarkariNoticeList li[data-notice-id="' + window.escNoticeSelId(window.pendingSharedNoticeId) + '"]');
+            if(!li) return;
+            var sharedId = window.pendingSharedNoticeId;
+            window.pendingSharedNoticeId = null;
+            if(typeof openNoticePage === 'function') openNoticePage();
+            setTimeout(function(){ window.highlightSharedNotice(sharedId); }, 150);
+        };
+    </script>
+
     <div id="timetablePage" class="container full-screen-container" style="display: none;">
         <div class="action-bar">
             <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
@@ -2205,6 +2634,40 @@
 
         <ul class="tt-schedule-list" id="ttScheduleList">
         </ul>
+    </div>
+
+    <!-- ================= ADDITIVE: ATTENDANCE TRACKER FULL PAGE =================
+         Bilkul naya page hai. Koi purana page/element chheda nahi gaya hai. -->
+    <div id="attendancePage" class="container full-screen-container" style="display: none;">
+        <div class="action-bar">
+            <button class="back-btn" onclick="openHomePage()" title="Back to Dashboard"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
+        </div>
+
+        <div class="tt-day-heading">
+            <h3><svg class="ui-icon"><use href="#icon-poll"></use></svg> My Attendance Tracker</h3>
+            <span id="attTodayLabel"></span>
+        </div>
+
+        <div class="att-overall-card">
+            <div class="att-overall-pct" id="attOverallPct">0%</div>
+            <div class="att-overall-count" id="attOverallCount">0 / 0 classes attended</div>
+            <div class="att-overall-advice" id="attOverallAdvice">Mark today's attendance below</div>
+        </div>
+
+        <p class="att-required-note">Minimum 75% attendance required as per BTEUP norms. Subjects below are pulled live from today's Timetable — mark Present or Absent any time during the day (you can correct it later the same day).</p>
+
+        <div class="att-backfill-toggle-wrap">
+            <button type="button" class="att-backfill-toggle-btn" id="attBackfillToggleBtn" onclick="toggleAttBackfillPanel()">+ Add Past Attendance</button>
+        </div>
+
+        <div class="att-backfill-panel" id="attBackfillPanel" style="display:none;">
+            <label class="att-backfill-label" for="attBackfillDate">Forgot to mark attendance for a previous day (last week, last month, etc.)? Pick the date below:</label>
+            <input type="date" id="attBackfillDate" class="att-backfill-date-input" onchange="attRenderBackfillList(this.value)">
+            <div id="attBackfillList"></div>
+        </div>
+
+        <h4 class="att-section-heading">Today's Classes</h4>
+        <div id="attSubjectList"></div>
     </div>
 
     <div id="mmitPage" class="mmit-page full-screen-container" style="display: none;">
@@ -2290,6 +2753,28 @@
                 <p><strong>Status:</strong> <span style="color: green; font-weight: bold;">Active</span></p>
             </div>
 
+            <!-- ================= ADDITIVE: USER ABOUT (BIO) — WhatsApp jaisa "About" =================
+                 Sirf naya block add kiya gaya hai. profile-details, eng-profile-stats,
+                 logout-btn ya koi bhi purana element chheda nahi gaya hai. Max 50
+                 characters ka About, jo 'portal/users/{roll}/about' me Firebase me
+                 save hota hai — isliye feed search me bhi automatically dikh jaata
+                 hai jab koi is user ka account search karta hai. -->
+            <div class="profile-about-wrap" id="profAboutWrap">
+                <p class="profile-about-text" id="profAboutText">Hey there! I am using CSE 1st Sem Portal.</p>
+                <button type="button" class="profile-about-edit-btn" id="profAboutEditBtn" title="Edit About" onclick="openAboutEditor()"><svg class="ui-icon" style="width:0.9em;height:0.9em;"><use href="#icon-edit"></use></svg></button>
+            </div>
+            <div class="profile-about-editor" id="profAboutEditor" style="display:none;">
+                <textarea id="profAboutInput" class="profile-about-input" maxlength="50" placeholder="Write about yourself (max 50 characters)..."></textarea>
+                <div class="profile-about-editor-row">
+                    <span class="profile-about-counter" id="profAboutCounter">0/50</span>
+                    <div class="profile-about-editor-btns">
+                        <button type="button" class="profile-about-cancel-btn" onclick="closeAboutEditor()">Cancel</button>
+                        <button type="button" class="profile-about-save-btn" onclick="saveAboutText()">Save</button>
+                    </div>
+                </div>
+            </div>
+            <!-- ================= END ADDITIVE: USER ABOUT (BIO) ================= -->
+
             <!-- ================= ADDITIVE: DAILY ENGAGEMENT SYSTEM — Profile stats =================
                  Sirf naya block add kiya gaya hai, profile-details, logout-btn ya koi bhi
                  purana element chheda nahi gaya hai. -->
@@ -2341,6 +2826,8 @@
                     <div>
                         <div class="feed-user-posts-name" id="feedUserPostsName"></div>
                         <div class="feed-user-posts-roll" id="feedUserPostsRoll"></div>
+                        <!-- ADDITIVE: USER ABOUT (BIO) — is user ka About yaha dikhta hai -->
+                        <div class="feed-user-posts-about" id="feedUserPostsAbout"></div>
                     </div>
                 </div>
             </div>
@@ -2695,6 +3182,19 @@
             
             const users = window.onlineUsersData || {};
             if(users[roll]) {
+                // ================= ADDITIVE: ADMIN FORCE LOGOUT (login-time check) =================
+                // Agar admin ne is roll number ke liye Force Logout panel se signal
+                // bheja hai (portal/users/{roll}/forceLogout === true), to use turant
+                // fresh login karne se bhi rok do — bina uski marzi ke wo app use nahi
+                // kar payega, chahe wo pehle se logged-in tha ya bilkul naya login try
+                // kar raha ho. Baaki poora purana login flow bilkul waisa hi hai, kuchh
+                // chheda nahi gaya.
+                if(users[roll].forceLogout) {
+                    err.innerText = "You have been logged out by the admin. Please try again later or contact your admin.";
+                    if(window.clearForceLogoutFlag) window.clearForceLogoutFlag(roll);
+                    return;
+                }
+
                 // Single-Device Login Lock: check this before finishing login.
                 const deviceId = getDeviceId();
                 if(window.checkAndSetActiveSession) {
@@ -2759,6 +3259,26 @@
             alert("Your profile has been removed/updated by the admin. You have been logged out automatically. Please log in again.");
         }
         window.forceLogoutDeletedUser = forceLogoutDeletedUser;
+
+        // ================= ADDITIVE: ADMIN FORCE LOGOUT =================
+        // Called automatically (realtime) when the admin clicks "Force Logout"
+        // for this user in the admin panel's Users tab. Logs the user out of
+        // the app immediately — same pattern as forceLogoutDeletedUser, but
+        // clears the 'forceLogout' flag afterwards so the account can log in
+        // normally again. Purana koi function/behaviour chheda nahi gaya.
+        function forceLogoutByAdmin() {
+            const roll = localUser ? localUser.rollNumber : null;
+            if(window.unwatchActiveSession) window.unwatchActiveSession();
+            localStorage.removeItem('portalUser');
+            localUser = null;
+            window.localUser = null;
+            closeAllSections();
+            openHomePage();
+            if(window.renderOnlineChats) window.renderOnlineChats();
+            alert("You have been logged out by the admin.");
+            if(roll && window.clearForceLogoutFlag) window.clearForceLogoutFlag(roll);
+        }
+        window.forceLogoutByAdmin = forceLogoutByAdmin;
 
         // Single-Device Login Lock: called (via watchActiveSession) when another
         // device/system logs in with the same Roll Number while this device is
@@ -2837,6 +3357,10 @@
         };
 
         const ttDayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        // ADDITIVE: expose on window so other additive features (Attendance Tracker) can
+        // look up any date's schedule too, without duplicating this data. Nothing above changed.
+        window.cseTimetable = cseTimetable;
+        window.ttDayNames = ttDayNames;
 
         function ttTimeToMinutes(str) {
             const [h, m] = str.split(':').map(Number);
@@ -3161,6 +3685,9 @@
             // ADDITIVE: hide the new engagement hub page too (nothing above changed)
             var engHubPageEl = document.getElementById('engagementHubPage');
             if(engHubPageEl) engHubPageEl.style.display = 'none';
+            // ADDITIVE: hide the new attendance tracker page too (nothing above changed)
+            var attPageEl = document.getElementById('attendancePage');
+            if(attPageEl) attPageEl.style.display = 'none';
         }
 
         window.onclick = function(event) {
@@ -3508,7 +4035,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, onValue, get, set, update, remove, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -3574,9 +4101,147 @@ window.vTick = function(roll, size){
 window.vTickText = function(roll){
   return window.isVerifiedRoll(roll) ? ' \u2714' : '';
 };
+// ================= ADDITIVE: PER-USER BADGE IMAGE + AVATAR SHAPE/COLOUR =================
+// Sab kuchh 'portal/users/{roll}' ke naye optional fields se control hota hai, jo
+// "Red Tick Admin Panel" (red-tick-admin.html) se set hote hain:
+//   badgeImage  : image link -> naam ke turant baad red tick jaisa chhota image
+//   avatarShape : 'circle' (default) | 'square' | 'rounded'
+//   avatarColor : hex colour (default = original blue) -> avatar ka background
+// Agar koi field set nahi hai to purana look bilkul waisa hi rehta hai.
+(function(){
+  function getU(roll){
+    try{ return (window.onlineUsersData || {})[String(roll)] || null; }catch(e){ return null; }
+  }
+  function safeImgUrl(u){
+    u = String(u || '').trim();
+    return /^(https?:\/\/|data:image\/)/i.test(u) ? u : '';
+  }
+  function attrEsc(x){
+    return String(x).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ---- Badge image (red tick ke method jaisa) ----
+  window.userBadgeImgHTML = function(roll, size){
+    var u = getU(roll);
+    if(!u) return '';
+    var src = safeImgUrl(u.badgeImage);
+    if(!src) return '';
+    var s = Math.round((size || 14) * 1.3); // Twitter jaisa: sirf image badge ~30% bada (red tick same size)
+    return '<img class="verified-tick-badge user-img-badge" src="'+attrEsc(src)+'" width="'+s+'" height="'+s+'" alt="Badge" title="Badge" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">';
+  };
+  // Purana vTick same rehta hai (red tick); uske baad badge image jod di jaati hai.
+  // Isse jaha jaha vTick already laga hai (chat, posts, stories, leaderboard, search...)
+  // wahan badge image apne aap dikhne lagti hai.
+  var baseVTick = window.vTick;
+  window.vTick = function(roll, size){
+    var base = baseVTick ? baseVTick(roll, size) : '';
+    return base + window.userBadgeImgHTML(roll, size);
+  };
+
+  // ---- Avatar shape + colour ----
+  var RADII = { circle:'50%', square:'0', rounded:'22%' };
+  function validColor(c){
+    c = String(c || '').trim();
+    return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(c) ? c : '';
+  }
+  function textOn(hex){
+    var h = hex.replace('#','');
+    if(h.length === 3) h = h.split('').map(function(x){ return x+x; }).join('');
+    var r = parseInt(h.substr(0,2),16), g = parseInt(h.substr(2,2),16), b = parseInt(h.substr(4,2),16);
+    return ((0.299*r + 0.587*g + 0.114*b) / 255) > 0.62 ? '#1a1a1a' : '#ffffff';
+  }
+  function styleAvatar(el, roll, shapeOnly){
+    if(!el || !roll) return;
+    var u = getU(roll) || {};
+    var shape = RADII[u.avatarShape] ? u.avatarShape : 'circle';
+    var color = validColor(u.avatarColor);
+    if(shape !== 'circle'){
+      el.style.borderRadius = RADII[shape];
+      el.setAttribute('data-uas-shape','1');
+    }else if(el.getAttribute('data-uas-shape')){
+      el.style.borderRadius = '';
+      el.removeAttribute('data-uas-shape');
+    }
+    if(shapeOnly) return;
+    if(color){
+      el.style.background = color;
+      el.style.color = textOn(color);
+      el.setAttribute('data-uas-color','1');
+    }else if(el.getAttribute('data-uas-color')){
+      el.style.background = '';
+      el.style.color = '';
+      el.removeAttribute('data-uas-color');
+    }
+  }
+  window.refreshUserAvatarStyles = function(){
+    try{
+      var me = window.localUser ? String(window.localUser.rollNumber) : '';
+      var pa = document.getElementById('profAvatar');
+      if(pa && me){
+        styleAvatar(pa, me);
+        styleAvatar(document.getElementById('profAvatarRing'), me, true);
+      }
+      document.querySelectorAll('.feed-search-suggestion-item').forEach(function(item){
+        styleAvatar(item.querySelector('.feed-search-suggestion-avatar'), item.getAttribute('data-roll'));
+      });
+      var fa = document.getElementById('feedUserPostsAvatar');
+      var fr = document.getElementById('feedUserPostsRoll');
+      if(fa && fr){
+        var r = (fr.textContent || '').replace(/^\s*Roll No:\s*/i,'').trim();
+        if(r) styleAvatar(fa, r);
+      }
+      document.querySelectorAll('.story-frame-avatar, .story-viewer-avatar').forEach(function(el){
+        var rr = (el.textContent || '').trim();
+        if(rr) styleAvatar(el, rr);
+      });
+    }catch(e){ /* best-effort, purana UI kabhi nahi rukega */ }
+  };
+  // Jaha bhi avatars dobara render hote hain (story tray, search, viewer...) wahan style dobara lagao
+  var t = null;
+  function schedule(){
+    if(t) return;
+    t = setTimeout(function(){ t = null; window.refreshUserAvatarStyles(); }, 100);
+  }
+  function startObs(){
+    if(!window.MutationObserver || !document.body) return;
+    new MutationObserver(schedule).observe(document.body, { childList:true, subtree:true });
+    schedule();
+  }
+  if(document.body) startObs(); else document.addEventListener('DOMContentLoaded', startObs);
+})();
 function arr(v){return v?Object.entries(v).map(([id,x])=>({id,...x})):[]}
 
 function applyOnlineData(d){
+  // ================= ADDITIVE: CROSS-PANEL STUDENT DELETE CASCADE =================
+  // Purana behaviour (upar/niche) bilkul waisa hi hai — sirf ek naya, alag
+  // check add kiya gaya hai. Yeh 'portal/users' ki nayi snapshot ko purani
+  // snapshot se compare karta hai taaki pata chal sake ki koi roll number
+  // is update me hi gayab hua hai — chahe delete kisi bhi admin panel se hua
+  // ho (is file ke apne admin panel se, ya alag "admin712172.html" se). Jis
+  // roll ka delete detect hota hai, uska poora leftover data (engagement
+  // XP/streak, apne posts/stories, active-session login-lock, personal
+  // notification) automatically saaf ho jaata hai — taaki (a) us roll par
+  // dobara turant login block na ho aur (b) baad me usi roll number par
+  // admin jab bilkul naya student add kare, to use purana data mixed hua na
+  // mile aur wo aasani se is file me login kar sake. Niche wali purani
+  // onlineData.users assignment line bilkul chheda nahi gayi hai.
+  var prevUsersForCascade = onlineData.users || {};
+  var nextUsersForCascade = (d && d.users) ? d.users : {};
+  var prevRollsForCascade = Object.keys(prevUsersForCascade);
+  var nextRollsForCascade = Object.keys(nextUsersForCascade);
+  if(prevRollsForCascade.length){
+    // Safety: agar naya snapshot ekdum khaali aa gaya jab pehle bahut saare
+    // users the, to yeh ek connection glitch ho sakta hai — is case me kuchh
+    // delete nahi karte (poore data ko galti se wipe hone se bachane ke liye).
+    var looksLikeGlitch = nextRollsForCascade.length === 0 && prevRollsForCascade.length > 1;
+    if(!looksLikeGlitch){
+      var newlyDeletedRolls = prevRollsForCascade.filter(function(r){ return !nextUsersForCascade.hasOwnProperty(r); });
+      newlyDeletedRolls.forEach(function(r){
+        if(window.cascadeCleanupDeletedStudentData) window.cascadeCleanupDeletedStudentData(r);
+      });
+    }
+  }
+
   onlineData={...onlineData,...(d||{})};
   onlineData.branding={...onlineData.branding,...((d&&d.branding)||{})};
   onlineData.subjects=arr(d&&d.subjects).length?arr(d.subjects):onlineData.subjects;
@@ -3587,10 +4252,19 @@ function applyOnlineData(d){
   onlineData.chats= arr(d&&d.chats);
 
   window.onlineUsersData = onlineData.users;
+  // ADDITIVE: admin ne avatar shape/colour badla ho to turant lagao
+  if(window.refreshUserAvatarStyles) window.refreshUserAvatarStyles();
 
   if(window.localUser) {
       const liveUser = window.onlineUsersData[window.localUser.rollNumber];
-      if(liveUser) {
+      if(liveUser && liveUser.forceLogout && typeof window.forceLogoutByAdmin === 'function') {
+          // ================= ADDITIVE: ADMIN FORCE LOGOUT DETECTION =================
+          // Admin ne is user ke liye 'forceLogout' flag set kiya hai (Users tab me
+          // "Force Logout" button se). User ki app isko turant pakad kar automatic
+          // logout kar deti hai — bina user ki marzi ke, jaisa deleted-user wale
+          // case me hota hai. Koi purana code/behaviour chheda nahi gaya.
+          window.forceLogoutByAdmin();
+      } else if(liveUser) {
           // Realtime profile update: agar admin ne naam update kiya hai to turant reflect ho.
           window.localUser.name = liveUser.name;
           localStorage.setItem('portalUser', JSON.stringify(window.localUser));
@@ -3843,13 +4517,20 @@ function renderOnlineNotices(){
   const sortedNotices = [...onlineData.notices].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
   c.innerHTML = sortedNotices.map(n => `
-    <li>
+    <li data-notice-id="${esc(n.id)}">
       <a href="${esc(n.link && n.link !== '#' ? n.link : '#')}" ${n.link && n.link !== '#' ? 'target="_blank"' : `onclick="event.preventDefault();alert('Opening official notification: ${esc(n.title)}')"`}>
         <svg class="ui-icon"><use href="#icon-chevron-right"></use></svg> ${esc(n.title)} ${n.isNew ? '<span class="badge-new">NEW</span>' : ''}
       </a>
-      <span class="notice-date"><svg class="ui-icon"><use href="#icon-calendar"></use></svg> ${esc(n.date)}</span>
+      <span class="notice-side-meta">
+        <span class="notice-date"><svg class="ui-icon"><use href="#icon-calendar"></use></svg> ${esc(n.date)}</span>
+        <button type="button" class="notice-share-btn" title="Share Notice" onclick="event.preventDefault();event.stopPropagation();window.shareNotice('${esc(n.id)}')"><svg class="ui-icon"><use href="#icon-share"></use></svg></button>
+      </span>
     </li>
   `).join('');
+
+  // ADDITIVE: agar koi share-link se aaya hai aur uska notice ab list me
+  // maujood hai, to use auto-open + highlight kar do.
+  if(typeof window.tryApplyPendingSharedNotice === 'function') window.tryApplyPendingSharedNotice();
 }
 
 function subscribe(){
@@ -4208,6 +4889,16 @@ window.updateOnlineUser = async function(oldRoll){
     setStatus('User updated successfully.');
 };
 
+// ================= ADDITIVE: ADMIN FORCE LOGOUT (detection side) =================
+// Yeh app khud force-logout signal nahi bhejta — wo signal ab alag
+// "Force Logout Admin Panel" (force-logout-admin.html) se bheja jaata hai.
+// Yahaan sirf ek chhota helper hai jo is app ke apne aap ko logout karne ke
+// baad 'forceLogout' flag ko wapas clear kar deta hai, taaki user turant
+// dobara normally login kar sake. Koi purana function chheda nahi gaya.
+window.clearForceLogoutFlag = async function(roll){
+    try{ await update(ref(db, 'portal/users/' + roll), { forceLogout: false }); }catch(e){ /* best-effort */ }
+};
+
 window.deleteOnlineUser = async function(roll){
     if(!confirm('Are you sure you want to delete this user?')) return;
     await remove(ref(db, 'portal/users/' + roll));
@@ -4233,6 +4924,58 @@ window.deleteOnlineUser = async function(roll){
     }catch(e){ console.warn('Stories cleanup failed', e); }
 
     setStatus('User deleted successfully.');
+};
+
+// ================= ADDITIVE: CROSS-PANEL STUDENT DELETE CASCADE (cleanup fn) =================
+// Bilkul naya, standalone global helper hai — window.deleteOnlineUser (upar) ya
+// koi bhi purana function/method chheda nahi gaya hai. Yeh function upar wale
+// applyOnlineData() ke realtime "roll number gayab ho gaya" detection se call
+// hota hai, isliye yeh kaam karta hai chahe delete is file ke apne admin panel
+// se hua ho ya bilkul alag "admin712172.html" (ya kisi bhi doosre) admin panel
+// se — dono cases me Firebase ka 'portal/users/{roll}' node hi hata hai, aur
+// yeh function usi ek badlaav ko live sunkar poora cleanup kar deta hai.
+// Har step best-effort + try/catch me hai taaki ek cleanup fail ho bhi jaaye
+// to baaki cleanup rukta nahi, aur agar koi cheez pehle se hi hati hui ho
+// (jaise is file ke apne deleteOnlineUser() ne already hata di ho) to remove()
+// dobara call karne se koi error/side-effect nahi hota — safe hai.
+window.cascadeCleanupDeletedStudentData = async function(roll){
+    const rollStr = String(roll);
+    if(!rollStr) return;
+
+    // 1) Engagement data (XP / streak / weekly XP / badges / class rank)
+    try{ await remove(ref(db, 'portal/engagement/users/' + rollStr)); }catch(e){ console.warn('Cascade: engagement cleanup failed', e); }
+
+    // 2) Student's own posts
+    try{
+        const allPosts = (window.adminPostsData || onlineData.posts || []);
+        const ownPosts = allPosts.filter(p => p && String(p.authorRoll || p.userId || p.createdBy || '') === rollStr);
+        await Promise.all(ownPosts.map(p => remove(ref(db, 'portal/posts/' + p.id)).catch(e => console.warn('Cascade: post cleanup failed', p.id, e))));
+    }catch(e){ console.warn('Cascade: posts cleanup failed', e); }
+
+    // 3) Student's own stories
+    try{
+        const allStories = (window.onlineStoriesData || []);
+        const ownStories = allStories.filter(s => s && String(s.authorRoll || '') === rollStr);
+        await Promise.all(ownStories.map(s => remove(ref(db, 'portal/stories/' + s.id)).catch(e => console.warn('Cascade: story cleanup failed', s.id, e))));
+    }catch(e){ console.warn('Cascade: stories cleanup failed', e); }
+
+    // 4) Single-Device Login Lock — agar yeh clear nahi hua to isi roll number
+    //    par naya add kiya gaya student "already logged in on another device"
+    //    error ki wajah se login hi nahi kar payega.
+    try{ await remove(ref(db, 'portal/activeSessions/' + rollStr)); }catch(e){ console.warn('Cascade: active-session cleanup failed', e); }
+
+    // 5) Personal notifications jo sirf isi roll number ke liye targeted thi
+    try{
+        const allNotifs = (onlineData.notifications || []);
+        const ownNotifs = allNotifs.filter(n => n && String(n.targetUser || '') === rollStr);
+        await Promise.all(ownNotifs.map(n => remove(ref(db, 'portal/notifications/' + n.id)).catch(e => console.warn('Cascade: notification cleanup failed', n.id, e))));
+    }catch(e){ console.warn('Cascade: notifications cleanup failed', e); }
+
+    // 6) Doosre students ke posts par isi roll ke reactions (emoji)
+    try{
+        const allPosts2 = (window.adminPostsData || onlineData.posts || []);
+        await Promise.all(allPosts2.filter(p => p && p.id).map(p => remove(ref(db, 'portal/reactions/' + p.id + '/' + rollStr)).catch(()=>{})));
+    }catch(e){ console.warn('Cascade: reactions cleanup failed', e); }
 };
 
 window.renderAdminAll = function() {
@@ -5745,11 +6488,13 @@ onAuthStateChanged(auth, user => {
     const items = list.map(u=>{
       const roll = String(u.roll||'');
       const initials = srchEsc(roll.slice(0,2).toUpperCase() || '?');
+      const rawAbout = window.getUserAboutText ? window.getUserAboutText(roll) : '';
+      const aboutHtml = window.linkifyAboutText ? window.linkifyAboutText(rawAbout) : srchEsc(rawAbout);
       return `<div class="feed-search-suggestion-item" data-roll="${srchEsc(roll)}">
         <div class="feed-search-suggestion-avatar">${initials}</div>
         <div class="feed-search-suggestion-info">
           <div class="feed-search-suggestion-name">${srchEsc(u.name||roll)}</div>
-          <div class="feed-search-suggestion-roll">Roll No: ${srchEsc(roll)}</div>
+          <div class="feed-search-suggestion-about">${aboutHtml}</div>
         </div>
         <button type="button" class="feed-search-suggestion-remove" data-remove-roll="${srchEsc(roll)}" title="Remove"><svg class="ui-icon"><use href="#icon-x"></use></svg></button>
       </div>`;
@@ -5824,11 +6569,13 @@ onAuthStateChanged(auth, user => {
     box.innerHTML = matches.map(u=>{
       const roll = String(u.rollNumber||'');
       const initials = srchEsc(roll.slice(0,2).toUpperCase() || '?');
+      const rawAbout = window.getUserAboutText ? window.getUserAboutText(roll) : '';
+      const aboutHtml = window.linkifyAboutText ? window.linkifyAboutText(rawAbout) : srchEsc(rawAbout);
       return `<div class="feed-search-suggestion-item" data-roll="${srchEsc(roll)}">
         <div class="feed-search-suggestion-avatar">${initials}</div>
         <div>
           <div class="feed-search-suggestion-name">${srchEsc(u.name||roll)}${window.vTick ? window.vTick(roll) : ''}</div>
-          <div class="feed-search-suggestion-roll">Roll No: ${srchEsc(roll)}</div>
+          <div class="feed-search-suggestion-about">${aboutHtml}</div>
         </div>
       </div>`;
     }).join('');
@@ -5857,6 +6604,14 @@ onAuthStateChanged(auth, user => {
     }
     if(rollEl) rollEl.textContent = 'Roll No: ' + roll;
     if(avEl) avEl.textContent = String(roll).slice(0,2).toUpperCase() || '?';
+    // ADDITIVE: USER ABOUT (BIO) — is user ka About header me dikhado
+    // UPDATED: ab About me diya gaya link/dns bhi clickable ban jaata hai
+    // (textContent ki jagah linkify karke innerHTML set kiya gaya hai).
+    const aboutEl = document.getElementById('feedUserPostsAbout');
+    if(aboutEl){
+      const rawAbout = window.getUserAboutText ? window.getUserAboutText(roll) : '';
+      aboutEl.innerHTML = window.linkifyAboutText ? window.linkifyAboutText(rawAbout) : rawAbout;
+    }
     showOnly('feedUserPostsView');
     renderFeedUserPosts(roll);
   }
@@ -5919,6 +6674,12 @@ onAuthStateChanged(auth, user => {
    - One reaction per user per post. Tapping a different emoji switches
      it. Long-pressing (1 sec) your own active emoji removes it. Only the
      reacting user can remove their own reaction.
+   - ADDITIVE UPDATE: Ab apne hi active reaction emoji par dobara sirf tap
+     karne se bhi (long-press ki zaroorat nahi) reaction turant remove ho
+     jaata hai — jaise like/dislike toggle. Purana long-press-remove method
+     bhi waisa hi kaam karta rehta hai (chheda nahi gaya).
+   - ADDITIVE UPDATE: Kisi bhi reaction emoji par tap karke react karne par
+     ab Twitter jaisa "pop/bounce" animation us emoji par chalta hai.
 ===================================================================== */
 (function(){
   const REACTION_EMOJIS = ['👍','❤️','😂','😮','😢'];
@@ -5952,7 +6713,7 @@ onAuthStateChanged(auth, user => {
       btn.type = 'button';
       const count = counts[emo] || 0;
       btn.className = 'post-reaction-btn' + (myReaction===emo ? ' active' : '');
-      btn.innerHTML = rEsc(emo) + (count>0 ? `<span class="post-reaction-count">${count}</span>` : '');
+      btn.innerHTML = '<span class="reaction-emoji">' + rEsc(emo) + '</span>' + (count>0 ? `<span class="post-reaction-count">${count}</span>` : '');
       btn.title = 'React with ' + emo;
 
       let pressTimer = null;
@@ -5972,6 +6733,31 @@ onAuthStateChanged(auth, user => {
       btn.addEventListener('pointerup', ()=>{
         clearPress();
         if(longPressFired) return;
+
+        // ========= ADDITIVE: TAP-TO-TOGGLE REMOVE (jaise like/dislike) =========
+        // Purana long-press-se-remove method chheda nahi gaya (upar wala
+        // pressTimer/longPressFired logic waisa hi hai) — yeh sirf ek naya
+        // additional tareeka hai: agar user isi emoji par pehle se reaction
+        // diya hua hai (button already active), to dobara usi par tap karne
+        // se seedha reaction remove ho jaayega, bina long-press kiye.
+        if(btn.classList.contains('active')){
+          requireLogin(()=>removeOwnPostReaction(pid));
+          return;
+        }
+
+        // ========= ADDITIVE: TWITTER-JAISA POP ANIMATION ON REACT =========
+        // Sirf naya animation trigger hai — emoji span par 'reaction-pop'
+        // class add karke turant reflow karte hain taaki animation baar baar
+        // (repeated taps par bhi) restart ho sake. Purana set/switch logic
+        // (requireLogin -> setOwnPostReaction) waisa hi hai, sirf uske
+        // pehle animation chala diya gaya hai.
+        const emoSpan = btn.querySelector('.reaction-emoji');
+        if(emoSpan){
+          emoSpan.classList.remove('reaction-pop');
+          void emoSpan.offsetWidth;
+          emoSpan.classList.add('reaction-pop');
+        }
+
         requireLogin(()=>setOwnPostReaction(pid, emo));
       });
       btn.addEventListener('pointercancel', clearPress);
@@ -7332,6 +8118,163 @@ onAuthStateChanged(auth, user => {
     return d.getFullYear() + '-W' + pad2(week);
   }
 
+  /* ================= ADDITIVE: SITE-SIDE AI CHALLENGE AUTO-GENERATE =================
+     Pehle sirf challenge-admin.html khula rehne par hi naya AI question generate
+     hota tha (setInterval us tab ke andar chalta tha). Chuki admin tab hamesha
+     khula nahi rakha ja sakta, ab yeh live index.html khud bhi check karta hai:
+     jab bhi koi bhi visitor site kholta hai (ya har naya hour shuru hota hai),
+     yeh dekhta hai ki current hour (hourKey) ke liye Firebase me question
+     already maujood hai ya nahi. Agar nahi hai, to challenge-admin.html wale
+     hi rules/settings (portal/engagement/aiConfig — key, model, xp) aur wahi
+     syllabus use karke ek naya AI question generate karke usi
+     'portal/engagement/dailyChallenge/<hourKey>' path par publish kar deta
+     hai — bilkul admin panel jaisa hi format/behaviour, bas trigger ab
+     "admin tab open hona" ki jagah "koi bhi site kholna" ban gaya hai.
+     Agar aiConfig me koi key hi save nahi hai (AI mode kabhi setup nahi
+     hua), to yeh chup-chaap kuchh nahi karta — purana manual "Set/Update an
+     Hour's Challenge" wala flow (admin se seedha publish) waise ka waisa
+     kaam karta rehta hai, kuchh chheda nahi gaya. */
+  var AI_CONFIG_PATH = 'portal/engagement/aiConfig';
+  var AI_DEFAULT_MODEL = 'meta-llama/llama-3.1-8b-instruct:free';
+  var SYLLABUS_TEXT = [
+    '1. Mathematics-I',
+    '- Unit 1: Trigonometry — Angles and Measurement, Degree and Radian, T-ratios, Allied Angles, Sum and Difference Formula, Product Formula, Multiple and Sub-multiple Angles, Graphs: |x|, sin x, cos x, e^x',
+    '- Unit 2: Differential Calculus — Function, Limits, Standard Limits, Differentiation, Differentiation Rules, Trigonometric Functions, Logarithmic Differentiation, Exponential Functions',
+    '- Unit 3: Partial Fractions — Polynomial Fraction, Proper and Improper Fraction, Partial Fractions, Linear Factors, Repeated Linear Factors',
+    '- Unit 4: Binomial Theorem — nPr and nCr, Binomial Theorem, Expansion, General Term, Middle Term, Independent Term',
+    '- Unit 5: Complex Numbers — Real and Imaginary Parts, Cartesian Form, Polar Form, Conjugate, Modulus, Amplitude, Operations on Complex Numbers, De Moivre\'s Theorem',
+    '',
+    '2. Applied Physics-I',
+    '- Unit 1: Units and Dimensions',
+    '- Unit 2: Force and Motion',
+    '- Unit 3: Work, Power and Energy',
+    '- Unit 4: Circular Motion',
+    '- Unit 5: Rotational Motion of a Rigid Body',
+    '- Unit 6: Properties of Matter',
+    '- Unit 7: Heat and Thermometry',
+    '- Practical: Vernier Calipers, Screw Gauge, Spherometer, Simple Pendulum, Parallelogram Law of Forces, Coefficient of Friction, Viscosity, Conservation of Mechanical Energy, Mercury Thermometer, Hooke\'s Law',
+    '',
+    '3. IT & AI',
+    '- Introduction to Information Technology, Computer Fundamentals, Basic Computer Components, Hardware and Software, Operating System, Internet and Web, Basic Networking, Information Technology Applications, Introduction to Artificial Intelligence, AI Basics and Concepts, Applications of AI',
+    '',
+    '4. Communication Skills in English',
+    '- Unit 1: Communication — Basics of Communication, Communication Process, Formal and Informal Communication, Verbal and Non-verbal Communication, 7 Cs of Communication, Barriers of Communication',
+    '- Unit 2: Soft Skills — Soft Skills, Hard Skills, Importance of Soft Skills',
+    '- Unit 3: Reading Comprehension — Unseen Passage, Questions and Answers, Prefix and Suffix, Synonyms, Antonyms',
+    '- Unit 4: Functional Grammar — Sentences and Types, Parts of Speech, Tenses, Active and Passive Voice, Punctuation',
+    '- Unit 5: Professional Writing — CV/Resume, Cover Letter, Agenda, Minutes, Notice, Official Letter, Memo, Circular, Office Order, Report, Email',
+    '',
+    '5. Engineering Workshop Practice',
+    '- Carpentry Shop: Woodworking Tools, Planing, Marking, Chiselling, Grooving, Turning, Wood Joints',
+    '- Fitting Shop: Fitting Tools, Filing, Drilling, Tapping, Sawing, Cutting, Marking, Hacksawing',
+    '- Welding Shop: Welding Tools, Arc Welding, Gas Welding, MIG Welding, Gas Cutting, Butt Joint, Lap Joint, T-Joint',
+    '- Sheet Metal Shop: Cutting, Bending, Edging, End Curling, Lancing, Soldering, Brazing, Riveting, Seam Joints, Cylinders',
+    '- Plumbing Shop: Plumbing Tools, Pipes and Fittings, Valves, GI/PVC Pipe Joints, Pipe Cutting, Threading, Pipe Fitting',
+    '- Painting & Polishing: Paints, Varnishes, Surface Preparation, Primer, Painting of Wood, Painting of Metal, Electroplating'
+  ].join('\n');
+
+  async function engCallOpenRouterOnce(key, model){
+    var prompt = 'You are a quiz-question generator for first-year diploma/engineering students. '
+      + 'You must generate ONE multiple-choice question STRICTLY AND ONLY from the syllabus given below. '
+      + 'Do NOT use any topic, concept, or example that is not explicitly listed in this syllabus — no outside knowledge, '
+      + 'no unrelated subjects, no made-up or general "computer science trivia" topics. Every question must map to a specific '
+      + 'unit/topic line from the syllabus text.\n\n'
+      + '=== SYLLABUS (the ONLY allowed source of topics) ===\n'
+      + SYLLABUS_TEXT
+      + '\n=== END OF SYLLABUS ===\n\n'
+      + 'Pick ONE topic line from the syllabus above (rotate randomly across the 5 subjects and their units so questions '
+      + 'don\'t repeat the same subject every time), and write one clear, exam-style multiple-choice question on it. '
+      + 'Reply with ONLY raw JSON, no markdown, no code fences, no extra text, in this exact shape: '
+      + '{"question":"...","options":["...","...","...","..."],"correct":0}. '
+      + '"options" must have exactly 4 short items. "correct" is the 0-based index of the correct option.';
+
+    var res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + key,
+        'HTTP-Referer': window.location.href,
+        'X-Title': 'MMITcs Daily Challenge (site auto-gen)'
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if(!res.ok){
+      var errText = await res.text();
+      throw new Error('API error ' + res.status + ': ' + errText.slice(0,200));
+    }
+
+    var data = await res.json();
+    var raw = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
+    raw = raw.trim().replace(/^```json/i,'').replace(/^```/,'').replace(/```$/,'').trim();
+
+    var parsed = JSON.parse(raw); // throws if not valid JSON
+
+    var question = String(parsed.question || '').trim();
+    var options = (parsed.options || []).map(function(o){ return String(o).trim(); });
+    var correct = parseInt(parsed.correct, 10);
+
+    if(!question || options.length !== 4 || options.some(function(o){ return !o; }) || isNaN(correct) || correct < 0 || correct > 3){
+      throw new Error('AI response incomplete/invalid shape');
+    }
+    return { question: question, options: options, correct: correct };
+  }
+
+  // Har period ke liye sirf EK baar generation ho, isliye ek chhota
+  // Firebase transaction-based "lock" (portal/engagement/genLock/<period>)
+  // use kiya gaya hai — agar do visitors ek saath site kholein to bhi
+  // sirf ek hi generate karega, dusra turant lock fail hote hi ruk jaayega.
+  async function engEnsureChallengeForPeriod(period){
+    try{
+      var existing = await get(ref(db, 'portal/engagement/dailyChallenge/'+period));
+      if(existing.exists()) return; // is hour ka question already hai — kuchh mat karo
+
+      var cfgSnap = await get(ref(db, AI_CONFIG_PATH));
+      var cfg = cfgSnap.val() || {};
+      var key = (cfg.key || '').trim();
+      if(!key) return; // AI mode kabhi setup hi nahi hua — chup-chaap skip, manual publish flow waisa hi rahega
+
+      var lockRef = ref(db, 'portal/engagement/genLock/'+period);
+      var lockResult = await runTransaction(lockRef, function(cur){
+        if(cur) return; // kisi aur visitor/tab ne already lock le liya — abort
+        return { by: 'site', ts: Date.now() };
+      });
+      if(!lockResult.committed) return; // lock nahi mila, matlab generation kahin aur ho raha hai
+
+      var model = cfg.model || AI_DEFAULT_MODEL;
+      var xp = parseInt(cfg.xp, 10) || 10;
+
+      // Dobara ek baar check — jab tak lock mila tab tak kisi ne publish to nahi kar diya
+      var recheck = await get(ref(db, 'portal/engagement/dailyChallenge/'+period));
+      if(recheck.exists()) return;
+
+      var MAX_ATTEMPTS = 3, lastErr = null;
+      for(var attempt = 1; attempt <= MAX_ATTEMPTS; attempt++){
+        try{
+          var gen = await engCallOpenRouterOnce(key, model);
+          await set(ref(db, 'portal/engagement/dailyChallenge/'+period), {
+            question: gen.question, options: gen.options, correct: gen.correct, xp: xp, ts: Date.now(), source: 'ai'
+          });
+          var statusMsg = '✅ Published for ' + period + ' (site auto-gen) at ' + new Date().toLocaleTimeString();
+          await set(ref(db, AI_CONFIG_PATH + '/lastStatus'), statusMsg);
+          return;
+        }catch(e){
+          lastErr = e;
+          if(String(e.message).includes('API error')) break;
+        }
+      }
+      if(lastErr){
+        await set(ref(db, AI_CONFIG_PATH + '/lastStatus'), '⚠️ site auto-gen failed for ' + period + ': ' + lastErr.message);
+      }
+    }catch(e){
+      console.error('engEnsureChallengeForPeriod error:', e);
+    }
+  }
+  /* ================= END ADDITIVE: SITE-SIDE AI CHALLENGE AUTO-GENERATE ============= */
+
   var engChallengeData = null;
   var engUsersData = {};
   var engAttemptsData = {};
@@ -7717,6 +8660,11 @@ onAuthStateChanged(auth, user => {
     if(unsubEngChallenge){ try{ unsubEngChallenge(); }catch(e){} }
     if(unsubEngAttempts){ try{ unsubEngAttempts(); }catch(e){} }
 
+    // ADDITIVE: site khulte hi (ya naya hour shuru hote hi) is period ke
+    // liye AI question ho na ho check karke, na ho to admin ke rules ke
+    // hisaab se khud generate + publish kara do (dekhein engEnsureChallengeForPeriod).
+    engEnsureChallengeForPeriod(period);
+
     unsubEngChallenge = onValue(ref(db, 'portal/engagement/dailyChallenge/'+period), function(snap){
       engChallengeData = snap.val();
       renderChallengeCard();
@@ -7809,6 +8757,764 @@ onAuthStateChanged(auth, user => {
   }, function(err){ console.error('Engagement weeklyChampions listener error:', err); });
 })();
 
+/* =====================================================================
+   ADDITIVE: DAILY ATTENDANCE TRACKER (100% Local Storage — per device)
+   Purely additive block. Isse upar ka koi bhi function/variable/listener
+   edit ya remove nahi kiya gaya hai. Koi Firebase call yahan use nahi hoti.
+
+   - Naya "Attendance" quick-link button (Timetable/Programming ke beech)
+     is IIFE se chalta hai.
+   - "Aaj ke subject" seedhe existing cseTimetable / ttGetLiveStatus()
+     (Timetable feature) se hi liye jaate hain — koi alag subject list
+     nahi, jo bhi aaj ke din timetable me schedule hai wahi yahan dikhega.
+   - Data browser ke localStorage me store hota hai (key: roll number ke
+     hisaab se), server/Firebase par kuchh nahi bhejta.
+   - Har period slot ke against ek "dates" map store hoti hai
+     (date -> 'P'/'A'), isliye:
+       (a) aaj ke din jitni baar chahe mark/correct kar sakte ho, aur
+       (b) pichle kisi bhi din (pichla hafta/mahina) ka attendance bhi
+           baad me "+ Add Past Attendance" se bharaa/correct kiya ja
+           sakta hai — koi bhi date dobara double-count nahi hoti.
+   - 75% BTEUP minimum ke hisaab se "safe to bunk" / "attend next N
+     classes" advice dikhata hai — sirf SVG icons ke saath, emoji nahi
+     (global users ke liye plain English UI text).
+====================================================================== */
+(function(){
+  var ATT_REQUIRED_PERCENT = 75; // BTEUP/AKTU minimum required attendance %
+
+  function attToday(){
+    var d = new Date();
+    var pad2 = function(n){ return (n < 10 ? '0' : '') + n; };
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+  }
+
+  function attMyRoll(){
+    return (window.localUser && window.localUser.rollNumber) ? String(window.localUser.rollNumber) : 'guest';
+  }
+
+  function attStorageKey(){
+    return 'portalAttendanceLocal_' + attMyRoll();
+  }
+
+  function attLoadData(){
+    try{
+      var raw = localStorage.getItem(attStorageKey());
+      return raw ? JSON.parse(raw) : {};
+    }catch(e){ return {}; }
+  }
+
+  function attSaveData(data){
+    try{ localStorage.setItem(attStorageKey(), JSON.stringify(data)); }catch(e){ console.error('attendance local save error:', e); }
+  }
+
+  // Aaj ke din ke classes seedhe Timetable feature (cseTimetable ke through
+  // ttGetLiveStatus()) se nikale jaate hain — Break/Free/Holiday chhod kar.
+  function attTodaysClasses(){
+    if(typeof ttGetLiveStatus !== 'function') return { dayKey: '', items: [] };
+    var status = ttGetLiveStatus();
+    var items = [];
+    (status.schedule || []).forEach(function(p, idx){
+      if(p.type === 'Break' || p.type === 'Free' || p.subject === 'HOLIDAY') return;
+      items.push({ key: status.dayKey + '_' + idx, subject: p.subject, teacher: p.teacher, start: p.start, end: p.end });
+    });
+    return { dayKey: status.dayKey, items: items };
+  }
+
+  // ADDITIVE: same as attTodaysClasses() but for ANY date (used by the
+  // "+ Add Past Attendance" backfill panel) — reuses the same window-exposed
+  // cseTimetable/ttDayNames data, so it always matches the real Timetable.
+  function attClassesForDate(dateStr){
+    var parts = String(dateStr).split('-').map(Number);
+    var d = new Date(parts[0], (parts[1] || 1) - 1, parts[2] || 1);
+    var days = window.ttDayNames || ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    var dayKey = days[d.getDay()];
+    var schedule = (window.cseTimetable && window.cseTimetable[dayKey]) || [];
+    var items = [];
+    schedule.forEach(function(p, idx){
+      if(p.type === 'Break' || p.type === 'Free' || p.subject === 'HOLIDAY') return;
+      items.push({ key: dayKey + '_' + idx, subject: p.subject, teacher: p.teacher, start: p.start, end: p.end });
+    });
+    return { dayKey: dayKey, items: items };
+  }
+
+  function attCalcStats(rec){
+    var present = (rec && rec.present) || 0;
+    var absent = (rec && rec.absent) || 0;
+    var total = present + absent;
+    var pct = total > 0 ? Math.round((present / total) * 100) : 100;
+    return { present: present, absent: absent, total: total, pct: pct };
+  }
+
+  function attColorFor(pct, total){
+    if(total === 0) return '#9aa5b1';
+    if(pct >= ATT_REQUIRED_PERCENT) return '#2ecc71';
+    if(pct >= ATT_REQUIRED_PERCENT - 10) return '#ff9900';
+    return '#c0392b';
+  }
+
+  // ADDITIVE UPDATE: emoji hata kar SVG icons use kiye (icon-check /
+  // icon-alert-triangle / icon-live), text pura English rakha hai.
+  function attBunkAdvice(stats){
+    var R = ATT_REQUIRED_PERCENT / 100;
+    var checkIcon = '<svg class="ui-icon"><use href="#icon-check"></use></svg>';
+    var warnIcon = '<svg class="ui-icon"><use href="#icon-alert-triangle"></use></svg>';
+    var dueIcon = '<svg class="ui-icon" style="color:#c0392b;"><use href="#icon-live"></use></svg>';
+    if(stats.total === 0) return "Mark today's attendance to get started.";
+    if(stats.pct >= ATT_REQUIRED_PERCENT){
+      var safe = Math.floor(stats.present / R - stats.total);
+      if(safe < 0) safe = 0;
+      return safe > 0
+        ? (checkIcon + ' Safe to miss next ' + safe + ' class' + (safe > 1 ? 'es' : ''))
+        : (warnIcon + ' At the edge — attend the next class!');
+    } else {
+      var need = Math.ceil((R * stats.total - stats.present) / (1 - R));
+      if(need < 1) need = 1;
+      return dueIcon + ' Attend next ' + need + ' class' + (need > 1 ? 'es' : '') + ' to reach ' + ATT_REQUIRED_PERCENT + '%';
+    }
+  }
+
+  function attOverallStats(data){
+    var totalPresent = 0, totalClasses = 0;
+    Object.keys(data).forEach(function(k){
+      var rec = data[k];
+      totalPresent += (rec.present || 0);
+      totalClasses += (rec.present || 0) + (rec.absent || 0);
+    });
+    var pct = totalClasses > 0 ? Math.round((totalPresent / totalClasses) * 100) : 100;
+    return { present: totalPresent, total: totalClasses, pct: pct };
+  }
+
+  window.openAttendancePage = function(){
+    closeAllSections();
+    document.getElementById('attendancePage').style.display = 'block';
+    window.scrollTo(0, 0);
+    updateNavState('navHome');
+    attRenderPage();
+  };
+
+  function attRenderPage(){
+    var data = attLoadData();
+    var overall = attOverallStats(data);
+
+    var pctEl = document.getElementById('attOverallPct');
+    if(pctEl){
+      pctEl.innerText = overall.pct + '%';
+      pctEl.style.color = attColorFor(overall.pct, overall.total);
+    }
+    var countEl = document.getElementById('attOverallCount');
+    if(countEl) countEl.innerText = overall.present + ' / ' + overall.total + ' classes attended';
+    var adviceEl = document.getElementById('attOverallAdvice');
+    if(adviceEl) adviceEl.innerHTML = attBunkAdvice(overall);
+
+    var todays = attTodaysClasses();
+    var dayLabelEl = document.getElementById('attTodayLabel');
+    if(dayLabelEl) dayLabelEl.innerText = todays.dayKey ? ("Today's Classes — " + todays.dayKey) : "Today's Classes";
+
+    var listEl = document.getElementById('attSubjectList');
+    if(!listEl) return;
+
+    if(todays.items.length === 0){
+      listEl.innerHTML = '<div class="att-empty-note"><svg class="ui-icon"><use href="#icon-calendar"></use></svg> No classes scheduled today as per the Timetable. Enjoy your day off!</div>';
+      return;
+    }
+
+    var today = attToday();
+    listEl.innerHTML = todays.items.map(function(it){
+      var rec = data[it.key] || { present: 0, absent: 0, dates: {} };
+      var stats = attCalcStats(rec);
+      var markToday = rec.dates ? rec.dates[today] : undefined;
+      var color = attColorFor(stats.pct, stats.total);
+      var subj = String(it.subject || '').replace(/</g, '&lt;');
+      var timeMeta = (typeof ttFormatTime === 'function' ? (ttFormatTime(it.start) + ' - ' + ttFormatTime(it.end)) : (it.start + ' - ' + it.end)) + (it.teacher ? (' • ' + it.teacher) : '');
+      return '<div class="att-subject-row">' +
+        '<div class="att-subject-info">' +
+          '<div class="att-subject-title">' + subj + '</div>' +
+          '<div class="att-subject-meta">' + timeMeta + '<br>' + stats.present + '/' + stats.total + ' classes • <span style="color:' + color + ';">' + stats.pct + '%</span>' + (markToday ? (' • <span style="color:#888;">marked ' + (markToday === 'P' ? 'Present' : 'Absent') + ' today</span>') : '') + '</div>' +
+        '</div>' +
+        '<div class="att-subject-actions">' +
+          '<button type="button" class="att-mark-btn att-present-btn' + (markToday === 'P' ? ' att-marked' : '') + '" onclick="markAttendance(\'' + it.key + '\', \'P\')" title="Mark Present"><svg class="ui-icon"><use href="#icon-check"></use></svg></button>' +
+          '<button type="button" class="att-mark-btn att-absent-btn' + (markToday === 'A' ? ' att-marked' : '') + '" onclick="markAttendance(\'' + it.key + '\', \'A\')" title="Mark Absent"><svg class="ui-icon"><use href="#icon-x"></use></svg></button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // ADDITIVE: shared marking logic for a specific slot (key) + specific
+  // calendar date. Ek "dates" map (date -> 'P'/'A') maintain hoti hai taaki:
+  //  - us specific date ke liye jitni baar chaho correct kar sako
+  //    (double-count kabhi nahi hota, purana mark hamesha pehle undo hota hai)
+  //  - aaj ke alawa koi bhi PURANI date (pichla hafta/mahina) bhi isi function
+  //    se safely backfill ho sake.
+  function attMark(key, mark, dateStr){
+    if(!(window.localUser && window.localUser.rollNumber)){ requireLogin(function(){ window.openAttendancePage(); }); return; }
+    var data = attLoadData();
+    var existing = data[key] || { present: 0, absent: 0, dates: {} };
+    if(!existing.dates) existing.dates = {}; // backward-safe for any older saved records
+
+    var present = existing.present || 0;
+    var absent = existing.absent || 0;
+    var prevMark = existing.dates[dateStr];
+    if(prevMark === 'P') present = Math.max(0, present - 1);
+    if(prevMark === 'A') absent = Math.max(0, absent - 1);
+    if(mark === 'P') present += 1; else absent += 1;
+
+    existing.dates[dateStr] = mark;
+    existing.present = present;
+    existing.absent = absent;
+    data[key] = existing;
+    attSaveData(data);
+    attUpdateNavDot();
+    attRenderPage();
+    var panelDateInput = document.getElementById('attBackfillDate');
+    if(panelDateInput && panelDateInput.value === dateStr) attRenderBackfillList(dateStr);
+  }
+
+  // Din ke andar jitni baar chahe mark/re-mark (correction) allowed — sirf
+  // us din ka aakhri mark hi count hota hai, double-count nahi hota.
+  window.markAttendance = function(key, mark){
+    attMark(key, mark, attToday());
+  };
+
+  // ADDITIVE: mark/correct attendance for a PAST date, chosen from the
+  // "+ Add Past Attendance" panel below.
+  window.markBackfillAttendance = function(key, mark, dateStr){
+    attMark(key, mark, dateStr);
+  };
+
+  // ADDITIVE: show/hide the "+ Add Past Attendance" panel and, on first
+  // open, default the date picker to today (capped so future dates can't
+  // be picked) and render that date's classes.
+  window.toggleAttBackfillPanel = function(){
+    var panel = document.getElementById('attBackfillPanel');
+    if(!panel) return;
+    var willShow = panel.style.display === 'none' || !panel.style.display;
+    panel.style.display = willShow ? 'block' : 'none';
+    if(willShow){
+      var dateInput = document.getElementById('attBackfillDate');
+      if(dateInput){
+        dateInput.max = attToday();
+        if(!dateInput.value) dateInput.value = attToday();
+        attRenderBackfillList(dateInput.value);
+      }
+    }
+  };
+
+  // ADDITIVE: renders the Present/Absent list for whichever past date the
+  // user picked in the backfill date input.
+  window.attRenderBackfillList = function(dateStr){
+    var listEl = document.getElementById('attBackfillList');
+    if(!listEl || !dateStr) return;
+    var data = attLoadData();
+    var info = attClassesForDate(dateStr);
+
+    if(info.items.length === 0){
+      listEl.innerHTML = '<div class="att-empty-note"><svg class="ui-icon"><use href="#icon-calendar"></use></svg> No classes were scheduled on this date (' + info.dayKey + ').</div>';
+      return;
+    }
+
+    listEl.innerHTML = info.items.map(function(it){
+      var rec = data[it.key] || { present: 0, absent: 0, dates: {} };
+      var mark = rec.dates ? rec.dates[dateStr] : undefined;
+      var subj = String(it.subject || '').replace(/</g, '&lt;');
+      var timeMeta = (typeof ttFormatTime === 'function' ? (ttFormatTime(it.start) + ' - ' + ttFormatTime(it.end)) : (it.start + ' - ' + it.end)) + (it.teacher ? (' • ' + it.teacher) : '');
+      return '<div class="att-subject-row">' +
+        '<div class="att-subject-info">' +
+          '<div class="att-subject-title">' + subj + '</div>' +
+          '<div class="att-subject-meta">' + timeMeta + (mark ? (' • <span style="color:#888;">marked ' + (mark === 'P' ? 'Present' : 'Absent') + '</span>') : '') + '</div>' +
+        '</div>' +
+        '<div class="att-subject-actions">' +
+          '<button type="button" class="att-mark-btn att-present-btn' + (mark === 'P' ? ' att-marked' : '') + '" onclick="markBackfillAttendance(\'' + it.key + '\', \'P\', \'' + dateStr + '\')" title="Mark Present"><svg class="ui-icon"><use href="#icon-check"></use></svg></button>' +
+          '<button type="button" class="att-mark-btn att-absent-btn' + (mark === 'A' ? ' att-marked' : '') + '" onclick="markBackfillAttendance(\'' + it.key + '\', \'A\', \'' + dateStr + '\')" title="Mark Absent"><svg class="ui-icon"><use href="#icon-x"></use></svg></button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  };
+
+  function attUpdateNavDot(){
+    var dot = document.getElementById('attNavPercentDot');
+    if(!dot) return;
+    var overall = attOverallStats(attLoadData());
+    dot.style.background = attColorFor(overall.pct, overall.total);
+  }
+
+  // Local-storage based hai, isliye koi realtime listener chahiye nahi —
+  // bas load par aur har thodi der me nav dot refresh kar dete hain
+  // (login/logout jaisa purana kuchh state change ho to bhi pakड़ le).
+  attUpdateNavDot();
+  setInterval(attUpdateNavDot, 15000);
+})();
+/* ================= END ADDITIVE: DAILY ATTENDANCE TRACKER ================= */
+
+/* ================= ADDITIVE: FULL OFFLINE MODE (WhatsApp-style local cache) =================
+   Bilkul naya, standalone code hai — upar ka koi bhi purana function,
+   variable, listener ya feature CHHUA/BADLA nahi gaya hai.
+
+   Yeh block sirf itna karta hai:
+   1) Jab bhi Firebase se live data aata hai (subjects/notices/notifications/
+      posts/users/chats/branding + stories), use turant localStorage me bhi
+      save kar deta hai (applyOnlineData ko wrap karke — bilkul waisi hi
+      technique jaisi is file me openProfile/renderOnlinePosts jaise doosre
+      "ADDITIVE" blocks me pehle se use ho rahi hai).
+   2) App load hote hi (chahe internet ho ya na ho), sabse pehle wahi
+      last-saved data turant screen par laga deta hai — taaki content turant
+      dikhe, jaise WhatsApp me purana chat turant dikhta hai aur internet
+      aane par apne aap fresh/sync ho jaata hai.
+   3) window.__offlineHasCache / window.__offlineShowBanner ko expose karta
+      hai taaki niche wala "No Internet" overlay script (jo is module ke
+      bahar, alag classic <script> me hai) offline hone par har click block
+      karne ki bajaye, agar pehle se saved data maujood hai to app ko
+      normally offline use hone de — bas ek chhota "Offline" banner dikhaye.
+*/
+(function(){
+  var OFFLINE_KEY_PORTAL = 'offlinePortalData';
+  var OFFLINE_KEY_STORIES = 'offlineStoriesData';
+
+  function safeSave(key, val){
+    try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+  }
+  function safeLoad(key){
+    try{
+      var raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  }
+
+  // ---- 1) Cache every live Firebase update of the main 'portal' feed ----
+  var __origApplyOnlineData = applyOnlineData;
+  applyOnlineData = function(d){
+    if(d && Object.keys(d).length){
+      safeSave(OFFLINE_KEY_PORTAL, d);
+    }
+    return __origApplyOnlineData(d);
+  };
+  window.applyOnlineData = applyOnlineData;
+
+  // Stories: existing code already keeps them in window.onlineStoriesData.
+  // A getter/setter lets us cache every future update too, without touching
+  // the original assignment line (portal/stories onValue listener) at all.
+  var __storiesVal = window.onlineStoriesData;
+  try{
+    Object.defineProperty(window, 'onlineStoriesData', {
+      configurable: true,
+      get: function(){ return __storiesVal; },
+      set: function(v){
+        __storiesVal = v;
+        if(v && v.length) safeSave(OFFLINE_KEY_STORIES, v);
+      }
+    });
+  }catch(e){}
+
+  // ---- 2) Restore last-saved data immediately on boot ----
+  var cachedPortal = safeLoad(OFFLINE_KEY_PORTAL);
+  if(cachedPortal){
+    try{ applyOnlineData(cachedPortal); }catch(e){}
+  }
+  var cachedStories = safeLoad(OFFLINE_KEY_STORIES);
+  if(cachedStories){
+    window.onlineStoriesData = cachedStories;
+    try{ if(typeof window.renderStoryTray === 'function') window.renderStoryTray(); }catch(e){}
+    try{ if(typeof window.renderProfileStoryRing === 'function') window.renderProfileStoryRing(); }catch(e){}
+  }
+
+  // ---- 3) Let the "No Internet" overlay (separate classic script below)
+  // know that saved data exists, plus a small shared banner it/​we can use.
+  window.__offlineHasCache = !!cachedPortal;
+
+  var offlineBannerTimer = null;
+  function showOfflineBanner(){
+    if(offlineBannerTimer){ clearTimeout(offlineBannerTimer); offlineBannerTimer = null; }
+    if(document.getElementById('offlineModeBanner')){
+      offlineBannerTimer = setTimeout(hideOfflineBanner, 30000);
+      return;
+    }
+    var b = document.createElement('div');
+    b.id = 'offlineModeBanner';
+    b.textContent = 'Offline — showing saved data.';
+    b.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:99998;background:var(--sarkari-red,#c0392b);color:#fff;text-align:center;font-size:0.78rem;padding:7px 10px;box-shadow:0 -2px 10px rgba(0,0,0,0.25);';
+    document.body.appendChild(b);
+    offlineBannerTimer = setTimeout(hideOfflineBanner, 30000);
+  }
+  function hideOfflineBanner(){
+    if(offlineBannerTimer){ clearTimeout(offlineBannerTimer); offlineBannerTimer = null; }
+    var b = document.getElementById('offlineModeBanner');
+    if(b) b.remove();
+  }
+  window.__offlineShowBanner = showOfflineBanner;
+  window.__offlineHideBanner = hideOfflineBanner;
+
+  window.addEventListener('online', hideOfflineBanner);
+  window.addEventListener('offline', function(){ if(window.__offlineHasCache) showOfflineBanner(); });
+  if(!navigator.onLine && window.__offlineHasCache) showOfflineBanner();
+
+  // Agar koi action (post/chat/login/admin-save waghera) sirf isliye fail
+  // hua kyunki device offline hai, to use silently fail hone dene ki bajaye
+  // yeh chhota banner dikha deta hai — bina us action ke apne purane code ko
+  // chhue.
+  window.addEventListener('unhandledrejection', function(){
+    if(!navigator.onLine) showOfflineBanner();
+  });
+})();
+/* ================= END ADDITIVE: FULL OFFLINE MODE ================= */
+
+/* ================= ADDITIVE: NEVER SHOW INTERNAL HARDCODED DATA =================
+   Bilkul naya, standalone code hai — loadSubjects() / renderNotifications() /
+   renderNoticeBoard() (jo is file ke purane, sirf-local/hardcoded internal
+   subjects, notifications aur notices dikhate the) delete ya edit NAHI kiye
+   gaye hain — sirf inhe (bilkul upar wale applyOnlineData wrap jaisi hi
+   technique se) no-op kar diya gaya hai, taaki inka internal/hardcoded data
+   screen par kabhi bhi — chahe online ho ya offline — na dikhe.
+
+   window.onload (jo khud chheda nahi gaya) abhi bhi loadSubjects(),
+   renderNotifications() aur renderNoticeBoard() ko call karta hai — bas ab
+   woh kuchh render nahi karte. subjectsGrid / notifList / sarkariNoticeList
+   ab hamesha sirf real data se hi bharte hain:
+     - Offline: upar wale "FULL OFFLINE MODE" block dwara localStorage se
+       restore kiya gaya, pehle online rehte waqt save hua data (isi purane
+       renderOnlineSubjects / renderOnlineNotifications / renderOnlineNotices
+       ke through).
+     - Online: Firebase se live data (wahi purane renderOnlineSubjects /
+       renderOnlineNotifications / renderOnlineNotices functions, jo
+       applyOnlineData ke andar se hi call hote hain — unko bhi chheda nahi
+       gaya hai). */
+(function(){
+  function noop(){}
+  if(typeof window.loadSubjects === 'function') window.loadSubjects = noop;
+  if(typeof window.renderNotifications === 'function') window.renderNotifications = noop;
+  if(typeof window.renderNoticeBoard === 'function') window.renderNoticeBoard = noop;
+})();
+/* ================= END ADDITIVE: NEVER SHOW INTERNAL HARDCODED DATA ================= */
+
+/* ================= ADDITIVE: USER ABOUT (BIO) FEATURE — WhatsApp jaisa "About" =================
+   Bilkul naya, standalone block hai. Koi bhi purana function/variable/method
+   (openProfile, applyOnlineData, renderSuggestions, renderSearchHistory,
+   openUserPostsFromSearch waghera) delete ya rewrite nahi kiya gaya — jaha
+   zaroorat thi wahan sirf naya HTML/element additively use kiya gaya hai
+   (upar dekhein), aur openProfile ko yahan bhi wahi purani "wrap old function"
+   technique se extend kiya gaya hai jaisi is file me pehle se hi (line ~5409,
+   ~5596) use ho rahi hai. 'about' field 'portal/users/{roll}/about' me
+   Firebase me save hota hai, isliye woh window.onlineUsersData ke through
+   feed search me bhi automatically live dikhta hai. */
+(function(){
+  var DEFAULT_ABOUT = 'Hey there! I am using CSE 1st Sem Portal.';
+  var ABOUT_MAX = 50;
+
+  // Kisi bhi roll ka current About text — live Firebase data se, warna
+  // (apne hi profile ke liye) localUser se, warna WhatsApp jaisa default text.
+  window.getUserAboutText = function(roll){
+    try{
+      var live = (window.onlineUsersData || {})[String(roll)];
+      if(live && typeof live.about === 'string' && live.about.trim()) return live.about;
+    }catch(e){}
+    try{
+      if(window.localUser && String(window.localUser.rollNumber) === String(roll) && window.localUser.about) return window.localUser.about;
+    }catch(e){}
+    return DEFAULT_ABOUT;
+  };
+
+  function renderOwnAbout(){
+    if(!window.localUser) return;
+    var t = document.getElementById('profAboutText');
+    var raw = window.getUserAboutText(window.localUser.rollNumber);
+    // UPDATED: agar About me link/dns diya gaya ho to wo clickable link
+    // ban kar dikhta hai (textContent ki jagah linkify karke innerHTML).
+    if(t) t.innerHTML = window.linkifyAboutText ? window.linkifyAboutText(raw) : raw;
+  }
+
+  window.openAboutEditor = function(){
+    if(!window.localUser) return;
+    var editor = document.getElementById('profAboutEditor');
+    var input = document.getElementById('profAboutInput');
+    var counter = document.getElementById('profAboutCounter');
+    var wrap = document.getElementById('profAboutWrap');
+    if(!editor || !input) return;
+    var cur = window.getUserAboutText(window.localUser.rollNumber);
+    input.value = (cur === DEFAULT_ABOUT) ? '' : cur;
+    if(counter) counter.textContent = input.value.length + '/' + ABOUT_MAX;
+    if(wrap) wrap.style.display = 'none';
+    editor.style.display = 'block';
+    setTimeout(function(){ input.focus(); }, 30);
+  };
+
+  window.closeAboutEditor = function(){
+    var editor = document.getElementById('profAboutEditor');
+    var wrap = document.getElementById('profAboutWrap');
+    if(editor) editor.style.display = 'none';
+    if(wrap) wrap.style.display = '';
+  };
+
+  window.saveAboutText = async function(){
+    if(!window.localUser) return;
+    var input = document.getElementById('profAboutInput');
+    if(!input) return;
+    var text = input.value.trim().slice(0, ABOUT_MAX);
+    var toSave = text || DEFAULT_ABOUT;
+    try{
+      await update(ref(db, 'portal/users/' + window.localUser.rollNumber), { about: toSave });
+    }catch(e){ /* best-effort — save fail hone par bhi purana UI kabhi nahi rukta */ }
+    window.localUser.about = toSave;
+    try{ localStorage.setItem('portalUser', JSON.stringify(window.localUser)); }catch(e){}
+    renderOwnAbout();
+    window.closeAboutEditor();
+  };
+
+  document.addEventListener('input', function(e){
+    if(e.target && e.target.id === 'profAboutInput'){
+      var counter = document.getElementById('profAboutCounter');
+      if(counter) counter.textContent = e.target.value.length + '/' + ABOUT_MAX;
+    }
+  });
+
+  // Apna profile khulte hi About turant render ho jaaye — purani openProfile()
+  // (aur uske upar ke sab wrappers) bilkul pehle jaisa hi chalta hai, bas iske
+  // baad naya About render extra ho jaata hai.
+  var prevOpenProfileForAbout = window.openProfile;
+  window.openProfile = function(){
+    if(typeof prevOpenProfileForAbout === 'function') prevOpenProfileForAbout();
+    setTimeout(renderOwnAbout, 45);
+  };
+})();
+/* ================= END ADDITIVE: USER ABOUT (BIO) FEATURE ================= */
+
+/* ================= ADDITIVE: ABOUT TEXT LINK / DNS AUTO-LINKIFY =================
+   Purely additive helper. Koi purana function/variable chheda nahi gaya —
+   sirf ek naya global helper window.linkifyAboutText() add kiya gaya hai,
+   jise upar ke ABOUT (BIO) render points (renderOwnAbout, feedUserPostsAbout,
+   aur feed search suggestion list) use karte hain (textContent ki jagah
+   ab innerHTML + is helper ka istemaal hota hai).
+
+   Kaam:
+   - User "About" me chahe sirf link de (jaise "google.com" ya
+     "https://wa.me/91xxxxxxxxxx"), ya text ke saath link/dns mix kare
+     (jaise "Insta: instagram.com/xyz"), dono cases me sirf link/dns wala
+     hissa clickable ban jaata hai — baaki text plain hi rehta hai.
+   - Bina http/https ke bhi (sirf dns jaise "example.com") likhne par bhi
+     wo auto link me convert ho jaata hai.
+   - Display me kabhi "https://" nahi dikhta — sirf link/dns ka naam
+     dikhta hai — lekin click karne par asli link (https:// ke saath)
+     naye tab me properly open hota hai.
+   - Pehle HTML-escape karke, phir link-pattern match kiya jaata hai —
+     isliye koi bhi About text HTML/script inject nahi kar sakta.
+==================================================================== */
+(function(){
+  function escHtml(v){
+    return String(v==null ? '' : v).replace(/[&<>"']/g, function(m){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+    });
+  }
+
+  // Common TLDs list — isse random "word.word" (jaise "Mr.Sharma") link
+  // nahi bante, lekin popular domains (.com/.in/.io/.me/.co.in etc.) sahi
+  // se pehchane jaate hain.
+  var TLDS = 'com|net|org|edu|gov|mil|int|io|co|me|info|biz|app|dev|xyz|' +
+             'online|site|tech|store|blog|club|live|fun|world|team|space|' +
+             'website|page|link|shop|ai|us|uk|in|ca|au|de|jp|cn|ru|br|nl|' +
+             'it|es|fr|pl|se|ch|at|be|dk|fi|no|gr|pt|ie|nz|sg|hk|tw|kr|ae|' +
+             'sa|za|mx|ar|id|my|ph|th|vn|pk|bd|lk|np|' +
+             'co\\.in|ac\\.in|gov\\.in|org\\.in|net\\.in|edu\\.in|' +
+             'co\\.uk|org\\.uk|ac\\.uk|com\\.au|co\\.jp|com\\.br|co\\.za|com\\.cn';
+
+  var urlRe = new RegExp(
+    '\\b((?:https?:\\/\\/)?(?:www\\.)?[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?' +
+    '(?:\\.[a-z0-9-]{1,61}[a-z0-9])*\\.(?:' + TLDS + ')(?:\\/[^\\s<]*)?)',
+    'gi'
+  );
+
+  window.linkifyAboutText = function(rawText){
+    var safe = escHtml(rawText);
+    return safe.replace(urlRe, function(match){
+      // Display text me "https://"/"http://" hamesha hata diya jaata hai —
+      // sirf link/dns ka naam (aur uske aage ka path agar ho) dikhta hai.
+      var display = match.replace(/^https?:\/\//i, '');
+      var hrefRaw = match
+        .replace(/&amp;/g, '&').replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+      if(!/^https?:\/\//i.test(hrefRaw)) hrefRaw = 'https://' + hrefRaw;
+      var hrefAttr = hrefRaw.replace(/"/g, '&quot;');
+      return '<a href="' + hrefAttr + '" target="_blank" rel="noopener noreferrer" ' +
+             'class="about-link" onclick="event.stopPropagation()">' + display + '</a>';
+    });
+  };
+})();
+/* ================= END ADDITIVE: ABOUT TEXT LINK / DNS AUTO-LINKIFY ================= */
+
+</script>
+
+<!-- =====================================================================
+     ADDITIVE: NO INTERNET ALERT OVERLAY
+     Purely additive block. Nothing above this is edited or removed.
+
+     - App offline khulti hai to yeh alert (animated no-internet SVG +
+       message + right-side OK button) turant dikh jaata hai.
+     - OK dabane par sirf alert hat jaata hai.
+     - Uske baad, jab tak internet nahi aata, Timetable button ke alawa
+       koi bhi aur button/link click karne par yeh alert dobara aayega
+       (us click ko rok kar). OK dabate hi alert hat jaata hai AUR user
+       jis button ko kholna chahta tha wahi khul jaata hai.
+     - Timetable button hamesha kaam karta hai (offline data hai) — isko
+       kabhi intercept nahi kiya jaata.
+====================================================================== -->
+<div id="noInternetOverlay" class="no-internet-overlay" style="display:none;">
+    <div class="no-internet-box">
+        <div class="no-internet-icon-wrap">
+            <svg class="no-internet-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="72" r="5" fill="var(--primary-blue, #003366)"/>
+                <path class="no-internet-arc arc3" d="M38 58 A 17 17 0 0 1 62 58" fill="none" stroke="var(--primary-blue, #003366)" stroke-width="5" stroke-linecap="round"/>
+                <path class="no-internet-arc arc2" d="M28 46 A 31 31 0 0 1 72 46" fill="none" stroke="var(--primary-blue, #003366)" stroke-width="5" stroke-linecap="round"/>
+                <path class="no-internet-arc arc1" d="M16 34 A 48 48 0 0 1 84 34" fill="none" stroke="var(--primary-blue, #003366)" stroke-width="5" stroke-linecap="round"/>
+                <line class="no-internet-slash" x1="14" y1="14" x2="86" y2="86" stroke="var(--sarkari-red, #c0392b)" stroke-width="7" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <h3 class="no-internet-title">No Internet Connection</h3>
+        <p class="no-internet-msg">Please connect to the internet and try again.</p>
+        <div class="no-internet-actions">
+            <button type="button" id="noInternetOkBtn" class="no-internet-ok-btn">OK</button>
+        </div>
+    </div>
+</div>
+<style>
+    .no-internet-overlay{
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.65);
+        z-index:999999;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        animation:noNetFadeIn 0.25s ease-in-out;
+    }
+    @keyframes noNetFadeIn{ from{opacity:0;} to{opacity:1;} }
+    .no-internet-box{
+        background:#fff;
+        border-radius:14px;
+        max-width:340px;
+        width:100%;
+        padding:28px 22px 22px;
+        text-align:center;
+        box-shadow:0 10px 40px rgba(0,0,0,0.3);
+        animation:noNetPopIn 0.3s ease-out;
+    }
+    @keyframes noNetPopIn{ from{transform:scale(0.85); opacity:0;} to{transform:scale(1); opacity:1;} }
+    .no-internet-icon-wrap{ margin-bottom:12px; }
+    .no-internet-svg{ width:90px; height:90px; }
+    .no-internet-title{ color:var(--sarkari-red, #c0392b); font-size:1.15rem; margin-bottom:8px; }
+    .no-internet-msg{ color:var(--text-dark, #333); font-size:0.9rem; margin-bottom:20px; line-height:1.4; }
+    .no-internet-actions{ display:flex; justify-content:flex-end; }
+    .no-internet-ok-btn{
+        background:var(--primary-blue, #003366);
+        color:#fff;
+        border:none;
+        padding:9px 28px;
+        border-radius:8px;
+        font-weight:bold;
+        font-size:0.9rem;
+        cursor:pointer;
+        transition:background 0.2s, transform 0.15s;
+    }
+    .no-internet-ok-btn:hover{ background:#002244; }
+    .no-internet-ok-btn:active{ transform:scale(0.95); }
+    .no-internet-arc{ transform-origin:50px 72px; animation:noNetArcPulse 1.6s ease-in-out infinite; opacity:0.3; }
+    .no-internet-arc.arc1{ animation-delay:0s; }
+    .no-internet-arc.arc2{ animation-delay:0.2s; }
+    .no-internet-arc.arc3{ animation-delay:0.4s; }
+    @keyframes noNetArcPulse{ 0%,100%{opacity:0.25;} 50%{opacity:0.9;} }
+    .no-internet-slash{
+        stroke-dasharray:130;
+        stroke-dashoffset:130;
+        animation:noNetSlashDraw 0.6s ease-out forwards, noNetSlashPulse 1.4s ease-in-out 0.6s infinite;
+    }
+    @keyframes noNetSlashDraw{ to{stroke-dashoffset:0;} }
+    @keyframes noNetSlashPulse{ 0%,100%{opacity:1;} 50%{opacity:0.55;} }
+</style>
+<script>
+(function(){
+    // Purely additive IIFE — koi bhi purana function/variable/listener
+    // touch nahi kiya gaya hai.
+    var overlay = document.getElementById('noInternetOverlay');
+    var okBtn = document.getElementById('noInternetOkBtn');
+    var pendingOfflineTarget = null;
+    var bypassOfflineIntercept = false;
+
+    function isOffline(){
+        return !navigator.onLine;
+    }
+
+    // ================= ADDITIVE: OFFLINE-WITH-SAVED-DATA CHECK =================
+    // Naya helper hai — niche ka koi bhi purana function/logic isse chheda
+    // nahi gaya hai. Agar app ne pehle kabhi bhi (kisi bhi purani session
+    // me) data localStorage me save kiya ho (dekhein module script ka
+    // "FULL OFFLINE MODE" block), to iska matlab hai app ab offline bhi
+    // normally use ho sakta hai (saved data ke saath) — isliye aisi
+    // situation me hum har click ko block nahi karte.
+    function hasOfflineCache(){
+        try{ return !!localStorage.getItem('offlinePortalData'); }catch(e){ return false; }
+    }
+
+    function showNoInternetOverlay(){
+        if(overlay){
+            overlay.style.display = 'flex';
+        }
+    }
+
+    function hideNoInternetOverlay(){
+        if(overlay){
+            overlay.style.display = 'none';
+        }
+    }
+
+    if(okBtn){
+        okBtn.addEventListener('click', function(){
+            hideNoInternetOverlay();
+            var target = pendingOfflineTarget;
+            pendingOfflineTarget = null;
+            // Jo button user kholna chahta tha, OK dabane ke baad wahi
+            // (aur sirf wahi) ab khulta hai.
+            if(target && document.body.contains(target)){
+                bypassOfflineIntercept = true;
+                try{ target.click(); }catch(e){}
+                bypassOfflineIntercept = false;
+            }
+        });
+    }
+
+    // App load hote hi agar offline hai to alert turant dikhado — LEKIN
+    // sirf tab, jab pehle se koi saved data hi na ho (pehli dafa hi bina
+    // internet ke khola ho). Agar saved data hai, to overlay ki jagah
+    // (module script wala) chhota "Offline" banner dikhega aur app turant
+    // saved data ke saath normally use ho sakta hai.
+    if(isOffline() && !hasOfflineCache()){
+        showNoInternetOverlay();
+    } else if(isOffline() && typeof window.__offlineShowBanner === 'function'){
+        window.__offlineShowBanner();
+    }
+
+    // Capture-phase click intercept — Timetable button ke alawa (jo
+    // offline bhi kaam karta hai) baaki har button/link click ko, jab
+    // tak offline hai AUR koi saved data maujood nahi hai, tab tak rok kar
+    // pehle yeh alert dikhata hai. Saved data maujood hone par clicks ab
+    // block nahi hote — app WhatsApp jaisa offline-usable ban jaata hai.
+    document.addEventListener('click', function(e){
+        if(bypassOfflineIntercept) return;
+        if(!isOffline()) return;
+        if(hasOfflineCache()) return;
+        if(overlay && overlay.contains(e.target)) return;
+
+        var timetableBtn = document.getElementById('timetableNavBtn');
+        if(timetableBtn && (e.target === timetableBtn || timetableBtn.contains(e.target))) return;
+
+        var actionable = e.target.closest('[onclick], button, a[href]');
+        if(!actionable) return;
+        if(actionable.id === 'timetableNavBtn') return;
+
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        pendingOfflineTarget = actionable;
+        showNoInternetOverlay();
+    }, true);
+
+    // Jab internet wapas aa jaaye to koi purana behaviour change nahi
+    // hota — bas agla naya click ab intercept nahi hoga.
+})();
 </script>
 </body>
 </html>
