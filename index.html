@@ -1522,14 +1522,16 @@
         .feed-search-suggestion-about:empty { display: none; }
         .feed-user-posts-about { color: #888; font-size: 0.78rem; font-style: italic; margin-top: 1px; }
         .feed-user-posts-about:empty { display: none; }
-        /* ================= ADDITIVE UPDATE: ABOUT TEXT KE ANDAR CLICKABLE LINK/DNS =================
-           About me diya gaya link/dns ab is style me dikhega — normal text jaisa hi
-           italic style barkarar, bas link thoda highlight aur underline ho jaata hai
-           taaki user ko pata chale yeh click karne layak hai. */
-        .about-inline-link { color: var(--primary-blue); text-decoration: underline; font-style: normal; word-break: break-all; }
-        .about-inline-link:hover, .about-inline-link:active { opacity: 0.8; }
-        /* ================= END ADDITIVE UPDATE ================= */
         /* ================= END ADDITIVE: USER ABOUT (BIO) FEATURE ================= */
+
+        /* ================= ADDITIVE: ABOUT TEXT AUTO-LINK STYLE =================
+           About me me agar user koi link ya dns/domain likhta hai, to wahi
+           hissa is style se dikhta hai. "https://" kabhi show nahi hota —
+           sirf link/dns ka naam dikhta hai, click karne par asli link
+           (https:// ke saath) naye tab me open ho jaata hai. Purana koi
+           CSS rule chheda nahi gaya, sirf naya rule add kiya gaya hai. */
+        .about-link { color: var(--primary-blue); text-decoration: underline; word-break: break-all; }
+        .about-link:hover, .about-link:active { opacity: 0.8; }
     
         /* FIREBASE ONLINE ADMIN PANEL */
         .admin-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:12000;display:none;align-items:center;justify-content:center;padding:15px}
@@ -1585,9 +1587,6 @@
 .user-post-card{background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:12px;margin-bottom:15px;border-top:3px solid var(--accent-orange)}
 .user-post-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
 .user-post-author{font-weight:700;color:var(--primary-blue)}
-/* ================= ADDITIVE UPDATE: FEED ME NAAM KE SATH ROLL NUMBER PROFILE (Instagram jaisa) ================= */
-.user-post-roll{font-size:.75rem;color:#64748b;font-weight:600;margin-top:1px}
-/* ================= END ADDITIVE UPDATE ================= */
 .user-post-time{font-size:.75rem;color:#64748b;margin-top:3px}
 .user-post-delete{border:0;background:#fee2e2;color:#b91c1c;border-radius:7px;padding:6px 9px;font-weight:700;cursor:pointer}
 .user-post-body{font-size:.95rem;line-height:1.5;color:#374151;white-space:pre-wrap;word-break:break-word;margin-bottom:10px}
@@ -1724,34 +1723,6 @@
 .post-reaction-count{font-size:.72rem;font-weight:700;color:#334155}
 .post-card .post-reaction-bar{margin-top:10px}
 .user-post-card .post-reaction-bar{border-top:none;margin-top:0;padding-top:0;margin-bottom:6px}
-/* ================= ADDITIVE UPDATE: TWITTER-JAISA REACTION TAP ANIMATION =================
-   Yeh sirf visual animation ke liye hai — .post-reaction-btn/.post-reaction-bar ka koi
-   purana layout/behaviour rule upar chheda nahi gaya hai. */
-@keyframes postReactionPopScale{
-  0%{ transform:scale(1); }
-  30%{ transform:scale(1.55); }
-  55%{ transform:scale(0.85); }
-  78%{ transform:scale(1.12); }
-  100%{ transform:scale(1); }
-}
-.post-reaction-btn.post-reaction-pop{ animation: postReactionPopScale .45s cubic-bezier(.34,1.56,.64,1); }
-#reactionBurstLayer{ position:fixed; left:0; top:0; width:0; height:0; overflow:visible; pointer-events:none; z-index:999998; }
-.post-reaction-burst-particle{
-  position:fixed;
-  font-size:1.05rem;
-  line-height:1;
-  pointer-events:none;
-  transform:translate(-50%,-50%);
-  animation-name: postReactionBurstFly;
-  animation-timing-function: cubic-bezier(.2,.85,.35,1);
-  animation-fill-mode: forwards;
-  will-change: transform, opacity;
-}
-@keyframes postReactionBurstFly{
-  0%{ transform:translate(-50%,-50%) translate(0,0) scale(.6) rotate(0deg); opacity:1; }
-  100%{ transform:translate(-50%,-50%) translate(var(--rtx),var(--rty)) scale(1.25) rotate(var(--rrot)); opacity:0; }
-}
-/* ================= END ADDITIVE UPDATE: TWITTER-JAISA REACTION TAP ANIMATION ================= */
 </style>
 <style>
 /* ================= ADDITIVE: BOOT LOADER (8s intro animation) ================= */
@@ -5711,7 +5682,7 @@ onAuthStateChanged(auth, user => {
     }
     return `<article class="global-user-post user-post-card" data-user-post-id="${esc(p.id||'')}">
       <div class="user-post-head">
-        <div><div class="user-post-author">${author}${authorTick}</div><div class="user-post-roll">${authorRollForTick?('Roll No: '+esc(authorRollForTick)):''}</div><div class="user-post-time">${typeof userPostTime==='function'?userPostTime(p.timestamp):''}</div></div>
+        <div><div class="user-post-author">${author}${authorTick}</div><div class="user-post-time">${typeof userPostTime==='function'?userPostTime(p.timestamp):''}</div></div>
         ${isOwn?`<button class="user-post-delete" onclick="deleteOwnUserPost('${esc(p.id)}')"><svg class="ui-icon"><use href="#icon-trash"></use></svg> Delete</button>`:''}
       </div>
       ${text}${media}
@@ -6500,12 +6471,13 @@ onAuthStateChanged(auth, user => {
     const items = list.map(u=>{
       const roll = String(u.roll||'');
       const initials = srchEsc(roll.slice(0,2).toUpperCase() || '?');
+      const rawAbout = window.getUserAboutText ? window.getUserAboutText(roll) : '';
+      const aboutHtml = window.linkifyAboutText ? window.linkifyAboutText(rawAbout) : srchEsc(rawAbout);
       return `<div class="feed-search-suggestion-item" data-roll="${srchEsc(roll)}">
         <div class="feed-search-suggestion-avatar">${initials}</div>
         <div class="feed-search-suggestion-info">
           <div class="feed-search-suggestion-name">${srchEsc(u.name||roll)}</div>
-          <!-- ADDITIVE UPDATE: Roll No line yaha search bar suggestion me ab nahi dikhta (sirf naam + about) -->
-          <div class="feed-search-suggestion-about">${window.linkifyAboutText ? window.linkifyAboutText(window.getUserAboutText ? window.getUserAboutText(roll) : '') : srchEsc(window.getUserAboutText ? window.getUserAboutText(roll) : '')}</div>
+          <div class="feed-search-suggestion-about">${aboutHtml}</div>
         </div>
         <button type="button" class="feed-search-suggestion-remove" data-remove-roll="${srchEsc(roll)}" title="Remove"><svg class="ui-icon"><use href="#icon-x"></use></svg></button>
       </div>`;
@@ -6580,12 +6552,13 @@ onAuthStateChanged(auth, user => {
     box.innerHTML = matches.map(u=>{
       const roll = String(u.rollNumber||'');
       const initials = srchEsc(roll.slice(0,2).toUpperCase() || '?');
+      const rawAbout = window.getUserAboutText ? window.getUserAboutText(roll) : '';
+      const aboutHtml = window.linkifyAboutText ? window.linkifyAboutText(rawAbout) : srchEsc(rawAbout);
       return `<div class="feed-search-suggestion-item" data-roll="${srchEsc(roll)}">
         <div class="feed-search-suggestion-avatar">${initials}</div>
         <div>
           <div class="feed-search-suggestion-name">${srchEsc(u.name||roll)}${window.vTick ? window.vTick(roll) : ''}</div>
-          <!-- ADDITIVE UPDATE: Roll No line yaha search bar suggestion me ab nahi dikhta (sirf naam + about) -->
-          <div class="feed-search-suggestion-about">${window.linkifyAboutText ? window.linkifyAboutText(window.getUserAboutText ? window.getUserAboutText(roll) : '') : srchEsc(window.getUserAboutText ? window.getUserAboutText(roll) : '')}</div>
+          <div class="feed-search-suggestion-about">${aboutHtml}</div>
         </div>
       </div>`;
     }).join('');
@@ -6615,11 +6588,12 @@ onAuthStateChanged(auth, user => {
     if(rollEl) rollEl.textContent = 'Roll No: ' + roll;
     if(avEl) avEl.textContent = String(roll).slice(0,2).toUpperCase() || '?';
     // ADDITIVE: USER ABOUT (BIO) — is user ka About header me dikhado
-    // UPDATED: About ke andar ka link/dns bhi ab clickable ban jaata hai.
+    // UPDATED: ab About me diya gaya link/dns bhi clickable ban jaata hai
+    // (textContent ki jagah linkify karke innerHTML set kiya gaya hai).
     const aboutEl = document.getElementById('feedUserPostsAbout');
     if(aboutEl){
-      const aboutTxt = window.getUserAboutText ? window.getUserAboutText(roll) : '';
-      aboutEl.innerHTML = window.linkifyAboutText ? window.linkifyAboutText(aboutTxt) : aboutTxt;
+      const rawAbout = window.getUserAboutText ? window.getUserAboutText(roll) : '';
+      aboutEl.innerHTML = window.linkifyAboutText ? window.linkifyAboutText(rawAbout) : rawAbout;
     }
     showOnly('feedUserPostsView');
     renderFeedUserPosts(roll);
@@ -6736,23 +6710,7 @@ onAuthStateChanged(auth, user => {
       btn.addEventListener('pointerup', ()=>{
         clearPress();
         if(longPressFired) return;
-        requireLogin(()=>{
-          // ADDITIVE UPDATE: Like/Dislike jaisa toggle — jis reaction par user
-          // already hai, usi reaction par dobara tap karne se woh reaction
-          // remove ho jayega (long-press wala purana remove tareeka bhi waisa
-          // hi kaam karta rahega, yeh sirf ek extra/aasan tareeka add hua hai).
-          if(btn.classList.contains('active')){
-            removeOwnPostReaction(pid);
-            return;
-          }
-          setOwnPostReaction(pid, emo);
-          // ADDITIVE UPDATE: Twitter-jaisa reaction animation — click hote hi
-          // emoji khud bounce/pop karta hai aur usi emoji ke chhote clones
-          // upar-side ud kar fade ho jaate hain. Burst me wahi emoji use hota
-          // hai jispar tap hua, isliye paanchon reaction (👍 ❤️ 😂 😮 😢) ka
-          // animation apne aap ek-doosre se alag dikhta hai.
-          playReactionAnimation(btn, emo);
-        });
+        requireLogin(()=>setOwnPostReaction(pid, emo));
       });
       btn.addEventListener('pointercancel', clearPress);
       btn.addEventListener('pointerleave', clearPress);
@@ -6769,64 +6727,6 @@ onAuthStateChanged(auth, user => {
     const roll = String(window.localUser.rollNumber);
     set(ref(db, 'portal/reactions/' + postId + '/' + roll), emoji).catch(e=>console.warn('reaction set failed', e));
   }
-
-  /* ================= ADDITIVE UPDATE: TWITTER-JAISA REACTION TAP ANIMATION =================
-     Purely additive — koi purana reaction logic (set/remove/long-press/counts) bilkul
-     pehle jaisa hi kaam karta hai. Yeh sirf ek visual animation layer add karta hai jo
-     tap hone par (1) us emoji button ko bounce/pop karta hai aur (2) khud usi emoji ke
-     chhote-chhote clones button se upar-side ud kar fade ho jaate hain (Twitter ke heart
-     "like" animation jaisa). Burst me har baar wahi emoji use hoti hai jis par tap hua,
-     isliye paanchon reaction (👍 ❤️ 😂 😮 😢) ka animation dikhne me apne aap ek-doosre se
-     alag-alag hota hai. */
-  let reactionBurstLayer = null;
-  function getReactionBurstLayer(){
-    if(reactionBurstLayer && document.body.contains(reactionBurstLayer)) return reactionBurstLayer;
-    reactionBurstLayer = document.createElement('div');
-    reactionBurstLayer.id = 'reactionBurstLayer';
-    reactionBurstLayer.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(reactionBurstLayer);
-    return reactionBurstLayer;
-  }
-
-  function playReactionAnimation(btn, emoji){
-    if(!btn) return;
-    // (1) Button khud bounce/pop karega
-    btn.classList.remove('post-reaction-pop');
-    void btn.offsetWidth; // reflow, taaki animation dubara se restart ho (fast double-tap par bhi)
-    btn.classList.add('post-reaction-pop');
-    const clearPop = ()=>{ btn.classList.remove('post-reaction-pop'); btn.removeEventListener('animationend', clearPop); };
-    btn.addEventListener('animationend', clearPop);
-    setTimeout(clearPop, 600); // safety fallback agar animationend na fire ho
-
-    // (2) Usi emoji ke chhote particles ud kar fade honge
-    try{
-      const rect = btn.getBoundingClientRect();
-      const originX = rect.left + rect.width/2;
-      const originY = rect.top + rect.height/2;
-      const layer = getReactionBurstLayer();
-      const COUNT = 6;
-      for(let i=0;i<COUNT;i++){
-        const span = document.createElement('span');
-        span.className = 'post-reaction-burst-particle';
-        span.textContent = emoji;
-        const angle = -90 + (Math.random()*100 - 50); // mostly upar ki taraf, thoda random spread
-        const dist = 34 + Math.random()*34;
-        const rad = angle * Math.PI / 180;
-        const tx = Math.cos(rad) * dist;
-        const ty = Math.sin(rad) * dist;
-        span.style.left = originX + 'px';
-        span.style.top = originY + 'px';
-        span.style.setProperty('--rtx', tx.toFixed(1) + 'px');
-        span.style.setProperty('--rty', ty.toFixed(1) + 'px');
-        span.style.setProperty('--rrot', ((Math.random()*50)-25).toFixed(1) + 'deg');
-        span.style.animationDuration = (500 + Math.random()*250).toFixed(0) + 'ms';
-        layer.appendChild(span);
-        span.addEventListener('animationend', function(){ if(span.parentNode) span.parentNode.removeChild(span); });
-        setTimeout(function(){ if(span.parentNode) span.parentNode.removeChild(span); }, 1000);
-      }
-    }catch(e){ /* animation kabhi bhi reaction save hone ko block nahi karega */ }
-  }
-  /* ================= END ADDITIVE UPDATE: TWITTER-JAISA REACTION TAP ANIMATION ================= */
 
   function removeOwnPostReaction(postId){
     if(!window.localUser) return;
@@ -9250,51 +9150,6 @@ onAuthStateChanged(auth, user => {
   var DEFAULT_ABOUT = 'Hey there! I am using CSE 1st Sem Portal.';
   var ABOUT_MAX = 50;
 
-  // ================= ADDITIVE UPDATE: ABOUT TEXT ME CLICKABLE LINK/DNS =================
-  // User apne About me kahin bhi ek link (http://, https://, www.xyz.com) ya
-  // sirf ek plain "dns"/domain (jaise example.com) text ke sath ya akela likh
-  // sakta hai — yeh function usse safely HTML-escape karke, us link ko ek
-  // real <a> tag me convert kar deta hai. Display me "https://" kabhi nahi
-  // dikhta — sirf link/dns ka naam dikhta hai, lekin click karne par wahi
-  // link (https:// ke sath) naye tab me khul jaata hai. Purana koi rendering
-  // (jaise plain non-link About text) bilkul pehle jaisa hi rehta hai.
-  function escAboutHtml(s){
-    return String(s == null ? '' : s).replace(/[&<>"']/g, function(m){
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
-    });
-  }
-  // Matches: http(s)://..., www.something, ya plain dns jaisa "example.com",
-  // "sub.example.co.in" waghera (kam se kam ek "." aur uske baad 2+ letters
-  // ki TLD zaroori hai, taaki normal sentences/numbers galti se link na banein).
-  var ABOUT_URL_RE = /((?:https?:\/\/|www\.)[^\s]+|\b(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,24}(?:\/[^\s]*)?)/g;
-
-  window.linkifyAboutText = function(text){
-    var raw = String(text == null ? '' : text);
-    if(!raw) return '';
-    var out = '';
-    var lastIdx = 0;
-    var m;
-    ABOUT_URL_RE.lastIndex = 0;
-    while((m = ABOUT_URL_RE.exec(raw)) !== null){
-      var full = m[0];
-      // Trailing punctuation (., , ; : ! ? ) ] " ') sentence ka hissa hoti hai,
-      // link ka nahi — usse link ke bahar rakhte hain.
-      var trimmed = full.replace(/[.,;:!?)\]"'}]+$/, '');
-      var trailing = full.slice(trimmed.length);
-      if(!trimmed){ out += escAboutHtml(full); lastIdx = m.index + full.length; continue; }
-      out += escAboutHtml(raw.slice(lastIdx, m.index));
-      var href = trimmed;
-      if(!/^https?:\/\//i.test(href)) href = 'https://' + href;
-      var displayTxt = trimmed.replace(/^https?:\/\//i, '');
-      out += '<a href="' + escAboutHtml(href) + '" target="_blank" rel="noopener noreferrer" class="about-inline-link" onclick="event.stopPropagation()">' + escAboutHtml(displayTxt) + '</a>';
-      out += escAboutHtml(trailing);
-      lastIdx = m.index + full.length;
-    }
-    out += escAboutHtml(raw.slice(lastIdx));
-    return out;
-  };
-  // ================= END ADDITIVE UPDATE: ABOUT TEXT ME CLICKABLE LINK/DNS =================
-
   // Kisi bhi roll ka current About text — live Firebase data se, warna
   // (apne hi profile ke liye) localUser se, warna WhatsApp jaisa default text.
   window.getUserAboutText = function(roll){
@@ -9311,10 +9166,10 @@ onAuthStateChanged(auth, user => {
   function renderOwnAbout(){
     if(!window.localUser) return;
     var t = document.getElementById('profAboutText');
-    // UPDATED: ab about text ke andar diya gaya link (ya bina http/https ke sirf
-    // dns/domain) bhi clickable ban jaata hai — window.linkifyAboutText() naya
-    // additive helper hai (neeche define), koi purana render tareeka nahi chheda.
-    if(t) t.innerHTML = window.linkifyAboutText ? window.linkifyAboutText(window.getUserAboutText(window.localUser.rollNumber)) : window.getUserAboutText(window.localUser.rollNumber);
+    var raw = window.getUserAboutText(window.localUser.rollNumber);
+    // UPDATED: agar About me link/dns diya gaya ho to wo clickable link
+    // ban kar dikhta hai (textContent ki jagah linkify karke innerHTML).
+    if(t) t.innerHTML = window.linkifyAboutText ? window.linkifyAboutText(raw) : raw;
   }
 
   window.openAboutEditor = function(){
@@ -9371,6 +9226,68 @@ onAuthStateChanged(auth, user => {
   };
 })();
 /* ================= END ADDITIVE: USER ABOUT (BIO) FEATURE ================= */
+
+/* ================= ADDITIVE: ABOUT TEXT LINK / DNS AUTO-LINKIFY =================
+   Purely additive helper. Koi purana function/variable chheda nahi gaya —
+   sirf ek naya global helper window.linkifyAboutText() add kiya gaya hai,
+   jise upar ke ABOUT (BIO) render points (renderOwnAbout, feedUserPostsAbout,
+   aur feed search suggestion list) use karte hain (textContent ki jagah
+   ab innerHTML + is helper ka istemaal hota hai).
+
+   Kaam:
+   - User "About" me chahe sirf link de (jaise "google.com" ya
+     "https://wa.me/91xxxxxxxxxx"), ya text ke saath link/dns mix kare
+     (jaise "Insta: instagram.com/xyz"), dono cases me sirf link/dns wala
+     hissa clickable ban jaata hai — baaki text plain hi rehta hai.
+   - Bina http/https ke bhi (sirf dns jaise "example.com") likhne par bhi
+     wo auto link me convert ho jaata hai.
+   - Display me kabhi "https://" nahi dikhta — sirf link/dns ka naam
+     dikhta hai — lekin click karne par asli link (https:// ke saath)
+     naye tab me properly open hota hai.
+   - Pehle HTML-escape karke, phir link-pattern match kiya jaata hai —
+     isliye koi bhi About text HTML/script inject nahi kar sakta.
+==================================================================== */
+(function(){
+  function escHtml(v){
+    return String(v==null ? '' : v).replace(/[&<>"']/g, function(m){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+    });
+  }
+
+  // Common TLDs list — isse random "word.word" (jaise "Mr.Sharma") link
+  // nahi bante, lekin popular domains (.com/.in/.io/.me/.co.in etc.) sahi
+  // se pehchane jaate hain.
+  var TLDS = 'com|net|org|edu|gov|mil|int|io|co|me|info|biz|app|dev|xyz|' +
+             'online|site|tech|store|blog|club|live|fun|world|team|space|' +
+             'website|page|link|shop|ai|us|uk|in|ca|au|de|jp|cn|ru|br|nl|' +
+             'it|es|fr|pl|se|ch|at|be|dk|fi|no|gr|pt|ie|nz|sg|hk|tw|kr|ae|' +
+             'sa|za|mx|ar|id|my|ph|th|vn|pk|bd|lk|np|' +
+             'co\\.in|ac\\.in|gov\\.in|org\\.in|net\\.in|edu\\.in|' +
+             'co\\.uk|org\\.uk|ac\\.uk|com\\.au|co\\.jp|com\\.br|co\\.za|com\\.cn';
+
+  var urlRe = new RegExp(
+    '\\b((?:https?:\\/\\/)?(?:www\\.)?[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?' +
+    '(?:\\.[a-z0-9-]{1,61}[a-z0-9])*\\.(?:' + TLDS + ')(?:\\/[^\\s<]*)?)',
+    'gi'
+  );
+
+  window.linkifyAboutText = function(rawText){
+    var safe = escHtml(rawText);
+    return safe.replace(urlRe, function(match){
+      // Display text me "https://"/"http://" hamesha hata diya jaata hai —
+      // sirf link/dns ka naam (aur uske aage ka path agar ho) dikhta hai.
+      var display = match.replace(/^https?:\/\//i, '');
+      var hrefRaw = match
+        .replace(/&amp;/g, '&').replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+      if(!/^https?:\/\//i.test(hrefRaw)) hrefRaw = 'https://' + hrefRaw;
+      var hrefAttr = hrefRaw.replace(/"/g, '&quot;');
+      return '<a href="' + hrefAttr + '" target="_blank" rel="noopener noreferrer" ' +
+             'class="about-link" onclick="event.stopPropagation()">' + display + '</a>';
+    });
+  };
+})();
+/* ================= END ADDITIVE: ABOUT TEXT LINK / DNS AUTO-LINKIFY ================= */
 
 </script>
 
