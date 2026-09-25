@@ -4738,6 +4738,22 @@ function applyOnlineData(d){
   renderOnlinePosts();
   renderOnlineChats();
 
+  // ================= ADDITIVE FIX: REACTION TAP PAR BITMOJI/AVATAR "BLINK" =================
+  // Bug: koi bhi post par reaction tap karne par Firebase ke poore 'portal' node
+  // wala listener (upar) fire hota hai, jo renderOnlinePosts() ke through
+  // renderGlobalFeed()/renderFeed() jaisे feed-rendering functions ko poora
+  // innerHTML rebuild karne par majboor karta hai — isse purane avatar
+  // elements (jinpar Avatar/Bitmoji Builder wali custom picture lagi thi)
+  // destroy hokar naye, bina-styled elements se replace ho jaate the. Purana
+  // MutationObserver-wala window.refreshUserAvatarStyles() unhe ~100ms baad
+  // hi restyle karta tha, aur usi gap me bitmoji "blink" (flash) hoti dikhti
+  // thi. Fix: feed rebuild hone ke turant baad, isi jagah, ek additional
+  // turant call se avatar styles turant dobara laga do — taaki blink na ho.
+  // Purana refreshUserAvatarStyles()/MutationObserver function ya upar wali
+  // koi bhi line bilkul chheda nahi gayi hai, sirf ek naya call add kiya
+  // gaya hai.
+  if(window.refreshUserAvatarStyles) window.refreshUserAvatarStyles();
+
   if(window.currentOpenSubjectId && document.getElementById('subjectPage').style.display === 'block') {
       const s = onlineData.subjects.find(x => String(x.id) === String(window.currentOpenSubjectId));
       if(s) {
