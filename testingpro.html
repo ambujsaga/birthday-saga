@@ -6201,7 +6201,28 @@ onAuthStateChanged(auth, user => {
       return !!(p.timestamp && (now - p.timestamp) < ONE_HOUR_MS);
     });
     if(!visiblePosts.length){list.innerHTML='<div class="global-feed-empty">No posts available yet.</div>';return;}
-    list.innerHTML=visiblePosts.map(p=>{
+    // ================= ADDITIVE: NEW POST 1-HOUR TOP PIN + RANDOM SHUFFLE AFTER =================
+    // Koi purana filter/sort/render logic upar chheda nahi gaya hai — sirf final
+    // display "order" yahan additive tarike se decide ki jaa rahi hai:
+    // - Kisi bhi user ne jo post abhi (last 1 ghante ke andar) kiya hai, wo post
+    //   feed me sabse upar dikhega (jitna naya utna pehle upar).
+    // - 1 ghante se purane ho chuke sabhi users ke posts, feed jab bhi khule/refresh
+    //   ho ya naya post aaye (yani renderGlobalFeed jab bhi chale), tab random order
+    //   me shuffle ho jaate hain — isse feed har baar upar-niche hota rehta hai aur
+    //   users ko boring nahi lagta. Post data, timestamp, delete, seen-count — kuchh
+    //   bhi change nahi hota, sirf display order badalta hai.
+    const ORDER_ONE_HOUR_MS = 60 * 60 * 1000;
+    const orderNow = Date.now();
+    const freshOrderPosts = visiblePosts.filter(p => p.timestamp && (orderNow - p.timestamp) < ORDER_ONE_HOUR_MS);
+    const olderOrderPosts = visiblePosts.filter(p => !(p.timestamp && (orderNow - p.timestamp) < ORDER_ONE_HOUR_MS));
+    freshOrderPosts.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    for(let i=olderOrderPosts.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [olderOrderPosts[i],olderOrderPosts[j]]=[olderOrderPosts[j],olderOrderPosts[i]];
+    }
+    const orderedFeedPosts = freshOrderPosts.concat(olderOrderPosts);
+    // ================= END ADDITIVE =================
+    list.innerHTML=orderedFeedPosts.map(p=>{
       const isUserPost=String(p.authorRoll||p.userId||p.createdBy||'')!=='';
       return isUserPost ? userFeedCard(p) : (typeof generatePostHTML==='function'?generatePostHTML(p):'');
     }).join('');
