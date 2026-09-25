@@ -5719,8 +5719,9 @@ onAuthStateChanged(auth, user => {
     // hai, bas ek naya avatar (roll ke initials, red-tick-admin ke avatarShape/avatarColor
     // se automatically style hota hai) aur naam ke niche roll number ki line jud gayi hai.
     const avatarInitials=esc(String(authorRollForTick||author).replace(/\s+/g,'').slice(0,2).toUpperCase()||'?');
-    const rollLineHTML=(authorRollForTick && String(authorRollForTick)!==String(p.authorName||''))
-      ? `<div class="user-post-roll">Roll No: ${esc(authorRollForTick)}</div>` : '';
+    // Feed me Roll No line hata di gayi hai (sirf yahan display off, baaki purana
+    // method/logic waisa hi rakha gaya hai — data still available agar future me chahiye ho)
+    const rollLineHTML='';
     // ================= END ADDITIVE =================
     return `<article class="global-user-post user-post-card" data-user-post-id="${esc(p.id||'')}">
       <div class="user-post-head">
