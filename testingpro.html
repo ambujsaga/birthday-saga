@@ -3768,6 +3768,11 @@
             // ADDITIVE: hide the new attendance tracker page too (nothing above changed)
             var attPageEl = document.getElementById('attendancePage');
             if(attPageEl) attPageEl.style.display = 'none';
+            // ADDITIVE: hide the Avatar/Bitmoji Builder page too (nothing above changed) —
+            // isse Create Your Avatar page kisi doosre page par navigate karte waqt
+            // properly close ho jayega, na ki peeche khula reh jayega.
+            var avBuilderPageEl = document.getElementById('avatarBuilderPage');
+            if(avBuilderPageEl) avBuilderPageEl.style.display = 'none';
         }
 
         window.onclick = function(event) {
