@@ -6216,10 +6216,30 @@ onAuthStateChanged(auth, user => {
     const freshOrderPosts = visiblePosts.filter(p => p.timestamp && (orderNow - p.timestamp) < ORDER_ONE_HOUR_MS);
     const olderOrderPosts = visiblePosts.filter(p => !(p.timestamp && (orderNow - p.timestamp) < ORDER_ONE_HOUR_MS));
     freshOrderPosts.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
-    for(let i=olderOrderPosts.length-1;i>0;i--){
-      const j=Math.floor(Math.random()*(i+1));
-      [olderOrderPosts[i],olderOrderPosts[j]]=[olderOrderPosts[j],olderOrderPosts[i]];
+    // ================= ADDITIVE: STABLE SHUFFLE (REACTION RE-RENDER FIX) =================
+    // Bug tha: har Firebase 'portal' update (jaise kisi post par reaction
+    // dena/hatana) is poore renderGlobalFeed() ko dobara chalata tha, aur upar
+    // wala shuffle loop HAR baar naya random order bana deta tha — isliye
+    // reaction dete hi feed ke posts upar-niche ho jaate the. Purana shuffle
+    // feature (naya khulne/refresh hone/naya post aane par random order) waisa
+    // hi rakha gaya hai — bas ab shuffle sirf tab dobara hota hai jab
+    // olderOrderPosts ka actual set (post ids) badle; agar sirf reactions
+    // change hui hain (ids same hain) to pehle wala order reuse hota hai.
+    const olderIdsKey = olderOrderPosts.map(p=>String(p.id||'')).sort().join('|');
+    if(window.__globalFeedOlderOrderCache && window.__globalFeedOlderOrderCache.key === olderIdsKey){
+      const cachedOrder = window.__globalFeedOlderOrderCache.order;
+      const byId = {};
+      olderOrderPosts.forEach(p=>{ byId[String(p.id||'')] = p; });
+      olderOrderPosts.length = 0;
+      cachedOrder.forEach(id=>{ if(byId[id]) olderOrderPosts.push(byId[id]); });
+    } else {
+      for(let i=olderOrderPosts.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [olderOrderPosts[i],olderOrderPosts[j]]=[olderOrderPosts[j],olderOrderPosts[i]];
+      }
+      window.__globalFeedOlderOrderCache = { key: olderIdsKey, order: olderOrderPosts.map(p=>String(p.id||'')) };
     }
+    // ================= END ADDITIVE: STABLE SHUFFLE =================
     const orderedFeedPosts = freshOrderPosts.concat(olderOrderPosts);
     // ================= END ADDITIVE =================
     list.innerHTML=orderedFeedPosts.map(p=>{
