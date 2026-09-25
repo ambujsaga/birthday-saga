@@ -1723,6 +1723,23 @@
 .post-reaction-count{font-size:.72rem;font-weight:700;color:#334155}
 .post-card .post-reaction-bar{margin-top:10px}
 .user-post-card .post-reaction-bar{border-top:none;margin-top:0;padding-top:0;margin-bottom:6px}
+
+/* ================= ADDITIVE: REACTION EMOJI POP ANIMATION (Twitter-like) =================
+   Sirf naya CSS add kiya gaya hai. Purana .post-reaction-btn / .post-reaction-count
+   ka koi rule chheda nahi gaya. Yeh sirf emoji span par lagta hai (count number
+   par nahi), taaki jaisa Twitter par like karne par icon "aala aala" (bouncy pop)
+   hota hai waisa hi effect kisi bhi reaction emoji par click karne par ho. */
+.post-reaction-btn .reaction-emoji{display:inline-block;transform-origin:center center;will-change:transform}
+@keyframes reactionPopAnim{
+  0%{transform:scale(1) rotate(0deg);}
+  25%{transform:scale(1.6) rotate(-12deg);}
+  50%{transform:scale(0.82) rotate(8deg);}
+  75%{transform:scale(1.22) rotate(-4deg);}
+  100%{transform:scale(1) rotate(0deg);}
+}
+.post-reaction-btn .reaction-emoji.reaction-pop{
+  animation:reactionPopAnim .5s cubic-bezier(.17,.89,.32,1.49);
+}
 </style>
 <style>
 /* ================= ADDITIVE: BOOT LOADER (8s intro animation) ================= */
@@ -6657,6 +6674,12 @@ onAuthStateChanged(auth, user => {
    - One reaction per user per post. Tapping a different emoji switches
      it. Long-pressing (1 sec) your own active emoji removes it. Only the
      reacting user can remove their own reaction.
+   - ADDITIVE UPDATE: Ab apne hi active reaction emoji par dobara sirf tap
+     karne se bhi (long-press ki zaroorat nahi) reaction turant remove ho
+     jaata hai — jaise like/dislike toggle. Purana long-press-remove method
+     bhi waisa hi kaam karta rehta hai (chheda nahi gaya).
+   - ADDITIVE UPDATE: Kisi bhi reaction emoji par tap karke react karne par
+     ab Twitter jaisa "pop/bounce" animation us emoji par chalta hai.
 ===================================================================== */
 (function(){
   const REACTION_EMOJIS = ['👍','❤️','😂','😮','😢'];
@@ -6690,7 +6713,7 @@ onAuthStateChanged(auth, user => {
       btn.type = 'button';
       const count = counts[emo] || 0;
       btn.className = 'post-reaction-btn' + (myReaction===emo ? ' active' : '');
-      btn.innerHTML = rEsc(emo) + (count>0 ? `<span class="post-reaction-count">${count}</span>` : '');
+      btn.innerHTML = '<span class="reaction-emoji">' + rEsc(emo) + '</span>' + (count>0 ? `<span class="post-reaction-count">${count}</span>` : '');
       btn.title = 'React with ' + emo;
 
       let pressTimer = null;
@@ -6710,6 +6733,31 @@ onAuthStateChanged(auth, user => {
       btn.addEventListener('pointerup', ()=>{
         clearPress();
         if(longPressFired) return;
+
+        // ========= ADDITIVE: TAP-TO-TOGGLE REMOVE (jaise like/dislike) =========
+        // Purana long-press-se-remove method chheda nahi gaya (upar wala
+        // pressTimer/longPressFired logic waisa hi hai) — yeh sirf ek naya
+        // additional tareeka hai: agar user isi emoji par pehle se reaction
+        // diya hua hai (button already active), to dobara usi par tap karne
+        // se seedha reaction remove ho jaayega, bina long-press kiye.
+        if(btn.classList.contains('active')){
+          requireLogin(()=>removeOwnPostReaction(pid));
+          return;
+        }
+
+        // ========= ADDITIVE: TWITTER-JAISA POP ANIMATION ON REACT =========
+        // Sirf naya animation trigger hai — emoji span par 'reaction-pop'
+        // class add karke turant reflow karte hain taaki animation baar baar
+        // (repeated taps par bhi) restart ho sake. Purana set/switch logic
+        // (requireLogin -> setOwnPostReaction) waisa hi hai, sirf uske
+        // pehle animation chala diya gaya hai.
+        const emoSpan = btn.querySelector('.reaction-emoji');
+        if(emoSpan){
+          emoSpan.classList.remove('reaction-pop');
+          void emoSpan.offsetWidth;
+          emoSpan.classList.add('reaction-pop');
+        }
+
         requireLogin(()=>setOwnPostReaction(pid, emo));
       });
       btn.addEventListener('pointercancel', clearPress);
