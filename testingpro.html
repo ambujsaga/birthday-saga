@@ -10136,5 +10136,63 @@ onAuthStateChanged(auth, user => {
     // hota — bas agla naya click ab intercept nahi hoga.
 })();
 </script>
+
+<!-- ======================================================================
+     ADDITIVE: DISABLE TEXT LONG-PRESS SELECT/COPY (IMAGES EXCLUDED)
+     Sirf naya CSS/JS add kiya gaya hai. Upar ka koi bhi purana
+     rule/element/function/listener chheda nahi gaya hai.
+
+     Kya hota hai:
+     - Website ke normal UI TEXT (headings, paragraphs, span, div, button,
+       label, list items, etc.) par ab long-press/double-tap se select ya
+       copy nahi ho payega.
+     - IMAGES (<img>, <svg>) is restriction se explicitly BAHAR hain —
+       image se related koi bhi purana feature/method (jaise long-press
+       par image save/share/preview) bilkul waise hi kaam karta rahega
+       jaise pehle karta tha.
+     - Input/textarea fields bhi is restriction se bahar hain, taaki forms
+       me type/select/copy-paste karna pehle jaisa hi normal rahe.
+====================================================================== -->
+<style>
+    *:not(img):not(svg):not(input):not(textarea) {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none; /* iOS: text par long-press "Copy" menu band */
+    }
+    input, textarea {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+        -webkit-touch-callout: default;
+    }
+    img, svg {
+        -webkit-touch-callout: default; /* images ka purana long-press behaviour intact */
+    }
+</style>
+<script>
+(function(){
+    // Purely additive IIFE — koi bhi purana function/variable/listener
+    // touch nahi kiya gaya hai.
+    function isTextTarget(target){
+        var tag = target && target.tagName ? target.tagName.toLowerCase() : '';
+        return tag !== 'img' && tag !== 'svg' && tag !== 'input' && tag !== 'textarea';
+    }
+
+    // Text select hone se hi roko (kuch Android/Chrome versions par
+    // user-select:none ke bawajood selectstart fire hota hai).
+    document.addEventListener('selectstart', function(e){
+        if(isTextTarget(e.target)) e.preventDefault();
+    });
+
+    // Copy (Ctrl+C / right-click copy / long-press copy) sirf text par
+    // block karo — images/inputs is se affect nahi hote.
+    document.addEventListener('copy', function(e){
+        if(isTextTarget(e.target)) e.preventDefault();
+    });
+})();
+</script>
 </body>
 </html>
