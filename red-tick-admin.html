@@ -97,6 +97,15 @@
   .tick-toggle input:checked + .tick-slider{background:var(--tick-red);}
   .tick-toggle input:checked + .tick-slider:before{transform:translateX(22px);}
 
+  /* ===== ADDITIVE: Spotlight (unique/highlighted post) toggle =====
+     Bilkul purane .tick-toggle jaisa hi switch hai — sirf color alag hai
+     (orange) taaki red tick switch se visually alag pehchaana ja sake.
+     Koi purana .tick-toggle/.tick-slider rule chheda nahi gaya hai. */
+  .toggle-col{display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0;}
+  .toggle-col .toggle-lbl{font-size:.62rem;font-weight:700;color:#888;white-space:nowrap;}
+  .spotlight-toggle input:checked + .tick-slider{background:var(--accent-orange);}
+  /* ===== END ADDITIVE ===== */
+
   .empty-msg, .loading-msg{
     text-align:center;color:#888;padding:30px 10px;font-size:.9rem;
   }
@@ -175,6 +184,9 @@
     <div class="stat-bar">
       <div class="stat-chip"><div class="num" id="totalCount">0</div><div class="lbl">Total Users</div></div>
       <div class="stat-chip verified"><div class="num" id="verifiedCount">0</div><div class="lbl">Red Tick Verified</div></div>
+      <!-- ===== ADDITIVE: Spotlight (highlighted post) stat chip ===== -->
+      <div class="stat-chip verified" style="color:var(--accent-orange)"><div class="num" id="spotlightCount" style="color:var(--accent-orange)">0</div><div class="lbl">Spotlight Posts</div></div>
+      <!-- ===== END ADDITIVE ===== -->
     </div>
 
     <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search by name or roll number..." oninput="renderUsers()">
@@ -259,6 +271,10 @@ function renderUsers(){
 
   document.getElementById('totalCount').textContent = all.length;
   document.getElementById('verifiedCount').textContent = all.filter(u => u.verified).length;
+  // ===== ADDITIVE: Spotlight (highlighted post) count =====
+  const spotlightEl = document.getElementById('spotlightCount');
+  if(spotlightEl) spotlightEl.textContent = all.filter(u => u.highlightPost).length;
+  // ===== END ADDITIVE =====
 
   const filtered = q
     ? all.filter(u => String(u.name||'').toLowerCase().includes(q) || String(u.rollNumber||'').toLowerCase().includes(q))
@@ -275,6 +291,9 @@ function renderUsers(){
     const roll = esc(u.rollNumber);
     const initials = String(u.rollNumber||'?').slice(0,2).toUpperCase();
     const checked = u.verified ? 'checked' : '';
+    // ===== ADDITIVE: Spotlight (highlighted post) checkbox state =====
+    const spotlightChecked = u.highlightPost ? 'checked' : '';
+    // ===== END ADDITIVE =====
 
     // --- avatar shape / colour (preview yahi dikhta hai jo portal me dikhega) ---
     const shape = RADII[u.avatarShape] ? u.avatarShape : 'circle';
@@ -303,10 +322,26 @@ function renderUsers(){
           <div class="user-roll">Roll No: ${roll}</div>
         </div>
         <button type="button" class="cust-btn" onclick="window.toggleCustomize(this)">⚙ Customize</button>
-        <label class="tick-toggle">
-          <input type="checkbox" ${checked} data-roll="${roll}" onchange="window.toggleTick(this)">
-          <span class="tick-slider"></span>
-        </label>
+        <div class="toggle-col">
+          <span class="toggle-lbl">Tick</span>
+          <label class="tick-toggle">
+            <input type="checkbox" ${checked} data-roll="${roll}" onchange="window.toggleTick(this)">
+            <span class="tick-slider"></span>
+          </label>
+        </div>
+        <!-- ===== ADDITIVE: Spotlight (unique/highlighted post) toggle =====
+             Ise ON karne par is user ka post (testingpro.html ki Profile page
+             aur "All Users Feed" dono jagah) baaki sabhi users ke posts se
+             alag/unique dikhta hai. Purana Red Tick toggle bilkul waisa hi
+             upar rehta hai — kuchh chheda nahi gaya hai. -->
+        <div class="toggle-col">
+          <span class="toggle-lbl">Spotlight</span>
+          <label class="tick-toggle spotlight-toggle">
+            <input type="checkbox" ${spotlightChecked} data-roll="${roll}" onchange="window.toggleSpotlight(this)">
+            <span class="tick-slider"></span>
+          </label>
+        </div>
+        <!-- ===== END ADDITIVE ===== -->
       </div>
       <div class="user-extra">
         <div class="extra-lbl">🖼 Badge Image Link (naam ke saath red tick jaisa dikhega)</div>
@@ -345,6 +380,27 @@ window.toggleTick = async function(checkbox){
     checkbox.disabled = false;
   }
 };
+
+// ---- ADDITIVE: Spotlight (unique/highlighted post) toggle ----
+// Bilkul window.toggleTick jaisa hi kaam karta hai, bas 'verified' ki
+// jagah naya 'highlightPost' field likhta hai. Purana toggleTick function
+// bilkul waisa hi upar rehta hai — kuchh chheda nahi gaya.
+window.toggleSpotlight = async function(checkbox){
+  const roll = checkbox.getAttribute('data-roll');
+  const newVal = checkbox.checked;
+  checkbox.disabled = true;
+  try{
+    await update(ref(db, 'portal/users/' + roll), { highlightPost: newVal });
+    if(usersData[roll]) usersData[roll].highlightPost = newVal;
+    renderUsers();
+  }catch(e){
+    alert('Update failed: ' + (e && e.message ? e.message : e));
+    checkbox.checked = !newVal;
+  }finally{
+    checkbox.disabled = false;
+  }
+};
+// ---- END ADDITIVE ----
 
 // ---- ADDITIVE: Customize panel actions ----
 async function saveUserField(roll, patch, localPatch){
