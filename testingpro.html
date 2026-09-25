@@ -1611,6 +1611,15 @@
   .user-post-delete{font-size:.72rem;padding:5px 7px}
 }
 
+/* ================= ADDITIVE: INSTAGRAM-STYLE AVATAR + ROLL NO. ON FEED POSTS =================
+   Sirf naya CSS add kiya gaya hai. Purana .user-post-head/.user-post-author/.user-post-time
+   rule bilkul chheda nahi gaya — bas naya avatar + roll-number line jod di gayi hai jo
+   inhi ke andar wrap hoti hai. */
+.user-post-head-left{display:flex;align-items:center;gap:10px;min-width:0}
+.user-post-avatar{width:36px;height:36px;border-radius:50%;background:var(--primary-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;flex:0 0 auto;letter-spacing:.3px}
+.user-post-roll{font-size:.72rem;color:#64748b;margin-top:1px}
+/* ================= END ADDITIVE: INSTAGRAM-STYLE AVATAR + ROLL NO. ================= */
+
 
 /* ================= ADDITIVE PROFILE CREATE PAGE + GLOBAL USER FEED UPDATE ================= */
 .user-post-create-page{width:100%;max-width:720px;margin:0 auto;padding:1rem;min-height:calc(100vh - 135px)}
@@ -4194,6 +4203,14 @@ window.vTickText = function(roll){
         var rr = (el.textContent || '').trim();
         if(rr) styleAvatar(el, rr);
       });
+      // ================= ADDITIVE: FEED POST AVATAR (naam ke saath, Instagram jaisa) =================
+      // Purana kuchh bhi upar chheda nahi gaya — sirf feed post cards ke naye avatar
+      // (.user-post-avatar) ko bhi wahi avatarShape/avatarColor styling di ja rahi hai.
+      document.querySelectorAll('.user-post-avatar[data-roll]').forEach(function(el){
+        var pr = el.getAttribute('data-roll');
+        if(pr) styleAvatar(el, pr);
+      });
+      // ================= END ADDITIVE =================
     }catch(e){ /* best-effort, purana UI kabhi nahi rukega */ }
   };
   // Jaha bhi avatars dobara render hote hain (story tray, search, viewer...) wahan style dobara lagao
@@ -5697,9 +5714,20 @@ onAuthStateChanged(auth, user => {
       </div>`;
       if(photos.length>1) media+=`<div class="user-post-photo-dots">${photos.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('')}</div><div class="user-post-photo-count"><svg class="ui-icon"><use href="#icon-camera"></use></svg> ${photos.length} photos • swipe left/right</div>`;
     }
+    // ================= ADDITIVE: INSTAGRAM-STYLE AVATAR + ROLL NO. NEXT TO NAME =================
+    // Sirf naya HTML add kiya gaya hai — purana author/time markup bilkul waisa hi rehta
+    // hai, bas ek naya avatar (roll ke initials, red-tick-admin ke avatarShape/avatarColor
+    // se automatically style hota hai) aur naam ke niche roll number ki line jud gayi hai.
+    const avatarInitials=esc(String(authorRollForTick||author).replace(/\s+/g,'').slice(0,2).toUpperCase()||'?');
+    const rollLineHTML=(authorRollForTick && String(authorRollForTick)!==String(p.authorName||''))
+      ? `<div class="user-post-roll">Roll No: ${esc(authorRollForTick)}</div>` : '';
+    // ================= END ADDITIVE =================
     return `<article class="global-user-post user-post-card" data-user-post-id="${esc(p.id||'')}">
       <div class="user-post-head">
-        <div><div class="user-post-author">${author}${authorTick}</div><div class="user-post-time">${typeof userPostTime==='function'?userPostTime(p.timestamp):''}</div></div>
+        <div class="user-post-head-left">
+          <div class="user-post-avatar" data-roll="${esc(authorRollForTick)}">${avatarInitials}</div>
+          <div><div class="user-post-author">${author}${authorTick}</div>${rollLineHTML}<div class="user-post-time">${typeof userPostTime==='function'?userPostTime(p.timestamp):''}</div></div>
+        </div>
         ${isOwn?`<button class="user-post-delete" onclick="deleteOwnUserPost('${esc(p.id)}')"><svg class="ui-icon"><use href="#icon-trash"></use></svg> Delete</button>`:''}
       </div>
       ${text}${media}
@@ -9516,114 +9544,5 @@ onAuthStateChanged(auth, user => {
     // hota — bas agla naya click ab intercept nahi hoga.
 })();
 </script>
-
-<!-- =====================================================================
-     ADDITIVE: FEED POSTS PAR INSTAGRAM-STYLE AVATAR + ROLL NUMBER PROFILE
-     Purely additive block. Upar ka koi bhi purana function/CSS/HTML edit
-     nahi kiya gaya hai — sirf window.userFeedCard() ko wrap kiya gaya hai
-     taaki har feed post ke naam ke saath ek chhota profile (avatar +
-     Roll No.) bhi dikhe, jaise Instagram post header. Isi avatar/naam/roll
-     par tap karne se woh purana "user profile" view hi khulta hai
-     (window.openUserPostsFromSearch) — koi naya alag profile system nahi
-     banaya gaya, purana method hi reuse hua hai.
-====================================================================== -->
-<style>
-    .user-post-headrow{ display:flex; align-items:flex-start; gap:10px; }
-    .user-post-namewrap{ display:flex; flex-direction:column; gap:1px; }
-    .user-post-avatar{
-        width:38px; height:38px; border-radius:50%;
-        background:var(--primary-blue, #003366); color:#fff;
-        display:flex; align-items:center; justify-content:center;
-        font-weight:700; font-size:.85rem; flex:0 0 auto;
-        cursor:pointer; user-select:none;
-    }
-    .user-post-author{ cursor:pointer; }
-    .user-post-roll{
-        font-size:.72rem; color:#64748b; font-weight:500; cursor:pointer;
-    }
-</style>
-<script>
-(function(){
-    function htmlEsc(v){
-        return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-    function jsEsc(v){
-        return String(v==null?'':v).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    }
-
-    var oldUserFeedCard = window.userFeedCard;
-    if(typeof oldUserFeedCard !== 'function') return;
-
-    var headPattern = /<div><div class="user-post-author">([\s\S]*?)<\/div><div class="user-post-time">([\s\S]*?)<\/div><\/div>/;
-
-    window.userFeedCard = function(p){
-        var html = oldUserFeedCard(p);
-        try{
-            var roll = String((p && (p.authorRoll || p.userId || p.createdBy)) || '');
-            if(!roll || !headPattern.test(html)) return html;
-
-            var initials = htmlEsc(roll.slice(0,2).toUpperCase() || '?');
-            var rollDisplay = htmlEsc(roll);
-            var clickAttr = "onclick=\"if(typeof window.openUserPostsFromSearch==='function'){window.openUserPostsFromSearch('" + jsEsc(roll) + "');}\"";
-
-            html = html.replace(headPattern, function(match, authorInner, timeInner){
-                return '<div class="user-post-headrow">' +
-                            '<div class="user-post-avatar" ' + clickAttr + '>' + initials + '</div>' +
-                            '<div class="user-post-namewrap">' +
-                                '<div class="user-post-author" ' + clickAttr + '>' + authorInner + '</div>' +
-                                '<div class="user-post-roll" ' + clickAttr + '>Roll No: ' + rollDisplay + '</div>' +
-                                '<div class="user-post-time">' + timeInner + '</div>' +
-                            '</div>' +
-                        '</div>';
-            });
-        }catch(e){ /* best-effort — kabhi bhi fail ho to purana card jaisa hi dikhega */ }
-        return html;
-    };
-
-    // Note: renderGlobalFeed() aur renderFeedUserPosts() dono already
-    // window.userFeedCard(...) ko hi call karte hain (purana method), isliye
-    // yeh naya avatar+roll display har jagah (Feed + kisi bhi user ka
-    // profile-posts view) apne aap dikh jaata hai — bina un functions ko
-    // chhue.
-
-    // ---- OPTIONAL: agar Red Tick Admin Panel se avatarColor/avatarShape
-    // set hai, to yeh feed-post avatar bhi usi look ko follow kare (purani
-    // '.feed-search-suggestion-avatar' / profile avatar wali styling jaisa
-    // hi behaviour, alag se, bina purane styleAvatar() ko chhue) ----
-    var RADII = { circle:'50%', square:'0', rounded:'22%' };
-    function validColor(c){ c = String(c||'').trim(); return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(c) ? c : ''; }
-    function textOn(hex){
-        var h = hex.replace('#','');
-        if(h.length === 3) h = h.split('').map(function(x){ return x+x; }).join('');
-        var r = parseInt(h.substr(0,2),16), g = parseInt(h.substr(2,2),16), b = parseInt(h.substr(4,2),16);
-        return ((0.299*r + 0.587*g + 0.114*b) / 255) > 0.62 ? '#1a1a1a' : '#ffffff';
-    }
-    function styleFeedPostAvatars(){
-        try{
-            var users = window.onlineUsersData || {};
-            document.querySelectorAll('.user-post-avatar[onclick]').forEach(function(el){
-                var m = /openUserPostsFromSearch\('([^']*)'\)/.exec(el.getAttribute('onclick') || '');
-                var roll = m ? m[1].replace(/\\'/g,"'") : '';
-                var u = roll ? users[roll] : null;
-                if(!u) return;
-                var shape = RADII[u.avatarShape] ? u.avatarShape : 'circle';
-                el.style.borderRadius = RADII[shape];
-                var color = validColor(u.avatarColor);
-                if(color){ el.style.background = color; el.style.color = textOn(color); }
-            });
-        }catch(e){}
-    }
-    var pending = null;
-    function scheduleStyle(){
-        if(pending) return;
-        pending = setTimeout(function(){ pending = null; styleFeedPostAvatars(); }, 120);
-    }
-    if(window.MutationObserver && document.body){
-        new MutationObserver(scheduleStyle).observe(document.body, { childList:true, subtree:true });
-    }
-    scheduleStyle();
-})();
-</script>
-<!-- ================= END ADDITIVE: FEED POSTS PAR INSTAGRAM-STYLE AVATAR + ROLL NUMBER PROFILE ================= -->
 </body>
 </html>
