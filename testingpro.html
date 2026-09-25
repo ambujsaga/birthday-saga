@@ -7219,6 +7219,49 @@ onAuthStateChanged(auth, user => {
     return bar;
   }
 
+  // ========= ADDITIVE: UPDATE EXISTING BAR IN-PLACE (ANIMATION FIX) =========
+  // Bug: pehle har realtime Firebase update par (jo reaction set/remove
+  // karte hi turant khud hi fire ho jaata hai) purana reaction-bar poora
+  // remove karke naya bana diya jaata tha (injectPostReactions me
+  // existing.remove() + buildReactionBar()). Isse jis emoji-span par abhi
+  // 'reaction-pop' animation class lagi thi wahi DOM node turant destroy ho
+  // jaata tha — isliye Twitter-jaisa pop animation kabhi dikhta hi nahi tha.
+  // Fix: agar usi postId ka bar pehle se maujood hai to use todne ke bajaye
+  // sirf uske andar ke active-state aur count ko update karte hain — jis
+  // button/emoji-span par animation chal rahi hai wahi DOM node bana rehta
+  // hai, isliye animation poori chalti hai. Naya bar banane ka purana
+  // buildReactionBar() logic (click/long-press/toggle sab kuch) bilkul
+  // waisa hi hai, chheda nahi gaya.
+  function updateReactionBarInPlace(bar, postId){
+    const pid = String(postId||'');
+    const reactions = getReactionsFor(pid);
+    const roll = window.localUser ? String(window.localUser.rollNumber) : '';
+    const myReaction = roll ? reactions[roll] : '';
+    const counts = {};
+    Object.keys(reactions).forEach(r=>{
+      const emo = reactions[r];
+      if(emo) counts[emo] = (counts[emo]||0) + 1;
+    });
+    const btns = bar.querySelectorAll('.post-reaction-btn');
+    btns.forEach((btn, idx)=>{
+      const emo = REACTION_EMOJIS[idx];
+      if(!emo) return;
+      const count = counts[emo] || 0;
+      btn.classList.toggle('active', myReaction === emo);
+      let countSpan = btn.querySelector('.post-reaction-count');
+      if(count > 0){
+        if(!countSpan){
+          countSpan = document.createElement('span');
+          countSpan.className = 'post-reaction-count';
+          btn.appendChild(countSpan);
+        }
+        countSpan.textContent = count;
+      } else if(countSpan){
+        countSpan.remove();
+      }
+    });
+  }
+
   function setOwnPostReaction(postId, emoji){
     if(!window.localUser) return;
     const roll = String(window.localUser.rollNumber);
@@ -7240,6 +7283,13 @@ onAuthStateChanged(auth, user => {
       const id = card.getAttribute('data-user-post-id');
       if(!id) return;
       const existing = card.querySelector('.post-reaction-bar');
+      // ADDITIVE: agar isi post ka bar pehle se maujood hai to todke naya
+      // banane ke bajaye sirf uske andar ka data in-place update karo
+      // (animation-fix — upar updateReactionBarInPlace() dekhein).
+      if(existing && existing.getAttribute('data-reaction-bar') === String(id)){
+        updateReactionBarInPlace(existing, id);
+        return;
+      }
       if(existing) existing.remove();
       const footer = card.querySelector('.user-post-footer');
       const bar = buildReactionBar(id);
@@ -7253,6 +7303,11 @@ onAuthStateChanged(auth, user => {
       const id = card.id.replace(/^post-/, '');
       if(!id) return;
       const existing = card.querySelector('.post-reaction-bar');
+      // ADDITIVE: same in-place update (animation-fix) admin post cards ke liye bhi.
+      if(existing && existing.getAttribute('data-reaction-bar') === String(id)){
+        updateReactionBarInPlace(existing, id);
+        return;
+      }
       if(existing) existing.remove();
       const actions = card.querySelector('.post-actions');
       const bar = buildReactionBar(id);
