@@ -1619,7 +1619,8 @@
         body.guest-mode .eng-profile-stats,
         body.guest-mode .eng-profile-badges,
         body.guest-mode .eng-stats-bar,
-        body.guest-mode #engMysteryCard { display: none !important; }
+        body.guest-mode #engMysteryCard,
+        body.guest-mode .vault-open-btn { display: none !important; } /* Data Vault guest ke liye nahi hai */
 
         /* USER LOGIN MODAL */
         .user-login-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 15px; }
@@ -2941,8 +2942,8 @@
          Naya page: data-vault.html ke saare features (details add/edit/delete, search,
          sensitive hide/show, copy, share as image, backup/restore, PIN lock) yaha
          ek alag iframe me chalte hain, taaki unka CSS/JS is portal ke kisi purane
-         element/function se na takraye. Data isi browser ke localStorage me
-         ('dataVault.v1', 'dataVault.pin') save hota hai. Koi purana page/function
+         element/function se na takraye. Data ab Firebase Realtime DB me
+         (portal/users/{roll}/dataVault) save hota hai (localStorage sirf cache hai). Koi purana page/function
          chheda nahi gaya hai. -->
     <div id="vaultPage" class="vault-page" style="display:none;">
         <div class="vault-bar">
@@ -3095,13 +3096,22 @@ header .top>div:first-child{display:flex;align-items:center;gap:10px}
 <script>
 var KEY='dataVault.v1',PKEY='dataVault.pin',CATS=['Personal','Identity','Academic','Other'];
 var mem={},shown={},editId=null,items=[];
-function st(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){if(v===undefined)return mem[k]||null;mem[k]=v}}
+/* ===== CLOUD SYNC (Firebase Realtime DB: portal/users/{roll}/dataVault) =====
+   Logged-in roll number ke hisaab se data Firebase me save hota hai; localStorage sirf
+   per-roll cache/offline copy hai. Guest ya Firebase na mile to purana local-only behaviour. */
+var cloud=null,roll='',RK='',unlocked=false,synced=false;
+try{cloud=parent.__vaultCloud||null;var lu=parent.localUser;roll=lu&&lu.rollNumber?String(lu.rollNumber):''}catch(e){}
+if(roll&&cloud)RK='.'+roll;
+function raw(k,v){var kk=k+RK;try{if(v===undefined)return localStorage.getItem(kk);if(v===null)localStorage.removeItem(kk);else localStorage.setItem(kk,v)}catch(e){if(v===undefined)return mem[kk]||null;mem[kk]=v}}
+function st(k,v){if(v!==undefined&&k===PKEY&&RK&&synced){cloud.savePin(roll,v).catch(function(){toast('PIN saved on this device only — cloud sync failed')})}return raw(k,v)}
+function canEdit(){if(RK&&!synced){toast('Cloud se connect nahi hua — internet check karke dobara kholein');return false}return true}
+function cloudSave(){cloud.saveItems(roll,JSON.stringify(items)).catch(function(){toast('Saved on this device only — cloud sync failed')})}
 var D=function(c,l,v,s,t){return{id:'d'+Math.random().toString(36).slice(2,9),cat:c,label:l,value:'',sens:!!s,type:t||''}};
 function seed(){return[D('Personal','Full Name'),D('Personal',"Father's Name"),D('Personal','Date of Birth'),D('Personal','Mobile Number',0,0,'mobile'),D('Personal','Email'),
 D('Identity','Enrollment No.'),D('Identity','Roll No.'),D('Identity','Aadhaar Number',0,1,'aadhaar'),D('Identity','APAAR / ABC ID',0,1),
 D('Academic','Branch / Course'),D('Academic','Semester'),D('Academic','Session')]}
-function load(){try{items=JSON.parse(st(KEY))}catch(e){items=null}if(!Array.isArray(items)||!items.length){items=seed();save()}}
-function save(){st(KEY,JSON.stringify(items))}
+function load(){try{items=JSON.parse(st(KEY))}catch(e){items=null}if(!Array.isArray(items)||!items.length){if(RK){items=[]}else{items=seed();save()}}}
+function save(){raw(KEY,JSON.stringify(items));if(RK&&synced)cloudSave()}
 var IC={lock:'<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',unlock:'<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>',download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',trash:'<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/>',shield:'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',eye:'<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',eyeoff:'<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>',copy:'<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',edit:'<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>',share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>',dots:'<circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>'};
 function ic(n){return '<svg class="i" viewBox="0 0 24 24" aria-hidden="true">'+IC[n]+'</svg>'}
 var $=function(i){return document.getElementById(i)};
@@ -3133,7 +3143,7 @@ $('list').addEventListener('click',function(e){
 $('q').addEventListener('input',render);
 function show(id,on){$(id).classList.toggle('on',on)}
 function openEdit(id){
-  editId=id;var it=id?items.find(function(x){return x.id===id}):null;
+  if(!canEdit())return;editId=id;var it=id?items.find(function(x){return x.id===id}):null;
   $('editTitle').textContent=it?'Edit detail':'Add new detail';
   $('fLabel').value=it?it.label:'';$('fVal').value=it?it.value:'';$('fCat').value=it?it.cat:'Other';$('fSens').checked=it?it.sens:false;
   $('fDel').style.display=it?'block':'none';$('fErr').textContent='';show('editOv',true);setTimeout(function(){(it?$('fVal'):$('fLabel')).focus()},50)}
@@ -3213,17 +3223,17 @@ $('shGo').onclick=function(){
 $('menuBtn').onclick=function(){$('mNoPin').style.display=st(PKEY)?'block':'none';show('menuOv',true)};
 $('mClose').onclick=function(){show('menuOv',false)};
 $('mExport').onclick=function(){var a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(items,null,1));a.download='my-details-backup.json';document.body.appendChild(a);a.click();a.remove();toast('Backup created')};
-$('mImport').onclick=function(){$('file').click()};
+$('mImport').onclick=function(){if(!canEdit())return;$('file').click()};
 $('file').onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var d=JSON.parse(r.result);if(!Array.isArray(d))throw 0;items=d.filter(function(x){return x&&x.label}).map(function(x){return{id:x.id||D().id,cat:CATS.indexOf(x.cat)>-1?x.cat:'Other',label:String(x.label),value:String(x.value||''),sens:!!x.sens,type:x.type||''}});save();render();show('menuOv',false);toast('Restored')}catch(er){toast('This backup file is not valid')}};r.readAsText(f);e.target.value=''};
-$('mReset').onclick=function(){if(confirm('All details will be deleted permanently. Are you sure?')){items=seed();save();render();show('menuOv',false);toast('Everything has been reset')}};
+$('mReset').onclick=function(){if(!canEdit())return;if(confirm('All details will be deleted permanently. Are you sure?')){items=seed();save();render();show('menuOv',false);toast('Everything has been reset')}};
 /* PIN lock */
 async function hash(p){try{var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('vault:'+p));return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')}catch(e){return btoa('vault:'+p)}}
-$('mPin').onclick=function(){show('menuOv',false);$('pinNew').value='';$('pinErr').textContent='';show('pinOv',true)};
+$('mPin').onclick=function(){if(!canEdit())return;show('menuOv',false);$('pinNew').value='';$('pinErr').textContent='';show('pinOv',true)};
 $('pinCancel').onclick=function(){show('pinOv',false)};
 $('pinSave').onclick=async function(){var p=$('pinNew').value;if(!/^\d{4}$/.test(p)){$('pinErr').textContent='PIN must be exactly 4 digits.';return}st(PKEY,await hash(p));show('pinOv',false);toast('PIN set')};
-$('mNoPin').onclick=function(){st(PKEY,null);show('menuOv',false);toast('PIN removed')};
-$('lockPin').addEventListener('input',async function(e){if(e.target.value.length<4)return;if(await hash(e.target.value)===st(PKEY)){show('lock',false);e.target.value='';$('lockErr').textContent=''}else{$('lockErr').textContent='Wrong PIN, please try again.';e.target.value=''}});
-document.addEventListener('visibilitychange',function(){if(document.hidden){shown={};if(st(PKEY))show('lock',true);render()}});
+$('mNoPin').onclick=function(){if(!canEdit())return;st(PKEY,null);show('menuOv',false);toast('PIN removed')};
+$('lockPin').addEventListener('input',async function(e){if(e.target.value.length<4)return;if(await hash(e.target.value)===st(PKEY)){unlocked=true;show('lock',false);e.target.value='';$('lockErr').textContent=''}else{$('lockErr').textContent='Wrong PIN, please try again.';e.target.value=''}});
+document.addEventListener('visibilitychange',function(){if(document.hidden){shown={};unlocked=false;if(st(PKEY))show('lock',true);render()}});
 [['editOv'],['menuOv'],['pinOv'],['shareOv']].forEach(function(a){$(a[0]).addEventListener('click',function(e){if(e.target===this)show(a[0],false)})});
 /* disable zoom: pinch, double-tap, ctrl+wheel, ctrl +/- */
 ['gesturestart','gesturechange','gestureend'].forEach(function(n){document.addEventListener(n,function(e){e.preventDefault()})});
@@ -3231,7 +3241,33 @@ document.addEventListener('touchmove',function(e){if(e.touches.length>1||(e.scal
 var lastTap=0;document.addEventListener('touchend',function(e){var t=Date.now();if(t-lastTap<300&&e.target.tagName!=='INPUT'&&e.target.tagName!=='SELECT')e.preventDefault();lastTap=t},{passive:false});
 document.addEventListener('wheel',function(e){if(e.ctrlKey)e.preventDefault()},{passive:false});
 document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&['+','=','-','_','0'].indexOf(e.key)>-1)e.preventDefault()});
-load();render();if(st(PKEY))show('lock',true);
+load();
+if(!RK){render();if(st(PKEY))show('lock',true)}
+else{
+  if(items.length)render();else $('list').innerHTML='<div class="empty-state">Loading your saved details…</div>';
+  if(st(PKEY))show('lock',true);
+  cloud.load(roll).then(function(d){
+    synced=true;var a=null;
+    if(d&&d.items){try{a=JSON.parse(d.items)}catch(e){}}
+    if(Array.isArray(a)&&a.length){
+      items=a;raw(KEY,d.items);
+      if(d.pin)raw(PKEY,d.pin);else raw(PKEY,null);
+    }else{
+      /* Pehli baar cloud par: is device ka purana (pre-cloud) data upload karo, warna cache/seed. */
+      var legacy=null;try{legacy=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+      if(Array.isArray(legacy)&&legacy.length){items=legacy;localStorage.removeItem(KEY)}
+      else if(!items.length)items=seed();
+      raw(KEY,JSON.stringify(items));cloudSave();
+      var lp=null;try{lp=localStorage.getItem(PKEY)}catch(e){}
+      if(lp&&!(d&&d.pin)){raw(PKEY,lp);cloud.savePin(roll,lp);localStorage.removeItem(PKEY)}
+    }
+    if(st(PKEY)&&!unlocked)show('lock',true);
+    render();
+  }).catch(function(){
+    if(items.length){render();toast('Offline — saved copy dikh rahi hai')}
+    else $('list').innerHTML='<div class="empty-state">Cloud se connect nahi ho paya. Internet check karke Vault dobara kholein.</div>';
+  });
+}
 </script>
         </template>
     </div>
@@ -10738,6 +10774,12 @@ onAuthStateChanged(auth, user => {
   }
 
   window.openVaultPage = function(){
+    // Data Vault sirf Roll Number se logged-in user ke liye hai — guest/logged-out ke liye nahi.
+    if(!(window.localUser && window.localUser.rollNumber)){
+      if(window.isGuestMode && typeof guestBlockedAlert === 'function') guestBlockedAlert();
+      else if(typeof requireLogin === 'function') requireLogin(function(){ window.openVaultPage(); });
+      return;
+    }
     if(typeof closeAllSections === 'function') closeAllSections();
     frame.srcdoc = '<!DOCTYPE html><html lang="en"><head>' + tpl.innerHTML;
     page.style.display = 'block';
@@ -10771,6 +10813,24 @@ onAuthStateChanged(auth, user => {
     };
   }
 })();
+</script>
+
+<!-- ================= ADDITIVE: DATA VAULT CLOUD (FIREBASE) BRIDGE =================
+     Sirf naya code. Vault iframe isse parent.__vaultCloud ke through use karta hai.
+     Data 'portal/users/{roll}/dataVault' me save hota hai: { items: JSON string, pin: hash, updatedAt }.
+     Purana koi function/listener/Firebase code chheda nahi gaya hai. -->
+<script type="module">
+import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+try{
+  const vdb = getDatabase(getApp());
+  const node = r => ref(vdb, 'portal/users/' + r + '/dataVault');
+  window.__vaultCloud = {
+    load: async r => { const s = await get(node(r)); return s.exists() ? s.val() : null; },
+    saveItems: (r, json) => update(node(r), { items: json, updatedAt: Date.now() }),
+    savePin: (r, p) => update(node(r), { pin: p || null })
+  };
+}catch(e){ /* Firebase na mile to vault purane local-only mode me chalega */ }
 </script>
 </body>
 </html>
