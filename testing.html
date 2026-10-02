@@ -1674,6 +1674,29 @@ body.guest-mode .profile-menu-btn{display:none!important}
 .user-login-box .ul-mail-btn:hover{background:#dbe4ee}
 .ul-mail-btn svg{width:20px;height:20px}
 .user-login-box input.el-input{text-align:left;font-weight:normal;margin:6px 0 10px}
+/* ================= ADDITIVE: ACCOUNT DRAWER v2 (Logout, Disconnect+Captcha, Change Password, Eye icon) ================= */
+.profile-card > .logout-btn{display:none}
+body.guest-mode .profile-card > .logout-btn{display:inline-block}
+.acct-logout-wrap{margin-top:16px;padding-top:16px;border-top:1px solid #eee}
+.acct-logout{width:100%;background:var(--sarkari-red,#c0392b);color:#fff;border:0;border-radius:8px;padding:12px;font-size:1rem;font-weight:700;cursor:pointer}
+.acct-logout:hover{background:#a93226}
+.acct-danger{width:100%;background:#fff;color:#dc2626;border:1px solid #dc2626;border-radius:8px;padding:12px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:10px}
+.acct-danger:hover{background:#fef2f2}
+.acct-secondary{width:100%;background:#fff;color:var(--primary-blue);border:1px solid var(--primary-blue);border-radius:8px;padding:12px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:10px}
+.acct-pass-wrap{position:relative}
+.acct-pass-wrap .acct-input{padding-right:46px}
+.acct-eye{position:absolute;right:6px;top:5px;width:36px;height:36px;border:0;background:none;color:#64748b;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;border-radius:6px}
+.acct-eye:hover{color:var(--primary-blue);background:#f1f5f9}
+.acct-eye svg{width:20px;height:20px}
+.acct-eye .eye-off{display:none}
+.acct-eye.shown .eye-on{display:none}
+.acct-eye.shown .eye-off{display:block}
+.acct-cap-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+#acctCapCanvas{flex:1;min-width:0;height:60px;border:1px solid #cbd5e1;border-radius:8px;background:#f1f5f9;user-select:none}
+.acct-cap-refresh{flex:0 0 40px;height:40px;border:1px solid #cbd5e1;background:#fff;border-radius:8px;color:var(--primary-blue);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.acct-cap-refresh svg{width:20px;height:20px}
+.acct-ok{color:#16a34a}
+/* ================= END ADDITIVE: ACCOUNT DRAWER v2 CSS ================= */
 /* ================= END ADDITIVE: EMAIL + PASSWORD LOGIN CSS ================= */
     </style>
 <style>
@@ -3620,8 +3643,8 @@ else{
             </div>
             <div class="acct-step" id="acctStepPass">
                 <p class="acct-note">Create a password for <b id="acctEmailShow2"></b></p>
-                <input type="password" class="acct-input" id="acctPass1" placeholder="Create password (min 6 characters)" autocomplete="new-password">
-                <input type="password" class="acct-input" id="acctPass2" placeholder="Confirm password" autocomplete="new-password" onkeypress="if(event.key === 'Enter') acctSavePassword()">
+                <div class="acct-pass-wrap"><input type="password" class="acct-input" id="acctPass1" placeholder="Create password (min 6 characters)" autocomplete="new-password"><button type="button" class="acct-eye" onclick="acctTogglePass(this)" aria-label="Show/Hide password" title="Show/Hide password"><svg class="eye-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></button></div>
+                <div class="acct-pass-wrap"><input type="password" class="acct-input" id="acctPass2" placeholder="Confirm password" autocomplete="new-password" onkeypress="if(event.key === 'Enter') acctSavePassword()"><button type="button" class="acct-eye" onclick="acctTogglePass(this)" aria-label="Show/Hide password" title="Show/Hide password"><svg class="eye-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></button></div>
                 <button type="button" class="acct-primary" id="acctSaveBtn" onclick="acctSavePassword()">Save</button>
                 <button type="button" class="acct-link" onclick="acctResetFlow()">Cancel</button>
                 <p class="acct-err" id="acctErr3"></p>
@@ -3630,6 +3653,32 @@ else{
                 <div class="acct-ok-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
                 <h4>Email connected</h4>
                 <p class="acct-note" id="acctDoneTxt"></p>
+                <button type="button" class="acct-secondary" onclick="acctOpenChange()">Change Password</button>
+                <button type="button" class="acct-danger" onclick="acctOpenDisconnect()">Disconnect Google Account</button>
+            </div>
+            <div class="acct-step" id="acctStepChange">
+                <p class="acct-note">Change password for <b id="acctChMasked"></b>. Enter your connected email and current password, then set a new one.</p>
+                <input type="email" class="acct-input" id="acctChEmail" placeholder="Connected Google email" autocomplete="username">
+                <div class="acct-pass-wrap"><input type="password" class="acct-input" id="acctChCur" placeholder="Current password" autocomplete="current-password"><button type="button" class="acct-eye" onclick="acctTogglePass(this)" aria-label="Show/Hide password" title="Show/Hide password"><svg class="eye-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></button></div>
+                <div class="acct-pass-wrap"><input type="password" class="acct-input" id="acctChNew" placeholder="New password (min 6 characters)" autocomplete="new-password"><button type="button" class="acct-eye" onclick="acctTogglePass(this)" aria-label="Show/Hide password" title="Show/Hide password"><svg class="eye-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></button></div>
+                <div class="acct-pass-wrap"><input type="password" class="acct-input" id="acctChNew2" placeholder="Confirm new password" autocomplete="new-password" onkeypress=\"if(event.key === 'Enter') acctSaveChange()\"><button type="button" class="acct-eye" onclick="acctTogglePass(this)" aria-label="Show/Hide password" title="Show/Hide password"><svg class="eye-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></button></div>
+                <button type="button" class="acct-primary" id="acctChBtn" onclick="acctSaveChange()">Update Password</button>
+                <button type="button" class="acct-link" onclick="acctBackToDone()">Cancel</button>
+                <p class="acct-err" id="acctErrCh"></p>
+            </div>
+            <div class="acct-step" id="acctStepCaptcha">
+                <p class="acct-note">To disconnect <b id="acctCapMasked"></b>, type the characters shown below.</p>
+                <div class="acct-cap-row">
+                    <canvas id="acctCapCanvas" width="220" height="60"></canvas>
+                    <button type="button" class="acct-cap-refresh" onclick="acctNewCaptcha()" aria-label="New captcha" title="New captcha"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
+                </div>
+                <input type="text" class="acct-input" id="acctCapInput" placeholder="Enter captcha" autocomplete="off" autocapitalize="characters" maxlength="8" onkeypress="if(event.key === 'Enter') acctConfirmDisconnect()">
+                <button type="button" class="acct-danger" id="acctCapBtn" style="margin-top:0" onclick="acctConfirmDisconnect()">Done</button>
+                <button type="button" class="acct-link" onclick="acctBackToDone()">Cancel</button>
+                <p class="acct-err" id="acctErrCap"></p>
+            </div>
+            <div class="acct-logout-wrap">
+                <button type="button" class="acct-logout" onclick="closeAcctDrawer(); userLogout();">Log Out</button>
             </div>
         </div>
     </aside>
@@ -12499,7 +12548,7 @@ try{
     return (n.length <= 2 ? n[0] + '*' : n.slice(0,2) + '***') + '@' + d;
   }
   function showStep(name){
-    ['Connect','Email','Pass','Done'].forEach(k => $('acctStep'+k).classList.toggle('active', k === name));
+    ['Connect','Email','Pass','Done','Change','Captcha'].forEach(k => $('acctStep'+k).classList.toggle('active', k === name));
   }
   function friendly(e){
     const c = (e && (e.code || e.message)) || '';
@@ -12510,6 +12559,9 @@ try{
     if(c.indexOf('roll-conflict') > -1) return 'This Google account is already connected to another Roll Number.';
     if(c.indexOf('network') > -1) return 'Network error. Please check your internet connection.';
     if(c.indexOf('weak-password') > -1) return 'Password is too weak. Use at least 6 characters.';
+    if(c.indexOf('not-yours') > -1) return 'This email is not connected to your Roll Number.';
+    if(c.indexOf('invalid-credential') > -1 || c.indexOf('wrong-password') > -1 || c.indexOf('user-not-found') > -1 || c.indexOf('invalid-email') > -1) return 'Incorrect email or current password.';
+    if(c.indexOf('too-many-requests') > -1) return 'Too many attempts. Please try again later.';
     return 'Something went wrong. Please try again.';
   }
 
@@ -12585,6 +12637,121 @@ try{
     btn.disabled = false; btn.textContent = 'Save';
   };
 
+  // ---------- ADDITIVE: eye toggle, change password, disconnect (captcha) ----------
+  window.acctTogglePass = function(btn){
+    const inp = btn.parentNode.querySelector('input');
+    const show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    btn.classList.toggle('shown', show);
+  };
+  function acctClearExtra(){
+    ['acctChEmail','acctChCur','acctChNew','acctChNew2','acctCapInput'].forEach(id => { const el = $(id); if(el) el.value = ''; });
+    ['acctPass1','acctPass2','acctChCur','acctChNew','acctChNew2'].forEach(id => { const el = $(id); if(el && el.type === 'text') el.type = 'password'; });
+    document.querySelectorAll('.acct-eye.shown').forEach(b => b.classList.remove('shown'));
+    ['acctErrCh','acctErrCap'].forEach(id => { const el = $(id); if(el){ el.textContent = ''; el.classList.remove('acct-ok'); } });
+  }
+  const _closeBase = window.closeAcctDrawer;
+  window.closeAcctDrawer = function(){ _closeBase(); acctClearExtra(); };
+  window.acctBackToDone = function(){ acctClearExtra(); showStep('Done'); };
+  function curMasked(){
+    const u = (window.onlineUsersData || {})[String(window.localUser.rollNumber)] || {};
+    return u.emailMasked || window.localUser.emailMasked || 'your Google account';
+  }
+
+  // Change password
+  window.acctOpenChange = function(){
+    acctClearExtra();
+    $('acctChMasked').textContent = curMasked();
+    showStep('Change');
+  };
+  window.acctSaveChange = async function(){
+    const email = $('acctChEmail').value.trim(), cur = $('acctChCur').value, n1 = $('acctChNew').value, n2 = $('acctChNew2').value;
+    const err = $('acctErrCh'), btn = $('acctChBtn');
+    err.classList.remove('acct-ok'); err.textContent = '';
+    if(!email || !cur){ err.textContent = 'Enter your connected email and current password.'; return; }
+    if(n1.length < 6){ err.textContent = 'New password must be at least 6 characters.'; return; }
+    if(n1 !== n2){ err.textContent = 'New passwords do not match.'; return; }
+    if(n1 === cur){ err.textContent = 'New password must be different from the current password.'; return; }
+    if(!window.emailAuthApi){ err.textContent = 'Please wait a moment and try again.'; return; }
+    btn.disabled = true; btn.textContent = 'Updating...';
+    try {
+      await window.emailAuthApi.changePassword(String(window.localUser.rollNumber), email, cur, n1);
+      acctClearExtra();
+      $('acctDoneTxt').textContent = 'Password updated successfully for ' + curMasked() + '.';
+      showStep('Done');
+    } catch(e){
+      err.textContent = friendly(e);
+    }
+    btn.disabled = false; btn.textContent = 'Update Password';
+  };
+
+  // Disconnect Google account (captcha)
+  let capCode = '';
+  window.acctNewCaptcha = function(){
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    capCode = '';
+    for(let i = 0; i < 5; i++) capCode += chars.charAt(Math.floor(Math.random() * chars.length));
+    const cv = $('acctCapCanvas'), ctx = cv.getContext('2d'), W = cv.width, H = cv.height;
+    ctx.clearRect(0, 0, W, H);
+    const bg = ctx.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0, '#e0e7ff'); bg.addColorStop(1, '#fef3c7');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    for(let i = 0; i < 6; i++){
+      ctx.strokeStyle = 'hsla(' + Math.floor(Math.random()*360) + ',55%,45%,.55)';
+      ctx.lineWidth = 1 + Math.random() * 1.5;
+      ctx.beginPath(); ctx.moveTo(Math.random()*W, Math.random()*H);
+      ctx.bezierCurveTo(Math.random()*W, Math.random()*H, Math.random()*W, Math.random()*H, Math.random()*W, Math.random()*H);
+      ctx.stroke();
+    }
+    for(let i = 0; i < 40; i++){
+      ctx.fillStyle = 'rgba(0,0,0,' + (0.15 + Math.random()*0.25) + ')';
+      ctx.fillRect(Math.random()*W, Math.random()*H, 2, 2);
+    }
+    const step = W / (capCode.length + 1);
+    for(let i = 0; i < capCode.length; i++){
+      ctx.save();
+      ctx.translate(step * (i + 0.8), H / 2 + (Math.random() * 12 - 6));
+      ctx.rotate((Math.random() - 0.5) * 0.7);
+      ctx.font = 'bold ' + (30 + Math.floor(Math.random() * 8)) + 'px Arial, sans-serif';
+      ctx.fillStyle = 'hsl(' + Math.floor(Math.random()*360) + ',60%,28%)';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(capCode.charAt(i), 0, 0);
+      ctx.restore();
+    }
+    $('acctCapInput').value = '';
+  };
+  window.acctOpenDisconnect = function(){
+    acctClearExtra();
+    $('acctCapMasked').textContent = curMasked();
+    showStep('Captcha');
+    window.acctNewCaptcha();
+  };
+  window.acctConfirmDisconnect = async function(){
+    const val = $('acctCapInput').value.trim().toUpperCase(), err = $('acctErrCap'), btn = $('acctCapBtn');
+    err.classList.remove('acct-ok'); err.textContent = '';
+    if(!val){ err.textContent = 'Please enter the captcha.'; return; }
+    if(val !== capCode){ err.textContent = 'Wrong captcha. A new one has been generated, try again.'; window.acctNewCaptcha(); return; }
+    if(!window.emailAuthApi){ err.textContent = 'Please wait a moment and try again.'; return; }
+    btn.disabled = true; btn.textContent = 'Disconnecting...';
+    try {
+      const roll = String(window.localUser.rollNumber);
+      await window.emailAuthApi.unlinkEmail(roll);
+      window.localUser.emailLinked = false;
+      window.localUser.emailMasked = '';
+      try { localStorage.setItem('portalUser', JSON.stringify(window.localUser)); } catch(e){}
+      const ou = (window.onlineUsersData || {})[roll];
+      if(ou){ ou.emailLinked = false; ou.emailMasked = ''; }
+      capCode = '';
+      acctClearExtra();
+      $('acctErr1').textContent = '';
+      showStep('Connect');
+    } catch(e){
+      err.textContent = friendly(e);
+      window.acctNewCaptcha();
+    }
+    btn.disabled = false; btn.textContent = 'Done';
+  };
+
   // ---------- Email login popup (from login screen) ----------
   window.openEmailLogin = function(){
     $('emailLoginEmail').value = ''; $('emailLoginPass').value = ''; $('emailLoginError').innerText = '';
@@ -12603,6 +12770,7 @@ try{
       const roll = await window.emailAuthApi.signIn(email, pass);
       const users = window.onlineUsersData || {};
       if(!users[roll]){ err.innerText = 'This Roll Number was not found. Contact your admin.'; btn.disabled = false; return; }
+      if(!users[roll].emailLinked){ err.innerText = 'This email is not connected to any Roll Number.'; btn.disabled = false; return; }
       if(users[roll].forceLogout){
         err.innerText = 'You have been logged out by the admin. Please try again later or contact your admin.';
         if(window.clearForceLogoutFlag) window.clearForceLogoutFlag(roll);
@@ -12662,8 +12830,12 @@ window.emailAuthApi = {
     const res = await signInWithPopup(auth2, provider);
     const dn = res.user.displayName || "";
     if(dn.indexOf(TAG) === 0 && dn !== TAG + roll){
+      // Agar purane roll ne apna email disconnect kar diya hai to is account ko naye roll se jodne do
+      const od = (window.onlineUsersData || {})[dn.slice(TAG.length)];
+      if(!od || od.emailLinked){
       await signOut(auth2);
       const e = new Error("roll-conflict"); e.code = "roll-conflict"; throw e;
+      }
     }
     return { email: res.user.email };
   },
@@ -12685,6 +12857,21 @@ window.emailAuthApi = {
     await signOut(auth2);
     if(dn.indexOf(TAG) !== 0){ const e = new Error("not-linked"); e.code = "not-linked"; throw e; }
     return dn.slice(TAG.length);
+  },
+  // ADDITIVE: current password verify karke naya password set karta hai
+  async changePassword(roll, email, current, next){
+    const cred = await signInWithEmailAndPassword(auth2, email, current);
+    if((cred.user.displayName || "") !== TAG + roll){
+      await signOut(auth2);
+      const e = new Error("not-yours"); e.code = "not-yours"; throw e;
+    }
+    await updatePassword(cred.user, next);
+    await signOut(auth2);
+  },
+  // ADDITIVE: Google/email connection hata deta hai (roll ka emailLinked off)
+  async unlinkEmail(roll){
+    await update(ref(db2, "portal/users/" + roll), { emailLinked: false, emailMasked: null, emailLinkedAt: null });
+    await signOut(auth2).catch(() => {});
   },
   signOut(){ return signOut(auth2).catch(() => {}); }
 };
