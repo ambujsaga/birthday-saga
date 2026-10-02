@@ -10851,19 +10851,48 @@ try{
 }catch(e){ /* Firebase na mile to Programming page login/cloud ke bina nahi khulega */ }
 </script>
 
-<!-- ================= ADDITIVE: PROGRAMMING FEED CLOUD BRIDGE =================
-     Posted coding projects 'portal/codeFeed/{postId}' me save hote hain. Purana koi Firebase code chheda nahi gaya. -->
+<!-- ================= ADDITIVE: PROJECT POST PUBLISH BRIDGE (FIREBASE) =================
+     Sirf naya code. Programming page ka "Post" button parent.__progPost.publish() ko call karta hai.
+     Project ek normal Feed post ki tarah 'portal/posts/{id}' me save hota hai (type: 'project'), isliye
+     seen count, reactions, comments, delete, avatar waghera sab purane features waise hi kaam karte hain. -->
 <script type="module">
 import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, get, set, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 try{
-  const fdb = getDatabase(getApp());
-  window.__progFeedCloud = {
-    load: async () => { const s = await get(ref(fdb, 'portal/codeFeed')); return s.exists() ? s.val() : {}; },
-    post: (id, obj) => set(ref(fdb, 'portal/codeFeed/' + id), obj),
-    del:  id => remove(ref(fdb, 'portal/codeFeed/' + id))
+  const pdb = getDatabase(getApp());
+  const LANG_IDS = ['web','c','cpp','java','python','javascript','csharp','php','kotlin','go'];
+  const TEXT_MAX = 50, NAME_MAX = 80, CODE_MAX = 100000;
+  window.__progPost = {
+    publish: async function(input){
+      const lu = window.localUser;
+      if(!lu || !lu.rollNumber) throw new Error('Please login first.');
+      const name = String((input && input.name) || '').trim().slice(0, NAME_MAX);
+      if(!name) throw new Error('Project name is required.');
+      const langId = String((input && input.langId) || '');
+      if(LANG_IDS.indexOf(langId) < 0) throw new Error('Unknown language.');
+      const text = String((input && input.text) || '').trim();
+      if(text.length > TEXT_MAX) throw new Error('Text can be a maximum of 50 characters.');
+      const src = (input && input.data) || {};
+      const data = langId === 'web'
+        ? { html: String(src.html || ''), css: String(src.css || ''), js: String(src.js || '') }
+        : { code: String(src.code || '') };
+      const total = Object.keys(data).reduce(function(n, k){ return n + data[k].length; }, 0);
+      if(!Object.keys(data).some(function(k){ return data[k].trim(); })) throw new Error('Write some code before posting.');
+      if(total > CODE_MAX) throw new Error('Code is too large to post (maximum about 100,000 characters).');
+      const roll = String(lu.rollNumber);
+      const id = 'userpost_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+      const seen = {}; seen[roll] = true;
+      const payload = {
+        id: id, subjectId: null, type: 'project', text: text, imgUrls: [], imgUrl: '',
+        authorRoll: roll, authorName: lu.name || roll, timestamp: Date.now(),
+        seenBy: seen, comments: [],
+        projectName: name, projectLang: langId, projectData: data
+      };
+      await set(ref(pdb, 'portal/posts/' + id), payload);
+      return id;
+    }
   };
-}catch(e){ /* Firebase na mile to Feed me post/view nahi hoga, baaki sab purana chalega */ }
+}catch(e){ /* Firebase na mile to Post button 'not available' bataega, baaki sab purana waise hi chalega */ }
 </script>
 
 <!-- ================= ADDITIVE: PROGRAMMING PAGE (programming.html ke saare features, same-to-same) =================
@@ -11065,24 +11094,22 @@ try{
 
   @media (max-width:640px){
     .save-row{margin-left:0;width:100%;}
-
-  /* ---- ADDITIVE: Feed / Post ---- */
-  .post-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;}
-  .post-row input{flex:1;min-width:160px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font:13px var(--sans);}
-  .post-count{font:11px var(--mono);color:var(--muted);}
-  .feed-link{font-weight:700;font-size:15px;color:#1a5fd0;text-decoration:underline;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .feed-cap{font-size:13px;color:var(--muted);margin:6px 0 2px;}
-  .pf-user{display:flex;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px;margin:14px 0;}
-  .pf-av{width:52px;height:52px;border-radius:50%;background:var(--amber) center/cover no-repeat;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;flex:none;}
-  .pf-name{font-weight:700;font-size:15px;}
-  .pf-about{font-size:12px;color:var(--muted);margin:2px 0 4px;}
-  .pf-title{font-family:var(--mono);margin:6px 0 2px;font-size:19px;}
-  .pf-codehead{display:flex;align-items:center;gap:8px;margin:14px 0 6px;font:600 12px var(--mono);}
-  .pf-codehead span{flex:1;}
-  .pf-file{font:600 11px var(--mono);color:var(--muted);margin:8px 0 3px;}
-  .pf-code{margin:0;padding:12px;background:#10141b;color:#e6e9ef;border-radius:10px;font:12px/1.5 var(--mono);overflow:auto;max-height:320px;white-space:pre;}
     .save-row input{width:100%;}
   }
+
+  /* ================= ADDITIVE: POST PROJECT TO FEED (modal) ================= */
+  .post-modal-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(15,20,30,.5);align-items:center;justify-content:center;padding:18px;}
+  .post-modal-overlay.open{display:flex;}
+  .post-modal{width:100%;max-width:420px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:0 20px 50px -15px rgba(0,0,0,.4);}
+  .post-modal h3{font-family:var(--mono);margin:0 0 4px;font-size:16px;}
+  .post-modal-sub{color:var(--muted);font-size:12px;margin:0 0 12px;line-height:1.45;}
+  .post-modal-proj{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:12px;}
+  .post-modal-name{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .post-modal-textwrap{position:relative;}
+  .post-modal textarea{width:100%;min-height:72px;resize:none;border:1px solid var(--border);border-radius:10px;padding:10px 12px 24px;font-family:var(--sans);font-size:14px;background:var(--panel-2);color:var(--text);outline:none;}
+  .post-modal-counter{position:absolute;right:10px;bottom:7px;font-family:var(--mono);font-size:11px;color:var(--muted);}
+  .post-modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}
+  /* ================= END ADDITIVE ================= */
 </style>
 
 <div id="app">
@@ -11101,9 +11128,6 @@ try{
     <button class="nav-btn" data-view="projects" title="My Projects" aria-label="My Projects">
       <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"/></svg>
     </button>
-    <button class="nav-btn" data-view="feed" title="Feed" aria-label="Feed" id="feedNavBtn">
-      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-    </button>    </button>
   </nav>
 
   <main>
@@ -11155,12 +11179,8 @@ try{
       <div class="toolbar">
         <button class="btn primary" id="runBtn">▶ Run</button>
         <button class="btn" id="downloadBtn">⬇ Download</button>
+        <button class="btn" id="postProjectBtn" title="Post this project to the Feed">📤 Post</button>
         <button class="btn ghost" id="resetBtn">Clear code</button>
-      </div>
-      <div class="post-row">
-        <input type="text" id="postCaption" maxlength="50" placeholder="Optional caption (max 50 characters)">
-        <span class="post-count" id="postCount">0/50</span>
-        <button class="btn primary" id="postFeedBtn">📤 Post to Feed</button>
       </div>
     </section>
 
@@ -11183,23 +11203,24 @@ try{
       </div>
     </section>
 
-    <!-- FEED (ADDITIVE) -->
-    <section id="view-feed" class="view">
-      <div class="section-head">
-        <h2>Project Feed</h2>
-        <p>Students ke posted coding projects. Project name par click karein.</p>
-      </div>
-      <div class="project-list" id="feedList"></div>
-      <div class="empty-state" id="feedEmpty">Loading...</div>
-    </section>
-
-    <!-- POST DETAIL (ADDITIVE) -->
-    <section id="view-post" class="view">
-      <button class="btn ghost small" id="postBackBtn">&larr; Back to Feed</button>
-      <div id="postDetail"></div>
-    </section>
-
   </main>
+
+  <!-- ADDITIVE: Post project to Feed (name + optional 50 character text) -->
+  <div class="post-modal-overlay" id="postModal">
+    <div class="post-modal" role="dialog" aria-modal="true" aria-labelledby="postModalTitle">
+      <h3 id="postModalTitle">Post to Feed</h3>
+      <p class="post-modal-sub">Your project will appear in the Feed for everyone. Adding text is optional.</p>
+      <div class="post-modal-proj"><span class="project-badge" id="postModalBadge"></span><span class="post-modal-name" id="postModalName"></span></div>
+      <div class="post-modal-textwrap">
+        <textarea id="postModalText" maxlength="50" placeholder="Add a short text (optional, max 50 characters)..."></textarea>
+        <span class="post-modal-counter" id="postModalCounter">0/50</span>
+      </div>
+      <div class="post-modal-actions">
+        <button class="btn ghost" id="postModalCancel">Cancel</button>
+        <button class="btn primary" id="postModalSubmit">Post</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -11363,9 +11384,11 @@ try{
         <span class="project-meta">Last saved: ${date.toLocaleDateString()} ${date.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span>
         <div class="project-actions">
           <button class="btn small open-btn">Open</button>
+          <button class="btn small post-btn">📤 Post</button>
           <button class="btn small danger delete-btn">Delete</button>
         </div>`;
       card.querySelector(".open-btn").addEventListener("click", () => openEditor(p.langId, p.id));
+      card.querySelector(".post-btn").addEventListener("click", () => requestPost(p.name, p.langId, p.data));
       card.querySelector(".delete-btn").addEventListener("click", () => {
         if (confirm(`Delete project "${p.name}"?`)) {
           setProjects(getProjects().filter(x => x.id !== p.id));
@@ -11767,113 +11790,68 @@ try{
     URL.revokeObjectURL(url);
   });
 
-  /* ---------------- ADDITIVE: Feed posts ---------------- */
-  const feedApi = (function(){ try { return parent.__progFeedCloud || null; } catch(e){ return null; } })();
-  const usersOf = r => { try { return (parent.onlineUsersData || {})[r] || {}; } catch(e){ return {}; } };
-  const safeImg = u => /^(data:image\/|https:\/\/)/i.test(u || "") ? u : "";
-  const fmtTime = t => { const d = new Date(t); return d.toLocaleDateString() + " " + d.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"}); };
-  let feedCache = {};
-  const capEl = byId("postCaption");
-  capEl.addEventListener("input", () => { byId("postCount").textContent = capEl.value.length + "/50"; });
+  /* ================= ADDITIVE: POST PROJECT TO FEED =================
+     Sirf naya code. User apna project (naam + code) Feed me post kar sakta hai, chahe to
+     maximum 50 characters ke optional text ke saath, chahe bina text ke. Asli posting parent
+     (portal) ke window.__progPost.publish() se hoti hai, jo 'portal/posts' me save karta hai. */
+  const POST_TEXT_MAX = 50;
+  const postApi = (function(){ try { return parent.__progPost || null; } catch(e){ return null; } })();
+  let postInfo = null;
 
-  byId("postFeedBtn").addEventListener("click", async () => {
-    const name = byId("projectNameInput").value.trim();
-    if (!name){ alert("Post karne se pehle project name likhein."); return; }
-    if (!feedApi || !BOOT.roll){ alert("Cloud abhi connect nahi hai."); return; }
-    const lang = langById(state.currentLang), data = clone(state.data);
-    const empty = lang.kind === "web" ? !((data.html||"") + (data.css||"") + (data.js||"")).trim() : !(data.code||"").trim();
-    if (empty){ alert("Khaali code post nahi ho sakta."); return; }
-    const id = "f_" + Date.now() + "_" + Math.random().toString(36).slice(2,7);
-    let nm = usersOf(BOOT.roll).name; try { nm = nm || parent.localUser.name; } catch(e){}
-    const post = { id, roll: String(BOOT.roll), name: nm || "", projectName: name, caption: capEl.value.trim().slice(0,50), langId: state.currentLang, data, time: Date.now() };
-    try {
-      await feedApi.post(id, post);
-      capEl.value = ""; byId("postCount").textContent = "0/50";
-      alert("Project Feed me post ho gaya!");
-    } catch(e){ alert("Post nahi ho paya. Internet check karke dobara try karein."); }
+  function hasCode(lang, data){
+    if (lang.kind === "web") return !!((data.html||"").trim() || (data.css||"").trim() || (data.js||"").trim());
+    return !!((data.code||"").trim());
+  }
+  function openPostModal(info){
+    postInfo = info;
+    const lang = langById(info.langId) || LANGS[0];
+    const badge = byId("postModalBadge");
+    badge.style.background = lang.color;
+    badge.textContent = lang.name;
+    byId("postModalName").textContent = info.name;
+    byId("postModalText").value = "";
+    byId("postModalCounter").textContent = "0/" + POST_TEXT_MAX;
+    byId("postModal").classList.add("open");
+    setTimeout(() => byId("postModalText").focus(), 30);
+  }
+  function closePostModal(){
+    byId("postModal").classList.remove("open");
+    postInfo = null;
+  }
+  function requestPost(name, langId, data){
+    name = (name || "").trim();
+    if (!name){ alert("Please enter a project name first."); return; }
+    const lang = langById(langId);
+    if (!lang || !hasCode(lang, data || {})){ alert("Write some code before posting."); return; }
+    openPostModal({ name, langId, data: clone(data) });
+  }
+
+  byId("postProjectBtn").addEventListener("click", () => {
+    requestPost(byId("projectNameInput").value, state.currentLang, state.data);
   });
-
-  async function loadFeed(){
-    const list = byId("feedList"), empty = byId("feedEmpty");
-    list.innerHTML = ""; empty.style.display = "block"; empty.textContent = "Loading...";
-    if (!feedApi){ empty.textContent = "Cloud abhi connect nahi hai."; return; }
-    try { feedCache = await feedApi.load() || {}; } catch(e){ empty.textContent = "Feed load nahi ho paya."; return; }
-    const posts = Object.values(feedCache).sort((a,b) => b.time - a.time);
-    if (!posts.length){ empty.textContent = "Abhi koi project post nahi hua."; return; }
-    empty.style.display = "none";
-    posts.forEach(p => {
-      const lang = langById(p.langId) || LANGS[0], nm = usersOf(p.roll).name || p.name || p.roll;
-      const card = document.createElement("div");
-      card.className = "project-card"; card.style.setProperty("--card-color", lang.color);
-      card.innerHTML = `<div class="project-top"><span class="project-badge" style="background:${lang.color}">${lang.name}</span><a href="#" class="feed-link">${escapeHtml(p.projectName)}</a></div>`
-        + (p.caption ? `<div class="feed-cap">${escapeHtml(p.caption)}</div>` : "")
-        + `<span class="project-meta">by ${escapeHtml(nm)} · ${fmtTime(p.time)}</span>`;
-      card.querySelector("a").addEventListener("click", e => { e.preventDefault(); openPost(p.id); });
-      list.appendChild(card);
-    });
-  }
-  byId("feedNavBtn").addEventListener("click", loadFeed);
-  byId("postBackBtn").addEventListener("click", () => { showView("feed"); });
-
-  function openPost(id){
-    const p = feedCache[id]; if (!p) return;
-    const lang = langById(p.langId) || LANGS[0], u = usersOf(p.roll), nm = u.name || p.name || p.roll;
-    const about = (u.about && u.about.trim()) || "Hey there! I am using CSE 1st Sem Portal.";
-    const img = safeImg(u.avatarPic), own = String(p.roll) === String(BOOT.roll);
-    const files = lang.kind === "web" ? [["HTML", p.data.html], ["CSS", p.data.css], ["JS", p.data.js]] : [[lang.name, p.data.code]];
-    byId("postDetail").innerHTML =
-      `<div class="pf-user">${img ? `<div class="pf-av" style="background-image:url('${img.replace(/'/g,"%27")}')"></div>` : `<div class="pf-av">${escapeHtml((nm||"?").trim().charAt(0).toUpperCase())}</div>`}
-        <div><div class="pf-name">${escapeHtml(nm)}</div><div class="pf-about">${escapeHtml(about)}</div>
-        <div class="project-meta">Roll No: ${escapeHtml(p.roll)} · Posted: ${fmtTime(p.time)}</div></div></div>
-      <h3 class="pf-title">${escapeHtml(p.projectName)}</h3>${p.caption ? `<div class="feed-cap">${escapeHtml(p.caption)}</div>` : ""}
-      <div class="pf-codehead"><span>${escapeHtml(lang.name)} code</span><button class="btn primary small" id="postRunBtn">▶ Run</button>${own ? '<button class="btn small danger" id="postDelBtn">Delete</button>' : ""}</div>
-      ${files.map(f => `<div class="pf-file">${f[0]}</div><pre class="pf-code">${escapeHtml(f[1] || "")}</pre>`).join("")}
-      <div class="run-panel" id="postRunPanel" style="display:none;margin-top:14px;"><div class="run-panel-head"><span id="postRunLabel">Output</span></div><div id="postRunBody"></div></div>`;
-    byId("postRunBtn").addEventListener("click", () => runPost(p, lang));
-    if (own) byId("postDelBtn").addEventListener("click", async () => {
-      if (!confirm("Is post ko Feed se delete karein?")) return;
-      try { await feedApi.del(p.id); await loadFeed(); showView("feed"); } catch(e){ alert("Delete nahi ho paya."); }
-    });
-    showView("post"); window.scrollTo(0, 0);
-  }
-
-  // Dusre user ka JS/Python code isolated (sandboxed, no same-origin) iframe me chalta hai taaki portal data safe rahe
-  function runSandboxed(kind, code, body){
-    const out = document.createElement("div"); out.className = "console-out";
-    out.textContent = kind === "python" ? "Loading Python runtime… (first run only, needs internet)" : "";
-    body.appendChild(out);
-    let html = "";
-    const fr = document.createElement("iframe"); fr.style.display = "none"; fr.setAttribute("sandbox", "allow-scripts");
-    const onMsg = e => {
-      if (e.source !== fr.contentWindow) return;
-      const m = e.data || {};
-      if (m.k === "d"){ window.removeEventListener("message", onMsg); fr.remove(); if (!html) out.textContent = "(no output)"; return; }
-      html += (html ? "\n" : "") + (m.k === "e" ? '<span class="err">' + escapeHtml(m.s) + "</span>" : escapeHtml(m.s));
-      out.innerHTML = html;
-    };
-    window.addEventListener("message", onMsg);
-    const run = kind === "python"
-      ? 'try{const py=await loadPyodide();py.setStdout({batched:s=>send("o",s)});py.setStderr({batched:s=>send("e",s)});await py.runPythonAsync(CODE);}catch(x){send("e",String(x.message||x));}'
-      : 'try{new Function("console",CODE)({log:(...a)=>send("o",a.map(String).join(" ")),warn:(...a)=>send("o",a.map(String).join(" ")),error:(...a)=>send("e",a.map(String).join(" "))});}catch(x){send("e","Error: "+x.message);}';
-    fr.srcdoc = "<!DOCTYPE html><html><body>"
-      + (kind === "python" ? '<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"><\/script>' : "")
-      + "<script>const CODE=" + JSON.stringify(code).replace(/</g, "\\u003c") + ";const send=(k,s)=>parent.postMessage({k,s:String(s)},'*');(async()=>{" + run + "send('d','');})();<\/script></body></html>";
-    body.appendChild(fr);
-  }
-
-  function runPost(p, lang){
-    const panel = byId("postRunPanel"), body = byId("postRunBody"), label = byId("postRunLabel");
-    panel.style.display = "block"; body.innerHTML = "";
-    if (lang.kind === "web"){
-      label.textContent = "Live Preview";
-      const fr = document.createElement("iframe"); fr.className = "preview"; fr.setAttribute("sandbox", "allow-scripts");
-      fr.srcdoc = `<!DOCTYPE html><html><head><style>${p.data.css||""}</style></head><body>${p.data.html||""}<script>${p.data.js||""}\<\/script></body></html>`;
-      body.appendChild(fr);
-    } else if (lang.kind === "js" || lang.kind === "python"){ label.textContent = "Console Output"; runSandboxed(lang.kind, p.data.code || "", body); }
-    else if (lang.kind === "c" || lang.kind === "cpp") runCLike(p.data.code || "", body, label);
-    else runRemote(lang, p.data.code || "", body, label);
-    panel.scrollIntoView({ behavior: "smooth" });
-  }
+  byId("postModalText").addEventListener("input", e => {
+    byId("postModalCounter").textContent = e.target.value.length + "/" + POST_TEXT_MAX;
+  });
+  byId("postModalCancel").addEventListener("click", closePostModal);
+  byId("postModal").addEventListener("click", e => { if (e.target === byId("postModal")) closePostModal(); });
+  byId("postModalSubmit").addEventListener("click", async () => {
+    if (!postInfo) return;
+    if (!postApi){ alert("Posting is not available right now. Please reopen the Programming page and try again."); return; }
+    const text = byId("postModalText").value.trim();
+    if (text.length > POST_TEXT_MAX){ alert("Text can be a maximum of 50 characters."); return; }
+    const btn = byId("postModalSubmit");
+    btn.disabled = true; btn.textContent = "Posting...";
+    try {
+      await postApi.publish({ name: postInfo.name, langId: postInfo.langId, text: text, data: postInfo.data });
+      closePostModal();
+      alert("Project posted! It now appears in the Feed.");
+    } catch (err) {
+      alert("Post failed: " + (err && err.message ? err.message : err));
+    } finally {
+      btn.disabled = false; btn.textContent = "Post";
+    }
+  });
+  /* ================= END ADDITIVE: POST PROJECT TO FEED ================= */
 
   /* ---------------- Init ---------------- */
   renderLangGrid();
@@ -12022,6 +12000,387 @@ try{
   // Tab/app background ya band hone par bhi pending code cloud par bhej do
   document.addEventListener('visibilitychange', function(){ if(document.hidden && isOpen()) flushNow(); });
   window.addEventListener('pagehide', function(){ if(isOpen()) flushNow(); });
+})();
+</script>
+
+<!-- ================= ADDITIVE: PROJECT POSTS IN FEED + PROJECT VIEW PAGE =================
+     Sirf naya code. Purana koi function/markup edit nahi hua hai.
+     - Jo post 'type: project' hai, uska project naam Feed (aur Profile / user-search posts) me
+       hyper text (link) ki tarah dikhta hai.
+     - Link par click karne par ek naya page khulta hai: profile + naam + about + roll number + post time,
+       uske niche project ka code, aur code ke bagal me Run button. Run dabane par output dikhta hai.
+     - Dusre user ka code hamesha sandboxed iframe (allow-scripts, same-origin nahi) me chalta hai,
+       taaki wo is portal ke data/login ko na chhu sake. -->
+<style>
+.proj-post-link-wrap{display:flex;align-items:center;gap:8px;margin:2px 0 8px}
+.proj-post-lang{flex:0 0 auto;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.68rem;font-weight:700;color:#fff;padding:3px 8px;border-radius:6px}
+.proj-post-link{color:#0b5ed7;font-weight:700;font-size:.98rem;text-decoration:underline;word-break:break-word;cursor:pointer}
+.proj-view-page{display:none;position:fixed;inset:0;z-index:19000;background:var(--bg-color);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.proj-view-topbar{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--primary-blue);color:#fff}
+.proj-view-back{width:36px;height:36px;border:0;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}
+.proj-view-topbar-title{font-weight:700;font-size:1.02rem}
+.proj-view-body{max-width:820px;margin:0 auto;padding:14px 14px 40px}
+.proj-view-card{background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.08);padding:16px;margin-bottom:14px}
+.proj-view-user{display:flex;align-items:center;gap:12px}
+.proj-view-card .proj-view-avatar{width:58px;height:58px;font-size:1.05rem}
+.proj-view-user-info{min-width:0;flex:1}
+.proj-view-name{font-weight:700;color:#1e293b;font-size:1.05rem;word-break:break-word}
+.proj-view-about{color:#888;font-size:.82rem;font-style:italic;margin-top:2px;word-break:break-word}
+.proj-view-about:empty{display:none}
+.proj-view-meta{color:#64748b;font-size:.8rem;margin-top:4px}
+.proj-view-title-row{display:flex;align-items:center;gap:10px;margin:16px 0 4px}
+.proj-view-title{font-size:1.15rem;color:#1e293b;word-break:break-word;margin:0}
+.proj-view-caption{color:#334155;font-size:.92rem;margin:2px 0 4px;word-break:break-word}
+.proj-view-tabs{display:flex;gap:6px;margin:12px 0 8px}
+.proj-view-tab{border:1px solid #dde1e7;background:#f1f5f9;color:#475569;padding:6px 14px;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer}
+.proj-view-tab.active{background:var(--primary-blue);color:#fff;border-color:var(--primary-blue)}
+.proj-view-code-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;background:#1e293b;color:#cbd5e1;padding:8px 12px;border-radius:10px 10px 0 0;font-size:.78rem;font-family:ui-monospace,Menlo,Consolas,monospace}
+.proj-view-tabs + .proj-view-code-head{margin-top:0}
+.proj-view-run{background:#1f9d5c;color:#fff;border:0;border-radius:8px;padding:8px 16px;font-weight:700;font-size:.88rem;cursor:pointer;flex:0 0 auto}
+.proj-view-run:disabled{opacity:.6;cursor:default}
+.proj-view-code{margin:0;background:#0f172a;color:#e2e8f0;padding:14px;border-radius:0 0 10px 10px;overflow:auto;max-height:55vh;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem;line-height:1.55;white-space:pre;tab-size:2}
+.proj-view-output{display:none;margin-top:12px;border:1px solid #dde1e7;border-radius:10px;overflow:hidden;background:#fff}
+.proj-view-output-head{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#eef0f3;border-bottom:1px solid #dde1e7;font-size:.75rem;color:#6b7482;font-family:ui-monospace,Menlo,Consolas,monospace}
+.proj-view-dots{display:flex;gap:5px}
+.proj-view-dots span{width:9px;height:9px;border-radius:50%;display:inline-block}
+.proj-view-console{padding:12px 14px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem;white-space:pre-wrap;min-height:70px;max-height:340px;overflow:auto;color:#1c2129;word-break:break-word}
+.proj-view-console .err{color:#d13a47}
+.proj-view-note{padding:12px 14px;font-size:.8rem;color:#6b7482;border-top:1px dashed #dde1e7;line-height:1.5}
+.proj-view-preview{display:block;width:100%;height:360px;border:0;background:#fff}
+</style>
+
+<div id="projViewPage" class="proj-view-page" style="display:none;">
+    <div class="proj-view-topbar">
+        <button type="button" class="proj-view-back" onclick="closeProjectPost()" aria-label="Back" title="Back"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
+        <div class="proj-view-topbar-title">Coding Project</div>
+    </div>
+    <div class="proj-view-body" id="projViewBody"></div>
+</div>
+
+<!-- Sandboxed runner document (JS / Python / C / C++). Sirf iframe sandbox="allow-scripts" me chalta hai. -->
+<template id="projViewRunnerTemplate">
+<meta charset="UTF-8">
+<script>
+(function(){
+  var JOB = /*__JOB__*/null;
+  function send(lines, exit){ try{ parent.postMessage({ __projRun: JOB.token, lines: lines, exit: exit || 0 }, '*'); }catch(e){} }
+  function loadScript(src){
+    return new Promise(function(res, rej){
+      var s = document.createElement('script'); s.src = src; s.onload = res;
+      s.onerror = function(){ rej(new Error('Could not load the runtime (check your internet connection).')); };
+      document.head.appendChild(s);
+    });
+  }
+  function fmt(args){
+    return Array.prototype.map.call(args, function(x){
+      try{ return (typeof x === 'object' && x !== null) ? JSON.stringify(x) : String(x); }catch(e){ return String(x); }
+    }).join(' ');
+  }
+  function msg(e){ return (e && e.message) ? e.message : String(e); }
+  try{
+    if(JOB.lang === 'javascript'){
+      var lines = [];
+      var fake = {
+        log:function(){ lines.push([0, fmt(arguments) + '\n']); },
+        info:function(){ lines.push([0, fmt(arguments) + '\n']); },
+        warn:function(){ lines.push([0, fmt(arguments) + '\n']); },
+        error:function(){ lines.push([1, fmt(arguments) + '\n']); }
+      };
+      try{ (new Function('console', JOB.code))(fake); }catch(e){ lines.push([1, 'Error: ' + msg(e) + '\n']); }
+      if(!lines.length) lines.push([0, '(no output. use console.log())']);
+      send(lines, 0);
+    } else if(JOB.lang === 'python'){
+      loadScript('https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js').then(function(){
+        return window.loadPyodide();
+      }).then(async function(py){
+        var lines = [];
+        py.setStdout({ batched:function(s){ lines.push([0, s + '\n']); } });
+        py.setStderr({ batched:function(s){ lines.push([1, s + '\n']); } });
+        var q = (JOB.stdin || '') ? String(JOB.stdin).split('\n') : [];
+        try{ py.setStdin({ stdin:function(){ return q.length ? q.shift() : undefined; } }); }catch(e){}
+        try{ await py.runPythonAsync(JOB.code); }catch(e){ lines.push([1, 'Error: ' + msg(e) + '\n']); }
+        if(!lines.length) lines.push([0, '(no output. use print())']);
+        send(lines, 0);
+      }).catch(function(e){
+        send([[1, 'Could not start the Python runtime (needs an internet connection the first time). ' + msg(e)]], 1);
+      });
+    } else if(JOB.lang === 'cpp'){
+      loadScript('https://cdn.jsdelivr.net/npm/JSCPP@2.0.9/dist/JSCPP.es5.min.js').then(function(){
+        if(!window.JSCPP) throw new Error('C/C++ interpreter failed to initialize.');
+        var out = '', err = '', exit = 0;
+        try{
+          var r = window.JSCPP.run(JOB.code, JOB.stdin || '', { stdio:{ write:function(c){ out += String(c); } } });
+          if(typeof r === 'number') exit = r;
+        }catch(e){ exit = 1; err = msg(e); }
+        var lines = [];
+        if(out) lines.push([0, out]);
+        if(err) lines.push([1, (out && !/\n$/.test(out) ? '\n' : '') + 'Error: ' + err]);
+        if(!out && !err) lines.push([0, '(no output)']);
+        send(lines, exit);
+      }).catch(function(e){
+        send([[1, 'C/C++ runtime could not start (needs an internet connection the first time). ' + msg(e)]], 1);
+      });
+    } else {
+      send([[1, 'Unsupported language.']], 1);
+    }
+  }catch(e){ send([[1, 'Error: ' + msg(e)]], 1); }
+})();
+</script>
+</template>
+
+<script>
+(function(){
+  var LANG = {
+    web:{name:'Web',color:'#e8703a',ext:'html'}, c:{name:'C',color:'#5c6bc0',ext:'c'}, cpp:{name:'C++',color:'#3f78c1',ext:'cpp'},
+    java:{name:'Java',color:'#e0793c',ext:'java'}, python:{name:'Python',color:'#3e7fad',ext:'py'},
+    javascript:{name:'JavaScript',color:'#d8b93a',ext:'js'}, csharp:{name:'C#',color:'#8f4fa8',ext:'cs'},
+    php:{name:'PHP',color:'#6c72ac',ext:'php'}, kotlin:{name:'Kotlin',color:'#7f52ff',ext:'kt'}, go:{name:'Go',color:'#3aa7c4',ext:'go'}
+  };
+  var REMOTE_LANG = {java:'java',csharp:'csharp',php:'php',kotlin:'kotlin',go:'go'};
+  var page = document.getElementById('projViewPage');
+  var bodyEl = document.getElementById('projViewBody');
+  var runnerTpl = document.getElementById('projViewRunnerTemplate');
+  if(!page || !bodyEl || !runnerTpl) return;
+
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]; }); }
+  function langOf(p){ return LANG[p.projectLang] || { name: String(p.projectLang || 'Code'), color:'#64748b', ext:'txt' }; }
+  function fmtTime(ts){
+    if(!ts) return '';
+    if(typeof window.userPostTime === 'function') return window.userPostTime(ts);
+    try{ return new Date(ts).toLocaleString(); }catch(e){ return ''; }
+  }
+  function getPost(id){
+    var all = window.adminPostsData || (window.onlineData && window.onlineData.posts) || [];
+    for(var i = 0; i < all.length; i++){ if(all[i] && String(all[i].id) === String(id)) return all[i]; }
+    return null;
+  }
+
+  /* ---------- 1) Feed / Profile / user-search cards me project naam ko hyper text banao ---------- */
+  function decorate(){
+    var cards = document.querySelectorAll('.user-post-card[data-user-post-id]:not([data-proj-done])');
+    if(!cards.length) return;
+    var map = {};
+    (window.adminPostsData || []).forEach(function(p){ if(p && p.type === 'project' && p.id) map[String(p.id)] = p; });
+    cards.forEach(function(card){
+      card.setAttribute('data-proj-done', '1');
+      var p = map[card.getAttribute('data-user-post-id')];
+      if(!p) return;
+      var head = card.querySelector('.user-post-head');
+      if(!head) return;
+      var l = langOf(p);
+      head.insertAdjacentHTML('afterend',
+        '<div class="proj-post-link-wrap"><span class="proj-post-lang" style="background:' + l.color + '">' + esc(l.name) + '</span>' +
+        '<a href="#" class="proj-post-link" data-proj-open="' + esc(p.id) + '">' + esc(p.projectName || 'Untitled project') + '</a></div>');
+    });
+  }
+  var scanTimer = null;
+  function scheduleScan(){ if(scanTimer) return; scanTimer = setTimeout(function(){ scanTimer = null; try{ decorate(); }catch(e){} }, 60); }
+  if(window.MutationObserver) new MutationObserver(scheduleScan).observe(document.body, { childList:true, subtree:true });
+  scheduleScan();
+
+  document.addEventListener('click', function(e){
+    var a = e.target && e.target.closest ? e.target.closest('[data-proj-open]') : null;
+    if(!a) return;
+    e.preventDefault(); e.stopPropagation();
+    window.openProjectPost(a.getAttribute('data-proj-open'));
+  });
+
+  /* ---------- 2) Project view page ---------- */
+  var cur = null, curTab = 'html', running = false, activeCleanup = null;
+
+  function isOpen(){ return page.style.display === 'block'; }
+  function codeText(){
+    var d = (cur && cur.projectData) || {};
+    if(cur.projectLang === 'web') return String(d[curTab] || '');
+    return String(d.code || '');
+  }
+  function paintCode(){
+    var pre = document.getElementById('projViewCode');
+    if(pre) pre.textContent = codeText() || '(empty)';
+  }
+
+  window.openProjectPost = function(id){
+    var p = getPost(id);
+    if(!p || !p.projectData){ alert('This project is not available anymore.'); return; }
+    cur = p; curTab = 'html'; running = false;
+    var roll = String(p.authorRoll || '');
+    var live = (window.onlineUsersData || {})[roll] || {};
+    var name = live.name || p.authorName || roll;
+    var rawAbout = window.getUserAboutText ? window.getUserAboutText(roll) : '';
+    var aboutHtml = window.linkifyAboutText ? window.linkifyAboutText(rawAbout) : esc(rawAbout);
+    var tick = window.vTick ? window.vTick(roll, 15) : '';
+    var l = langOf(p);
+    var isWeb = p.projectLang === 'web';
+    bodyEl.innerHTML =
+      '<div class="proj-view-card">' +
+        '<div class="proj-view-user">' +
+          '<div class="user-post-avatar proj-view-avatar" data-roll="' + esc(roll) + '">' + esc(roll.slice(0, 2).toUpperCase() || '?') + '</div>' +
+          '<div class="proj-view-user-info">' +
+            '<div class="proj-view-name">' + esc(name) + tick + '</div>' +
+            '<div class="proj-view-about">' + aboutHtml + '</div>' +
+            '<div class="proj-view-meta">Roll No: ' + esc(roll) + ' &bull; ' + esc(fmtTime(p.timestamp)) + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="proj-view-title-row"><span class="proj-post-lang" style="background:' + l.color + '">' + esc(l.name) + '</span>' +
+          '<h2 class="proj-view-title">' + esc(p.projectName || 'Untitled project') + '</h2></div>' +
+        (p.text ? '<div class="proj-view-caption">' + esc(p.text) + '</div>' : '') +
+        (isWeb ? '<div class="proj-view-tabs"><button type="button" class="proj-view-tab active" data-pv-tab="html">HTML</button><button type="button" class="proj-view-tab" data-pv-tab="css">CSS</button><button type="button" class="proj-view-tab" data-pv-tab="js">JS</button></div>' : '') +
+        '<div class="proj-view-code-head"><span>' + esc(l.name) + (isWeb ? '' : ' &bull; .' + esc(l.ext)) + '</span>' +
+          '<button type="button" class="proj-view-run" id="projViewRunBtn">&#9654; Run</button></div>' +
+        '<pre class="proj-view-code" id="projViewCode"></pre>' +
+        '<div class="proj-view-output" id="projViewOutput">' +
+          '<div class="proj-view-output-head"><span id="projViewOutLabel">Output</span>' +
+            '<span class="proj-view-dots"><span style="background:#ef5f6c"></span><span style="background:#f2a93b"></span><span style="background:#4fd18b"></span></span></div>' +
+          '<div id="projViewOutBody"></div>' +
+        '</div>' +
+      '</div>';
+    paintCode();
+    document.getElementById('projViewRunBtn').addEventListener('click', onRun);
+    bodyEl.querySelectorAll('[data-pv-tab]').forEach(function(b){
+      b.addEventListener('click', function(){
+        curTab = b.getAttribute('data-pv-tab');
+        bodyEl.querySelectorAll('[data-pv-tab]').forEach(function(x){ x.classList.toggle('active', x === b); });
+        paintCode();
+      });
+    });
+    if(!isOpen()){
+      page.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+      try{ history.pushState({ projectViewOpen: true }, ''); }catch(e){}
+    }
+    page.scrollTop = 0;
+  };
+
+  function hideProject(){
+    if(!isOpen()) return;
+    if(activeCleanup){ try{ activeCleanup(); }catch(e){} activeCleanup = null; }
+    page.style.display = 'none';
+    bodyEl.innerHTML = '';
+    document.body.style.overflow = '';
+    cur = null; running = false;
+  }
+  window.closeProjectPost = function(){
+    if(!isOpen()) return;
+    var s = null;
+    try{ s = history.state; }catch(e){}
+    if(s && s.projectViewOpen){ history.back(); setTimeout(hideProject, 400); }
+    else hideProject();
+  };
+  // Phone ka back button: Project page -> wapas Feed. Capture + stopImmediatePropagation isliye, taaki
+  // app ka purana back handler (jo Feed se Home le jaata) is baar na chale.
+  window.addEventListener('popstate', function(e){
+    if(isOpen()){ hideProject(); e.stopImmediatePropagation(); }
+  }, true);
+
+  /* ---------- 3) Run ---------- */
+  function setNote(body, html){ body.innerHTML = '<div class="proj-view-note">' + html + '</div>'; }
+  function setText(body, text){ body.innerHTML = ''; var d = document.createElement('div'); d.className = 'proj-view-console'; d.textContent = text; body.appendChild(d); }
+  function renderLines(body, lines, exit){
+    var out = document.createElement('div'); out.className = 'proj-view-console';
+    (lines || []).forEach(function(l){
+      if(!l || l.length < 2) return;
+      if(l[0]){ var s = document.createElement('span'); s.className = 'err'; s.textContent = String(l[1]); out.appendChild(s); }
+      else out.appendChild(document.createTextNode(String(l[1])));
+    });
+    body.innerHTML = ''; body.appendChild(out);
+    if(exit){ var n = document.createElement('div'); n.className = 'proj-view-note'; n.textContent = 'Process exited with code ' + exit; body.appendChild(n); }
+  }
+  function getExecutorUrl(){
+    try{ return window.MMITCS_EXECUTOR_URL || localStorage.getItem('mmitcs_executor_url') || ''; }catch(e){ return window.MMITCS_EXECUTOR_URL || ''; }
+  }
+
+  function runInSandbox(job){
+    return new Promise(function(resolve){
+      var token = 'r' + Date.now() + Math.random().toString(36).slice(2);
+      var ifr = document.createElement('iframe');
+      ifr.setAttribute('sandbox', 'allow-scripts');
+      ifr.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden';
+      var timer = null;
+      function cleanup(){ window.removeEventListener('message', onMsg); clearTimeout(timer); if(ifr.parentNode) ifr.parentNode.removeChild(ifr); if(activeCleanup === cleanup) activeCleanup = null; }
+      function onMsg(e){
+        if(e.source !== ifr.contentWindow) return;
+        var d = e.data;
+        if(!d || d.__projRun !== token) return;
+        cleanup();
+        resolve({ lines: Array.isArray(d.lines) ? d.lines : [], exit: d.exit || 0 });
+      }
+      window.addEventListener('message', onMsg);
+      activeCleanup = cleanup;
+      timer = setTimeout(function(){ cleanup(); resolve({ lines: [[1, 'Timed out: the program took too long to finish.']], exit: 1 }); }, 90000);
+      var json = JSON.stringify(Object.assign({ token: token }, job)).replace(/</g, '\\u003c');
+      ifr.srcdoc = '<!DOCTYPE html><html><head>' + runnerTpl.innerHTML.replace('/*__JOB__*/null', function(){ return json; });
+      page.appendChild(ifr);
+    });
+  }
+
+  function runRemote(p, body, label){
+    label.textContent = 'Compiler Output';
+    var l = langOf(p), url = getExecutorUrl(), code = String((p.projectData || {}).code || '');
+    if(!url){
+      setNote(body, '<b>' + esc(l.name) + ' needs its real compiler/runtime.</b><br>A compiler service is not connected yet, so this project cannot be run here. You can still read the code above.');
+      return Promise.resolve();
+    }
+    setText(body, 'Starting ' + l.name + ' compiler…');
+    return fetch(url, { method:'POST', headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ language: REMOTE_LANG[p.projectLang] || p.projectLang, version:'*', files:[{ name:'Main.' + l.ext, content: code }], stdin:'' }) })
+    .then(function(res){ if(!res.ok) throw new Error('Compiler service returned HTTP ' + res.status); return res.json(); })
+    .then(function(r){
+      var run = (r && r.run) || {}, lines = [];
+      if(run.stdout) lines.push([0, String(run.stdout)]);
+      if(run.stderr) lines.push([1, (run.stdout ? '\n' : '') + String(run.stderr)]);
+      if(!lines.length) lines.push([0, '(no output)']);
+      renderLines(body, lines, (run.code && !run.stderr) ? run.code : 0);
+    })
+    .catch(function(err){ setNote(body, '<span style="color:#d13a47">Compiler connection failed:</span> ' + esc(err && err.message ? err.message : err)); });
+  }
+
+  function onRun(){
+    if(running || !cur) return;
+    var p = cur, kind = p.projectLang, data = p.projectData || {};
+    var out = document.getElementById('projViewOutput'), body = document.getElementById('projViewOutBody');
+    var label = document.getElementById('projViewOutLabel'), btn = document.getElementById('projViewRunBtn');
+    out.style.display = 'block'; body.innerHTML = '';
+
+    function finishScroll(){ try{ out.scrollIntoView({ behavior:'smooth', block:'nearest' }); }catch(e){} }
+
+    if(kind === 'web'){
+      label.textContent = 'Live Preview';
+      var ifr = document.createElement('iframe');
+      ifr.className = 'proj-view-preview';
+      ifr.setAttribute('sandbox', 'allow-scripts');
+      ifr.srcdoc = '<!DOCTYPE html><html><head><style>' + (data.css || '') + '</style></head><body>' + (data.html || '') + '<script>' + (data.js || '') + '<\/script></body></html>';
+      body.appendChild(ifr); finishScroll();
+      return;
+    }
+
+    var code = String(data.code || '');
+    if(kind === 'javascript' || kind === 'python' || kind === 'c' || kind === 'cpp'){
+      var job = { lang: (kind === 'c' ? 'cpp' : kind), code: code, stdin: '' };
+      if(job.lang === 'cpp' && /\b(scanf|fscanf|sscanf|getchar|getc|fgetc|gets|cin|getline)\b/.test(code)){
+        var s1 = window.prompt('C/C++ Standard Input (optional)\nEnter input values exactly as your program expects.\nExample: 10 20', '');
+        label.textContent = 'Console Output';
+        if(s1 === null){ setText(body, 'Run cancelled.'); return; }
+        job.stdin = s1;
+      } else if(kind === 'python' && /\binput\s*\(/.test(code)){
+        var s2 = window.prompt('Program input\nIf the program asks for more than one input, separate them with |  (example: 10|20)', '');
+        label.textContent = 'Console Output';
+        if(s2 === null){ setText(body, 'Run cancelled.'); return; }
+        job.stdin = s2.split('|').join('\n');
+      }
+      label.textContent = 'Console Output';
+      setText(body, kind === 'python' ? 'Loading Python runtime… (first run only, needs internet)' : (kind === 'javascript' ? 'Running…' : 'Loading C/C++ runtime… (first run only)'));
+      running = true; btn.disabled = true;
+      runInSandbox(job).then(function(res){
+        if(cur !== p) return;
+        renderLines(body, res.lines, res.exit);
+        running = false; btn.disabled = false; finishScroll();
+      });
+      return;
+    }
+
+    running = true; btn.disabled = true;
+    runRemote(p, body, label).then(function(){ running = false; btn.disabled = false; finishScroll(); });
+  }
 })();
 </script>
 </body>
