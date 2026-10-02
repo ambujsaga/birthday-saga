@@ -1609,6 +1609,10 @@
         .admin-tabs{display:flex;gap:7px;flex-wrap:wrap;padding:12px 15px;border-bottom:1px solid #ddd;background:#f7f9fc;position:sticky;top:57px;z-index:2}.admin-tab{border:1px solid #ccd4df;background:#fff;padding:8px 11px;border-radius:20px;cursor:pointer;font-weight:700;color:#334155}.admin-tab.active{background:var(--primary-blue);color:#fff}
         .admin-content{padding:18px}.admin-section{display:none}.admin-section.active{display:block}.admin-card{border:1px solid #e2e8f0;border-radius:10px;padding:15px;margin-bottom:14px;background:#fff}.admin-card h3{color:var(--primary-blue);margin-bottom:10px}.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.admin-preview{width:100%;max-height:180px;object-fit:cover;border-radius:8px;border:1px solid #ddd;margin:5px 0 10px}.admin-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.admin-status{padding:9px 12px;background:#eef6ff;border-radius:7px;margin-bottom:12px;font-size:.9rem}.admin-small{font-size:.8rem;color:#666}.admin-post-img{width:90px;height:65px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:8px}
 
+        /* Guest (hidden) mode: sirf dekhna, koi input/compose control nahi */
+        body.guest-mode .chat-input-area,
+        body.guest-mode .comment-input-box { display: none !important; }
+
         /* USER LOGIN MODAL */
         .user-login-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 15px; }
         .user-login-box { background: #fff; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -3537,6 +3541,12 @@ load();render();if(st(PKEY))show('lock',true);
         
         let localUser = JSON.parse(localStorage.getItem('portalUser')) || null;
         window.localUser = localUser;
+
+        // ADDITIVE (hidden): shared guest access code. Guest ke paas localUser nahi hota,
+        // isliye post/story/chat/comment/XP jaise saare write-features apne aap band rehte hain.
+        const GUEST_ACCESS_CODE = 'UP56';
+        window.isGuestMode = !localUser && localStorage.getItem('portalGuest') === '1';
+        if (window.isGuestMode) document.body.classList.add('guest-mode');
         let pendingAction = null;
 
         // Dynamic Unique Color Generator per Roll Number
@@ -3626,21 +3636,55 @@ load();render();if(st(PKEY))show('lock',true);
                 actionCallback();
             } else {
                 pendingAction = actionCallback;
+                pendingActionIsView = false;
                 document.getElementById('userLoginPassword').value = '';
                 document.getElementById('userLoginError').innerText = '';
                 document.getElementById('userLoginModal').style.display = 'flex';
             }
         }
 
+        // ADDITIVE: sirf "dekhne" wale actions (chat dekhna, comments dekhna) ke liye.
+        // Logged-in user ya guest, dono ke liye chalta hai; baaki sab ke liye requireLogin hi rahega.
+        let pendingActionIsView = false;
+        function requireLoginView(actionCallback) {
+            if (localUser || window.isGuestMode) {
+                actionCallback();
+            } else {
+                requireLogin(actionCallback);
+                pendingActionIsView = true;
+            }
+        }
+
         function closeUserLogin() {
             document.getElementById('userLoginModal').style.display = 'none';
             pendingAction = null;
+            pendingActionIsView = false;
+        }
+
+        // ADDITIVE: hidden guest entry (multi-device, multi-user, koi lock/active status nahi)
+        function enterGuestMode() {
+            localUser = null;
+            window.localUser = null;
+            localStorage.removeItem('portalUser');
+            window.isGuestMode = true;
+            localStorage.setItem('portalGuest', '1');
+            document.body.classList.add('guest-mode');
+            document.getElementById('userLoginModal').style.display = 'none';
+            if(window.renderOnlineChats) window.renderOnlineChats();
+            if(window.renderStoryTray) window.renderStoryTray();
+            if(typeof refreshCurrentFeeds === 'function') refreshCurrentFeeds();
+            const act = pendingAction, isView = pendingActionIsView;
+            pendingAction = null;
+            pendingActionIsView = false;
+            if(act && isView) act();
         }
 
         async function processUserLogin() {
             const roll = document.getElementById('userLoginPassword').value.trim();
             const err = document.getElementById('userLoginError');
             if(!roll) { err.innerText = "Please enter your Roll Number."; return; }
+
+            if(roll.toUpperCase() === GUEST_ACCESS_CODE) { enterGuestMode(); return; }
             
             const users = window.onlineUsersData || {};
             if(users[roll]) {
@@ -3671,6 +3715,9 @@ load();render();if(st(PKEY))show('lock',true);
                 localUser = users[roll];
                 window.localUser = localUser;
                 localStorage.setItem('portalUser', JSON.stringify(localUser));
+                window.isGuestMode = false;
+                localStorage.removeItem('portalGuest');
+                document.body.classList.remove('guest-mode');
                 document.getElementById('userLoginModal').style.display = 'none';
                 
                 if(window.setUserActiveStatus) window.setUserActiveStatus(roll, true);
@@ -4193,7 +4240,7 @@ load();render();if(st(PKEY))show('lock',true);
 
         // LocalStorage Red Dot logic for Chat Icon
         function openChat() {
-            requireLogin(() => {
+            requireLoginView(() => {
                 updateNavState('navChat');
                 closeAllSections();
                 document.getElementById('chatPage').style.display = 'block';
@@ -4408,7 +4455,7 @@ load();render();if(st(PKEY))show('lock',true);
         }
 
         function toggleCommentSection(postId) {
-            requireLogin(() => {
+            requireLoginView(() => {
                 const sec = document.getElementById(`comments-sec-${postId}`);
                 if (sec.style.display === 'none') {
                     sec.style.display = 'block';
