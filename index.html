@@ -2275,9 +2275,9 @@
 .vault-open-chev{flex:none;opacity:.8}
 .vault-open-chev .ui-icon{width:1.3em;height:1.3em}
 .vault-page{display:none;width:100%;background:var(--bg-color)}
-.vault-bar{display:flex;align-items:center;gap:12px;height:56px;padding:8px 14px;background:#fff;border-bottom:1px solid #eaeaea}
+.vault-bar{display:none;align-items:center;gap:12px;height:56px;padding:8px 14px;background:#fff;border-bottom:1px solid #eaeaea}
 .vault-bar h2{color:var(--primary-blue);font-size:1.1rem;margin:0}
-.vault-frame{display:block;width:100%;border:0;background:var(--bg-color);height:calc(100vh - 56px - 65px);height:calc(100dvh - 56px - 65px)}
+.vault-frame{display:block;width:100%;border:0;background:var(--bg-color);height:calc(100vh - 65px);height:calc(100dvh - 65px)}
 /* ================= END ADDITIVE: DATA VAULT BUTTON + PAGE ================= */
 </style>
 </head>
@@ -3018,17 +3018,23 @@ h2{font-size:.95rem;color:var(--blue);margin:18px 2px 8px;border-left:4px solid 
 /* ADDITIVE: header ka "My Details / CSE 1st Sem · Student Data Vault" text hidden (element DOM me hi hai, share-image logic same rahta hai) */
 header .top>div:first-child h1,header #hdrSub{display:none}
 header .top>div:last-child{margin-left:auto}
+header .top>div:first-child{display:flex;align-items:center;gap:10px}
+.vh-title{font-size:1.15rem;font-weight:700;color:#fff}
+/* ADDITIVE: WhatsApp jaisa niche centre me "End-to-end encrypted" note */
+.e2e-note{display:flex;align-items:center;justify-content:center;gap:6px;text-align:center;font-size:.76rem;color:var(--muted);margin:22px 0 6px}
+.e2e-note .i{width:.95em;height:.95em;color:var(--muted);vertical-align:baseline}
 </style>
 <div id="lock"><div><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h1>Vault is locked</h1><p style="color:#cbd5e1;font-size:.85rem">Enter your 4-digit PIN</p><input id="lockPin" type="password" inputmode="numeric" maxlength="4" autocomplete="off"><div id="lockErr" class="err" style="color:#ffb4a8"></div></div>
 
 <header>
-  <div class="top"><div><h1>My Details</h1><p id="hdrSub">CSE 1st Sem · Student Data Vault</p></div><div style="display:flex;gap:8px"><button class="ico" id="shareBtn" aria-label="Share details"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg></button><button class="ico" id="menuBtn" aria-label="Menu"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button></div></div>
+  <div class="top"><div><button class="ico" id="vBackBtn" type="button" aria-label="Back to Profile" onclick="try{parent.closeVaultPage()}catch(e){}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span class="vh-title">Student Data Vault</span><h1>My Details</h1><p id="hdrSub">CSE 1st Sem · Student Data Vault</p></div><div style="display:flex;gap:8px"><button class="ico" id="shareBtn" aria-label="Share details"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg></button><button class="ico" id="menuBtn" aria-label="Menu"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button></div></div>
   <div class="prog"><span id="progTxt"></span><div class="bar"><i id="progBar"></i></div></div>
 </header>
 
 <main>
   <input class="search" id="q" type="search" placeholder="Search details (e.g. Aadhaar, Enrollment)">
   <div id="list"></div>
+  <p class="e2e-note"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>End-to-end encrypted</span></p>
 </main>
 
 <button class="fab" id="addBtn">+ Add detail</button>
