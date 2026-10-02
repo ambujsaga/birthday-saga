@@ -10851,6 +10851,21 @@ try{
 }catch(e){ /* Firebase na mile to Programming page login/cloud ke bina nahi khulega */ }
 </script>
 
+<!-- ================= ADDITIVE: PROGRAMMING FEED CLOUD BRIDGE =================
+     Posted coding projects 'portal/codeFeed/{postId}' me save hote hain. Purana koi Firebase code chheda nahi gaya. -->
+<script type="module">
+import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, get, set, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+try{
+  const fdb = getDatabase(getApp());
+  window.__progFeedCloud = {
+    load: async () => { const s = await get(ref(fdb, 'portal/codeFeed')); return s.exists() ? s.val() : {}; },
+    post: (id, obj) => set(ref(fdb, 'portal/codeFeed/' + id), obj),
+    del:  id => remove(ref(fdb, 'portal/codeFeed/' + id))
+  };
+}catch(e){ /* Firebase na mile to Feed me post/view nahi hoga, baaki sab purana chalega */ }
+</script>
+
 <!-- ================= ADDITIVE: PROGRAMMING PAGE (programming.html ke saare features, same-to-same) =================
      Home screen ke "Programming" button par click karne par programming.html ke saare features
      (language cards, editor, Run, My Projects, Save, Download, Python/C/C++ runtime, etc.) ek alag
@@ -11050,6 +11065,22 @@ try{
 
   @media (max-width:640px){
     .save-row{margin-left:0;width:100%;}
+
+  /* ---- ADDITIVE: Feed / Post ---- */
+  .post-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  .post-row input{flex:1;min-width:160px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font:13px var(--sans);}
+  .post-count{font:11px var(--mono);color:var(--muted);}
+  .feed-link{font-weight:700;font-size:15px;color:#1a5fd0;text-decoration:underline;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .feed-cap{font-size:13px;color:var(--muted);margin:6px 0 2px;}
+  .pf-user{display:flex;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px;margin:14px 0;}
+  .pf-av{width:52px;height:52px;border-radius:50%;background:var(--amber) center/cover no-repeat;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;flex:none;}
+  .pf-name{font-weight:700;font-size:15px;}
+  .pf-about{font-size:12px;color:var(--muted);margin:2px 0 4px;}
+  .pf-title{font-family:var(--mono);margin:6px 0 2px;font-size:19px;}
+  .pf-codehead{display:flex;align-items:center;gap:8px;margin:14px 0 6px;font:600 12px var(--mono);}
+  .pf-codehead span{flex:1;}
+  .pf-file{font:600 11px var(--mono);color:var(--muted);margin:8px 0 3px;}
+  .pf-code{margin:0;padding:12px;background:#10141b;color:#e6e9ef;border-radius:10px;font:12px/1.5 var(--mono);overflow:auto;max-height:320px;white-space:pre;}
     .save-row input{width:100%;}
   }
 </style>
@@ -11070,6 +11101,9 @@ try{
     <button class="nav-btn" data-view="projects" title="My Projects" aria-label="My Projects">
       <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"/></svg>
     </button>
+    <button class="nav-btn" data-view="feed" title="Feed" aria-label="Feed" id="feedNavBtn">
+      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+    </button>    </button>
   </nav>
 
   <main>
@@ -11123,6 +11157,11 @@ try{
         <button class="btn" id="downloadBtn">⬇ Download</button>
         <button class="btn ghost" id="resetBtn">Clear code</button>
       </div>
+      <div class="post-row">
+        <input type="text" id="postCaption" maxlength="50" placeholder="Optional caption (max 50 characters)">
+        <span class="post-count" id="postCount">0/50</span>
+        <button class="btn primary" id="postFeedBtn">📤 Post to Feed</button>
+      </div>
     </section>
 
     <!-- RUN (separate page per language, opened from the editor's Run button) -->
@@ -11142,6 +11181,22 @@ try{
         </div>
         <div id="runPanelBody"></div>
       </div>
+    </section>
+
+    <!-- FEED (ADDITIVE) -->
+    <section id="view-feed" class="view">
+      <div class="section-head">
+        <h2>Project Feed</h2>
+        <p>Students ke posted coding projects. Project name par click karein.</p>
+      </div>
+      <div class="project-list" id="feedList"></div>
+      <div class="empty-state" id="feedEmpty">Loading...</div>
+    </section>
+
+    <!-- POST DETAIL (ADDITIVE) -->
+    <section id="view-post" class="view">
+      <button class="btn ghost small" id="postBackBtn">&larr; Back to Feed</button>
+      <div id="postDetail"></div>
     </section>
 
   </main>
@@ -11711,6 +11766,114 @@ try{
     document.body.appendChild(a); a.click(); a.remove();
     URL.revokeObjectURL(url);
   });
+
+  /* ---------------- ADDITIVE: Feed posts ---------------- */
+  const feedApi = (function(){ try { return parent.__progFeedCloud || null; } catch(e){ return null; } })();
+  const usersOf = r => { try { return (parent.onlineUsersData || {})[r] || {}; } catch(e){ return {}; } };
+  const safeImg = u => /^(data:image\/|https:\/\/)/i.test(u || "") ? u : "";
+  const fmtTime = t => { const d = new Date(t); return d.toLocaleDateString() + " " + d.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"}); };
+  let feedCache = {};
+  const capEl = byId("postCaption");
+  capEl.addEventListener("input", () => { byId("postCount").textContent = capEl.value.length + "/50"; });
+
+  byId("postFeedBtn").addEventListener("click", async () => {
+    const name = byId("projectNameInput").value.trim();
+    if (!name){ alert("Post karne se pehle project name likhein."); return; }
+    if (!feedApi || !BOOT.roll){ alert("Cloud abhi connect nahi hai."); return; }
+    const lang = langById(state.currentLang), data = clone(state.data);
+    const empty = lang.kind === "web" ? !((data.html||"") + (data.css||"") + (data.js||"")).trim() : !(data.code||"").trim();
+    if (empty){ alert("Khaali code post nahi ho sakta."); return; }
+    const id = "f_" + Date.now() + "_" + Math.random().toString(36).slice(2,7);
+    let nm = usersOf(BOOT.roll).name; try { nm = nm || parent.localUser.name; } catch(e){}
+    const post = { id, roll: String(BOOT.roll), name: nm || "", projectName: name, caption: capEl.value.trim().slice(0,50), langId: state.currentLang, data, time: Date.now() };
+    try {
+      await feedApi.post(id, post);
+      capEl.value = ""; byId("postCount").textContent = "0/50";
+      alert("Project Feed me post ho gaya!");
+    } catch(e){ alert("Post nahi ho paya. Internet check karke dobara try karein."); }
+  });
+
+  async function loadFeed(){
+    const list = byId("feedList"), empty = byId("feedEmpty");
+    list.innerHTML = ""; empty.style.display = "block"; empty.textContent = "Loading...";
+    if (!feedApi){ empty.textContent = "Cloud abhi connect nahi hai."; return; }
+    try { feedCache = await feedApi.load() || {}; } catch(e){ empty.textContent = "Feed load nahi ho paya."; return; }
+    const posts = Object.values(feedCache).sort((a,b) => b.time - a.time);
+    if (!posts.length){ empty.textContent = "Abhi koi project post nahi hua."; return; }
+    empty.style.display = "none";
+    posts.forEach(p => {
+      const lang = langById(p.langId) || LANGS[0], nm = usersOf(p.roll).name || p.name || p.roll;
+      const card = document.createElement("div");
+      card.className = "project-card"; card.style.setProperty("--card-color", lang.color);
+      card.innerHTML = `<div class="project-top"><span class="project-badge" style="background:${lang.color}">${lang.name}</span><a href="#" class="feed-link">${escapeHtml(p.projectName)}</a></div>`
+        + (p.caption ? `<div class="feed-cap">${escapeHtml(p.caption)}</div>` : "")
+        + `<span class="project-meta">by ${escapeHtml(nm)} · ${fmtTime(p.time)}</span>`;
+      card.querySelector("a").addEventListener("click", e => { e.preventDefault(); openPost(p.id); });
+      list.appendChild(card);
+    });
+  }
+  byId("feedNavBtn").addEventListener("click", loadFeed);
+  byId("postBackBtn").addEventListener("click", () => { showView("feed"); });
+
+  function openPost(id){
+    const p = feedCache[id]; if (!p) return;
+    const lang = langById(p.langId) || LANGS[0], u = usersOf(p.roll), nm = u.name || p.name || p.roll;
+    const about = (u.about && u.about.trim()) || "Hey there! I am using CSE 1st Sem Portal.";
+    const img = safeImg(u.avatarPic), own = String(p.roll) === String(BOOT.roll);
+    const files = lang.kind === "web" ? [["HTML", p.data.html], ["CSS", p.data.css], ["JS", p.data.js]] : [[lang.name, p.data.code]];
+    byId("postDetail").innerHTML =
+      `<div class="pf-user">${img ? `<div class="pf-av" style="background-image:url('${img.replace(/'/g,"%27")}')"></div>` : `<div class="pf-av">${escapeHtml((nm||"?").trim().charAt(0).toUpperCase())}</div>`}
+        <div><div class="pf-name">${escapeHtml(nm)}</div><div class="pf-about">${escapeHtml(about)}</div>
+        <div class="project-meta">Roll No: ${escapeHtml(p.roll)} · Posted: ${fmtTime(p.time)}</div></div></div>
+      <h3 class="pf-title">${escapeHtml(p.projectName)}</h3>${p.caption ? `<div class="feed-cap">${escapeHtml(p.caption)}</div>` : ""}
+      <div class="pf-codehead"><span>${escapeHtml(lang.name)} code</span><button class="btn primary small" id="postRunBtn">▶ Run</button>${own ? '<button class="btn small danger" id="postDelBtn">Delete</button>' : ""}</div>
+      ${files.map(f => `<div class="pf-file">${f[0]}</div><pre class="pf-code">${escapeHtml(f[1] || "")}</pre>`).join("")}
+      <div class="run-panel" id="postRunPanel" style="display:none;margin-top:14px;"><div class="run-panel-head"><span id="postRunLabel">Output</span></div><div id="postRunBody"></div></div>`;
+    byId("postRunBtn").addEventListener("click", () => runPost(p, lang));
+    if (own) byId("postDelBtn").addEventListener("click", async () => {
+      if (!confirm("Is post ko Feed se delete karein?")) return;
+      try { await feedApi.del(p.id); await loadFeed(); showView("feed"); } catch(e){ alert("Delete nahi ho paya."); }
+    });
+    showView("post"); window.scrollTo(0, 0);
+  }
+
+  // Dusre user ka JS/Python code isolated (sandboxed, no same-origin) iframe me chalta hai taaki portal data safe rahe
+  function runSandboxed(kind, code, body){
+    const out = document.createElement("div"); out.className = "console-out";
+    out.textContent = kind === "python" ? "Loading Python runtime… (first run only, needs internet)" : "";
+    body.appendChild(out);
+    let html = "";
+    const fr = document.createElement("iframe"); fr.style.display = "none"; fr.setAttribute("sandbox", "allow-scripts");
+    const onMsg = e => {
+      if (e.source !== fr.contentWindow) return;
+      const m = e.data || {};
+      if (m.k === "d"){ window.removeEventListener("message", onMsg); fr.remove(); if (!html) out.textContent = "(no output)"; return; }
+      html += (html ? "\n" : "") + (m.k === "e" ? '<span class="err">' + escapeHtml(m.s) + "</span>" : escapeHtml(m.s));
+      out.innerHTML = html;
+    };
+    window.addEventListener("message", onMsg);
+    const run = kind === "python"
+      ? 'try{const py=await loadPyodide();py.setStdout({batched:s=>send("o",s)});py.setStderr({batched:s=>send("e",s)});await py.runPythonAsync(CODE);}catch(x){send("e",String(x.message||x));}'
+      : 'try{new Function("console",CODE)({log:(...a)=>send("o",a.map(String).join(" ")),warn:(...a)=>send("o",a.map(String).join(" ")),error:(...a)=>send("e",a.map(String).join(" "))});}catch(x){send("e","Error: "+x.message);}';
+    fr.srcdoc = "<!DOCTYPE html><html><body>"
+      + (kind === "python" ? '<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"><\/script>' : "")
+      + "<script>const CODE=" + JSON.stringify(code).replace(/</g, "\\u003c") + ";const send=(k,s)=>parent.postMessage({k,s:String(s)},'*');(async()=>{" + run + "send('d','');})();<\/script></body></html>";
+    body.appendChild(fr);
+  }
+
+  function runPost(p, lang){
+    const panel = byId("postRunPanel"), body = byId("postRunBody"), label = byId("postRunLabel");
+    panel.style.display = "block"; body.innerHTML = "";
+    if (lang.kind === "web"){
+      label.textContent = "Live Preview";
+      const fr = document.createElement("iframe"); fr.className = "preview"; fr.setAttribute("sandbox", "allow-scripts");
+      fr.srcdoc = `<!DOCTYPE html><html><head><style>${p.data.css||""}</style></head><body>${p.data.html||""}<script>${p.data.js||""}\<\/script></body></html>`;
+      body.appendChild(fr);
+    } else if (lang.kind === "js" || lang.kind === "python"){ label.textContent = "Console Output"; runSandboxed(lang.kind, p.data.code || "", body); }
+    else if (lang.kind === "c" || lang.kind === "cpp") runCLike(p.data.code || "", body, label);
+    else runRemote(lang, p.data.code || "", body, label);
+    panel.scrollIntoView({ behavior: "smooth" });
+  }
 
   /* ---------------- Init ---------------- */
   renderLangGrid();
