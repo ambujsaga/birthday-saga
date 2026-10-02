@@ -1612,6 +1612,14 @@
         /* Guest (hidden) mode: sirf dekhna, koi input/compose control nahi */
         body.guest-mode .chat-input-area,
         body.guest-mode .comment-input-box { display: none !important; }
+        /* ADDITIVE: Guest ke liye post/story create, XP/streak/rank, avatar/about-edit controls hidden */
+        body.guest-mode .profile-post-plus,
+        body.guest-mode .avatar-edit-fab,
+        body.guest-mode .profile-about-edit-btn,
+        body.guest-mode .eng-profile-stats,
+        body.guest-mode .eng-profile-badges,
+        body.guest-mode .eng-stats-bar,
+        body.guest-mode #engMysteryCard { display: none !important; }
 
         /* USER LOGIN MODAL */
         .user-login-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 15px; }
@@ -2498,13 +2506,13 @@
                 <!-- ================= ADDITIVE: ATTENDANCE TRACKER QUICK-LINK BUTTON =================
                      Sirf naya button add kiya gaya hai, Timetable aur Programming button ke
                      beech me. In dono me se kuchh bhi chheda nahi gaya hai. -->
-                <button type="button" class="attendance-nav-btn" id="attendanceNavBtn" onclick="requireLogin(openAttendancePage)" title="Track your daily attendance">
+                <button type="button" class="attendance-nav-btn" id="attendanceNavBtn" onclick="requireLoginView(openAttendancePage)" title="Track your daily attendance">
                     <span class="att-nav-dot" id="attNavPercentDot"></span>
                     <span>Attendance</span>
                 </button>
                 <a href="programming.html" class="programming-nav-btn">Programming</a>
             </div>
-            <div class="eng-hub-bar" id="engHubBar" onclick="requireLogin(openEngagementHubPage)" title="Daily Challenge, Streak, XP, Mystery Box & Leaderboard">
+            <div class="eng-hub-bar" id="engHubBar" onclick="requireLoginView(openEngagementHubPage)" title="Daily Challenge, Streak, XP, Mystery Box & Leaderboard">
                 <span class="eng-hub-bar-badge">🎯 Daily Engagement<span class="eng-hub-dot" id="engHubDot"></span></span>
                 <span class="eng-hub-bar-text" id="engHubBarText">🔥 0 Day Streak &nbsp; ⚡ 0 XP &nbsp; 🏆 Rank #— &nbsp;— Tap for Challenge, Mystery Box & Leaderboard</span>
                 <!-- ADDITIVE: naya question har 1 hour me aane par yeh signal dot dikhega,
@@ -2566,15 +2574,15 @@
         </div>
 
         <div class="eng-stats-bar">
-            <div class="eng-stat-chip" onclick="requireLogin(openEngagementFullPage)" title="Your streak">
+            <div class="eng-stat-chip" onclick="requireLoginView(openEngagementFullPage)" title="Your streak">
                 <span class="eng-stat-emoji">🔥</span>
                 <span><span class="eng-stat-val" id="engStreakVal">0</span><span class="eng-stat-lbl">Day Streak</span></span>
             </div>
-            <div class="eng-stat-chip" onclick="requireLogin(openEngagementFullPage)" title="Your XP">
+            <div class="eng-stat-chip" onclick="requireLoginView(openEngagementFullPage)" title="Your XP">
                 <span class="eng-stat-emoji">⚡</span>
                 <span><span class="eng-stat-val" id="engXpVal">0</span><span class="eng-stat-lbl">XP</span></span>
             </div>
-            <div class="eng-stat-chip" onclick="requireLogin(openEngagementFullPage)" title="Your rank">
+            <div class="eng-stat-chip" onclick="requireLoginView(openEngagementFullPage)" title="Your rank">
                 <span class="eng-stat-emoji">🏆</span>
                 <span><span class="eng-stat-val" id="engRankVal">#—</span><span class="eng-stat-lbl">Rank</span></span>
             </div>
@@ -2599,7 +2607,7 @@
             <div class="eng-card-body" id="engLeaderboardBody" style="padding-bottom:0;">
                 <div class="eng-challenge-empty">Loading leaderboard…</div>
             </div>
-            <button type="button" class="eng-view-full-btn" onclick="requireLogin(openEngagementFullPage)">VIEW FULL RANKING</button>
+            <button type="button" class="eng-view-full-btn" onclick="requireLoginView(openEngagementFullPage)">VIEW FULL RANKING</button>
         </div>
     </div>
 
@@ -3631,9 +3639,18 @@ load();render();if(st(PKEY))show('lock',true);
         
         let savedPostIds = JSON.parse(localStorage.getItem('portalSavedPosts')) || [];
 
+        // ADDITIVE: guest ke liye restricted features (post/story create, chat message,
+        // admin-post comment, XP/streak/rank) ka friendly message.
+        function guestBlockedAlert() {
+            alert("Guest mode me yeh feature available nahi hai.\n\nPost/Story banana, Chat me message bhejna, Comment karna aur XP/Streak/Rank sirf Roll Number se login karne par milte hain.");
+        }
+        window.guestBlockedAlert = guestBlockedAlert;
+
         function requireLogin(actionCallback) {
             if (localUser) {
                 actionCallback();
+            } else if (window.isGuestMode) {
+                guestBlockedAlert();
             } else {
                 pendingAction = actionCallback;
                 pendingActionIsView = false;
@@ -3735,6 +3752,12 @@ load();render();if(st(PKEY))show('lock',true);
         }
 
         function userLogout() {
+            // ADDITIVE: guest ka logout — guest flag/class saaf karo
+            if(window.isGuestMode) {
+                window.isGuestMode = false;
+                localStorage.removeItem('portalGuest');
+                document.body.classList.remove('guest-mode');
+            }
             if(localUser && window.setUserActiveStatus) {
                 window.setUserActiveStatus(localUser.rollNumber, false);
             }
@@ -4290,14 +4313,16 @@ load();render();if(st(PKEY))show('lock',true);
         window.switchChatTab = switchChatTab;
 
         function openProfile() {
-            requireLogin(() => {
+            requireLoginView(() => {
                 updateNavState('navProfile');
                 closeAllSections();
                 
-                document.getElementById('profName').innerText = localUser.name;
-                document.getElementById('profName').insertAdjacentHTML('beforeend', window.vTick ? window.vTick(localUser.rollNumber, 15) : '');
-                document.getElementById('profRoll').innerText = localUser.rollNumber;
-                document.getElementById('profAvatar').innerText = localUser.rollNumber; 
+                // ADDITIVE: guest ke paas localUser nahi hota — uske liye neutral guest profile dikhao
+                const _profUser = localUser || { name: 'Guest User', rollNumber: 'Guest' };
+                document.getElementById('profName').innerText = _profUser.name;
+                document.getElementById('profName').insertAdjacentHTML('beforeend', (localUser && window.vTick) ? window.vTick(_profUser.rollNumber, 15) : '');
+                document.getElementById('profRoll').innerText = localUser ? _profUser.rollNumber : 'Guest (no Roll Number)';
+                document.getElementById('profAvatar').innerText = localUser ? _profUser.rollNumber : 'G'; 
                 
                 document.getElementById('profilePage').style.display = 'block';
                 window.scrollTo(0, 0);
@@ -6761,7 +6786,7 @@ onAuthStateChanged(auth, user => {
     }, 60000);
   }
   window.openGlobalFeed=function(){
-    requireLogin(function(){
+    requireLoginView(function(){
       closeAllSections();
       document.getElementById('globalFeedPage').style.display='block';
       updateNavState('navFeed');
@@ -7683,6 +7708,13 @@ onAuthStateChanged(auth, user => {
 
   function rEsc(v){ return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
+  // ADDITIVE: reaction ka key — roll number user ke liye roll, guest ke liye is device ka guest id
+  function reactionActorKey(){
+    if(window.localUser) return String(window.localUser.rollNumber);
+    if(window.isGuestMode && typeof getDeviceId === 'function') return 'guest_' + getDeviceId();
+    return '';
+  }
+
   function getReactionsFor(postId){
     const all = (typeof onlineData !== 'undefined' && onlineData.reactions) || {};
     return all[postId] || {};
@@ -7692,7 +7724,7 @@ onAuthStateChanged(auth, user => {
     const pid = String(postId||'');
     if(!pid) return null;
     const reactions = getReactionsFor(pid);
-    const roll = window.localUser ? String(window.localUser.rollNumber) : '';
+    const roll = reactionActorKey();
     const myReaction = roll ? reactions[roll] : '';
     const counts = {};
     Object.keys(reactions).forEach(r=>{
@@ -7722,7 +7754,7 @@ onAuthStateChanged(auth, user => {
         pressTimer = setTimeout(()=>{
           longPressFired = true;
           if(btn.classList.contains('active')){
-            requireLogin(()=>removeOwnPostReaction(pid));
+            requireLoginView(()=>removeOwnPostReaction(pid));
           }
         }, LONG_PRESS_MS);
       });
@@ -7737,7 +7769,7 @@ onAuthStateChanged(auth, user => {
         // diya hua hai (button already active), to dobara usi par tap karne
         // se seedha reaction remove ho jaayega, bina long-press kiye.
         if(btn.classList.contains('active')){
-          requireLogin(()=>removeOwnPostReaction(pid));
+          requireLoginView(()=>removeOwnPostReaction(pid));
           return;
         }
 
@@ -7754,7 +7786,7 @@ onAuthStateChanged(auth, user => {
           emoSpan.classList.add('reaction-pop');
         }
 
-        requireLogin(()=>setOwnPostReaction(pid, emo));
+        requireLoginView(()=>setOwnPostReaction(pid, emo));
       });
       btn.addEventListener('pointercancel', clearPress);
       btn.addEventListener('pointerleave', clearPress);
@@ -7782,7 +7814,7 @@ onAuthStateChanged(auth, user => {
   function updateReactionBarInPlace(bar, postId){
     const pid = String(postId||'');
     const reactions = getReactionsFor(pid);
-    const roll = window.localUser ? String(window.localUser.rollNumber) : '';
+    const roll = reactionActorKey();
     const myReaction = roll ? reactions[roll] : '';
     const counts = {};
     Object.keys(reactions).forEach(r=>{
@@ -7810,14 +7842,14 @@ onAuthStateChanged(auth, user => {
   }
 
   function setOwnPostReaction(postId, emoji){
-    if(!window.localUser) return;
-    const roll = String(window.localUser.rollNumber);
+    const roll = reactionActorKey();
+    if(!roll) return;
     set(ref(db, 'portal/reactions/' + postId + '/' + roll), emoji).catch(e=>console.warn('reaction set failed', e));
   }
 
   function removeOwnPostReaction(postId){
-    if(!window.localUser) return;
-    const roll = String(window.localUser.rollNumber);
+    const roll = reactionActorKey();
+    if(!roll) return;
     remove(ref(db, 'portal/reactions/' + postId + '/' + roll)).catch(e=>console.warn('reaction remove failed', e));
   }
 
@@ -8363,7 +8395,7 @@ onAuthStateChanged(auth, user => {
   };
 
   window.openStoryViewer = function(roll){
-    requireLogin(()=>{
+    requireLoginView(()=>{
       sv.groups = groupStories();
       sv.userIdx = sv.groups.findIndex(g=>g.roll===String(roll));
       if(sv.userIdx < 0) return;
@@ -8931,12 +8963,13 @@ onAuthStateChanged(auth, user => {
 
   window.mcqPopupSelect = async function(optIdx){
     const id = mcqPopupShowingId;
-    if(!id || !window.localUser) return;
+    if(!id || !(window.localUser || window.isGuestMode)) return;
     markMcqSeen(id);
     const body = document.getElementById('mcqPopupBody');
     if(body) body.innerHTML = '<div class="mcq-popup-thanks"><svg class="ui-icon"><use href="#icon-check"></use></svg> Thanks for answering!</div>';
     try{
-      await set(ref(db, 'portal/mcqs/' + id + '/votes/' + window.localUser.rollNumber), optIdx);
+      const _voterKey = window.localUser ? window.localUser.rollNumber : ('guest_' + getDeviceId());
+      await set(ref(db, 'portal/mcqs/' + id + '/votes/' + _voterKey), optIdx);
     }catch(e){ /* silent — popup already closed for this user */ }
     setTimeout(closeMcqPopup, 650);
   };
@@ -8954,7 +8987,7 @@ onAuthStateChanged(auth, user => {
 
   function showNextMcqPopup(){
     if(mcqPopupShowingId) return;
-    if(!window.localUser) return; // Voting is tied to Roll Number, so only shown once logged in
+    if(!(window.localUser || window.isGuestMode)) return; // Roll Number user ya guest — dono ko poll dikhta hai
     const adminBox = document.getElementById('adminModal');
     if(adminBox && adminBox.classList.contains('active')) return;
     const storyPage = document.getElementById('storyCreatePage');
@@ -8981,7 +9014,7 @@ onAuthStateChanged(auth, user => {
     queueUnseenMcqs();
   }, err => console.error('MCQ listener error:', err));
 
-  document.addEventListener('click', function(){ if(window.localUser) queueUnseenMcqs(); }, { once:true, capture:true });
+  document.addEventListener('click', function(){ if(window.localUser || window.isGuestMode) queueUnseenMcqs(); }, { once:true, capture:true });
   window.addEventListener('load', () => setTimeout(queueUnseenMcqs, 1200));
 })();
 
@@ -9726,6 +9759,11 @@ onAuthStateChanged(auth, user => {
     var mysteryReady = !!(mysteryEl && mysteryEl.style.display !== 'none');
     barText.textContent = '🔥 ' + streak + ' Day Streak   ⚡ ' + xp + ' XP   🏆 Rank ' + rank + (mysteryReady ? '   🎁 Mystery Box Ready!' : '') + '   — Tap for Challenge, Mystery Box & Leaderboard';
     if(dot) dot.style.display = mysteryReady ? 'inline-block' : 'none';
+    // ADDITIVE: guest ke liye XP/streak/rank nahi bante — uske liye alag simple text
+    if(window.isGuestMode && !window.localUser){
+      barText.textContent = '🎯 Daily Challenge & Class Leaderboard — Tap to view (Guest: XP/Streak/Rank nahi bante)';
+      if(dot) dot.style.display = 'none';
+    }
 
     /* ADDITIVE UPDATE: har 1-hour ke naye question ka "signal" dot —
        jab is ghante ka question aaya ho aur abhi tak jawab na diya ho to
@@ -10042,7 +10080,7 @@ onAuthStateChanged(auth, user => {
   //  - aaj ke alawa koi bhi PURANI date (pichla hafta/mahina) bhi isi function
   //    se safely backfill ho sake.
   function attMark(key, mark, dateStr){
-    if(!(window.localUser && window.localUser.rollNumber)){ requireLogin(function(){ window.openAttendancePage(); }); return; }
+    if(!(window.localUser && window.localUser.rollNumber) && !window.isGuestMode){ requireLogin(function(){ window.openAttendancePage(); }); return; }
     var data = attLoadData();
     var existing = data[key] || { present: 0, absent: 0, dates: {} };
     if(!existing.dates) existing.dates = {}; // backward-safe for any older saved records
