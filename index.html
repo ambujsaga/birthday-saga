@@ -10833,6 +10833,24 @@ try{
 }catch(e){ /* Firebase na mile to vault purane local-only mode me chalega */ }
 </script>
 
+<!-- ================= ADDITIVE: PROGRAMMING CLOUD (FIREBASE) BRIDGE =================
+     Sirf naya code. Programming page ke projects aur drafts ab localStorage me nahi, Firebase Realtime DB me
+     'portal/users/{roll}/programming' me save hote hain: { projects: JSON string, drafts: { langId: JSON string }, updatedAt }.
+     Isse user kisi bhi device par login karke apne projects pa sakta hai. Purana koi Firebase code chheda nahi gaya. -->
+<script type="module">
+import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+try{
+  const pdb = getDatabase(getApp());
+  const node = (r, sub) => ref(pdb, 'portal/users/' + r + '/programming' + (sub ? '/' + sub : ''));
+  window.__progCloud = {
+    load: async r => { const s = await get(node(r)); return s.exists() ? s.val() : null; },
+    saveProjects: (r, json) => update(node(r), { projects: json, updatedAt: Date.now() }),
+    saveDraft: (r, langId, json) => update(node(r, 'drafts'), { [langId]: json })
+  };
+}catch(e){ /* Firebase na mile to Programming page login/cloud ke bina nahi khulega */ }
+</script>
+
 <!-- ================= ADDITIVE: PROGRAMMING PAGE (programming.html ke saare features, same-to-same) =================
      Home screen ke "Programming" button par click karne par programming.html ke saare features
      (language cards, editor, Run, My Projects, Save, Download, Python/C/C++ runtime, etc.) ek alag
@@ -11170,26 +11188,57 @@ try{
   const byId = id => document.getElementById(id);
   const langById = id => LANGS.find(l => l.id === id);
 
-  /* ---------------- Storage helpers ---------------- */
+  /* ---------------- Storage helpers (Firebase Realtime DB, localStorage nahi) ----------------
+     Parent portal login ke baad cloud se data load karke parent.__progBoot me deta hai.
+     Yahan memory cache use hota hai (purane sync functions waise hi chalte hain) aur
+     har change thodi der baad Firebase me save hota hai. */
+  const BOOT = (function(){ try { return parent.__progBoot || null; } catch(e){ return null; } })() || { roll: "", projects: [], drafts: {} };
+  const cloudApi = (function(){ try { return parent.__progCloud || null; } catch(e){ return null; } })();
+  let projectsCache = Array.isArray(BOOT.projects) ? BOOT.projects : [];
+  const draftsCache = BOOT.drafts || {};
+  const dirtyDrafts = {};
+  let projectsDirty = false, cloudTimer = null;
+  const clone = o => JSON.parse(JSON.stringify(o));
+
+  function cloudFlush(){
+    clearTimeout(cloudTimer); cloudTimer = null;
+    if (!cloudApi || !BOOT.roll) return;
+    const fail = () => {
+      const t = document.getElementById("statusText");
+      if (t) t.textContent = "Cloud sync failed - retrying...";
+      clearTimeout(cloudTimer); cloudTimer = setTimeout(cloudFlush, 3000);
+    };
+    if (projectsDirty){
+      projectsDirty = false;
+      cloudApi.saveProjects(BOOT.roll, JSON.stringify(projectsCache)).catch(() => { projectsDirty = true; fail(); });
+    }
+    Object.keys(dirtyDrafts).forEach(id => {
+      delete dirtyDrafts[id];
+      cloudApi.saveDraft(BOOT.roll, id, JSON.stringify(draftsCache[id])).catch(() => { dirtyDrafts[id] = true; fail(); });
+    });
+  }
+  function scheduleFlush(){ clearTimeout(cloudTimer); cloudTimer = setTimeout(cloudFlush, 800); }
+  window.__progFlush = cloudFlush;
+
   function getProjects(){
-    try { return JSON.parse(localStorage.getItem(LS_PROJECTS)) || []; }
-    catch(e){ return []; }
+    return clone(projectsCache);
   }
   function setProjects(list){
-    localStorage.setItem(LS_PROJECTS, JSON.stringify(list));
+    projectsCache = clone(list);
+    projectsDirty = true;
+    scheduleFlush();
   }
   function getDraft(langId){
-    try {
-      const raw = localStorage.getItem(draftKey(langId));
-      if (raw) return JSON.parse(raw);
-    } catch(e){}
+    if (draftsCache[langId]) return clone(draftsCache[langId]);
     const lang = langById(langId);
     return lang.kind === "web"
       ? { html: STARTERS.web.html, css: STARTERS.web.css, js: STARTERS.web.js }
       : { code: STARTERS[langId] || "" };
   }
   function setDraft(langId, data){
-    localStorage.setItem(draftKey(langId), JSON.stringify(data));
+    draftsCache[langId] = clone(data);
+    dirtyDrafts[langId] = true;
+    scheduleFlush();
   }
 
   /* ---------------- App state ---------------- */
@@ -11365,7 +11414,7 @@ try{
   function updateStatus(){
     byId("statusText").textContent = state.currentProjectId
       ? "Saved to project"
-      : "Saved as draft (local)";
+      : "Saved as draft (cloud)";
   }
 
   // Reset draft
@@ -11675,36 +11724,124 @@ try{
 <script>
 /* ================= ADDITIVE: PROGRAMMING PAGE LOGIC =================
    Sirf naya code. Purana koi function/listener edit nahi hua hai.
+   - Programming page sirf logged-in users (Roll Number login) ke liye hai. Login nahi hai to login box khulta hai,
+     Guest mode me access nahi milta.
+   - Projects/drafts Firebase Realtime DB (portal/users/{roll}/programming) me save hote hain, taaki kisi bhi
+     device par login karke wahi projects milen. localStorage me coding data save nahi hota.
+   - Is device par purana localStorage data (mmitcs_projects / mmitcs_draft_*) ho aur cloud khaali ho to
+     pehli baar uske account me cloud par move ho jata hai (save ke baad hi local se hataya jata hai).
    - Programming button -> overlay khulta hai (fresh load, home view se, jaise programming.html kholne par).
-   - Back (page ke andar ka Back arrow ya phone ka back button) -> wapas Home screen.
-   - Projects/drafts wahi localStorage keys use karte hain jo programming.html use karta tha,
-     isliye pehle ka saved data bhi dikhega. */
+   - Back (page ke andar ka Back arrow ya phone ka back button) -> wapas Home screen. */
 (function(){
   var page  = document.getElementById('programmingPage');
   var frame = document.getElementById('programmingFrame');
   var tpl   = document.getElementById('programmingTemplate');
   if(!page || !frame || !tpl) return;
 
+  var loader = document.createElement('div');
+  loader.style.cssText = 'position:absolute;inset:0;z-index:1;display:none;align-items:center;justify-content:center;background:#fff;color:#334155;font:600 15px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+  loader.textContent = 'Loading your projects...';
+  page.appendChild(loader);
+
+  var authTimer = null;
+
   function isOpen(){ return page.style.display === 'block'; }
+
+  function flushNow(){
+    try{ if(frame.contentWindow && frame.contentWindow.__progFlush) frame.contentWindow.__progFlush(); }catch(e){}
+  }
 
   function hideProgramming(){
     if(!isOpen()) return;
+    flushNow();   // baaki bacha hua code turant cloud par bhej do
+    clearInterval(authTimer); authTimer = null;
+    loader.style.display = 'none';
+    window.__progBoot = null;
     page.style.display = 'none';
     document.body.style.overflow = '';
-    // Thodi der baad iframe khaali karo (typing ka debounce-save poora ho jaye, memory bhi free ho)
+    // Thodi der baad iframe khaali karo (memory free ho jaye)
     setTimeout(function(){ if(!isOpen()){ try{ frame.srcdoc = ''; }catch(e){} } }, 700);
+  }
+
+  function parseCloud(d, roll){
+    var projects = [], drafts = {};
+    if(d){
+      try{ projects = JSON.parse(d.projects || '[]') || []; }catch(e){ projects = []; }
+      if(d.drafts && typeof d.drafts === 'object'){
+        Object.keys(d.drafts).forEach(function(k){ try{ drafts[k] = JSON.parse(d.drafts[k]); }catch(e){} });
+      }
+    }
+    return { roll: roll, projects: projects, drafts: drafts };
+  }
+
+  // Is device ka purana local data (agar ho) cloud par move karo, sirf tab jab cloud khaali ho
+  async function migrateLocal(api, boot){
+    if(boot.projects.length || Object.keys(boot.drafts).length) return;
+    var lp = [], ld = {}, keys = [];
+    try{
+      var rawP = localStorage.getItem('mmitcs_projects');
+      if(rawP){ var arr = JSON.parse(rawP); if(Array.isArray(arr) && arr.length){ lp = arr; keys.push('mmitcs_projects'); } }
+      for(var i = 0; i < localStorage.length; i++){
+        var k = localStorage.key(i);
+        if(k && k.indexOf('mmitcs_draft_') === 0){
+          try{ ld[k.slice('mmitcs_draft_'.length)] = JSON.parse(localStorage.getItem(k)); keys.push(k); }catch(e){}
+        }
+      }
+    }catch(e){ return; }
+    if(!keys.length) return;
+    if(lp.length) await api.saveProjects(boot.roll, JSON.stringify(lp));
+    for(var id in ld){ await api.saveDraft(boot.roll, id, JSON.stringify(ld[id])); }
+    boot.projects = lp; boot.drafts = ld;
+    keys.forEach(function(k){ try{ localStorage.removeItem(k); }catch(e){} });
   }
 
   window.openProgrammingPage = function(){
     if(isOpen()) return;
-    frame.srcdoc = '<!DOCTYPE html><html lang="en"><head>' + tpl.innerHTML;
+
+    // Sirf logged-in users
+    if(!window.localUser){
+      if(window.isGuestMode){
+        alert('Programming page sirf logged-in users ke liye hai.\n\nGuest mode me yeh available nahi hai, Roll Number se login karein.');
+        return;
+      }
+      if(typeof requireLogin === 'function'){
+        requireLogin(function(){ window.openProgrammingPage(); });
+      }
+      return;
+    }
+
+    var api = window.__progCloud;
+    if(!api){
+      alert('Cloud (Firebase) abhi connect nahi hua. Internet check karke thodi der baad dobara try karein.');
+      return;
+    }
+
+    var roll = String(window.localUser.rollNumber);
+    loader.style.display = 'flex';
     page.style.display = 'block';
     document.body.style.overflow = 'hidden';
     try{ history.pushState({ programmingOpen: true }, ''); }catch(e){}
+
+    api.load(roll).then(function(d){
+      var boot = parseCloud(d, roll);
+      return migrateLocal(api, boot).catch(function(){}).then(function(){ return boot; });
+    }).then(function(boot){
+      if(!isOpen()) return;   // load ke dauran user wapas chala gaya
+      window.__progBoot = boot;
+      frame.srcdoc = '<!DOCTYPE html><html lang="en"><head>' + tpl.innerHTML;
+      loader.style.display = 'none';
+      clearInterval(authTimer);
+      // Logout / force-logout hone par page band kar do
+      authTimer = setInterval(function(){ if(isOpen() && !window.localUser) window.closeProgrammingPage(); }, 1500);
+    }).catch(function(){
+      alert('Aapke projects cloud se load nahi ho paye. Internet check karke dobara try karein.');
+      if(isOpen()) window.closeProgrammingPage();
+    });
   };
 
   window.closeProgrammingPage = function(){
     if(!isOpen()) return;
+    flushNow();
     var s = null;
     try{ s = history.state; }catch(e){}
     if(s && s.programmingOpen){
@@ -11718,6 +11855,10 @@ try{
 
   // Phone ka back button: Programming -> Home
   window.addEventListener('popstate', function(){ if(isOpen()) hideProgramming(); });
+
+  // Tab/app background ya band hone par bhi pending code cloud par bhej do
+  document.addEventListener('visibilitychange', function(){ if(document.hidden && isOpen()) flushNow(); });
+  window.addEventListener('pagehide', function(){ if(isOpen()) flushNow(); });
 })();
 </script>
 </body>
