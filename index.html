@@ -7507,10 +7507,10 @@ onAuthStateChanged(auth, user => {
 })();
 
 /* =====================================================================
-   ADDITIVE: "DOWNLOAD APP" TOP POPUP (every 3 minutes) + PWA INSTALL
+   ADDITIVE: "DOWNLOAD APP" TOP POPUP (30s, 45s, phir har 30s) + PWA INSTALL
    Purely additive module. Nothing above this block is edited or removed.
 
-   - Har 90 second me app ke upar ek popup aayega: "Download App" +
+   - Pehli baar 30s, doosri baar 45s, phir har 30s baad popup aayega: "Download App" +
      ek Download button.
    - Download button dabane par browser (Chrome) ka built-in
      "Install App" (Add to Home Screen) prompt open hoga. Accept karte
@@ -7528,7 +7528,12 @@ onAuthStateChanged(auth, user => {
      na is session me, na future me (localStorage me flag save hota hai).
 ===================================================================== */
 (function(){
-  const POPUP_INTERVAL_MS = 90 * 1000; // 90 seconds
+  // Popup schedule: 1st popup 30s baad, 2nd popup 45s baad, uske baad
+  // har 30s baad - jab tak user app install nahi kar leta.
+  const FIRST_POPUP_MS  = 30 * 1000;
+  const SECOND_POPUP_MS = 45 * 1000;
+  const REPEAT_POPUP_MS = 30 * 1000;
+  let popupCount = 0;
   const INSTALLED_FLAG_KEY = 'pwaAppInstalledFlag';
   let deferredInstallPrompt = null;
   let popupTimer = null;
@@ -7549,6 +7554,18 @@ onAuthStateChanged(auth, user => {
   window.addEventListener('beforeinstallprompt', function(e){
     e.preventDefault();
     deferredInstallPrompt = e;
+    // Browser ne install prompt diya matlab app abhi installed NAHI hai
+    // (user ne PWA uninstall kar diya) -> purana flag hata kar popup
+    // cycle dobara shuru karo.
+    var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+    if(!standalone){
+      var wasInstalled = false;
+      try{ wasInstalled = localStorage.getItem(INSTALLED_FLAG_KEY) === '1'; }catch(err){}
+      if(wasInstalled){
+        try{ localStorage.removeItem(INSTALLED_FLAG_KEY); }catch(err){}
+      }
+      if(!popupTimer){ startPopupCycle(); }
+    }
   });
 
   window.addEventListener('appinstalled', function(){
@@ -7600,16 +7617,42 @@ onAuthStateChanged(auth, user => {
   }
 
   function stopPopupCycle(){
-    if(popupTimer){ clearInterval(popupTimer); popupTimer = null; }
+    if(popupTimer){ clearTimeout(popupTimer); popupTimer = null; }
   }
 
   function startPopupCycle(){
     if(isAppInstalled()) return;
     stopPopupCycle();
-    popupTimer = setInterval(function(){
+    popupCount = 0;
+    scheduleNextPopup();
+  }
+
+  function scheduleNextPopup(){
+    var delay = popupCount === 0 ? FIRST_POPUP_MS : (popupCount === 1 ? SECOND_POPUP_MS : REPEAT_POPUP_MS);
+    popupTimer = setTimeout(function(){
+      popupTimer = null;
       if(isAppInstalled()){ stopPopupCycle(); return; }
       showDownloadPopup();
-    }, POPUP_INTERVAL_MS);
+      popupCount++;
+      scheduleNextPopup();
+    }, delay);
+  }
+
+  // Extra uninstall detection (Chrome Android): agar browser batata hai ki
+  // app installed nahi hai to purana flag hata do.
+  if(navigator.getInstalledRelatedApps){
+    navigator.getInstalledRelatedApps().then(function(apps){
+      var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+      if(apps && apps.length === 0 && !standalone){
+        var flagged = false;
+        try{ flagged = localStorage.getItem(INSTALLED_FLAG_KEY) === '1'; }catch(e){}
+        // Sirf tab clear karo jab beforeinstallprompt bhi mila ho (reliable signal)
+        if(flagged && deferredInstallPrompt){
+          try{ localStorage.removeItem(INSTALLED_FLAG_KEY); }catch(e){}
+          if(!popupTimer) startPopupCycle();
+        }
+      }
+    }).catch(function(){});
   }
 
   // Register a minimal service worker (additive, does not touch any
