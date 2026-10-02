@@ -3015,6 +3015,9 @@ h2{font-size:.95rem;color:var(--blue);margin:18px 2px 8px;border-left:4px solid 
 .shtop button{flex:1;padding:8px;border-radius:8px;background:var(--chip);font-size:.82rem}
 .btns .pri:disabled{opacity:.5;cursor:not-allowed}
 .btns .pri .i{margin-right:6px}
+/* ADDITIVE: header ka "My Details / CSE 1st Sem · Student Data Vault" text hidden (element DOM me hi hai, share-image logic same rahta hai) */
+header .top>div:first-child h1,header #hdrSub{display:none}
+header .top>div:last-child{margin-left:auto}
 </style>
 <div id="lock"><div><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h1>Vault is locked</h1><p style="color:#cbd5e1;font-size:.85rem">Enter your 4-digit PIN</p><input id="lockPin" type="password" inputmode="numeric" maxlength="4" autocomplete="off"><div id="lockErr" class="err" style="color:#ffb4a8"></div></div>
 
