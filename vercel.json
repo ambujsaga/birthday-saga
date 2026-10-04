@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/ree", "destination": "/index.html" },
+    { "source": "/ree/", "destination": "/index.html" },
+    { "source": "/ree/logo.jpg", "destination": "/logo.jpg" },
+    { "source": "/ree/manifest.json", "destination": "/manifest.json" }
+  ]
+}
