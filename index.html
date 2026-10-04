@@ -1871,7 +1871,9 @@ body.guest-mode .profile-card > .logout-btn{display:inline-block}
    Sirf naya CSS. Purane .feed-user-posts-* rules chhede nahi gaye — purana header sirf
    hide kiya gaya hai (uske elements DOM me hi rehte hain taaki purana JS waise hi chale). */
 #feedUserPostsView > .feed-user-posts-header{display:none}
-#feedUserPostsView #feedUserPostsList{display:none}
+/* FIX: pehle ye rule (2 IDs) .fu-detail-open wale rule (1 ID + 2 classes) se zyada strong tha,
+   isliye tile tap par post kabhi dikhta hi nahi tha. Ab list sirf tab hide hoti hai jab detail band ho. */
+#feedUserPostsView:not(.fu-detail-open) #feedUserPostsList{display:none}
 .fu-ig{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;margin-top:.2rem}
 .fu-ig-bar{display:flex;align-items:center;gap:10px;height:52px;padding:8px 10px;border-bottom:1px solid #eaeaea}
 .fu-ig-bar-title{font-weight:700;color:#111;font-size:1rem;display:flex;align-items:center;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
