@@ -8,8 +8,14 @@
     <link rel="manifest" href="manifest.json">
     <title>CSE 1st Sem</title>
     <script>
-    /* ADDITIVE: Public project link — /ree/#slug par sirf viewer dikhao */
-    (function(){try{if(/(^|\/)ree$/i.test(location.pathname.replace(/\/+$/,''))) document.documentElement.setAttribute('data-ree','1');}catch(e){}})();
+    /* ADDITIVE: Public project link — ree.com/#slug par sirf viewer dikhao (purana /ree/#slug bhi chalta hai).
+       Domain badalna ho to sirf neeche REE_HOST badal do. */
+    window.REE_HOST = window.REE_HOST || 'ree.com';
+    window.REE_MAIN_URL = window.REE_MAIN_URL || 'https://mmitcs.vercel.app/';
+    (function(){try{
+      var h = location.hostname.toLowerCase().replace(/^www\./,'');
+      if(h === window.REE_HOST || /(^|\/)ree$/i.test(location.pathname.replace(/\/+$/,''))) document.documentElement.setAttribute('data-ree','1');
+    }catch(e){}})();
     </script>
     <style>
     html[data-ree] body > *:not(#reeViewer){display:none !important;}
@@ -11718,7 +11724,7 @@ try{
 </script>
 
 <!-- ================= ADDITIVE: PUBLIC PROJECT LINK BRIDGE (FIREBASE) =================
-     Sirf naya code. Public link 'portal/publicProjects/{slug}' me save hota hai. Link: <site>/ree/#slug
+     Sirf naya code. Public link 'portal/publicProjects/{slug}' me save hota hai. Link: ree.com/#slug
      Sirf '#' ke baad wala slug user edit kar sakta hai. Purana koi Firebase code chheda nahi gaya. -->
 <script type="module">
 import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -11746,7 +11752,7 @@ try{
     return { name, langId, data };
   }
   window.__progPublic = {
-    baseUrl: (/^https?:$/.test(location.protocol) ? location.origin : 'https://mmitcs.vercel.app') + '/ree/#',
+    baseUrl: 'https://' + (window.REE_HOST || 'ree.com') + '/#',
     cleanSlug: cleanSlug,
     claim: async function(input){
       const u = me(), slug = cleanSlug(input && input.slug), pk = pack(input), now = Date.now();
@@ -12772,7 +12778,7 @@ try{
   });
   /* ================= END ADDITIVE: POST PROJECT TO FEED ================= */
 
-  /* ================= ADDITIVE: PUBLIC PROJECT LINK (/ree/#slug) =================
+  /* ================= ADDITIVE: PUBLIC PROJECT LINK (ree.com/#slug) =================
      Sirf naya code. Saved project ka public link banta hai; link ka '#' ke baad wala hissa edit ho sakta hai.
      Project dobara save karne par public link ka output bhi apne aap update hota hai. */
   const pubApi = (function(){ try { return parent.__progPublic || null; } catch(e){ return null; } })();
@@ -13996,7 +14002,7 @@ window.emailAuthApi = {
 })();
 </script>
 <!-- ================= END ADDITIVE: FEED SEARCH -> USER PROFILE LOGIC ================= -->
-<!-- ================= ADDITIVE: PUBLIC PROJECT VIEWER (<site>/ree/#slug) =================
+<!-- ================= ADDITIVE: PUBLIC PROJECT VIEWER (ree.com/#slug) =================
      Sirf naya code. /ree/ path par sirf yeh viewer dikhta hai (login ki zarurat nahi). Web project full-screen
      chalta hai, baaki languages ka console output dikhta hai. Code hamesha sandboxed iframe me chalta hai. -->
 <style>
@@ -14019,9 +14025,9 @@ html[data-ree] #reeViewer{display:flex}
 #reePill{position:absolute;right:10px;bottom:10px;z-index:2;background:rgba(0,51,102,.88);color:#fff;font:700 11px Arial,sans-serif;padding:6px 11px;border-radius:14px;text-decoration:none;display:none}
 </style>
 <div id="reeViewer">
-  <div id="reeBar"><a href="/">MMITcs</a><span id="reeLang"></span><span id="reeTitle"></span><button type="button" id="reeRerun">&#8635; Run again</button></div>
+  <div id="reeBar"><a href="https://mmitcs.vercel.app/" class="ree-home">MMITcs</a><span id="reeLang"></span><span id="reeTitle"></span><button type="button" id="reeRerun">&#8635; Run again</button></div>
   <div id="reeStage"></div>
-  <a id="reePill" href="/">Made with MMITcs</a>
+  <a id="reePill" class="ree-home" href="https://mmitcs.vercel.app/">Made with MMITcs</a>
 </div>
 <script>
 (function(){
@@ -14032,6 +14038,7 @@ html[data-ree] #reeViewer{display:flex}
   var bar = document.getElementById('reeBar'), stage = document.getElementById('reeStage'), pill = document.getElementById('reePill');
   var langEl = document.getElementById('reeLang'), titleEl = document.getElementById('reeTitle'), rerun = document.getElementById('reeRerun');
   var runId = 0;
+  Array.prototype.forEach.call(root.querySelectorAll('.ree-home'), function(a){ a.href = window.REE_MAIN_URL || a.href; });
 
   function slugNow(){
     var h = (location.hash || '').replace(/^#/, '');
@@ -14043,7 +14050,7 @@ html[data-ree] #reeViewer{display:flex}
     var d = document.createElement('div'); d.className = 'ree-msg';
     var h = document.createElement('h2'); h.textContent = title;
     var p = document.createElement('p'); p.textContent = text;
-    var a = document.createElement('a'); a.href = '/'; a.textContent = 'Open MMITcs';
+    var a = document.createElement('a'); a.href = window.REE_MAIN_URL || 'https://mmitcs.vercel.app/'; a.textContent = 'Open MMITcs';
     d.appendChild(h); d.appendChild(p); d.appendChild(a); stage.appendChild(d);
   }
   function lines(out, ls, exit){
@@ -14126,7 +14133,7 @@ html[data-ree] #reeViewer{display:flex}
   function load(){
     runId++;
     var slug = slugNow();
-    if(!slug){ msg('No project link', 'Open a link like mmitcs.vercel.app/ree/#projectname to see a project.'); return; }
+    if(!slug){ msg('No project link', 'Open a link like ree.com/#projectname to see a project.'); return; }
     msg('Loading project…', '');
     var n = 0;
     (function wait(){
