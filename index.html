@@ -2150,6 +2150,29 @@ body.guest-mode .profile-card > .logout-btn{display:inline-block}
 }
 </style>
 
+<!-- ================= ADDITIVE: INTERACTIVE POLLS IN FEED (styles) ================= -->
+<style>
+.poll-toggle-btn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:8px 14px;border:1.5px dashed #6366f1;background:#eef2ff;color:#4338ca;border-radius:10px;font-weight:700;font-size:.85rem;cursor:pointer}
+.poll-composer-panel{display:none;margin-top:10px;padding:12px;border:1px solid #e5e7eb;border-radius:12px;background:#f9fafb}
+.poll-composer-panel.open{display:block}
+.poll-composer-panel input{width:100%;box-sizing:border-box;padding:9px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:.9rem;margin-bottom:8px;font-family:inherit}
+.poll-opt-row{display:flex;gap:6px;align-items:flex-start}
+.poll-opt-row input{flex:1}
+.poll-opt-remove{border:none;background:#fee2e2;color:#b91c1c;border-radius:8px;padding:8px 10px;cursor:pointer;font-weight:700}
+.poll-add-opt,.poll-publish-btn{border:none;border-radius:10px;padding:9px 14px;font-weight:700;font-size:.85rem;cursor:pointer}
+.poll-add-opt{background:#e0e7ff;color:#3730a3;margin-right:8px}
+.poll-publish-btn{background:#4f46e5;color:#fff}
+.poll-publish-btn:disabled{opacity:.6}
+.user-post-poll{margin:6px 0 10px}
+.poll-opt{position:relative;display:block;width:100%;text-align:left;margin-bottom:8px;padding:10px 12px;border:1.5px solid #c7d2fe;background:#fff;border-radius:10px;font-size:.9rem;color:#1f2937;cursor:pointer;overflow:hidden;font-family:inherit}
+.poll-opt .poll-fill{position:absolute;left:0;top:0;bottom:0;background:#e0e7ff;z-index:0;transition:width .35s}
+.poll-opt.mine{border-color:#4f46e5}
+.poll-opt.mine .poll-fill{background:#c7d2fe}
+.poll-opt .poll-row{position:relative;z-index:1;display:flex;justify-content:space-between;gap:8px;font-weight:600}
+.poll-meta{font-size:.75rem;color:#6b7280;margin-top:2px}
+</style>
+<!-- ================= END ADDITIVE: POLLS (styles) ================= -->
+
 <!-- ================= ADDITIVE: MCQ popup (display-only). The MCQ questions
      themselves are created/deleted from a separate standalone file,
      mcq-admin.html, which writes directly to the same Firebase database
@@ -9114,6 +9137,151 @@ onAuthStateChanged(auth, user => {
     }
   };
 })();
+
+/* ================= ADDITIVE: INTERACTIVE POLLS IN FEED =================
+   Users multiple-choice poll bana sakte hain. Poll bhi ek normal post hai
+   ('portal/posts/{id}', type:'poll'), isliye seen/delete/reactions/comments
+   purana system waise hi kaam karta hai. Votes post ke andar 'votes/{roll}' me
+   store hote hain (post delete => votes bhi delete). Koi purana function change nahi. */
+(function(){
+  const MAX_Q=90, MAX_OPT=40, MIN_OPTS=2, MAX_OPTS=5;
+  const pEsc=v=>String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+  function injectComposer(){
+    const composer=document.getElementById('userPostComposer');
+    if(!composer || document.getElementById('pollComposerPanel')) return;
+    const wrap=document.createElement('div');
+    wrap.innerHTML=`
+      <button type="button" class="poll-toggle-btn" id="pollToggleBtn">📊 Create a Poll</button>
+      <div class="poll-composer-panel" id="pollComposerPanel">
+        <input type="text" id="pollQuestion" maxlength="${MAX_Q}" placeholder="Ask a question (e.g. Who is attending class tomorrow morning?)">
+        <div id="pollOptions"></div>
+        <button type="button" class="poll-add-opt" id="pollAddOpt">+ Add Option</button>
+        <button type="button" class="poll-publish-btn" id="pollPublishBtn">Publish Poll</button>
+      </div>`;
+    composer.appendChild(wrap);
+    const panel=document.getElementById('pollComposerPanel');
+    const list=document.getElementById('pollOptions');
+    function addOpt(val){
+      if(list.children.length>=MAX_OPTS) return alert('Maximum '+MAX_OPTS+' options allowed.');
+      const row=document.createElement('div');
+      row.className='poll-opt-row';
+      row.innerHTML=`<input type="text" maxlength="${MAX_OPT}" placeholder="Option"><button type="button" class="poll-opt-remove" title="Remove">✕</button>`;
+      row.querySelector('input').value=val||'';
+      row.querySelector('button').onclick=function(){
+        if(list.children.length<=MIN_OPTS) return alert('At least '+MIN_OPTS+' options are required.');
+        row.remove();
+      };
+      list.appendChild(row);
+    }
+    function resetPanel(){
+      document.getElementById('pollQuestion').value='';
+      list.innerHTML='';
+      for(let i=0;i<MIN_OPTS;i++) addOpt('');
+    }
+    resetPanel();
+    document.getElementById('pollToggleBtn').onclick=()=>panel.classList.toggle('open');
+    document.getElementById('pollAddOpt').onclick=()=>addOpt('');
+    document.getElementById('pollPublishBtn').onclick=function publish(){
+      if(!window.localUser){
+        if(window.isGuestMode) return window.guestBlockedAlert && window.guestBlockedAlert();
+        return requireLogin(publish);
+      }
+      const q=document.getElementById('pollQuestion').value.trim();
+      const opts=Array.from(list.querySelectorAll('input')).map(i=>i.value.trim()).filter(Boolean);
+      if(!q) return alert('Please write the poll question.');
+      if(new Set(opts.map(o=>o.toLowerCase())).size!==opts.length) return alert('Options must be different from each other.');
+      if(opts.length<MIN_OPTS) return alert('Please add at least '+MIN_OPTS+' options.');
+      const btn=this;
+      btn.disabled=true; btn.textContent='Publishing…';
+      const id='userpost_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+      const roll=String(window.localUser.rollNumber);
+      set(ref(db,'portal/posts/'+id),{
+        id, subjectId:null, type:'poll', text:q, imgUrls:[], imgUrl:'',
+        authorRoll:roll, authorName:window.localUser.name||roll,
+        timestamp:Date.now(), seenBy:{[roll]:true}, comments:[],
+        pollQuestion:q, pollOptions:opts
+      }).then(()=>{
+        resetPanel(); panel.classList.remove('open');
+        alert('Poll published! It will appear in the Feed.');
+      }).catch(e=>{
+        console.warn('Poll publish failed',e);
+        alert('Could not publish poll. Please try again.');
+      }).finally(()=>{ btn.disabled=false; btn.textContent='Publish Poll'; });
+    };
+  }
+
+  const prevEnsure=window.ensureProfilePostUI;
+  window.ensureProfilePostUI=function(){
+    const r=typeof prevEnsure==='function' ? prevEnsure.apply(this,arguments) : undefined;
+    try{ injectComposer(); }catch(e){ console.warn('poll composer',e); }
+    return r;
+  };
+  try{ injectComposer(); }catch(e){}
+
+  function findPost(id){
+    return (window.adminPostsData||[]).find(p=>p && String(p.id)===String(id));
+  }
+
+  function renderPoll(box,post){
+    const opts=Array.isArray(post.pollOptions) ? post.pollOptions : Object.values(post.pollOptions||{});
+    const votes=post.votes||{};
+    const roll=window.localUser ? String(window.localUser.rollNumber) : '';
+    const mine=roll && votes[roll]!==undefined ? Number(votes[roll]) : -1;
+    const counts=opts.map(()=>0);
+    Object.keys(votes).forEach(k=>{ const i=Number(votes[k]); if(counts[i]!==undefined) counts[i]++; });
+    const total=counts.reduce((a,b)=>a+b,0);
+    const showResults=mine>=0 || window.isGuestMode;
+    box.innerHTML=opts.map((o,i)=>{
+      const pct=total?Math.round(counts[i]*100/total):0;
+      return `<button type="button" class="poll-opt${mine===i?' mine':''}" data-poll-idx="${i}">
+        ${showResults?`<span class="poll-fill" style="width:${pct}%"></span>`:''}
+        <span class="poll-row"><span>${mine===i?'✓ ':''}${pEsc(o)}</span>${showResults?`<span>${pct}% (${counts[i]})</span>`:''}</span>
+      </button>`;
+    }).join('')+`<div class="poll-meta">${total} vote${total===1?'':'s'}${mine>=0?' • tap your choice again to remove vote':' • tap an option to vote'}</div>`;
+    box.querySelectorAll('.poll-opt').forEach(btn=>{
+      btn.onclick=function(){
+        const idx=Number(this.getAttribute('data-poll-idx'));
+        const doVote=function(){
+          const r=String(window.localUser.rollNumber);
+          const cur=findPost(post.id)||post;
+          cur.votes=cur.votes||{};
+          const same=cur.votes[r]!==undefined && Number(cur.votes[r])===idx;
+          const path=ref(db,'portal/posts/'+post.id+'/votes/'+r);
+          if(same){ delete cur.votes[r]; remove(path).catch(e=>console.warn(e)); }
+          else { cur.votes[r]=idx; set(path,idx).catch(e=>console.warn(e)); }
+          renderPoll(box,cur);
+        };
+        if(window.localUser) return doVote();
+        if(window.isGuestMode) return window.guestBlockedAlert && window.guestBlockedAlert();
+        requireLogin(doVote);
+      };
+    });
+  }
+
+  function scan(){
+    document.querySelectorAll('.user-post-card[data-user-post-id]:not([data-poll-done])').forEach(card=>{
+      const id=card.getAttribute('data-user-post-id');
+      const post=findPost(id);
+      if(!post) return;                       // data abhi nahi aaya — agle scan me
+      card.setAttribute('data-poll-done','1');
+      if(post.type!=='poll' || !post.pollOptions) return;
+      const box=document.createElement('div');
+      box.className='user-post-poll';
+      const body=card.querySelector('.user-post-body');
+      if(body) body.insertAdjacentElement('afterend',box);
+      else card.querySelector('.user-post-head').insertAdjacentElement('afterend',box);
+      renderPoll(box,post);
+    });
+  }
+  let queued=false;
+  new MutationObserver(function(){
+    if(queued) return; queued=true;
+    requestAnimationFrame(function(){ queued=false; try{ scan(); }catch(e){ console.warn('poll scan',e); } });
+  }).observe(document.body,{childList:true,subtree:true});
+  scan();
+})();
+/* ================= END ADDITIVE: POLLS ================= */
 
 /* ================= ADDITIVE: MCQ POPUP (DISPLAY-ONLY) =================
    This app file (index.html) only DISPLAYS the MCQ poll popup to logged-in
