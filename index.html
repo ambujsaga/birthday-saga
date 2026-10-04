@@ -7,6 +7,14 @@
     <link rel="apple-touch-icon" sizes="192x192" href="logo.jpg?v=1.1">
     <link rel="manifest" href="manifest.json">
     <title>CSE 1st Sem</title>
+    <script>
+    /* ADDITIVE: Public project link — /ree/#slug par sirf viewer dikhao */
+    (function(){try{if(/(^|\/)ree$/i.test(location.pathname.replace(/\/+$/,''))) document.documentElement.setAttribute('data-ree','1');}catch(e){}})();
+    </script>
+    <style>
+    html[data-ree] body > *:not(#reeViewer){display:none !important;}
+    html[data-ree] body{padding-bottom:0 !important;overflow:hidden;}
+    </style>
     
     <style>
         /* ================= CSS START ================= */
@@ -11709,6 +11717,70 @@ try{
 }catch(e){ /* Firebase na mile to Post button 'not available' bataega, baaki sab purana waise hi chalega */ }
 </script>
 
+<!-- ================= ADDITIVE: PUBLIC PROJECT LINK BRIDGE (FIREBASE) =================
+     Sirf naya code. Public link 'portal/publicProjects/{slug}' me save hota hai. Link: <site>/ree/#slug
+     Sirf '#' ke baad wala slug user edit kar sakta hai. Purana koi Firebase code chheda nahi gaya. -->
+<script type="module">
+import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, get, set, remove, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+try{
+  const pdb = getDatabase(getApp());
+  const SLUG_MAX = 40, NAME_MAX = 80, CODE_MAX = 100000;
+  const LANG_IDS = ['web','c','cpp','java','python','javascript','csharp','php','kotlin','go'];
+  const node = s => ref(pdb, 'portal/publicProjects/' + s);
+  const cleanSlug = v => String(v == null ? '' : v).trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9_-]/g,'').replace(/-{2,}/g,'-').replace(/^[-_]+|[-_]+$/g,'').slice(0, SLUG_MAX);
+  function me(){
+    const lu = window.localUser;
+    if(!lu || !lu.rollNumber) throw new Error('Please login first.');
+    return { roll: String(lu.rollNumber), name: String(lu.name || lu.rollNumber) };
+  }
+  function pack(input){
+    const name = String((input && input.name) || '').trim().slice(0, NAME_MAX);
+    if(!name) throw new Error('Project name is required.');
+    const langId = String((input && input.langId) || '');
+    if(LANG_IDS.indexOf(langId) < 0) throw new Error('Unknown language.');
+    const src = (input && input.data) || {};
+    const data = langId === 'web' ? { html:String(src.html||''), css:String(src.css||''), js:String(src.js||'') } : { code:String(src.code||'') };
+    if(!Object.keys(data).some(k => data[k].trim())) throw new Error('Write some code before sharing.');
+    if(Object.keys(data).reduce((n,k) => n + data[k].length, 0) > CODE_MAX) throw new Error('Code is too large to share (maximum about 100,000 characters).');
+    return { name, langId, data };
+  }
+  window.__progPublic = {
+    baseUrl: (/^https?:$/.test(location.protocol) ? location.origin : 'https://mmitcs.vercel.app') + '/ree/#',
+    cleanSlug: cleanSlug,
+    claim: async function(input){
+      const u = me(), slug = cleanSlug(input && input.slug), pk = pack(input), now = Date.now();
+      if(!slug) throw new Error('Please enter a link name.');
+      const res = await runTransaction(node(slug), function(cur){
+        if(cur && String(cur.ownerRoll) !== u.roll) return;
+        return { ownerRoll:u.roll, ownerName:u.name, name:pk.name, langId:pk.langId, data:pk.data, createdAt:(cur && cur.createdAt) || now, updatedAt:now };
+      });
+      if(!res.committed) throw new Error('This link name is already taken. Please choose another one.');
+      const old = cleanSlug(input && input.oldSlug);
+      if(old && old !== slug){ try{ const o = await get(node(old)); if(o.exists() && String(o.val().ownerRoll) === u.roll) await remove(node(old)); }catch(e){} }
+      return slug;
+    },
+    sync: async function(input){
+      const u = me(), slug = cleanSlug(input && input.slug), pk = pack(input);
+      const c = await get(node(slug));
+      if(!c.exists() || String(c.val().ownerRoll) !== u.roll) return false;
+      await set(node(slug), Object.assign({}, c.val(), { name:pk.name, langId:pk.langId, data:pk.data, updatedAt:Date.now() }));
+      return true;
+    },
+    remove: async function(slug){
+      const u = me(); slug = cleanSlug(slug); if(!slug) return;
+      const c = await get(node(slug));
+      if(c.exists() && String(c.val().ownerRoll) === u.roll) await remove(node(slug));
+    },
+    load: async function(slug){
+      slug = cleanSlug(slug); if(!slug) return null;
+      const c = await get(node(slug));
+      return c.exists() ? c.val() : null;
+    }
+  };
+}catch(e){ /* Firebase na mile to Share/Viewer 'not available' bataega, baaki sab purana waise hi chalega */ }
+</script>
+
 <!-- ================= ADDITIVE: PROGRAMMING PAGE (programming.html ke saare features, same-to-same) =================
      Home screen ke "Programming" button par click karne par programming.html ke saare features
      (language cards, editor, Run, My Projects, Save, Download, Python/C/C++ runtime, etc.) ek alag
@@ -11924,6 +11996,17 @@ try{
   .post-modal-counter{position:absolute;right:10px;bottom:7px;font-family:var(--mono);font-size:11px;color:var(--muted);}
   .post-modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}
   /* ================= END ADDITIVE ================= */
+  /* ================= ADDITIVE: PUBLIC LINK (share modal) ================= */
+  .project-actions{flex-wrap:wrap;}
+  .post-modal-actions{flex-wrap:wrap;}
+  .share-link-row{display:flex;align-items:stretch;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--panel-2);}
+  .share-link-prefix{padding:10px 0 10px 12px;font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap;display:flex;align-items:center;user-select:none;}
+  .share-link-input{flex:1;min-width:0;border:0;outline:0;background:transparent;padding:10px 12px 10px 0;font-family:var(--mono);font-size:13px;color:var(--text);}
+  .share-hint{font-size:11px;color:var(--muted);margin:6px 0 0;}
+  .share-msg{font-size:12px;margin-top:8px;min-height:16px;color:#d13a47;word-break:break-word;}
+  .share-msg.ok{color:#1f9d5c;}
+  .share-full{font-family:var(--mono);font-size:12px;word-break:break-all;margin-top:6px;}
+  /* ================= END ADDITIVE: PUBLIC LINK ================= */
 </style>
 
 <div id="app">
@@ -11994,6 +12077,7 @@ try{
         <button class="btn primary" id="runBtn">▶ Run</button>
         <button class="btn" id="downloadBtn">⬇ Download</button>
         <button class="btn" id="postProjectBtn" title="Post this project to the Feed">📤 Post</button>
+        <button class="btn" id="shareProjectBtn" title="Get a public link to this project">🔗 Share</button>
         <button class="btn ghost" id="resetBtn">Clear code</button>
       </div>
     </section>
@@ -12032,6 +12116,25 @@ try{
       <div class="post-modal-actions">
         <button class="btn ghost" id="postModalCancel">Cancel</button>
         <button class="btn primary" id="postModalSubmit">Post</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADDITIVE: Public link (share) modal -->
+  <div class="post-modal-overlay" id="shareModal">
+    <div class="post-modal" role="dialog" aria-modal="true" aria-labelledby="shareModalTitle">
+      <h3 id="shareModalTitle">Public Link</h3>
+      <p class="post-modal-sub">Anyone with this link can open your project's output, no login needed. Only the part after # can be edited.</p>
+      <div class="post-modal-proj"><span class="project-badge" id="shareModalBadge"></span><span class="post-modal-name" id="shareModalName"></span></div>
+      <div class="share-link-row"><span class="share-link-prefix" id="shareLinkPrefix"></span><input type="text" class="share-link-input" id="shareSlugInput" maxlength="40" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="projectname"></div>
+      <p class="share-hint">Letters, numbers, - and _ only (max 40).</p>
+      <div class="share-msg" id="shareMsg"></div>
+      <div class="share-full" id="shareFull"></div>
+      <div class="post-modal-actions">
+        <button class="btn danger" id="shareUnpublish" style="margin-right:auto;display:none">Remove link</button>
+        <button class="btn ghost" id="shareClose">Close</button>
+        <button class="btn" id="shareCopy" style="display:none">Copy link</button>
+        <button class="btn primary" id="shareSave">Create link</button>
       </div>
     </div>
   </div>
@@ -12195,14 +12298,16 @@ try{
           <span class="project-badge" style="background:${lang.color}">${lang.name}</span>
           <span class="project-name">${escapeHtml(p.name)}</span>
         </div>
-        <span class="project-meta">Last saved: ${date.toLocaleDateString()} ${date.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span>
+        <span class="project-meta">Last saved: ${date.toLocaleDateString()} ${date.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}${p.publicSlug ? ' &bull; 🌐 Public' : ''}</span>
         <div class="project-actions">
           <button class="btn small open-btn">Open</button>
           <button class="btn small post-btn">📤 Post</button>
+          <button class="btn small share-btn">🔗 Share</button>
           <button class="btn small danger delete-btn">Delete</button>
         </div>`;
       card.querySelector(".open-btn").addEventListener("click", () => openEditor(p.langId, p.id));
       card.querySelector(".post-btn").addEventListener("click", () => requestPost(p.name, p.langId, p.data));
+      card.querySelector(".share-btn").addEventListener("click", () => openShareModal(p.id));
       card.querySelector(".delete-btn").addEventListener("click", () => {
         if (confirm(`Delete project "${p.name}"?`)) {
           setProjects(getProjects().filter(x => x.id !== p.id));
@@ -12666,6 +12771,119 @@ try{
     }
   });
   /* ================= END ADDITIVE: POST PROJECT TO FEED ================= */
+
+  /* ================= ADDITIVE: PUBLIC PROJECT LINK (/ree/#slug) =================
+     Sirf naya code. Saved project ka public link banta hai; link ka '#' ke baad wala hissa edit ho sakta hai.
+     Project dobara save karne par public link ka output bhi apne aap update hota hai. */
+  const pubApi = (function(){ try { return parent.__progPublic || null; } catch(e){ return null; } })();
+  let shareProjId = null;
+  const liveSlug = v => String(v || "").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9_-]/g, "").slice(0, 40);
+  const projSig = p => JSON.stringify([p.name, p.langId, p.data]);
+  const pubMapOf = list => { const m = {}; list.forEach(p => { if (p && p.publicSlug) m[p.id] = p.publicSlug; }); return m; };
+  const pubSynced = {};
+  let prevPubMap = pubMapOf(projectsCache), pubTimer = null;
+  projectsCache.forEach(p => { if (p.publicSlug) pubSynced[p.id] = projSig(p); });
+
+  function pubSyncNow(){
+    pubTimer = null;
+    if (!pubApi) return;
+    projectsCache.forEach(p => {
+      if (!p.publicSlug) return;
+      const sg = projSig(p);
+      if (pubSynced[p.id] === sg) return;
+      pubApi.sync({ slug: p.publicSlug, name: p.name, langId: p.langId, data: p.data }).then(() => { pubSynced[p.id] = sg; }).catch(() => {});
+    });
+  }
+  const origSetProjects = setProjects;
+  setProjects = function(list){
+    origSetProjects(list);
+    const next = pubMapOf(list);
+    Object.keys(prevPubMap).forEach(id => {
+      if (!next[id] && !list.some(p => p.id === id) && pubApi) pubApi.remove(prevPubMap[id]).catch(() => {});  // project delete => link bhi hat jaye
+    });
+    prevPubMap = next;
+    clearTimeout(pubTimer); pubTimer = setTimeout(pubSyncNow, 1500);
+  };
+
+  const shareMsg = (t, ok) => { const m = byId("shareMsg"); m.textContent = t || ""; m.className = "share-msg" + (ok ? " ok" : ""); };
+  const shareLink = slug => pubApi.baseUrl + slug;
+  function paintShare(p){
+    const has = !!p.publicSlug;
+    byId("shareSave").textContent = has ? "Update link" : "Create link";
+    byId("shareCopy").style.display = has ? "" : "none";
+    byId("shareUnpublish").style.display = has ? "" : "none";
+    const f = byId("shareFull");
+    f.innerHTML = "";
+    if (has){ const a = document.createElement("a"); a.href = shareLink(p.publicSlug); a.target = "_blank"; a.rel = "noopener"; a.textContent = shareLink(p.publicSlug); f.appendChild(a); }
+  }
+  function openShareModal(id){
+    if (!pubApi){ alert("Sharing is not available right now. Please reopen the Programming page and try again."); return; }
+    const p = getProjects().find(x => x.id === id);
+    if (!p){ alert("Please save the project first, then create its public link."); return; }
+    const lang = langById(p.langId) || LANGS[0];
+    if (!hasCode(lang, p.data || {})){ alert("Write some code before sharing."); return; }
+    shareProjId = id;
+    byId("shareModalBadge").style.background = lang.color;
+    byId("shareModalBadge").textContent = lang.name;
+    byId("shareModalName").textContent = p.name;
+    byId("shareLinkPrefix").textContent = pubApi.baseUrl.replace(/^https?:\/\//, "");
+    byId("shareSlugInput").value = p.publicSlug || pubApi.cleanSlug(p.name);
+    shareMsg("");
+    paintShare(p);
+    byId("shareModal").classList.add("open");
+  }
+  function closeShareModal(){ byId("shareModal").classList.remove("open"); shareProjId = null; }
+
+  byId("shareProjectBtn").addEventListener("click", () => {
+    if (!state.currentProjectId){ alert("Please save the project first (enter a name and click Save Project), then you can create its public link."); return; }
+    persistCurrent();
+    openShareModal(state.currentProjectId);
+  });
+  byId("shareSlugInput").addEventListener("input", e => {
+    const v = liveSlug(e.target.value);
+    if (v !== e.target.value) e.target.value = v;
+  });
+  byId("shareClose").addEventListener("click", closeShareModal);
+  byId("shareModal").addEventListener("click", e => { if (e.target === byId("shareModal")) closeShareModal(); });
+  byId("shareCopy").addEventListener("click", () => {
+    const p = getProjects().find(x => x.id === shareProjId);
+    if (!p || !p.publicSlug) return;
+    const t = shareLink(p.publicSlug);
+    const ok = () => shareMsg("Link copied!", true);
+    const fallback = () => { try { const ta = document.createElement("textarea"); ta.value = t; ta.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(ta); ta.select(); const r = document.execCommand("copy"); ta.remove(); r ? ok() : shareMsg("Copy failed. Please copy the link manually."); } catch(e){ shareMsg("Copy failed. Please copy the link manually."); } };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, fallback); else fallback();
+  });
+  byId("shareSave").addEventListener("click", async () => {
+    const p = getProjects().find(x => x.id === shareProjId);
+    if (!p) return;
+    const slug = pubApi.cleanSlug(byId("shareSlugInput").value);
+    if (!slug){ shareMsg("Please enter a link name."); return; }
+    const btn = byId("shareSave");
+    btn.disabled = true; shareMsg("Saving link...", true);
+    try {
+      await pubApi.claim({ slug, oldSlug: p.publicSlug || "", name: p.name, langId: p.langId, data: p.data });
+      const list = getProjects(), idx = list.findIndex(x => x.id === p.id);
+      if (idx > -1){ list[idx].publicSlug = slug; setProjects(list); pubSynced[p.id] = projSig(list[idx]); p.publicSlug = slug; }
+      byId("shareSlugInput").value = slug;
+      paintShare(p); shareMsg("Link is live! Anyone can open it now.", true);
+      renderProjects();
+    } catch (err) {
+      const m = String(err && err.message ? err.message : err);
+      shareMsg(/permission/i.test(m) ? "Sharing is not enabled on the database yet (allow portal/publicProjects in Firebase rules)." : m);
+    } finally { btn.disabled = false; }
+  });
+  byId("shareUnpublish").addEventListener("click", async () => {
+    const p = getProjects().find(x => x.id === shareProjId);
+    if (!p || !p.publicSlug) return;
+    if (!confirm("Remove the public link? People who have it will no longer see this project.")) return;
+    try {
+      await pubApi.remove(p.publicSlug);
+      const list = getProjects(), idx = list.findIndex(x => x.id === p.id);
+      if (idx > -1){ delete list[idx].publicSlug; setProjects(list); }
+      closeShareModal(); renderProjects();
+    } catch (err) { shareMsg(String(err && err.message ? err.message : err)); }
+  });
+  /* ================= END ADDITIVE: PUBLIC PROJECT LINK ================= */
 
   /* ---------------- Init ---------------- */
   renderLangGrid();
@@ -13778,5 +13996,153 @@ window.emailAuthApi = {
 })();
 </script>
 <!-- ================= END ADDITIVE: FEED SEARCH -> USER PROFILE LOGIC ================= -->
+<!-- ================= ADDITIVE: PUBLIC PROJECT VIEWER (<site>/ree/#slug) =================
+     Sirf naya code. /ree/ path par sirf yeh viewer dikhta hai (login ki zarurat nahi). Web project full-screen
+     chalta hai, baaki languages ka console output dikhta hai. Code hamesha sandboxed iframe me chalta hai. -->
+<style>
+#reeViewer{display:none;position:fixed;inset:0;z-index:2147483000;background:#fff;flex-direction:column;font-family:Arial,'Segoe UI',sans-serif}
+html[data-ree] #reeViewer{display:flex}
+#reeBar{display:none;align-items:center;gap:10px;padding:10px 14px;background:#003366;color:#fff;flex:0 0 auto}
+#reeBar a{color:#ff9900;font-weight:800;text-decoration:none}
+#reeLang{font:700 .68rem ui-monospace,Menlo,Consolas,monospace;padding:3px 8px;border-radius:6px;color:#fff}
+#reeTitle{flex:1;min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#reeRerun{background:#1f9d5c;color:#fff;border:0;border-radius:8px;padding:7px 14px;font-weight:700;cursor:pointer}
+#reeRerun:disabled{opacity:.6}
+#reeStage{flex:1;position:relative;overflow:auto;background:#fff}
+.ree-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
+.ree-msg{max-width:420px;margin:18vh auto 0;padding:0 20px;text-align:center;color:#334155}
+.ree-msg h2{margin-bottom:8px;color:#003366}.ree-msg p{margin-bottom:14px;line-height:1.5}.ree-msg a{color:#0b5ed7;font-weight:700}
+.ree-wrap{max-width:820px;margin:0 auto;padding:14px}
+.ree-in{width:100%;min-height:70px;border:1px solid #dde1e7;border-radius:10px;padding:10px;font:14px ui-monospace,Menlo,Consolas,monospace;margin:6px 0 8px}
+.ree-out{border:1px solid #dde1e7;border-radius:10px;padding:12px 14px;font:.85rem ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;min-height:80px;background:#f8fafc;color:#1c2129}
+.ree-out .err{color:#d13a47}
+#reePill{position:absolute;right:10px;bottom:10px;z-index:2;background:rgba(0,51,102,.88);color:#fff;font:700 11px Arial,sans-serif;padding:6px 11px;border-radius:14px;text-decoration:none;display:none}
+</style>
+<div id="reeViewer">
+  <div id="reeBar"><a href="/">MMITcs</a><span id="reeLang"></span><span id="reeTitle"></span><button type="button" id="reeRerun">&#8635; Run again</button></div>
+  <div id="reeStage"></div>
+  <a id="reePill" href="/">Made with MMITcs</a>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('reeViewer');
+  if(!root || !document.documentElement.hasAttribute('data-ree')) return;
+  var LANG = {web:['Web','#e8703a','html'],c:['C','#5c6bc0','c'],cpp:['C++','#3f78c1','cpp'],java:['Java','#e0793c','java'],python:['Python','#3e7fad','py'],javascript:['JavaScript','#d8b93a','js'],csharp:['C#','#8f4fa8','cs'],php:['PHP','#6c72ac','php'],kotlin:['Kotlin','#7f52ff','kt'],go:['Go','#3aa7c4','go']};
+  var REMOTE = {java:1,csharp:1,php:1,kotlin:1,go:1};
+  var bar = document.getElementById('reeBar'), stage = document.getElementById('reeStage'), pill = document.getElementById('reePill');
+  var langEl = document.getElementById('reeLang'), titleEl = document.getElementById('reeTitle'), rerun = document.getElementById('reeRerun');
+  var runId = 0;
+
+  function slugNow(){
+    var h = (location.hash || '').replace(/^#/, '');
+    try{ h = decodeURIComponent(h); }catch(e){}
+    return h.trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9_-]/g,'').replace(/-{2,}/g,'-').replace(/^[-_]+|[-_]+$/g,'').slice(0,40);
+  }
+  function msg(title, text){
+    bar.style.display = 'none'; pill.style.display = 'none'; stage.innerHTML = '';
+    var d = document.createElement('div'); d.className = 'ree-msg';
+    var h = document.createElement('h2'); h.textContent = title;
+    var p = document.createElement('p'); p.textContent = text;
+    var a = document.createElement('a'); a.href = '/'; a.textContent = 'Open MMITcs';
+    d.appendChild(h); d.appendChild(p); d.appendChild(a); stage.appendChild(d);
+  }
+  function lines(out, ls, exit){
+    out.innerHTML = '';
+    (ls || []).forEach(function(l){
+      if(!l || l.length < 2) return;
+      if(l[0]){ var s = document.createElement('span'); s.className = 'err'; s.textContent = String(l[1]); out.appendChild(s); }
+      else out.appendChild(document.createTextNode(String(l[1])));
+    });
+    if(exit) out.appendChild(document.createTextNode('\nProcess exited with code ' + exit));
+  }
+  function sandbox(job){
+    return new Promise(function(resolve){
+      var tpl = document.getElementById('projViewRunnerTemplate');
+      if(!tpl){ resolve({ lines:[[1,'Runner not available.']], exit:1 }); return; }
+      var tk = 'r' + Date.now() + Math.random().toString(36).slice(2), timer = null;
+      var ifr = document.createElement('iframe');
+      ifr.setAttribute('sandbox', 'allow-scripts');
+      ifr.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden';
+      function done(){ window.removeEventListener('message', onMsg); clearTimeout(timer); if(ifr.parentNode) ifr.parentNode.removeChild(ifr); }
+      function onMsg(e){
+        if(e.source !== ifr.contentWindow) return;
+        var d = e.data; if(!d || d.__projRun !== tk) return;
+        done(); resolve({ lines: Array.isArray(d.lines) ? d.lines : [], exit: d.exit || 0 });
+      }
+      window.addEventListener('message', onMsg);
+      timer = setTimeout(function(){ done(); resolve({ lines:[[1,'Timed out: the program took too long to finish.']], exit:1 }); }, 90000);
+      var json = JSON.stringify(Object.assign({ token: tk }, job)).replace(/</g, '\\u003c');
+      ifr.srcdoc = '<!DOCTYPE html><html><head>' + tpl.innerHTML.replace('/*__JOB__*/null', function(){ return json; });
+      root.appendChild(ifr);
+    });
+  }
+  function exec(p, stdin, out, btn){
+    var my = ++runId, kind = p.langId, code = String((p.data || {}).code || '');
+    btn.disabled = true;
+    function fin(){ if(my === runId) btn.disabled = false; }
+    if(REMOTE[kind]){
+      var url = ''; try{ url = window.MMITCS_EXECUTOR_URL || localStorage.getItem('mmitcs_executor_url') || ''; }catch(e){ url = window.MMITCS_EXECUTOR_URL || ''; }
+      if(!url){ out.textContent = LANG[kind][0] + ' needs a compiler service, which is not connected yet, so this project cannot be run here.'; fin(); return; }
+      out.textContent = 'Starting ' + LANG[kind][0] + ' compiler…';
+      fetch(url, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ language: kind, version:'*', files:[{ name:'Main.' + LANG[kind][2], content: code }], stdin: stdin || '' }) })
+        .then(function(r){ if(!r.ok) throw new Error('Compiler service returned HTTP ' + r.status); return r.json(); })
+        .then(function(r){ var run = (r && r.run) || {}, ls = []; if(run.stdout) ls.push([0, String(run.stdout)]); if(run.stderr) ls.push([1, (run.stdout ? '\n' : '') + String(run.stderr)]); if(!ls.length) ls.push([0, '(no output)']); if(my === runId) lines(out, ls, (run.code && !run.stderr) ? run.code : 0); })
+        .catch(function(e){ if(my === runId) lines(out, [[1, 'Compiler connection failed: ' + (e && e.message ? e.message : e)]], 0); })
+        .then(fin);
+      return;
+    }
+    out.textContent = kind === 'python' ? 'Loading Python runtime… (needs internet, first run takes a few seconds)' : (kind === 'javascript' ? 'Running…' : 'Loading C/C++ runtime…');
+    sandbox({ lang: (kind === 'c' ? 'cpp' : kind), code: code, stdin: stdin || '' }).then(function(r){ if(my === runId) lines(out, r.lines, r.exit); fin(); });
+  }
+  function show(rec){
+    var l = LANG[rec.langId] || [String(rec.langId), '#64748b', 'txt'], d = rec.data || {};
+    document.title = (rec.name || 'Project') + ' • MMITcs';
+    stage.innerHTML = '';
+    if(rec.langId === 'web'){
+      bar.style.display = 'none'; pill.style.display = 'block';
+      var f = document.createElement('iframe'); f.className = 'ree-frame';
+      f.setAttribute('sandbox', 'allow-scripts allow-forms allow-modals allow-popups');
+      f.srcdoc = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' + (d.css || '') + '</style></head><body>' + (d.html || '') + '<script>' + (d.js || '') + '<\/script></body></html>';
+      stage.appendChild(f);
+      return;
+    }
+    pill.style.display = 'none'; bar.style.display = 'flex';
+    langEl.textContent = l[0]; langEl.style.background = l[1]; titleEl.textContent = rec.name || 'Project';
+    var code = String(d.code || ''), wrap = document.createElement('div'); wrap.className = 'ree-wrap';
+    var needs = rec.langId === 'python' ? /\binput\s*\(/.test(code) : ((rec.langId === 'c' || rec.langId === 'cpp') ? /\b(scanf|fscanf|sscanf|getchar|getc|fgetc|gets|cin|getline)\b/.test(code) : false);
+    var inp = null;
+    if(needs){
+      var lab = document.createElement('div'); lab.textContent = 'Program input (one value per line, optional):'; lab.style.cssText = 'font-size:.85rem;color:#475569';
+      inp = document.createElement('textarea'); inp.className = 'ree-in';
+      wrap.appendChild(lab); wrap.appendChild(inp);
+    }
+    var out = document.createElement('div'); out.className = 'ree-out';
+    wrap.appendChild(out); stage.appendChild(wrap);
+    rerun.onclick = function(){ exec(rec, inp ? inp.value : '', out, rerun); };
+    rerun.innerHTML = needs ? '&#9654; Run' : '&#8635; Run again';
+    if(needs) out.textContent = 'This program needs input. Enter it above and press Run.';
+    else exec(rec, '', out, rerun);
+  }
+  function load(){
+    runId++;
+    var slug = slugNow();
+    if(!slug){ msg('No project link', 'Open a link like mmitcs.vercel.app/ree/#projectname to see a project.'); return; }
+    msg('Loading project…', '');
+    var n = 0;
+    (function wait(){
+      var api = window.__progPublic;
+      if(!api){ if(++n > 75){ msg('Could not connect', 'Please check your internet connection and reload.'); return; } setTimeout(wait, 200); return; }
+      api.load(slug).then(function(rec){
+        if(slugNow() !== slug) return;
+        if(!rec || !rec.data){ msg('Project not found', 'This link does not exist, or its owner has removed it.'); return; }
+        show(rec);
+      }).catch(function(){ msg('Could not load project', 'Please check your internet connection and try again.'); });
+    })();
+  }
+  window.addEventListener('hashchange', load);
+  load();
+})();
+</script>
+<!-- ================= END ADDITIVE: PUBLIC PROJECT VIEWER ================= -->
 </body>
 </html>
