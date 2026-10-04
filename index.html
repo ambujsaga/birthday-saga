@@ -2380,6 +2380,64 @@ body.guest-mode .profile-card > .logout-btn{display:inline-block}
 .vault-bar h2{color:var(--primary-blue);font-size:1.1rem;margin:0}
 .vault-frame{display:block;width:100%;border:0;background:var(--bg-color);height:calc(100vh - 65px);height:calc(100dvh - 65px)}
 /* ================= END ADDITIVE: DATA VAULT BUTTON + PAGE ================= */
+/* ================= ADDITIVE: MY POSTS BUTTON + PAGE (Profile se khulta hai, Instagram-style grid) =================
+   Sirf naya CSS. Koi purana rule chheda nahi gaya hai. */
+body.guest-mode .myposts-open-btn{display:none!important} /* My Posts guest ke liye nahi hai */
+.myposts-open-btn{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 14px;padding:11px 14px;border:1.5px solid var(--primary-blue);border-radius:12px;background:#fff;color:var(--primary-blue);text-align:left;cursor:pointer;box-shadow:0 2px 8px rgba(0,51,102,.12);transition:transform .15s,box-shadow .15s}
+.myposts-open-btn:active{transform:scale(.98);box-shadow:0 1px 4px rgba(0,51,102,.15)}
+.myposts-open-ico-wrap{flex:none;width:44px;height:44px;border-radius:12px;background:var(--primary-blue);display:flex;align-items:center;justify-content:center}
+.myposts-open-ico{width:26px;height:26px;color:#fff}
+.myposts-open-title{flex:1;min-width:0;font-size:1rem;font-weight:700;line-height:1.2}
+.myposts-open-chev{flex:none;opacity:.7}
+.myposts-open-chev .ui-icon{width:1.3em;height:1.3em}
+
+.myposts-page{display:none;width:100%;max-width:720px;margin:0 auto;background:#fff;min-height:calc(100vh - 65px);padding-bottom:85px}
+.myposts-bar{display:flex;align-items:center;gap:12px;height:56px;padding:8px 14px;background:#fff;border-bottom:1px solid #eaeaea}
+.myposts-bar h2{color:var(--primary-blue);font-size:1.1rem;margin:0}
+.myposts-head{display:flex;align-items:center;gap:22px;padding:16px 16px 6px}
+.myposts-avatar{width:78px;height:78px;font-size:1.3rem;border:3px solid #fff;box-shadow:0 0 0 2px var(--accent-orange)}
+.myposts-stats{flex:1;display:flex;justify-content:space-around;text-align:center}
+.myposts-stat b{display:block;font-size:1.15rem;color:#111}
+.myposts-stat span{font-size:.78rem;color:#555}
+.myposts-info{padding:4px 16px 14px;text-align:left}
+.myposts-name{font-weight:700;color:#111;font-size:.98rem;display:flex;align-items:center;gap:4px}
+.myposts-role{font-size:.82rem;color:#666;margin-top:1px}
+.myposts-about{font-size:.85rem;color:#333;margin-top:4px;word-break:break-word}
+.myposts-tabs{display:flex;border-top:1px solid #eaeaea;border-bottom:1px solid #eaeaea;position:sticky;top:0;background:#fff;z-index:3}
+.myposts-tab{flex:1;border:0;background:none;padding:8px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;color:#8a94a3;font-size:.62rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.myposts-tab svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.myposts-tab.active{color:var(--primary-blue);border-bottom-color:var(--primary-blue)}
+.myposts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:2px}
+.myposts-empty{grid-column:1/-1;text-align:center;color:#778;padding:48px 20px;font-size:.92rem}
+.myposts-empty svg{width:42px;height:42px;fill:none;stroke:#a5aebb;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;display:block;margin:0 auto 10px}
+.mp-tile{position:relative;display:block;width:100%;aspect-ratio:1/1;padding:0;border:0;overflow:hidden;background:#e9edf2;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mp-tile:active{opacity:.85}
+.mp-tile img{width:100%;height:100%;object-fit:cover;display:block}
+.mp-badge{position:absolute;top:6px;right:6px;width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 2px rgba(0,0,0,.7))}
+.mp-badge.mp-badge-left{right:auto;left:6px}
+.mp-fill{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;color:#fff;text-align:center;word-break:break-word}
+.mp-fill span{font-size:.76rem;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.mp-fill em{font-style:normal;font-size:.64rem;opacity:.85}
+.mp-fill svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.mp-g0{background:linear-gradient(135deg,#f093fb,#f5576c)}
+.mp-g1{background:linear-gradient(135deg,#4facfe,#00c6c7)}
+.mp-g2{background:linear-gradient(135deg,#fa709a,#fee140);color:#4a2a00}
+.mp-g3{background:linear-gradient(135deg,#43e97b,#1aa6a0)}
+.mp-g4{background:linear-gradient(135deg,#a18cd1,#fbc2eb);color:#2c1b4a}
+.mp-g5{background:linear-gradient(135deg,#ff9a44,#fc6076)}
+.mp-poll{background:linear-gradient(135deg,#4f46e5,#7c3aed)}
+.mp-proj{background:#0f172a;align-items:flex-start;justify-content:flex-start;text-align:left;font-family:ui-monospace,Menlo,Consolas,monospace}
+.mp-proj b{font-size:.6rem;padding:2px 6px;border-radius:4px;color:#fff;font-family:inherit}
+.mp-proj span{color:#e2e8f0;font-size:.74rem;-webkit-line-clamp:3}
+.mp-proj svg{position:absolute;right:8px;bottom:8px;width:20px;height:20px;color:#64748b}
+
+.myposts-detail{display:none;position:fixed;left:0;right:0;top:0;bottom:65px;z-index:900;background:var(--bg-color);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.myposts-detail-bar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;height:56px;padding:8px 14px;background:#fff;border-bottom:1px solid #eaeaea}
+.myposts-detail-bar h2{color:var(--primary-blue);font-size:1.1rem;margin:0}
+.myposts-detail-body{max-width:720px;margin:0 auto;padding:12px 12px 24px}
+.myposts-detail-body .user-post-card{scroll-margin-top:68px}
+/* ================= END ADDITIVE: MY POSTS BUTTON + PAGE ================= */
+
 </style>
 </head>
 <body>
@@ -3024,6 +3082,24 @@ body.guest-mode .profile-card > .logout-btn{display:inline-block}
                 <span class="vault-open-chev"><svg class="ui-icon"><use href="#icon-chevron-right"></use></svg></span>
             </button>
             <!-- ================= END ADDITIVE: DATA VAULT BUTTON ================= -->
+            <!-- ================= ADDITIVE: MY POSTS BUTTON =================
+                 Sirf naya button add kiya gaya hai (Data Vault button ke neeche). Upar/neeche ka koi
+                 purana element chheda nahi gaya. Click karne par My Posts page (Instagram-style grid) khulta hai. -->
+            <button type="button" class="myposts-open-btn" id="myPostsOpenBtn" onclick="openMyPostsPage()" title="My Posts">
+                <span class="myposts-open-ico-wrap">
+                    <svg class="myposts-open-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="3" width="18" height="18" rx="2.5"/>
+                        <line x1="3" y1="9" x2="21" y2="9"/>
+                        <line x1="3" y1="15" x2="21" y2="15"/>
+                        <line x1="9" y1="3" x2="9" y2="21"/>
+                        <line x1="15" y1="3" x2="15" y2="21"/>
+                    </svg>
+                </span>
+                <span class="myposts-open-title">My Posts</span>
+                <span class="myposts-open-chev"><svg class="ui-icon"><use href="#icon-chevron-right"></use></svg></span>
+            </button>
+            <!-- ================= END ADDITIVE: MY POSTS BUTTON ================= -->
+
 
             <button class="logout-btn" onclick="userLogout()">Log Out</button>
             <button class="profile-post-plus" onclick="openUserPostCreatePage()" title="Create Post">+</button>
@@ -3364,6 +3440,50 @@ else{
         </template>
     </div>
     <!-- ================= END ADDITIVE: DATA VAULT PAGE ================= -->
+
+    <!-- ================= ADDITIVE: MY POSTS PAGE =================
+         Naya page: user ke apne saare posts (photo, text, project, poll) Instagram jaise profile header +
+         3-column grid me. Kisi tile par tap karne par us post ka poora card (purane feed card jaisa, poll vote /
+         project open / reactions / delete sab purane features ke saath) neeche scroll hone wale view me khulta hai.
+         Koi purana page/function/data chheda nahi gaya hai. -->
+    <div id="myPostsPage" class="myposts-page" style="display:none;">
+        <div class="myposts-bar">
+            <button class="user-post-create-back" type="button" onclick="closeMyPostsPage()" title="Back to Profile"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
+            <h2>My Posts</h2>
+        </div>
+        <div class="myposts-head">
+            <div class="user-post-avatar myposts-avatar" id="myPostsAvatar" data-roll=""></div>
+            <div class="myposts-stats">
+                <div class="myposts-stat"><b id="mpStatPosts">0</b><span>Posts</span></div>
+                <div class="myposts-stat"><b id="mpStatProjects">0</b><span>Projects</span></div>
+                <div class="myposts-stat"><b id="mpStatPolls">0</b><span>Polls</span></div>
+            </div>
+        </div>
+        <div class="myposts-info">
+            <div class="myposts-name" id="myPostsName"></div>
+            <div class="myposts-role" id="myPostsRole"></div>
+            <div class="myposts-about" id="myPostsAbout"></div>
+        </div>
+        <div class="myposts-tabs" id="myPostsTabs">
+            <button type="button" class="myposts-tab active" data-mp-tab="all" aria-label="All posts"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1.5"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>All</button>
+            <button type="button" class="myposts-tab" data-mp-tab="photo" aria-label="Photo posts"><svg viewBox="0 0 24 24"><use href="#icon-image"></use></svg>Photos</button>
+            <button type="button" class="myposts-tab" data-mp-tab="text" aria-label="Text posts"><svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="11" x2="20" y2="11"/><line x1="4" y1="16" x2="14" y2="16"/></svg>Text</button>
+            <button type="button" class="myposts-tab" data-mp-tab="project" aria-label="Project posts"><svg viewBox="0 0 24 24"><polyline points="8 7 3 12 8 17"/><polyline points="16 7 21 12 16 17"/><line x1="14" y1="5" x2="10" y2="19"/></svg>Projects</button>
+            <button type="button" class="myposts-tab" data-mp-tab="poll" aria-label="Poll posts"><svg viewBox="0 0 24 24"><use href="#icon-poll"></use></svg>Polls</button>
+        </div>
+        <div class="myposts-grid" id="myPostsGrid"></div>
+
+        <!-- Tile par tap karne par khulne wala scroll view (Instagram ke "Posts" view jaisa) -->
+        <div class="myposts-detail" id="myPostsDetail" style="display:none;">
+            <div class="myposts-detail-bar">
+                <button class="user-post-create-back" type="button" onclick="closeMyPostsDetail()" title="Back"><svg class="ui-icon"><use href="#icon-back"></use></svg></button>
+                <h2>Posts</h2>
+            </div>
+            <div class="myposts-detail-body" id="myPostsDetailList"></div>
+        </div>
+    </div>
+    <!-- ================= END ADDITIVE: MY POSTS PAGE ================= -->
+
 
     <!-- ================= ADDITIVE: AVATAR / BITMOJI BUILDER PAGE =================
          Naya feature: user khud ka cartoon-style Avatar/Bitmoji bana kar apni
@@ -11132,6 +11252,313 @@ onAuthStateChanged(auth, user => {
       return r;
     };
   }
+})();
+</script>
+
+<script>
+/* ================= ADDITIVE: MY POSTS PAGE LOGIC =================
+   Sirf naya code. Purana koi function/listener edit nahi hua hai.
+   - closeAllSections() aur refreshCurrentFeeds() ko sirf "wrap" kiya gaya hai (original pehle chalta hai).
+   - Posts ka data wahi hai jo purana Profile/Feed use karta hai (window.adminPostsData); koi naya Firebase
+     node ya write nahi hai. Poll / Project / Reactions / Delete / Audio sab purane methods se hi chalte hain
+     (userFeedCard, deleteOwnUserPost, injectPostReactions, openProjectPost, toggleUserPostAudioPlay). */
+(function(){
+  var page = document.getElementById('myPostsPage');
+  var grid = document.getElementById('myPostsGrid');
+  var detail = document.getElementById('myPostsDetail');
+  var detailList = document.getElementById('myPostsDetailList');
+  var tabsEl = document.getElementById('myPostsTabs');
+  if(!page || !grid || !detail || !detailList || !tabsEl) return;
+
+  var tab = 'all';
+  var detailSig = '';
+  var LANG = {
+    web:{n:'Web',c:'#e44d26'}, c:{n:'C',c:'#5c6bc0'}, cpp:{n:'C++',c:'#00599c'}, java:{n:'Java',c:'#e0793c'},
+    python:{n:'Python',c:'#3e7fad'}, javascript:{n:'JavaScript',c:'#d8b93a'}, csharp:{n:'C#',c:'#8f4fa8'},
+    php:{n:'PHP',c:'#6c72ac'}, kotlin:{n:'Kotlin',c:'#7f52ff'}, go:{n:'Go',c:'#3aa7c4'}
+  };
+  var EMPTY = {
+    all:'You haven\'t published any posts yet.',
+    photo:'No photo posts yet.',
+    text:'No text posts yet.',
+    project:'No project posts yet.',
+    poll:'No polls yet.'
+  };
+
+  function esc(v){
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function(m){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m];
+    });
+  }
+  function myRoll(){ return window.localUser && window.localUser.rollNumber ? String(window.localUser.rollNumber) : ''; }
+  function isOpen(){ return page.style.display === 'block'; }
+  function isDetailOpen(){ return detail.style.display === 'block'; }
+  function photosOf(p){
+    if(Array.isArray(p.imgUrls)) return p.imgUrls.filter(Boolean);
+    if(p.imgUrl) return [p.imgUrl];
+    return [];
+  }
+  function kindOf(p){
+    if(p.type === 'poll') return 'poll';
+    if(p.type === 'project') return 'project';
+    return photosOf(p).length ? 'photo' : 'text';
+  }
+  function hash(str){
+    var h = 0;
+    for(var i = 0; i < str.length; i++){ h = (h * 31 + str.charCodeAt(i)) | 0; }
+    return Math.abs(h);
+  }
+  function allPosts(){
+    return window.adminPostsData || (window.onlineData && window.onlineData.posts) || [];
+  }
+  function myPosts(){
+    var me = myRoll();
+    if(!me) return [];
+    return allPosts().filter(function(p){
+      return p && String(p.authorRoll || p.userId || p.createdBy || '') === me && (p.timestamp || p.authorRoll);
+    }).sort(function(a, b){ return (b.timestamp || 0) - (a.timestamp || 0); });
+  }
+  function inTab(p){ return tab === 'all' || kindOf(p) === tab; }
+
+  var ICON_STACK = '<svg class="mp-badge" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 4H6a2 2 0 0 0-2 2v10"/></svg>';
+  var ICON_MUSIC = '<svg class="mp-badge mp-badge-left" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
+
+  function tileHTML(p){
+    var k = kindOf(p), inner = '';
+    var music = p.audioUrl ? ICON_MUSIC : '';
+    if(k === 'photo'){
+      var ph = photosOf(p);
+      inner = '<img src="' + esc(ph[0]) + '" alt="Post photo" loading="lazy">' + (ph.length > 1 ? ICON_STACK : '') + music;
+    } else if(k === 'text'){
+      inner = '<div class="mp-fill mp-g' + (hash(String(p.id || '')) % 6) + '"><span>' + esc(p.text || '') + '</span></div>' + music;
+    } else if(k === 'poll'){
+      var votes = Object.keys(p.votes || {}).length;
+      inner = '<div class="mp-fill mp-poll"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="20" x2="5" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="19" y1="20" x2="19" y2="15"/></svg>' +
+              '<span>' + esc(p.pollQuestion || p.text || 'Poll') + '</span><em>' + votes + ' vote' + (votes === 1 ? '' : 's') + '</em></div>';
+    } else {
+      var l = LANG[p.projectLang] || { n: String(p.projectLang || 'Code').toUpperCase(), c: '#64748b' };
+      inner = '<div class="mp-fill mp-proj"><b style="background:' + l.c + '">' + esc(l.n) + '</b>' +
+              '<span>' + esc(p.projectName || 'Untitled project') + '</span>' +
+              '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="8 7 3 12 8 17"/><polyline points="16 7 21 12 16 17"/><line x1="14" y1="5" x2="10" y2="19"/></svg></div>';
+    }
+    return '<button type="button" class="mp-tile mp-tile-' + k + '" data-mp-open="' + esc(p.id) + '" aria-label="Open post">' + inner + '</button>';
+  }
+
+  function renderHeader(posts){
+    var me = myRoll(), u = window.localUser || {};
+    var av = document.getElementById('myPostsAvatar');
+    if(av){
+      av.setAttribute('data-roll', me);
+      if(av.textContent !== me.slice(0, 2).toUpperCase()) av.textContent = me.slice(0, 2).toUpperCase() || '?';
+    }
+    var nm = document.getElementById('myPostsName');
+    if(nm){
+      nm.textContent = u.name || me;
+      if(window.vTick) nm.insertAdjacentHTML('beforeend', window.vTick(me, 15));
+    }
+    var role = document.getElementById('myPostsRole');
+    var srcRole = document.querySelector('#profilePage .profile-role');
+    if(role) role.textContent = srcRole ? srcRole.textContent : '';
+    var ab = document.getElementById('myPostsAbout');
+    if(ab){
+      var raw = window.getUserAboutText ? window.getUserAboutText(me) : '';
+      ab.innerHTML = window.linkifyAboutText ? window.linkifyAboutText(raw) : esc(raw);
+    }
+    var cnt = { project: 0, poll: 0 };
+    posts.forEach(function(p){ var k = kindOf(p); if(k === 'project') cnt.project++; if(k === 'poll') cnt.poll++; });
+    document.getElementById('mpStatPosts').textContent = posts.length;
+    document.getElementById('mpStatProjects').textContent = cnt.project;
+    document.getElementById('mpStatPolls').textContent = cnt.poll;
+    if(typeof window.refreshUserAvatarStyles === 'function') window.refreshUserAvatarStyles();
+  }
+
+  function renderGrid(){
+    var posts = myPosts();
+    renderHeader(posts);
+    var list = posts.filter(inTab);
+    if(!list.length){
+      grid.innerHTML = '<div class="myposts-empty"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="3.5"/></svg>' + esc(EMPTY[tab] || EMPTY.all) + '</div>';
+      return;
+    }
+    grid.innerHTML = list.map(tileHTML).join('');
+  }
+
+  /* ---------- Tabs ---------- */
+  tabsEl.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('[data-mp-tab]') : null;
+    if(!b) return;
+    tab = b.getAttribute('data-mp-tab') || 'all';
+    tabsEl.querySelectorAll('[data-mp-tab]').forEach(function(x){ x.classList.toggle('active', x === b); });
+    renderGrid();
+  });
+
+  /* ---------- Tile tap -> scroll view ---------- */
+  grid.addEventListener('click', function(e){
+    var t = e.target.closest ? e.target.closest('[data-mp-open]') : null;
+    if(!t) return;
+    openDetail(t.getAttribute('data-mp-open'));
+  });
+
+  function sigOf(list){
+    return list.map(function(p){ return p.id + ':' + Object.keys(p.votes || {}).length; }).join('|');
+  }
+
+  function injectAudioIcons(){
+    var all = allPosts();
+    detailList.querySelectorAll('[data-user-post-id]').forEach(function(card){
+      var id = card.getAttribute('data-user-post-id');
+      var footer = card.querySelector('.user-post-footer');
+      if(!id || !footer || footer.querySelector('.user-post-music-icon')) return;
+      var post = all.find(function(p){ return p && String(p.id) === String(id); });
+      if(!post || !post.audioUrl) return;
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'user-post-music-icon';
+      b.title = 'Play post audio';
+      b.innerHTML = '<svg class="ui-icon"><use href="#icon-music"></use></svg>';
+      b.onclick = function(ev){
+        ev.stopPropagation();
+        if(typeof window.toggleUserPostAudioPlay === 'function') window.toggleUserPostAudioPlay(id, b);
+      };
+      footer.insertBefore(b, footer.firstChild);
+    });
+  }
+
+  function renderDetail(list){
+    detailList.innerHTML = list.map(function(p){
+      return typeof window.userFeedCard === 'function' ? window.userFeedCard(p) : '';
+    }).join('');
+    detailList.querySelectorAll('[data-userpost-img]').forEach(function(img){
+      if(typeof window.bindLongPress === 'function') window.bindLongPress(img, img.getAttribute('data-userpost-img'));
+    });
+    detailList.querySelectorAll('.user-post-carousel').forEach(function(c){
+      c.addEventListener('scroll', function(){
+        var dots = c.parentElement.querySelector('.user-post-photo-dots');
+        if(!dots) return;
+        var idx = Math.round(c.scrollLeft / c.clientWidth);
+        dots.querySelectorAll('span').forEach(function(d, i){ d.classList.toggle('active', i === idx); });
+      }, { passive: true });
+    });
+    if(typeof window.injectPostReactions === 'function') window.injectPostReactions('myPostsDetailList');
+    injectAudioIcons();
+    detailSig = sigOf(list);
+  }
+
+  function openDetail(id){
+    var list = myPosts().filter(inTab);
+    if(!list.length) return;
+    renderDetail(list);
+    detail.style.display = 'block';
+    detail.scrollTop = 0;
+    try{ history.pushState({ myPostsDetail: true }, ''); }catch(e){}
+    setTimeout(function(){
+      var cards = detailList.querySelectorAll('[data-user-post-id]');
+      for(var i = 0; i < cards.length; i++){
+        if(cards[i].getAttribute('data-user-post-id') === String(id)){ cards[i].scrollIntoView({ block: 'start' }); break; }
+      }
+    }, 30);
+  }
+
+  function hideDetail(){
+    if(!isDetailOpen()) return;
+    detail.style.display = 'none';
+    detailList.innerHTML = '';
+    detailSig = '';
+  }
+
+  window.closeMyPostsDetail = function(){
+    if(!isDetailOpen()) return;
+    var s = null;
+    try{ s = history.state; }catch(e){}
+    if(s && s.myPostsDetail){
+      history.back();
+      setTimeout(hideDetail, 400);
+    } else {
+      hideDetail();
+    }
+  };
+
+  /* ---------- Page open / close ---------- */
+  function hidePage(){
+    if(!isOpen()) return;
+    hideDetail();
+    page.style.display = 'none';
+  }
+
+  function showProfile(){
+    if(typeof closeAllSections === 'function') closeAllSections();
+    var pp = document.getElementById('profilePage');
+    if(pp) pp.style.display = 'block';
+    if(typeof updateNavState === 'function') updateNavState('navProfile');
+    window.scrollTo(0, 0);
+  }
+
+  window.openMyPostsPage = function(){
+    // My Posts sirf Roll Number se logged-in user ke liye hai — guest/logged-out ke liye nahi.
+    if(!myRoll()){
+      if(window.isGuestMode && typeof guestBlockedAlert === 'function') guestBlockedAlert();
+      else if(typeof requireLogin === 'function') requireLogin(function(){ window.openMyPostsPage(); });
+      return;
+    }
+    if(typeof closeAllSections === 'function') closeAllSections();
+    tab = 'all';
+    tabsEl.querySelectorAll('[data-mp-tab]').forEach(function(x){ x.classList.toggle('active', x.getAttribute('data-mp-tab') === 'all'); });
+    renderGrid();
+    page.style.display = 'block';
+    if(typeof updateNavState === 'function') updateNavState('navProfile');
+    window.scrollTo(0, 0);
+  };
+
+  window.closeMyPostsPage = function(){
+    if(!isOpen()) return;
+    if(isDetailOpen()) hideDetail();
+    var s = null;
+    try{ s = history.state; }catch(e){}
+    if(s && s.portalAway){
+      // App ki existing back-button history entry ko consume karo (popstate niche handle karta hai).
+      history.back();
+      setTimeout(function(){ if(isOpen()) showProfile(); }, 400);
+    } else {
+      showProfile();
+    }
+  };
+
+  // Phone ka back button: (scroll view ->) My Posts -> Profile
+  window.addEventListener('popstate', function(){
+    if(isDetailOpen()){ hideDetail(); return; }
+    if(isOpen()) showProfile();
+  });
+
+  // Kisi bhi doosre page par jaate hi My Posts band ho jaye
+  var origCloseAll = window.closeAllSections;
+  if(typeof origCloseAll === 'function'){
+    window.closeAllSections = function(){
+      var r = origCloseAll.apply(this, arguments);
+      hidePage();
+      return r;
+    };
+  }
+
+  // Realtime data (naya post / delete / poll vote) aate hi page ko sync rakho
+  var origRefresh = window.refreshCurrentFeeds;
+  window.refreshCurrentFeeds = function(){
+    var r = typeof origRefresh === 'function' ? origRefresh.apply(this, arguments) : undefined;
+    if(isOpen()){
+      try{
+        renderGrid();
+        if(isDetailOpen()){
+          var list = myPosts().filter(inTab);
+          if(!list.length){ window.closeMyPostsDetail(); }
+          else if(sigOf(list) !== detailSig){
+            var top = detail.scrollTop;
+            renderDetail(list);
+            detail.scrollTop = top;
+          }
+        }
+      }catch(e){ console.warn('my posts sync', e); }
+    }
+    return r;
+  };
 })();
 </script>
 
